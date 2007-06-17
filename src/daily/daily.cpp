@@ -949,6 +949,8 @@ void dispersalcheck(char &clearformess) {
 
     //MUST DO AN END OF GAME CHECK HERE BECAUSE OF DISPERSAL
     endcheck(END_DISPERSED);
+
+    cleangonesquads();
 }
 
 
