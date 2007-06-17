@@ -102,7 +102,7 @@ void translategetch(int &c) {
         if(c == '&')
             c = '1';
 
-        if(c == '���')
+        if(c == 0x82)
             c = '2';
 
         if(c == '\"')
@@ -117,16 +117,16 @@ void translategetch(int &c) {
         if(c == '-')
             c = '6';
 
-        if(c == '���')
+        if(c == 0x8A)
             c = '7';
 
         if(c == '_')
             c = '8';
 
-        if(c == '���')
+        if(c == 0x87)
             c = '9';
 
-        if(c == '���')
+        if(c == 0x85)
             c = '0';
     }
 

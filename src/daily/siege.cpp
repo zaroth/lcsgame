@@ -103,7 +103,7 @@ void siegecheck(char canseethings) {
                 for(int i = 0; i < LAWFLAGNUM; i++) {
                     if(pool[p]->lawflag[i]) {
                         // Count up crimes (extra pressure for high intensity)
-                        crimes += pool[p]->lawflag[i] * (LawflagHeat[i] / 16 + 1);
+                        crimes += pool[p]->lawflag[i] * (lawflagheat(i) / 16 + 1);
                     }
                 }
             }
