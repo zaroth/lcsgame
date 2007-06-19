@@ -1410,6 +1410,7 @@ void loadgraphics(void) {
         CloseHandle(h);
     }
 
+
     h = LCSCreateFile("art\\newspic.cpc", LCSIO_READ);
 
     if(h != NULL) {

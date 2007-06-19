@@ -169,7 +169,7 @@ HANDLE LCSCreateFile(char *filename, enum LCSIOFlag flag) {
             }
         }
 
-//Skip the "art\" at the beginning...
+        //Skip the "art\" at the beginning...
         p1 = strchr(filename, '\\');
 
         if (p1 != NULL) {
