@@ -94,16 +94,12 @@ char completevacation(datest &d, int p, char &clearformess) {
             getrecruitcreature(str, d.date[e]->type);
             addstr(str);
             addstr(" in its presence?");
+            move(3, 0);
+            addstr("If you do not enter anything, their real name will be used.");
 
-            keypad(stdscr, FALSE);
-            raw_output(FALSE);
-            echo();
-            curs_set(1);
-            mvgetstr(3, 0, d.date[e]->name);
-            curs_set(0);
-            noecho();
-            raw_output(TRUE);
-            keypad(stdscr, TRUE);
+            move(4, 0);
+            enter_name(d.date[e]->name, CREATURE_NAMELEN, d.date[e]->propername);
+
 
             pool.push_back(d.date[e]);
             stat_recruits++;
@@ -359,16 +355,11 @@ char completedate(datest &d, int p, char &clearformess) {
                         getrecruitcreature(str, d.date[e]->type);
                         addstr(str);
                         addstr(" in its presence?");
+                        move(3, 0);
+                        addstr("If you do not enter anything, their real name will be used.");
 
-                        keypad(stdscr, FALSE);
-                        raw_output(FALSE);
-                        echo();
-                        curs_set(1);
-                        mvgetstr(3, 0, d.date[e]->name);
-                        curs_set(0);
-                        noecho();
-                        raw_output(TRUE);
-                        keypad(stdscr, TRUE);
+                        move(4, 0);
+                        enter_name(d.date[e]->name, CREATURE_NAMELEN, d.date[e]->propername);
 
                         pool.push_back(d.date[e]);
                         stat_recruits++;
@@ -536,15 +527,11 @@ char completedate(datest &d, int p, char &clearformess) {
                     addstr(str);
                     addstr(" in its presence?");
 
-                    keypad(stdscr, FALSE);
-                    raw_output(FALSE);
-                    echo();
-                    curs_set(1);
-                    mvgetstr(3, 0, d.date[e]->name);
-                    curs_set(0);
-                    noecho();
-                    raw_output(TRUE);
-                    keypad(stdscr, TRUE);
+                    move(3, 0);
+                    addstr("If you do not enter anything, their real name will be used.");
+
+                    move(4, 0);
+                    enter_name(d.date[e]->name, CREATURE_NAMELEN, d.date[e]->propername);
 
                     pool.push_back(d.date[e]);
                     stat_kidnappings++;
