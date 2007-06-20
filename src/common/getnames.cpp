@@ -2154,6 +2154,8 @@ void enter_name(char *name, int len, char *defname) {
 
     if((defname != NULL) && (strncmp(name, "", len) == 0))
         strncpy(name, defname, len);
+
+    name[len - 1] = '\0';
 }
 
 
