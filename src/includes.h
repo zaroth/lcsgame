@@ -704,8 +704,8 @@ struct activityst {
 #define CREATUREFLAG_ILLEGALALIEN BIT6
 #define CREATURE_NAMELEN 40
 struct creaturest {
-    char name[CREATURE_NAMELEN];
-    char propername[CREATURE_NAMELEN];
+    char name[CREATURE_NAMELEN + 1];
+    char propername[CREATURE_NAMELEN + 1];
     long squadid;//REMEMBER, THIS IS ID NUMBER, NOT ARRAY INDEX
     char exists;
     char align;
@@ -1163,11 +1163,14 @@ struct blogpostst {
     char issue;
 };
 
+
+#define SLOGAN_LEN 80
+
 struct highscorest {
     char valid;
     char endtype;
 
-    char slogan[80];
+    char slogan[SLOGAN_LEN + 1];
     int month;
     int year;
     unsigned long stat_recruits;
