@@ -179,8 +179,9 @@ void getslogan(void) {
     raw_output(FALSE);
     echo();
     curs_set(1);
-    mvgetnstr(24, 0, slogan, SLOGAN_LEN);
-    slogan[CREATURE_NAMELEN - 1] = '\0';
+    move(24, 0);
+    enter_name(slogan, SLOGAN_LEN);
+
     curs_set(0);
     noecho();
     raw_output(TRUE);

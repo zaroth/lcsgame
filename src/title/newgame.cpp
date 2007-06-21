@@ -487,8 +487,9 @@ void makecharacter(void) {
     raw_output(FALSE);
     echo();
     curs_set(1);
-    mvgetnstr(1, 0, newcr->name, CREATURE_NAMELEN);
-    newcr->name[CREATURE_NAMELEN - 1] = '\0';
+    move(1, 0);
+    enter_name(newcr->name, CREATURE_NAMELEN);
+
     curs_set(0);
     noecho();
     raw_output(TRUE);

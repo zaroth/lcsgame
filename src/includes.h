@@ -44,7 +44,8 @@ const unsigned long lowestloadscoreversion = 30001;
 #include "vector.h"
 #endif
 #endif
-#include "curses.h"
+
+#include <curses.h>
 //undo PDCurses macros that break vector class
 #undef erase
 #undef clear
@@ -69,7 +70,7 @@ const unsigned long lowestloadscoreversion = 30001;
 #define HAVE_PROTO 1
 #define CPLUSPLUS   1
 /* Try these PDCurses/Xcurses options later...
-#define FAST_VIDEO 
+#define FAST_VIDEO
 #define REGISTERWINDOWS
 */
 #include <xcurses.h> //This is the X11 Port of PDCurses
@@ -1164,7 +1165,7 @@ struct blogpostst {
 };
 
 
-#define SLOGAN_LEN 80
+#define SLOGAN_LEN 79
 
 struct highscorest {
     char valid;
