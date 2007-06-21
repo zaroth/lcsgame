@@ -313,8 +313,7 @@ void passmonth(char &clearformess, char canseethings) {
         savehighscore(END_WON);
         reset();
         viewhighscores();
-        endwin();
-        exit(0);
+        end_game();
     }
 
     //CONTROL LONG DISBANDS
@@ -344,8 +343,7 @@ void passmonth(char &clearformess, char canseethings) {
         savehighscore(END_DISBANDLOSS);
         reset();
         viewhighscores();
-        endwin();
-        exit(0);
+        end_game();
     }
 
     //UPDATE THE WORLD IN CASE THE LAWS HAVE CHANGED

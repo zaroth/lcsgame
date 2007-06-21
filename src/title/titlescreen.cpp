@@ -107,10 +107,8 @@ void mode_title(void) {
     int c = getch();
     translategetch(c);
 
-    if(c == 27) {
-        endwin();
-        exit(0);
-    }
+    if(c == 27)
+        end_game();
 
     viewhighscores();
 

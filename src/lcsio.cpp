@@ -197,6 +197,8 @@ HANDLE LCSCreateFile(char *filename, enum LCSIOFlag flag) {
     if (tofree > 0)
         free(f);
 
+    free(lcs_home);
+    lcs_home_init = false;
     #endif
     return h;
 }
