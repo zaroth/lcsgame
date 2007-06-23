@@ -1377,8 +1377,10 @@ void chase_giveup(void) {
         activesquad->squad[p]->activity.type = ACTIVITY_NONE;
 
         if(activesquad->squad[p]->prisoner != NULL) {
+            if(activesquad->squad[p]->prisoner->squadid == -1)
+                hostagefreed++;
+
             freehostage(*activesquad->squad[p], 2);
-            hostagefreed++;
         }
 
         activesquad->squad[p] = NULL;
