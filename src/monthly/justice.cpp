@@ -60,7 +60,7 @@ void trial(creaturest &g) {
         if(g.lawflag[i]) {
             typenum++;
             breaker[i] = 1;
-            scarefactor += lawflagheat(i) / 10;
+            scarefactor += lawflagheat(i) * g.lawflag[i] / 10;
         }
     }
 
@@ -381,17 +381,8 @@ void trial(creaturest &g) {
 
         //PROSECUTION MESSAGE
         int prosecution;
-
         // *JDS* The bigger your record, the stronger the evidence
-        if(scarefactor > 15)
-            prosecution = LCSrandom(51) + 100;
-        else if(scarefactor > 5)
-            prosecution = LCSrandom(101) + 50;
-        else if(scarefactor > 0)
-            prosecution = LCSrandom(91) + 10;
-        else
-            prosecution = LCSrandom(101);
-
+        prosecution = LCSrandom(101);
         prosecution += scarefactor;
 
         if(sleeperjudge)

@@ -299,7 +299,6 @@ char chasesequence(void) {
                     enemyattack();
                     creatureadvance();
                     drivingupdate(obstacle);
-                    chaseseq.canpullover = 0;
                 }
 
                 if(c == 'e')
@@ -550,10 +549,11 @@ char footchase(void) {
 
             if(c == 'd') {
                 if(encounter[0].exists &&
-                        encounter[0].type == CREATURE_COP)
+                        encounter[0].type == CREATURE_COP) {
                     sitestory->crime.push_back(CRIME_FOOTCHASE);
+                    criminalizeparty(LAWFLAG_RESIST);
+                }
 
-                criminalizeparty(LAWFLAG_RESIST);
                 evasiverun();
                 enemyattack();
                 creatureadvance();
@@ -561,14 +561,14 @@ char footchase(void) {
 
             if(c == 'f') {
                 if(encounter[0].exists &&
-                        encounter[0].type == CREATURE_COP)
+                        encounter[0].type == CREATURE_COP) {
                     sitestory->crime.push_back(CRIME_FOOTCHASE);
+                    criminalizeparty(LAWFLAG_RESIST);
+                }
 
-                criminalizeparty(LAWFLAG_RESIST);
                 youattack();
                 enemyattack();
                 creatureadvance();
-                chaseseq.canpullover = 0;
             }
 
             if(c == 'e')
@@ -795,16 +795,19 @@ long driveskill(creaturest &cr, vehiclest *v) {
         break;
 
     case VEHICLE_POLICECAR:
-        vbonus = 3;
+        vbonus = 2;
         break;
 
     case VEHICLE_SPORTSCAR:
     case VEHICLE_AGENTCAR:
-        vbonus = 5;
+        vbonus = 3;
         break;
     }
 
-    return cr.attval(ATTRIBUTE_AGILITY) + cr.skill[SKILL_DRIVING] * 3 + vbonus;
+    int driveskill = cr.attval(ATTRIBUTE_AGILITY) / 4 + cr.skill[SKILL_DRIVING] * (3 + vbonus);
+    healthmodroll(driveskill, cr);
+    driveskill *= static_cast<int>(cr.blood / 50.0);
+    return driveskill;
 }
 
 
