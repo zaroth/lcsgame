@@ -1274,7 +1274,7 @@ void investlocation(void) {
 
         move(15, 1);
 
-        if(!location[loc]->compound_walls == COMPOUND_PRINTINGPRESS)
+        if(!(location[loc]->compound_walls == COMPOUND_PRINTINGPRESS))
             addstr("R - Buy 20 more daily rations ($150)");
 
         move(16, 1);
