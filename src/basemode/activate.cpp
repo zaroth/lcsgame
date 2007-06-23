@@ -250,7 +250,11 @@ void activate(creaturest *cr) {
             addstr("S - Procuring a Wheelchair.");
         }
 
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        if(location[cr->location]->compound_walls == COMPOUND_PRINTINGPRESS)
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        else
+            set_color(COLOR_BLACK, COLOR_BLACK, 1);
+
         move(14, 40);
         addstr("W - Writing for the Liberal Guardian.");
 
@@ -340,8 +344,15 @@ void activate(creaturest *cr) {
             }
         }
 
-        if(c == 'w') {
-            cr->activity.type = ACTIVITY_WRITE;
+        if(c == 'w' && location[cr->location]->compound_walls == COMPOUND_PRINTINGPRESS) {
+            activityst oact = cr->activity;
+            cr->activity.type = ACTIVITY_NONE;
+
+            if(select_view(cr, cr->activity.arg))
+                cr->activity.type = ACTIVITY_WRITE;
+            else
+                cr->activity = oact;
+
             break;
         }
 
@@ -1120,7 +1131,7 @@ long select_troublefundinglevel(creaturest *cr) {
 
 
 
-/* base - activate - select a topic to write about (uncalled function!!!) */
+/* base - activate - select a topic to write about */
 char select_view(creaturest *cr, long &v) {
     int page = 0;
     char str[80];
@@ -1130,29 +1141,40 @@ char select_view(creaturest *cr, long &v) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(0, 0);
-        addstr("Which topic will ");
-        addstr(cr->name);
-        addstr(" write about?");
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        addstr("Write a news story if the LCS makes the news on the selected topic today, or");
         move(1, 0);
-        addstr("----TOPIC-----------------------------------TOPIC-------------------------------");
+        addstr("write editorials if there is no current news but there is public interest.");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        move(2, 0);
+        addstr("----TOPIC-----------------------------------INTEREST---------------------------");
 
-        int y = 2, x = 0;
+        int y = 3, x = 0;
 
-        for(int p = page * 26; p < VIEWNUM - 2 && p < page * 26 + 26; p++) {
+        for(int p = page * 18; p < VIEWNUM - 2 && p < page * 18 + 18; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, x);
-            addch((p - page * 26) + 'A');
+            addch((p - page * 18) + 'A');
             addstr(" - ");
             getview(str, p);
             addstr(str);
 
-            y++;
+            move(y, 44);
 
-            if(y == 16) {
-                y = 2;
-                x = 40;
+            if(newspaper_topicwork1[p] > 40) {
+                set_color(COLOR_RED, COLOR_BLACK, 1);
+                addstr("Major Controversy");
+            } else if(newspaper_topicwork1[p] > 10) {
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                addstr("Significant");
+            } else if(newspaper_topicwork1[p] > 0) {
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                addstr("Minor");
+            } else {
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);
+                addstr("None");
             }
+
+            y++;
         }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -1162,7 +1184,6 @@ char select_view(creaturest *cr, long &v) {
 
         if(interface_pgup == '[')
             addstr("[] to view other Liberal pages.");
-
         else if(interface_pgup == '.')
             addstr("; and : to view other Liberal pages.");
         else
@@ -1178,11 +1199,11 @@ char select_view(creaturest *cr, long &v) {
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 26 < VIEWNUM - 2)
+        if(c == interface_pgdn && (page + 1) * 16 < VIEWNUM - 2)
             page++;
 
-        if(c >= 'a' && c <= 's') {
-            int p = page * 26 + (int)(c - 'a');
+        if(c >= 'a' && c <= 'a' + 18) {
+            int p = page * 18 + (int)(c - 'a');
 
             if(p < VIEWNUM - 2) {
                 v = p;

@@ -505,12 +505,13 @@ void change_public_opinion(int v, int power, char affect, char cap) {
 
         if(effpower > 80)
             effpower = 80;
-    } else if(cap) {
-        if(effpower < -10)
-            effpower = -10;
-
-        if(effpower > 10)
-            effpower = 10;
+    } else if(effpower > 0) {
+        if(attitude[v] + effpower > cap) {
+            if(attitude[v] > cap)
+                effpower = 0;
+            else
+                effpower = cap - attitude[v];
+        }
     }
 
     attitude[v] += effpower;
@@ -526,64 +527,64 @@ void change_public_opinion(int v, int power, char affect, char cap) {
 int lawflagheat(int lawflag) {
     switch(lawflag) {
     case LAWFLAG_KIDNAPPING:
-        return 128;
+        return 30;
 
     case LAWFLAG_MURDER:
-        return 64;
+        return 30;
 
     case LAWFLAG_THEFT:
-        return 4;
+        return 2;
 
     case LAWFLAG_BREAKING:
         return 1;
 
     case LAWFLAG_TERRORISM:
-        return 64;
+        return 100;
 
     case LAWFLAG_JURY:
-        return 32;
+        return 30;
 
     case LAWFLAG_TREASON:
-        return 128;
+        return 100;
 
     case LAWFLAG_ESCAPED:
-        return 64;
+        return 50;
 
     case LAWFLAG_HELPESCAPE:
-        return 64;
+        return 50;
 
     case LAWFLAG_RESIST:
-        return 16;
+        return 5;
 
     case LAWFLAG_BURNFLAG:
-        return 1;
+        return 5;
 
     case LAWFLAG_SPEECH:
-        return 4;
+        return 5;
 
     case LAWFLAG_VANDALISM:
-        return 1;
+        return 4;
 
     case LAWFLAG_ASSAULT:
-        return 16;
+        return 10;
 
     case LAWFLAG_CARTHEFT:
-        return 8;
+        return 5;
 
     case LAWFLAG_INFORMATION:
-        return 4;
+        return 5;
 
     case LAWFLAG_COMMERCE:
         return 1;
 
     case LAWFLAG_CCFRAUD:
-        return 8;
+        return 10;
 
     case LAWFLAG_BROWNIES:
-        return 4;
+        return 10;
 
     case LAWFLAG_BURIAL:
-        return 4;
+        return 5;
 
     case LAWFLAG_PROSTITUTION:
         return 1;
@@ -595,13 +596,16 @@ int lawflagheat(int lawflag) {
         return 1;
 
     case LAWFLAG_RACKETEERING:
-        return 8;
+        return 10;
 
     case LAWFLAG_LOITERING:
         return 0;
 
     case LAWFLAG_GUNCARRY:
-        return 16;
+        return 20;
+
+    default:
+        return 0;
     }
 }
 

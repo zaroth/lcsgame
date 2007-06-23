@@ -261,7 +261,7 @@ void printnews(short l, short newspaper) {
         switch(LCSrandom(10)) {
         case 0:
             addstr("engaging in lude behavior with animals.");
-            change_public_opinion(VIEW_ANIMALRESEARCH, 15, 0, 0);
+            change_public_opinion(VIEW_ANIMALRESEARCH, 15, 0);
             break;
 
         case 1:
@@ -270,8 +270,8 @@ void printnews(short l, short newspaper) {
 
         case 2:
             addstr("participating in a murder.");
-            change_public_opinion(VIEW_POLICEBEHAVIOR, 15, 0, 0);
-            change_public_opinion(VIEW_JUSTICES, 10, 0, 0);
+            change_public_opinion(VIEW_POLICEBEHAVIOR, 15, 0);
+            change_public_opinion(VIEW_JUSTICES, 10, 0);
             break;
 
         case 3:
@@ -284,8 +284,8 @@ void printnews(short l, short newspaper) {
 
         case 5:
             addstr("making out with an FDA official overseeing the CEO's products.");
-            change_public_opinion(VIEW_GENETICS, 10, 0, 0);
-            change_public_opinion(VIEW_POLLUTION, 10, 0, 0);
+            change_public_opinion(VIEW_GENETICS, 10, 0);
+            change_public_opinion(VIEW_POLLUTION, 10, 0);
             break;
 
         case 6:
@@ -298,7 +298,7 @@ void printnews(short l, short newspaper) {
 
         case 8:
             addstr("torturing an employee with a hot iron.");
-            change_public_opinion(VIEW_SWEATSHOPS, 10, 0, 0);
+            change_public_opinion(VIEW_SWEATSHOPS, 10, 0);
             break;
 
         case 9:
@@ -311,10 +311,10 @@ void printnews(short l, short newspaper) {
         move(9, 1);
         addstr("This is bound to get the Corporations a little riled up.");
 
-        change_public_opinion(VIEW_LIBERALCRIMESQUAD, newspaper * 10, 0, 0);
-        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, newspaper * 10, 0, 0);
-        change_public_opinion(VIEW_CEOSALARY, 50, 0, 0);
-        change_public_opinion(VIEW_CORPORATECULTURE, 50, 0, 0);
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10, 0);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10, 0);
+        change_public_opinion(VIEW_CEOSALARY, 50, 0);
+        change_public_opinion(VIEW_CORPORATECULTURE, 50, 0);
         offended_corps = 1;
         break;
 
@@ -326,27 +326,27 @@ void printnews(short l, short newspaper) {
         switch(LCSrandom(5)) {
         case 0:
             addstr("describing a genetic monster created in a lab.");
-            change_public_opinion(VIEW_GENETICS, 50, 0, 0);
+            change_public_opinion(VIEW_GENETICS, 50, 0);
             break;
 
         case 1:
             addstr("with a list of gay employees entitled \"Homo-workers\".");
-            change_public_opinion(VIEW_GAY, 50, 0, 0);
+            change_public_opinion(VIEW_GAY, 50, 0);
             break;
 
         case 2:
             addstr("containing a memo: \"Terminate the pregnancy, I terminate you.\"");
-            change_public_opinion(VIEW_ABORTION, 50, 0, 0);
+            change_public_opinion(VIEW_ABORTION, 50, 0);
             break;
 
         case 3:
             addstr("cheerfully describing foreign corporate sweatshops.");
-            change_public_opinion(VIEW_SWEATSHOPS, 50, 0, 0);
+            change_public_opinion(VIEW_SWEATSHOPS, 50, 0);
             break;
 
         case 4:
             addstr("describing an intricate tax scheme.");
-            change_public_opinion(VIEW_TAXES, 50, 0, 0);
+            change_public_opinion(VIEW_TAXES, 50, 0);
             break;
         }
 
@@ -355,10 +355,10 @@ void printnews(short l, short newspaper) {
         move(9, 1);
         addstr("This is bound to get the Corporations a little riled up.");
 
-        change_public_opinion(VIEW_LIBERALCRIMESQUAD, newspaper * 10, 0, 0);
-        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, newspaper * 10, 0, 0);
-        change_public_opinion(VIEW_CEOSALARY, 50, 0, 0);
-        change_public_opinion(VIEW_CORPORATECULTURE, 50, 0, 0);
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, newspaper * 10, 0);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, newspaper * 10, 0);
+        change_public_opinion(VIEW_CEOSALARY, 50, 0);
+        change_public_opinion(VIEW_CORPORATECULTURE, 50, 0);
         offended_corps = 1;
         break;
 
@@ -375,7 +375,7 @@ void printnews(short l, short newspaper) {
 
         case 1:
             addstr("documenting the planned assassination of a Liberal federal judge.");
-            change_public_opinion(VIEW_JUSTICES, 50, 0, 0);
+            change_public_opinion(VIEW_JUSTICES, 50, 0);
             break;
 
         case 2:
@@ -384,17 +384,17 @@ void printnews(short l, short newspaper) {
 
         case 3:
             addstr("documenting \"harmful speech\" made by innocent citizens.");
-            change_public_opinion(VIEW_FREESPEECH, 50, 0, 0);
+            change_public_opinion(VIEW_FREESPEECH, 50, 0);
             break;
 
         case 4:
             addstr("used to keep tabs on gay citizens.");
-            change_public_opinion(VIEW_GAY, 50, 0, 0);
+            change_public_opinion(VIEW_GAY, 50, 0);
             break;
 
         case 5:
             addstr("documenting the infiltration of a pro-choice group.");
-            change_public_opinion(VIEW_ABORTION, 50, 0, 0);
+            change_public_opinion(VIEW_ABORTION, 50, 0);
             break;
         }
 
@@ -403,9 +403,9 @@ void printnews(short l, short newspaper) {
         move(9, 1);
         addstr("This is bound to get the Government a little riled up.");
 
-        change_public_opinion(VIEW_LIBERALCRIMESQUAD, newspaper * 10, 0, 0);
-        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, newspaper * 10, 0, 0);
-        change_public_opinion(VIEW_INTELLIGENCE, 50, 0, 0);
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10, 0);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10, 0);
+        change_public_opinion(VIEW_INTELLIGENCE, 50, 0);
         offended_cia = 1;
         break;
 
@@ -425,7 +425,7 @@ void printnews(short l, short newspaper) {
 
         case 2:
             addstr("documenting a systematic invasion of privacy by the force.");
-            change_public_opinion(VIEW_INTELLIGENCE, 15, 0, 0);
+            change_public_opinion(VIEW_INTELLIGENCE, 15, 0);
             break;
 
         case 3:
@@ -438,7 +438,7 @@ void printnews(short l, short newspaper) {
 
         case 5:
             addstr("documenting gladiatory matches held between prisoners by guards.");
-            change_public_opinion(VIEW_PRISONS, 50, 0, 0);
+            change_public_opinion(VIEW_PRISONS, 50, 0);
             break;
         }
 
@@ -447,9 +447,9 @@ void printnews(short l, short newspaper) {
         move(9, 1);
         addstr("This is bound to get the police a little riled up.");
 
-        change_public_opinion(VIEW_LIBERALCRIMESQUAD, newspaper * 10, 0, 0);
-        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, newspaper * 10, 0, 0);
-        change_public_opinion(VIEW_POLICEBEHAVIOR, 50, 0, 0);
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10, 0);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10, 0);
+        change_public_opinion(VIEW_POLICEBEHAVIOR, 50, 0);
         offended_cops = 1;
         break;
     }

@@ -103,17 +103,17 @@ void siegecheck(char canseethings) {
                 for(int i = 0; i < LAWFLAGNUM; i++) {
                     if(pool[p]->lawflag[i]) {
                         // Count up crimes (extra pressure for high intensity)
-                        crimes += pool[p]->lawflag[i] * (lawflagheat(i) / 16 + 1);
+                        crimes += pool[p]->lawflag[i] * lawflagheat(i);
                     }
                 }
             }
 
             // Let the place slowly cool off if there are no criminals there
             if(!crimes && location[l]->heat) {
-                if(location[l]->heat > 128)
-                    location[l]->heat -= 36 - police_heat * 8;
+                if(location[l]->heat > 2000)
+                    location[l]->heat -= 200 - police_heat * 40;
                 else
-                    location[l]->heat -= 5 - police_heat;
+                    location[l]->heat -= 50 - police_heat * 10;
 
                 if(location[l]->heat < 0)
                     location[l]->heat = 0;
@@ -152,13 +152,13 @@ void siegecheck(char canseethings) {
                 // So the upscale apartment takes 16 times less heat than a warehouse!
                 crimes >>= heatprotection;
 
-                if(crimes > 40 - heatprotection * 10)
-                    crimes = 40 - heatprotection * 10;
+                if(crimes > 200)
+                    crimes = 200;
 
                 location[l]->heat += crimes;
 
                 if(location[l]->siege.timeuntillocated == -1 &&
-                        location[l]->heat > 150) {
+                        location[l]->heat > 500) {
                     // Begin planning siege if high heat on location
                     int siegetime = 5 * (1 + 1 * heatprotection);
                     location[l]->siege.timeuntillocated += siegetime + LCSrandom(siegetime);
@@ -497,7 +497,6 @@ void siegeturn(char clearformess) {
     for(int l = 0; l < location.size(); l++) {
         if(location[l]->siege.siege &&
                 !location[l]->siege.underattack) {
-
             //EAT
             int eat = numbereating(l);
 
@@ -1032,8 +1031,8 @@ void siegeturn(char clearformess) {
                     getch();
 
                     //CHECK PUBLIC OPINION
-                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, 20, 0, 0);
-                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, (segmentpower - 25) / 2, 0, 0);
+                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, 20, 0);
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, (segmentpower - 25) / 2, 0);
                     int viewhit;
 
                     for(int v = 0; v < 5; v++) {
@@ -1042,9 +1041,9 @@ void siegeturn(char clearformess) {
                         } while(viewhit == VIEW_LIBERALCRIMESQUADPOS);
 
                         if(viewhit != VIEW_LIBERALCRIMESQUAD)
-                            change_public_opinion(viewhit, (segmentpower - 25) / 2, 1, 0);
+                            change_public_opinion(viewhit, (segmentpower - 25) / 2, 1);
                         else
-                            change_public_opinion(viewhit, segmentpower / 4, 1, 0);
+                            change_public_opinion(viewhit, segmentpower / 4, 1);
                     }
                 }
             }
@@ -1173,7 +1172,7 @@ void giveup(void) {
             addstr("Fortunately, your funds remain intact.");
         }
 
-        if(location[loc]->compound_walls) {
+        if(location[loc]->compound_walls && location[loc]->compound_walls != COMPOUND_PRINTINGPRESS) {
             move(10, 1);
             addstr("The compound is dismantled.");
             location[loc]->compound_walls = 0;

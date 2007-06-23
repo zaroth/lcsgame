@@ -1280,8 +1280,6 @@ void funds_and_trouble(char &clearformess) {
     long tfund = 0;
     vector<creaturest *> hack;
     long hfund = 0;
-    vector<creaturest *> write;
-    long wfund = 0;
     vector<creaturest *> bury;
     vector<creaturest *> solicit;
     vector<creaturest *> brownies;
@@ -1348,10 +1346,6 @@ void funds_and_trouble(char &clearformess) {
         case ACTIVITY_BURY:
             bury.push_back(pool[p]);
             pool[p]->activity.type = ACTIVITY_NONE;
-            break;
-
-        case ACTIVITY_WRITE:
-            write.push_back(pool[p]);
             break;
 
         case ACTIVITY_CLINIC:
@@ -1475,10 +1469,7 @@ void funds_and_trouble(char &clearformess) {
                 trackdif = 30;
                 crime = LAWFLAG_INFORMATION;
                 juiceval = 20;
-
-                if(attitude[VIEW_INTELLIGENCE] < 75)
-                    change_public_opinion(VIEW_INTELLIGENCE, 3, 0);
-
+                change_public_opinion(VIEW_INTELLIGENCE, 3, 0, 75);
                 break;
             }
 
@@ -1558,10 +1549,7 @@ void funds_and_trouble(char &clearformess) {
                 juiceval = 2;
                 trackdif = 2;
                 crime = LAWFLAG_INFORMATION;
-
-                if(attitude[issue] < 75)
-                    change_public_opinion(issue, 1, 0);
-
+                change_public_opinion(issue, 1, 0, 75);
                 break;
             }
             }
@@ -1576,133 +1564,6 @@ void funds_and_trouble(char &clearformess) {
 
             refresh();
             getch();
-        }
-    }
-
-    //WRITING
-    if(write.size() > 0) {
-        char num[20];
-
-        for(int w = write.size() - 1; w >= 0; w--) {
-            write[w]->skill_ip[SKILL_WRITING] += LCSrandom(2) + 1;
-
-            if(LCSrandom(4) ||
-                    ((write[w]->juice < 0) && LCSrandom(3)))
-                continue;
-
-            long juiceval = 0;
-            char done = 0;
-            unsigned short crime = 0;
-
-            if(clearformess)
-                erase();
-            else
-                makedelimiter(8, 0);
-
-
-
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            move(8, 1);
-
-            addstr(write[w]->name);
-            addstr(" wrote ");
-
-            int power = 0;
-            power += write[w]->skill[SKILL_PERSUASION] * 2 +
-                     write[w]->skill[SKILL_WRITING] * 2 +
-                     write[w]->attval(ATTRIBUTE_HEART) +
-                     write[w]->attval(ATTRIBUTE_INTELLIGENCE);
-            power += LCSrandom(15);
-
-            // Criminalize for speech violations (this will be ignored and cleared
-            // later if this isn't illegal)
-            write[w]->lawflag[LAWFLAG_SPEECH]++;
-
-            int issue = LCSrandom(VIEWNUM - 2);
-
-            for(int i = 0; i < VIEWNUM - 2; ++i) {
-                if(newspaper_topicwork[i])
-                    issue = i;
-            }
-
-            int reporttype;
-
-            if(newspaper_topicwork[issue]) {
-                reporttype = REPORT_NEWS;
-                power = newspaper_topicwork[issue];
-                newspaper_topicwork[issue] = 0;
-                juiceval = power / 4;
-                addstr("a news story about LCS actions and ");
-                char text[50];
-                getview(text, issue);
-                addstr(text);
-                addstr(".");
-            } else {
-                reporttype = LCSrandom(2) ? REPORT_OPINION : REPORT_ATTACK;
-                adjustblogpower(power);
-
-                switch(reporttype) {
-                case REPORT_OPINION: {
-                    if(power < 1) {
-                        switch(LCSrandom(2)) {
-                        case 0:
-                            addstr(" paper on ");
-                            break;
-
-                        case 1:
-                            addstr(" opinion about ");
-                            break;
-                        }
-                    } else if(power == 1)
-                        addstr(" article about ");
-                    else {
-                        switch(LCSrandom(4)) {
-                        case 0:
-                            addstr(" essay about ");
-                            break;
-
-                        case 1:
-                            addstr(" column on ");
-                            break;
-
-                        case 2:
-                            addstr(" discussion of ");
-                            break;
-
-                        case 3:
-                            addstr(" editorial about ");
-                            break;
-                        }
-                    }
-
-                    char text[50];
-                    getview(text, issue);
-                    addstr(text);
-                    addstr(".");
-                    break;
-                }
-
-                case REPORT_ATTACK: {
-                    addstr(" attack against Conservatism.");
-                    break;
-                    break;
-                }
-                }
-            }
-
-            blogpostst *bp = new blogpostst;
-            bp->power = power;
-            bp->issue = issue;
-            bp->type = reporttype;
-            blogpost.push_back(bp);
-
-            refresh();
-            getch();
-
-            if(crime != 0)
-                write[w]->lawflag[crime]++;
-
-            addjuice(*write[w], juiceval, 20);
         }
     }
 
@@ -1867,11 +1728,8 @@ void funds_and_trouble(char &clearformess) {
                     juiceval = 2;
                     crime = LAWFLAG_ASSAULT;
                     change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 0);
-
-                    if(attitude[VIEW_ANIMALRESEARCH] < 75)
-                        change_public_opinion(VIEW_ANIMALRESEARCH, mod, 0);
-
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                    change_public_opinion(VIEW_ANIMALRESEARCH, mod, 0, 75);
                     done = 1;
                     break;
 
@@ -1879,11 +1737,8 @@ void funds_and_trouble(char &clearformess) {
                     if(law[LAW_GAY] < 2) {
                         addstr("disrupted a traditional wedding at a church!");
                         change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 0);
-
-                        if(attitude[VIEW_GAY] < 75)
-                            change_public_opinion(VIEW_GAY, mod, 0);
-
+                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                        change_public_opinion(VIEW_GAY, mod, 0, 75);
                         juiceval = 2;
                         crime = LAWFLAG_DISTURBANCE;
                         done = 1;
@@ -1896,11 +1751,8 @@ void funds_and_trouble(char &clearformess) {
                     if(law[LAW_ABORTION] < 2) {
                         addstr("posted horrifying dead abortion doctor pictures downtown!");
                         change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 0);
-
-                        if(attitude[VIEW_ABORTION] < 75)
-                            change_public_opinion(VIEW_ABORTION, mod, 0);
-
+                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                        change_public_opinion(VIEW_ABORTION, mod, 0, 75);
                         juiceval = 1;
                         done = 1;
                     }
@@ -1911,11 +1763,8 @@ void funds_and_trouble(char &clearformess) {
                 case 3: {
                     addstr("distributed fliers graphically illustrating prison life!");
                     change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 0);
-
-                    if(attitude[VIEW_PRISONS] < 75)
-                        change_public_opinion(VIEW_PRISONS, mod, 0);
-
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                    change_public_opinion(VIEW_PRISONS, mod, 0, 75);
                     juiceval = 1;
                     done = 1;
                     break;
@@ -1925,11 +1774,8 @@ void funds_and_trouble(char &clearformess) {
                     if(law[LAW_POLICEBEHAVIOR] < 2) {
                         addstr("gone downtown and reenacted a police beating!");
                         change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 0);
-
-                        if(attitude[VIEW_POLICEBEHAVIOR] < 75)
-                            change_public_opinion(VIEW_POLICEBEHAVIOR, mod, 0);
-
+                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                        change_public_opinion(VIEW_POLICEBEHAVIOR, mod, 0, 75);
                         juiceval = 2;
                         crime = LAWFLAG_DISTURBANCE;
                         done = 1;
@@ -1946,11 +1792,8 @@ void funds_and_trouble(char &clearformess) {
                             addstr("dressed up and pretended to be a radioactive mutant!");
 
                         change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 0);
-
-                        if(attitude[VIEW_NUCLEARPOWER] < 75)
-                            change_public_opinion(VIEW_NUCLEARPOWER, mod, 0);
-
+                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                        change_public_opinion(VIEW_NUCLEARPOWER, mod, 0, 75);
                         juiceval = 2;
                         crime = LAWFLAG_DISTURBANCE;
                         done = 1;
@@ -1963,11 +1806,8 @@ void funds_and_trouble(char &clearformess) {
                     if(law[LAW_POLLUTION] < 2) {
                         addstr("squirted business people with fake polluted water!");
                         change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 0);
-
-                        if(attitude[VIEW_POLLUTION] < 75)
-                            change_public_opinion(VIEW_POLLUTION, mod, 0);
-
+                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                        change_public_opinion(VIEW_POLLUTION, mod, 0, 75);
                         juiceval = 2;
                         crime = LAWFLAG_DISTURBANCE;
                         done = 1;
@@ -1980,11 +1820,8 @@ void funds_and_trouble(char &clearformess) {
                     if(law[LAW_DEATHPENALTY] < 2) {
                         addstr("distributed fliers graphically illustrating executions!");
                         change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 0);
-
-                        if(attitude[VIEW_DEATHPENALTY] < 75)
-                            change_public_opinion(VIEW_DEATHPENALTY, mod, 0);
-
+                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                        change_public_opinion(VIEW_DEATHPENALTY, mod, 0, 75);
                         juiceval = 1;
                         done = 1;
                     }
