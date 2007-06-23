@@ -1363,6 +1363,7 @@ void chase_giveup(void) {
     }
 
     chaseseq.friendcar.clear();
+    int hostagefreed = 0;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] == NULL)
@@ -1374,6 +1375,12 @@ void chase_giveup(void) {
         activesquad->squad[p]->weapon.type = WEAPON_NONE;
         activesquad->squad[p]->weapon.ammo = 0;
         activesquad->squad[p]->activity.type = ACTIVITY_NONE;
+
+        if(activesquad->squad[p]->prisoner != NULL) {
+            freehostage(*activesquad->squad[p], 2);
+            hostagefreed++;
+        }
+
         activesquad->squad[p] = NULL;
     }
 
@@ -1390,6 +1397,16 @@ void chase_giveup(void) {
         addstr("You stop and are arrested.");
     else
         addstr("You pull over and are arrested.");
+
+    if(hostagefreed > 0) {
+        move(17, 1);
+        addstr("Your hostage");
+
+        if(hostagefreed > 1)
+            addstr("s are free.");
+        else
+            addstr(" is free.");
+    }
 
     refresh();
     getch();
