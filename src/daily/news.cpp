@@ -1750,59 +1750,62 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
 void loadgraphics(void) {
     unsigned long picnum, dimx, dimy;
 
-    DWORD numbytes;
-    HANDLE h;
+    unsigned int numbytes;
+    FILE *h;
 
-    h = LCSCreateFile("art\\largecap.cpc", LCSIO_READ);
+    h = LCSOpenFile("largecap.cpc", "rb", LCSIO_PRE_ART);
 
     if(h != NULL) {
-        ReadFile(h, &picnum, sizeof(unsigned long), &numbytes, NULL);
-        ReadFile(h, &dimx, sizeof(unsigned long), &numbytes, NULL);
-        ReadFile(h, &dimy, sizeof(unsigned long), &numbytes, NULL);
+
+        numbytes = fread(&picnum, sizeof(unsigned long), 1, h);
+        numbytes = fread(&dimx, sizeof(unsigned long), 1, h);
+        numbytes = fread(&dimy, sizeof(unsigned long), 1, h);
 
         for(int p = 0; p < picnum; p++) {
             for(int x = 0; x < dimx; x++) {
                 for(int y = 0; y < dimy; y++)
-                    ReadFile(h, &bigletters[p][x][y][0], sizeof(unsigned char) * 4, &numbytes, NULL);
+                    numbytes = fread(&bigletters[p][x][y][0], sizeof(unsigned char), 4, h);
             }
         }
 
-        CloseHandle(h);
+        LCSCloseFile(h);
     }
 
-    h = LCSCreateFile("art\\newstops.cpc", LCSIO_READ);
+    h = LCSOpenFile("newstops.cpc", "rb", LCSIO_PRE_ART);
 
     if(h != NULL) {
-        ReadFile(h, &picnum, sizeof(unsigned long), &numbytes, NULL);
-        ReadFile(h, &dimx, sizeof(unsigned long), &numbytes, NULL);
-        ReadFile(h, &dimy, sizeof(unsigned long), &numbytes, NULL);
+
+        numbytes = fread(&picnum, sizeof(unsigned long), 1, h);
+        numbytes = fread(&dimx, sizeof(unsigned long), 1, h);
+        numbytes = fread(&dimy, sizeof(unsigned long), 1, h);
 
         for(int p = 0; p < picnum; p++) {
             for(int x = 0; x < dimx; x++) {
                 for(int y = 0; y < dimy; y++)
-                    ReadFile(h, &newstops[p][x][y][0], sizeof(unsigned char) * 4, &numbytes, NULL);
+                    numbytes = fread(&newstops[p][x][y][0], sizeof(unsigned char), 4, h);
             }
         }
 
-        CloseHandle(h);
+        LCSCloseFile(h);
     }
 
 
-    h = LCSCreateFile("art\\newspic.cpc", LCSIO_READ);
+    h = LCSOpenFile("newspic.cpc", "rb", LCSIO_PRE_ART);
 
     if(h != NULL) {
-        ReadFile(h, &picnum, sizeof(unsigned long), &numbytes, NULL);
-        ReadFile(h, &dimx, sizeof(unsigned long), &numbytes, NULL);
-        ReadFile(h, &dimy, sizeof(unsigned long), &numbytes, NULL);
+
+        numbytes = fread(&picnum, sizeof(unsigned long), 1, h);
+        numbytes = fread(&dimx, sizeof(unsigned long), 1, h);
+        numbytes = fread(&dimy, sizeof(unsigned long), 1, h);
 
         for(int p = 0; p < picnum; p++) {
             for(int x = 0; x < dimx; x++) {
                 for(int y = 0; y < dimy; y++)
-                    ReadFile(h, &newspic[p][x][y][0], sizeof(unsigned char) * 4, &numbytes, NULL);
+                    numbytes = fread(&newspic[p][x][y][0], sizeof(unsigned char), 4, h);
             }
         }
 
-        CloseHandle(h);
+        LCSCloseFile(h);
     }
 }
 

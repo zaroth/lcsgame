@@ -75,7 +75,7 @@
 //Lower Case using POSIX tolower() function.
 //Free returned string after use.
 
-char *strToLower(const char *str);
+char *strToLower (const char *str);
 
 int stricmp(const char *str1, const char *str2);
 #endif
