@@ -52,8 +52,7 @@ char *art_search_paths[] = {
 };
 
 
-/// TODO: Change windows stat code to just open the file read only.
-/// TODO: Change windows mkdir code to use special windows crap.
+
 
 //Check if filename exists on the system.
 //Filename is the full path to the file.
