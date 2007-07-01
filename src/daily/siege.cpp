@@ -1080,6 +1080,7 @@ void giveup(void) {
             }
         }
 
+
         //END SIEGE
         erase();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -1198,6 +1199,17 @@ void giveup(void) {
             //ALL KIDNAP VICTIMS FREED REGARDLESS OF CRIMES
             if((pool[p]->flag & CREATUREFLAG_MISSING) ||
                     !pool[p]->alive) {
+                // Clear actions for anybody who was tending to this person
+                for(int i = 0; i < pool.size(); ++i) {
+                    if(!pool[i]->alive)
+                        continue;
+
+                    if(pool[i]->activity.type == ACTIVITY_HOSTAGETENDING) {
+                        if(pool[i]->activity.arg == pool[p]->id)
+                            pool[i]->activity.type = ACTIVITY_NONE;
+                    }
+                }
+
                 removesquadinfo(*pool[p]);
                 delete pool[p];
                 pool.erase(pool.begin() + p);
