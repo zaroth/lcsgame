@@ -967,19 +967,38 @@ void printliberalstats(creaturest &cr, char smll) {
     char num[20], str[200];
 
     move(2, 0);
-    addstr("Name: ");
+
+    if(strcmp(cr.propername, cr.name) != 0)
+        addstr("Code name: ");
+    else
+        addstr("Name: ");
+
+    set_color(COLOR_WHITE, COLOR_BLACK, 1);
     addstr(cr.name);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     addstr(", ");
     gettitle(str, cr);
     addstr(str);
 
-    move(4, 25);
+    if(strcmp(cr.propername, cr.name) != 0) {
+        //The names do not match, print alias
+
+        move(3, 0);
+        addstr("Real name: ");
+
+        addstr(cr.propername);
+
+    }
+
+
+
+    move(5, 25);
     addstr("Juice: ");
     itoa(cr.juice, num, 10);
     addstr(num);
 
     if(cr.juice < 500) {
-        move(5, 25);
+        move(6, 25);
         addstr("Next: ");
 
         if(cr.juice < 0)
@@ -996,31 +1015,31 @@ void printliberalstats(creaturest &cr, char smll) {
             addstr("500");
     }
 
-    move(4, 0);
+    move(5, 0);
     addstr("Heart: ");
     itoa(cr.attval(ATTRIBUTE_HEART), num, 10);
     addstr(num);
-    move(5, 0);
+    move(6, 0);
     addstr("Intelligence: ");
     itoa(cr.attval(ATTRIBUTE_INTELLIGENCE), num, 10);
     addstr(num);
-    move(6, 0);
+    move(7, 0);
     addstr("Wisdom: ");
     itoa(cr.attval(ATTRIBUTE_WISDOM), num, 10);
     addstr(num);
-    move(7, 0);
+    move(8, 0);
     addstr("Health: ");
     itoa(cr.attval(ATTRIBUTE_HEALTH), num, 10);
     addstr(num);
-    move(8, 0);
+    move(9, 0);
     addstr("Agility: ");
     itoa(cr.attval(ATTRIBUTE_AGILITY), num, 10);
     addstr(num);
-    move(9, 0);
+    move(10, 0);
     addstr("Strength: ");
     itoa(cr.attval(ATTRIBUTE_STRENGTH), num, 10);
     addstr(num);
-    move(10, 0);
+    move(11, 0);
     addstr("Charisma: ");
     itoa(cr.attval(ATTRIBUTE_CHARISMA), num, 10);
     addstr(num);
@@ -1059,9 +1078,9 @@ void printliberalstats(creaturest &cr, char smll) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
             if(!smll)
-                move(4 + 14 - snum, 40);
+                move(5 + 14 - snum, 40);
             else
-                move(4 + 7 - snum, 40);
+                move(5 + 7 - snum, 40);
 
             getskill(str, maxs);
             strcat(str, ": ");
@@ -1071,7 +1090,7 @@ void printliberalstats(creaturest &cr, char smll) {
 
             if((snum == 14 && !smll) || (snum == 7 && smll)) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                move(2, 40);
+                move(4, 40);
                 getrecruitcreature(str, cr.type);
                 addstr(str);
             }
