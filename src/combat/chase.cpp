@@ -278,7 +278,9 @@ char chasesequence(void) {
                 if(c == 'd') {
                     if(encounter[0].exists &&
                             encounter[0].type == CREATURE_COP) {
-                        sitestory->crime.push_back(CRIME_CARCHASE);
+                        if(chaseseq.location)
+                            sitestory->crime.push_back(CRIME_CARCHASE);
+
                         criminalizeparty(LAWFLAG_RESIST);
                     }
 
@@ -291,7 +293,9 @@ char chasesequence(void) {
                 if(c == 'f') {
                     if(encounter[0].exists &&
                             encounter[0].type == CREATURE_COP) {
-                        sitestory->crime.push_back(CRIME_CARCHASE);
+                        if(chaseseq.location)
+                            sitestory->crime.push_back(CRIME_CARCHASE);
+
                         criminalizeparty(LAWFLAG_RESIST);
                     }
 
@@ -1432,14 +1436,17 @@ char footchase(creaturest &cr) {
     activesquad = sq;
     party_status = 0;
     char ret = footchase();
-    activesquad = oact;
+
     party_status = ops;
 
     delete sq;
 
     if(ret)
         cr.squadid = oldsqid;
-    else for(int i = 0; i < 6; i++) {
+    else if(oldsqid != -1) {
+        activesquad = squad[getsquad(oldsqid)];
+
+        for(int i = 0; i < 6; i++) {
             if(activesquad->squad[i] != NULL && activesquad->squad[i] == crp) {
                 for(int j = i + 1; j < 6; j++, i++)
                     activesquad->squad[i] = activesquad->squad[j];
@@ -1448,7 +1455,9 @@ char footchase(creaturest &cr) {
                 break;
             }
         }
+    }
 
+    activesquad = oact;
     return ret;
 }
 
@@ -1458,9 +1467,11 @@ char chasesequence(creaturest &cr, vehiclest &v) {
     long oldsqid = cr.squadid;
     squadst *sq = new squadst;
     sq->squad[0] = &cr;
+    sq->squad[0]->id = cursquadid;
+    cursquadid++;
     sq->id = cursquadid;
     cursquadid++;
-    cr.squadid = sq->id;
+    cr.squadid = sq->squad[0]->id;
     cr.carid = v.id;
     cr.is_driver = 1;
 
@@ -1469,7 +1480,6 @@ char chasesequence(creaturest &cr, vehiclest &v) {
     activesquad = sq;
     party_status = 0;
     char ret = chasesequence();
-    activesquad = oact;
     party_status = ops;
 
     delete sq;
@@ -1477,7 +1487,10 @@ char chasesequence(creaturest &cr, vehiclest &v) {
     if(ret) {
         cr.squadid = oldsqid;
         cr.carid = -1;
-    } else for(int i = 0; i < 6; i++) {
+    } else if(oldsqid != -1) {
+        activesquad = squad[getsquad(oldsqid)];
+
+        for(int i = 0; i < 6; i++) {
             if(activesquad->squad[i] != NULL && activesquad->squad[i] == &cr) {
                 for(int j = i + 1; j < 6; j++, i++)
                     activesquad->squad[i] = activesquad->squad[j];
@@ -1486,6 +1499,8 @@ char chasesequence(creaturest &cr, vehiclest &v) {
                 break;
             }
         }
+    }
 
+    activesquad = oact;
     return ret;
 }

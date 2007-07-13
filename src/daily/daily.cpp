@@ -538,6 +538,8 @@ void advanceday(char &clearformess, char canseethings) {
         case ACTIVITY_STEALCARS:
             if(stealcar(*pool[p], clearformess))
                 pool[p]->activity.type = ACTIVITY_NONE;
+            else if(location[pool[p]->location]->type == SITE_GOVERNMENT_POLICESTATION)
+                ++pool[p]->lawflag[LAWFLAG_CARTHEFT];
 
             break;
 

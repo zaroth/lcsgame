@@ -35,169 +35,211 @@ This file is part of Liberal Crime Squad.                                       
 char talk(creaturest &a, int t) {
     //BLUFFING
     if((sitealarm || location[cursite]->siege.siege) && encounter[t].align == -1) {
+        clearcommandarea();
+        clearmessagearea();
+        clearmaparea();
+
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        move(16, 1);
+        move(9, 1);
+        addstr(a.name);
+        addstr(" talks to ");
+        addstr(encounter[t].name);
+        addstr(":");
 
-        if(location[cursite]->siege.siege) {
-            addstr(a.name);
-            addstr(" ");
+        int c = 0;
 
-            switch(location[cursite]->siege.siegetype) {
-            case SIEGE_POLICE:
-                addstr("pretends to be part of a police raid.");
-                break;
+        if(encounter[t].type == CREATURE_COP ||
+                encounter[t].type == CREATURE_GANGUNIT ||
+                encounter[t].type == CREATURE_SWAT) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(11, 1);
+            addstr("A - Bluff");
+            move(12, 1);
+            addstr("B - Give up");
 
-            case SIEGE_CIA:
-                addstr("pretends to be a Secret Agent.");
-                break;
-
-            case SIEGE_HICKS:
-                switch(LCSrandom(2)) {
-                case 0:
-                    addstr("pretends to be Mountain");
-                    move(17, 1);
-                    addstr("like Patrick Swayze in Next of Kin.");
-                    break;
-
-                case 1:
-                    addstr("squeals like Ned Beatty");
-                    move(17, 1);
-                    addstr("in Deliverance.");
-                    break;
-                }
-
-                break;
-
-            case SIEGE_CORPORATE:
-                addstr("pretends to be a mercenary.");
-                break;
+            while(c != 'a' && c != 'b') {
+                c = getch();
+                translategetch(c);
             }
-        } else {
-            addstr("talks like a Conservative");
-            move(17, 1);
-            addstr("and pretends to belong here.");
         }
 
-        refresh();
-        getch();
+        if(c != 'b') {
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            move(16, 1);
 
-        vector<int> noticer;
+            if(location[cursite]->siege.siege) {
+                addstr(a.name);
+                addstr(" ");
 
-        for(int e = 0; e < ENCMAX; e++) {
-            if(encounter[e].exists && encounter[e].alive &&
-                    encounter[e].align == -1)
-                noticer.push_back(e);
-        }
-
-        if(noticer.size() > 0) {
-            int disguise = disguiseskill();
-            int weapon = 0;
-
-            for(int i = 0; i > 0; i--) {
-                if(activesquad->squad[i] == NULL)
+                switch(location[cursite]->siege.siegetype) {
+                case SIEGE_POLICE:
+                    addstr("pretends to be part of a police raid.");
                     break;
 
-                weapon += weaponcheck(*activesquad->squad[i], cursite);
-            }
-
-            char noticed = 0, bluff = 0;
-            int n, an;
-
-            do {
-                an = LCSrandom(noticer.size());
-                n = noticer[an];
-                noticer.erase(noticer.begin() + an);
-
-                int chance = encounter[n].attval(ATTRIBUTE_WISDOM) * 3 +
-                             encounter[n].attval(ATTRIBUTE_INTELLIGENCE);
-
-                if(chance + 10 * weapon + sitecrime > (int)LCSrandom(21) + disguise) {
-                    noticed = 1;
+                case SIEGE_CIA:
+                    addstr("pretends to be a Secret Agent.");
                     break;
-                }
 
-            } while(noticer.size() > 0);
+                case SIEGE_HICKS:
+                    switch(LCSrandom(2)) {
+                    case 0:
+                        addstr("pretends to be Mountain");
+                        move(17, 1);
+                        addstr("like Patrick Swayze in Next of Kin.");
+                        break;
 
-            //NOW MUST BLUFF
-            if(!noticed) {
-                short aroll = LCSrandom(21) + a.attval(ATTRIBUTE_CHARISMA) +
-                              a.attval(ATTRIBUTE_WISDOM) * 3 + LCSrandom(a.skill[SKILL_PERSUASION] * 2 + 1);
-
-                int maxtroll = 0, troll;
-
-                for(int e = 0; e < ENCMAX; e++) {
-                    if(encounter[e].exists && encounter[e].alive &&
-                            encounter[e].align == -1) {
-                        troll = encounter[e].attval(ATTRIBUTE_WISDOM) * 3 +
-                                encounter[e].attval(ATTRIBUTE_INTELLIGENCE);
-
-                        if(troll > maxtroll) {
-                            n = e;
-                            maxtroll = troll;
-                        }
-                    }
-                }
-
-                maxtroll += LCSrandom(21);
-                a.skill_ip[SKILL_PERSUASION] += (maxtroll >> 2) + 1;
-
-                if(maxtroll > aroll) {
-                    clearmessagearea();
-
-                    set_color(COLOR_RED, COLOR_BLACK, 1);
-                    move(16, 1);
-
-                    if(encounter[n].type == CREATURE_HICK) {
-                        addstr("But ");
-                        addstr(encounter[n].name);
-                        addstr(" weren't born yesterday.");
-                    } else {
-                        addstr(encounter[n].name);
-                        addstr(" is not fooled by that crap.");
+                    case 1:
+                        addstr("squeals like Ned Beatty");
+                        move(17, 1);
+                        addstr("in Deliverance.");
+                        break;
                     }
 
-                    refresh();
-                    getch();
-                } else {
-                    clearmessagearea();
+                    break;
 
-                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                    move(16, 1);
-                    addstr("The Enemy is fooled and departs.");
-                    bluff = 1;
-
-                    refresh();
-                    getch();
+                case SIEGE_CORPORATE:
+                    addstr("pretends to be a mercenary.");
+                    break;
                 }
             } else {
-                clearmessagearea();
-
-                if(!location[cursite]->siege.siege && !sitealarm) {
-                    set_color(COLOR_RED, COLOR_BLACK, 1);
-                    move(16, 1);
-                    addstr(encounter[n].name);
-                    addstr(" looks at the Squad with Intolerance");
-                    move(17, 1);
-                    addstr("and lets forth a piercing Conservative alarm cry!");
-
-                    sitealarm = 1;
-                } else {
-                    set_color(COLOR_RED, COLOR_BLACK, 1);
-                    move(16, 1);
-                    addstr(encounter[n].name);
-                    addstr(" looks at the Squad and isn't fooled.");
-                }
-
-                refresh();
-                getch();
+                addstr("talks like a Conservative");
+                move(17, 1);
+                addstr("and pretends to belong here.");
             }
 
-            if(bluff) {
-                for(int e = ENCMAX - 1; e >= 0; e--) {
-                    if(encounter[e].exists && encounter[e].alive &&
-                            encounter[e].align == -1)
-                        delenc(e, 0);
+            refresh();
+            getch();
+
+            vector<int> noticer;
+
+            for(int e = 0; e < ENCMAX; e++) {
+                if(encounter[e].exists && encounter[e].alive &&
+                        encounter[e].align == -1)
+                    noticer.push_back(e);
+            }
+
+            if(noticer.size() > 0) {
+                int disguise = disguiseskill();
+                int weapon = 0;
+
+                for(int i = 0; i > 0; i--) {
+                    if(activesquad->squad[i] == NULL)
+                        break;
+
+                    weapon += weaponcheck(*activesquad->squad[i], cursite);
                 }
+
+                char noticed = 0, bluff = 0;
+                int n, an;
+
+                do {
+                    an = LCSrandom(noticer.size());
+                    n = noticer[an];
+                    noticer.erase(noticer.begin() + an);
+
+                    int chance = encounter[n].attval(ATTRIBUTE_WISDOM) * 3 +
+                                 encounter[n].attval(ATTRIBUTE_INTELLIGENCE);
+
+                    if(chance + 10 * weapon + sitecrime > (int)LCSrandom(21) + disguise) {
+                        noticed = 1;
+                        break;
+                    }
+
+                } while(noticer.size() > 0);
+
+                //NOW MUST BLUFF
+                if(!noticed) {
+                    short aroll = LCSrandom(21) + a.attval(ATTRIBUTE_CHARISMA) +
+                                  a.attval(ATTRIBUTE_WISDOM) * 3 + LCSrandom(a.skill[SKILL_PERSUASION] * 2 + 1);
+
+                    int maxtroll = 0, troll;
+
+                    for(int e = 0; e < ENCMAX; e++) {
+                        if(encounter[e].exists && encounter[e].alive &&
+                                encounter[e].align == -1) {
+                            troll = encounter[e].attval(ATTRIBUTE_WISDOM) * 3 +
+                                    encounter[e].attval(ATTRIBUTE_INTELLIGENCE);
+
+                            if(troll > maxtroll) {
+                                n = e;
+                                maxtroll = troll;
+                            }
+                        }
+                    }
+
+                    maxtroll += LCSrandom(21);
+                    a.skill_ip[SKILL_PERSUASION] += (maxtroll >> 2) + 1;
+
+                    if(maxtroll > aroll) {
+                        clearmessagearea();
+
+                        set_color(COLOR_RED, COLOR_BLACK, 1);
+                        move(16, 1);
+
+                        if(encounter[n].type == CREATURE_HICK) {
+                            addstr("But ");
+                            addstr(encounter[n].name);
+                            addstr(" weren't born yesterday.");
+                        } else {
+                            addstr(encounter[n].name);
+                            addstr(" is not fooled by that crap.");
+                        }
+
+                        refresh();
+                        getch();
+                    } else {
+                        clearmessagearea();
+
+                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                        move(16, 1);
+                        addstr("The Enemy is fooled and departs.");
+                        bluff = 1;
+
+                        refresh();
+                        getch();
+                    }
+                } else {
+                    clearmessagearea();
+
+                    if(!location[cursite]->siege.siege && !sitealarm) {
+                        set_color(COLOR_RED, COLOR_BLACK, 1);
+                        move(16, 1);
+                        addstr(encounter[n].name);
+                        addstr(" looks at the Squad with Intolerance");
+                        move(17, 1);
+                        addstr("and lets forth a piercing Conservative alarm cry!");
+
+                        sitealarm = 1;
+                    } else {
+                        set_color(COLOR_RED, COLOR_BLACK, 1);
+                        move(16, 1);
+                        addstr(encounter[n].name);
+                        addstr(" looks at the Squad and isn't fooled.");
+                    }
+
+                    refresh();
+                    getch();
+                }
+
+                if(bluff) {
+                    for(int e = ENCMAX - 1; e >= 0; e--) {
+                        if(encounter[e].exists && encounter[e].alive &&
+                                encounter[e].align == -1)
+                            delenc(e, 0);
+                    }
+                }
+            }
+        } else {
+            move(14, 1);
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            addstr("The police arrest the Squad.");
+            getch();
+
+            for(int i = 0; i < 6; ++i) {
+                if(activesquad->squad[i])
+                    capturecreature(*activesquad->squad[i]);
+
+                activesquad->squad[i] = NULL;
             }
         }
 
