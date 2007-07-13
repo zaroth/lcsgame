@@ -367,7 +367,7 @@ char completedate(datest &d, int p, char &clearformess) {
                         if(d.date[e]->att[ATTRIBUTE_HEART] < 6)
                             d.date[e]->att[ATTRIBUTE_HEART]++;
                         else
-                            d.date->att[ATTRIBUTE_WISDOM]--;
+                            d.date[e]->att[ATTRIBUTE_WISDOM]--;
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                         move(y, 0);
