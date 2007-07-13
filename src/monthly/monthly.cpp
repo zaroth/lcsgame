@@ -266,7 +266,8 @@ void passmonth(char &clearformess, char canseethings) {
                 if(law[LAW_POLICEBEHAVIOR] == 2)
                     copstrength = 50;
 
-                if(LCSrandom(copstrength) > pool[p]->juice + pool[p]->attval(ATTRIBUTE_HEART, 0) * 5 && pool[p]->hireid != -1) {
+                if(LCSrandom(copstrength) > pool[p]->juice + pool[p]->attval(ATTRIBUTE_HEART) * 5 - pool[p]->attval(ATTRIBUTE_WISDOM) * 5 &&
+                        pool[p]->hireid != -1) {
                     if(pool[p]->hireid != -1) {
                         for(int p2 = 0; p2 < pool.size(); p2++) {
                             if(pool[p2]->alive == 1 && pool[p2]->id == pool[p]->hireid) {
