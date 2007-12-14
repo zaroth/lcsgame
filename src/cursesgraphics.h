@@ -130,6 +130,8 @@
  * Bump CH_MAXIMUM.
  */
 
+#include "compat.h"
+
 #ifdef WIN32
 #include "curses.h"
 #else
@@ -137,7 +139,7 @@
 #define HAVE_PROTO 1
 #define CPLUSPLUS  1
 /* Try these PDCurses/Xcurses options later...
-#define FAST_VIDEO 
+#define FAST_VIDEO
 #define REGISTERWINDOWS
 */
 #include <xcurses.h> //This is the X11 Port of PDCurses
