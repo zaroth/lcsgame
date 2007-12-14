@@ -133,10 +133,10 @@ void locheader(void) {
         getactivity(str, activesquad->activity);
 
         if(activesquad->activity.type == ACTIVITY_NONE) {
-            int count = 0;
+            int32 count = 0;
             char haveact = 0;
 
-            for(int p = 0; p < 6; p++) {
+            for(int32 p = 0; p < 6; p++) {
                 if(activesquad->squad[p] == NULL)
                     continue;
 
@@ -162,13 +162,13 @@ void printparty(void) {
     creaturest *party[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
     if(activesquad != NULL) {
-        for(int p = 0; p < 6; p++)
+        for(int32 p = 0; p < 6; p++)
             party[p] = activesquad->squad[p];
     }
 
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
-    for(int i = 2; i < 8; i++) {
+    for(int32 i = 2; i < 8; i++) {
         move(i, 0);
         addstr("                                                                                ");
     }
@@ -191,7 +191,7 @@ void printparty(void) {
         move(1, 0);
         addstr("#-CODE NAME------------SKILL---WEAPON---------ARMOR----------HEALTH---TRANSPORT-");
 
-        for(int p = 0; p < 6; p++) {
+        for(int32 p = 0; p < 6; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(p + 2, 0);
             addstr("                                                                                          ");
@@ -210,11 +210,11 @@ void printparty(void) {
                 if(party[p]->prisoner != NULL)
                     addstr("+H");
 
-                unsigned long skill = 0;
+                uint32 skill = 0;
                 char bright = 0;
 
-                for(int sk = 0; sk < SKILLNUM; sk++) {
-                    skill += (unsigned long)party[p]->skill[sk];
+                for(int32 sk = 0; sk < SKILLNUM; sk++) {
+                    skill += (uint32)party[p]->skill[sk];
 
                     if(party[p]->skill_ip[sk] >= 100 * ((10 + party[p]->skill[sk]) / 10) &&
                             party[p]->skill[sk] < party[p]->attval(skillatt(sk)) * 2)
@@ -226,8 +226,8 @@ void printparty(void) {
                 itoa(skill, num, 10);
                 addstr(num);
                 addstr("/");
-                int wsk = SKILL_HANDTOHAND;
-                int wsk2 = 0;
+                int32 wsk = SKILL_HANDTOHAND;
+                int32 wsk2 = 0;
 
                 switch(party[p]->weapon.type) {
                 case WEAPON_SHANK:
@@ -359,7 +359,7 @@ void printparty(void) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 move(p + 2, 70);
 
-                long v = -1;
+                int32 v = -1;
 
                 if(showcarprefs == 1)
                     v = id_getcar(party[p]->pref_carid);
@@ -378,7 +378,7 @@ void printparty(void) {
                     if(d)
                         strcat(str, "-D");
                 } else {
-                    int legok = 2;
+                    int32 legok = 2;
 
                     if((party[p]->wound[BODYPART_LEG_RIGHT] & WOUND_NASTYOFF) ||
                             (party[p]->wound[BODYPART_LEG_RIGHT] & WOUND_CLEANOFF))
@@ -406,7 +406,7 @@ void printparty(void) {
 
 
 /* location info at top of screen */
-void printlocation(long loc) {
+void printlocation(int32 loc) {
     if(location[loc]->siege.siege) {
         if(!location[loc]->siege.underattack) {
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
@@ -515,8 +515,8 @@ void printlocation(long loc) {
             addstr("GENERATOR");
         }
 
-        int eaters = numbereating(loc);
-        int days = fooddaysleft(loc);
+        int32 eaters = numbereating(loc);
+        int32 days = fooddaysleft(loc);
         char num[20];
 
         if(eaters > 0 && location[loc]->compound_walls != COMPOUND_PRINTINGPRESS) {
@@ -631,7 +631,7 @@ void printcreatureinfo(creaturest *cr) {
     addstr(num);
     move(5, 11);
     addstr("Trans: ");
-    long v = -1;
+    int32 v = -1;
 
     if(showcarprefs == 1)
         v = id_getcar(cr->pref_carid);
@@ -650,7 +650,7 @@ void printcreatureinfo(creaturest *cr) {
         if(d)
             strcat(str, "-D");
     } else {
-        int legok = 2;
+        int32 legok = 2;
 
         if((cr->wound[BODYPART_LEG_RIGHT] & WOUND_NASTYOFF) ||
                 (cr->wound[BODYPART_LEG_RIGHT] & WOUND_CLEANOFF))
@@ -697,7 +697,7 @@ void printcreatureinfo(creaturest *cr) {
         itoa(cr->weapon.ammo, num, 10);
         addstr(" (");
         addstr(num);
-        int at = ammotype(cr->weapon.type);
+        int32 at = ammotype(cr->weapon.type);
         itoa(cr->clip[at], num, 10);
         addstr("/");
         addstr(num);
@@ -725,16 +725,16 @@ void printcreatureinfo(creaturest *cr) {
     char used[SKILLNUM];
     memset(used, 0, sizeof(char)*SKILLNUM);
 
-    int snum = 5;
+    int32 snum = 5;
     char printed = 1;
 
     while(snum > 0 && printed) {
         printed = 0;
 
-        unsigned long max = 0;
-        long maxs = -1;
+        uint32 max = 0;
+        int32 maxs = -1;
 
-        for(int s = 0; s < SKILLNUM; s++) {
+        for(int32 s = 0; s < SKILLNUM; s++) {
             if(cr->skill[s] > max && !used[s]) {
                 max = cr->skill[s];
                 maxs = s;
@@ -768,9 +768,9 @@ void printcreatureinfo(creaturest *cr) {
         snum--;
     }
 
-    int woundsum = 0;
+    int32 woundsum = 0;
 
-    for(int w = 0; w < BODYPARTNUM; w++) {
+    for(int32 w = 0; w < BODYPARTNUM; w++) {
         if(cr->wound[w] != 0)
             woundsum++;
     }
@@ -778,7 +778,7 @@ void printcreatureinfo(creaturest *cr) {
     printhealthstat(*cr, 1, 49, FALSE);
 
     if(woundsum > 0) {
-        for(int w = 0; w < BODYPARTNUM; w++) {
+        for(int32 w = 0; w < BODYPARTNUM; w++) {
             if(cr->wound[w] & WOUND_BLEEDING)
                 set_color(COLOR_RED, COLOR_BLACK, 1);
             else
@@ -819,7 +819,7 @@ void printcreatureinfo(creaturest *cr) {
             else if(cr->wound[w] & WOUND_CLEANOFF)
                 addstr("Clean sever");
             else {
-                int sum = 0;
+                int32 sum = 0;
 
                 if(cr->wound[w] & WOUND_SHOT)
                     sum++;
@@ -890,7 +890,7 @@ void printcreatureinfo(creaturest *cr) {
 
 
 /* full character sheet (with surrounding interface) */
-void fullstatus(int p) {
+void fullstatus(int32 p) {
     if(activesquad == NULL)
         return;
 
@@ -919,11 +919,11 @@ void fullstatus(int p) {
         addstr("Press any other key to continue the Struggle");
 
         refresh();
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(activesquad->squad[1] != NULL && (c == interface_pgup || c == interface_pgdn)) {
-            int sx = 1;
+            int32 sx = 1;
 
             if(c == interface_pgup)
                 sx = -1;
@@ -1047,7 +1047,7 @@ void printliberalstats(creaturest &cr, char smll) {
     char used[SKILLNUM];
     memset(used, 0, sizeof(char)*SKILLNUM);
 
-    int snum = 14;
+    int32 snum = 14;
 
     if(smll)
         snum = 7;
@@ -1057,10 +1057,10 @@ void printliberalstats(creaturest &cr, char smll) {
     while(snum > 0 && printed) {
         printed = 0;
 
-        unsigned long max = 0;
-        long maxs = -1;
+        uint32 max = 0;
+        int32 maxs = -1;
 
-        for(int s = 0; s < SKILLNUM; s++) {
+        for(int32 s = 0; s < SKILLNUM; s++) {
             if(cr.skill[s] > max && !used[s]) {
                 max = cr.skill[s];
                 maxs = s;
@@ -1112,7 +1112,7 @@ void printliberalstats(creaturest &cr, char smll) {
             itoa(cr.weapon.ammo, num, 10);
             addstr(" (");
             addstr(num);
-            int at = ammotype(cr.weapon.type);
+            int32 at = ammotype(cr.weapon.type);
             itoa(cr.clip[at], num, 10);
             addstr("/");
             addstr(num);
@@ -1126,7 +1126,7 @@ void printliberalstats(creaturest &cr, char smll) {
 
         move(14, 0);
         addstr("Transport: ");
-        long v = -1;
+        int32 v = -1;
 
         if(showcarprefs == 1)
             v = id_getcar(cr.pref_carid);
@@ -1145,7 +1145,7 @@ void printliberalstats(creaturest &cr, char smll) {
             if(d)
                 strcat(str, "-D");
         } else {
-            int legok = 2;
+            int32 legok = 2;
 
             if((cr.wound[BODYPART_LEG_RIGHT] & WOUND_NASTYOFF) ||
                     (cr.wound[BODYPART_LEG_RIGHT] & WOUND_CLEANOFF))
@@ -1165,15 +1165,15 @@ void printliberalstats(creaturest &cr, char smll) {
 
         addstr(str);
 
-        int woundsum = 0;
+        int32 woundsum = 0;
 
-        for(int w = 0; w < BODYPARTNUM; w++) {
+        for(int32 w = 0; w < BODYPARTNUM; w++) {
             if(cr.wound[w] != 0)
                 woundsum++;
         }
 
         if(woundsum > 0) {
-            for(int w = 0; w < BODYPARTNUM; w++) {
+            for(int32 w = 0; w < BODYPARTNUM; w++) {
                 if(cr.wound[w] & WOUND_BLEEDING)
                     set_color(COLOR_RED, COLOR_BLACK, 1);
                 else
@@ -1214,7 +1214,7 @@ void printliberalstats(creaturest &cr, char smll) {
                 else if(cr.wound[w] & WOUND_CLEANOFF)
                     addstr("Cleanly severed");
                 else {
-                    int sum = 0;
+                    int32 sum = 0;
 
                     if(cr.wound[w] & WOUND_SHOT)
                         sum++;
@@ -1385,7 +1385,7 @@ void printliberalstats(creaturest &cr, char smll) {
 
 
 /* draws a horizontal line across the screen */
-void makedelimiter(int y, int x) {
+void makedelimiter(int32 y, int32 x) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(y, x);
     addstr("--------------------------------------------------------------------------------");
@@ -1402,11 +1402,11 @@ void addlocationname(locationst *loc) {
 }
 
 /* prints a character's health description (One Leg, Liberal, NearDETH...) */
-void printhealthstat(creaturest &g, int y, int x, char smll) {
-    short woundsum = 0;
+void printhealthstat(creaturest &g, int32 y, int32 x, char smll) {
+    int16 woundsum = 0;
     char bleeding = 0;
 
-    for(int w = 0; w < BODYPARTNUM; w++) {
+    for(int32 w = 0; w < BODYPARTNUM; w++) {
         if(g.wound[w] != 0)
             woundsum++;
 
@@ -1414,8 +1414,8 @@ void printhealthstat(creaturest &g, int y, int x, char smll) {
             bleeding = 1;
     }
 
-    int armok = 2;
-    int legok = 2;
+    int32 armok = 2;
+    int32 legok = 2;
 
     if((g.wound[BODYPART_ARM_RIGHT] & WOUND_NASTYOFF) ||
             (g.wound[BODYPART_ARM_RIGHT] & WOUND_CLEANOFF))
@@ -1613,7 +1613,7 @@ void printhealthstat(creaturest &g, int y, int x, char smll) {
 
 
 */
-void printfunds(unsigned int y, unsigned int offsetx, char *prefix) {
+void printfunds(uint32 y, uint32 offsetx, char *prefix) {
 
     char moneystr[50];
 
@@ -1628,13 +1628,13 @@ void printfunds(unsigned int y, unsigned int offsetx, char *prefix) {
 
 
     //Save screen coordinates for later.
-    int begy, begx;
+    int32 begy, begx;
     getyx(stdscr, begy, begx);
 
     //Save color and brightness information for later.
-    short colorpair;
-    short front, back;
-    short dim;
+    int16 colorpair;
+    int16 front, back;
+    int16 dim;
 
     attr_t attrs;
     attr_get(&attrs, &colorpair, NULL);

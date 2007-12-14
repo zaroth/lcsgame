@@ -32,12 +32,12 @@ This file is part of Liberal Crime Squad.                                       
 
 /* base - burn the flag */
 void burnflag(void) {
-    int flagparts = 112;
-    long flag[16][7][4];
-    int x;
-    int y;
+    int32 flagparts = 112;
+    int32 flag[16][7][4];
+    int32 x;
+    int32 y;
 
-    for(int p = 0; p < 7; p++) {
+    for(int32 p = 0; p < 7; p++) {
         if(p < 3) {
             for(x = 0; x < 6; x++) {
                 flag[x][p][0] = ':';
@@ -195,9 +195,9 @@ void orderparty(void) {
     if(activesquad == NULL)
         return;
 
-    int partysize = 0;
+    int32 partysize = 0;
 
-    for(int p = 0; p < 6; p++) {
+    for(int32 p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL)
             partysize++;
     }
@@ -205,7 +205,7 @@ void orderparty(void) {
     if(partysize <= 1)
         return;
 
-    int spot = 0;
+    int32 spot = 0;
 
     do {
         printparty();
@@ -220,7 +220,7 @@ void orderparty(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 10)
@@ -239,8 +239,8 @@ void orderparty(void) {
 
 /* base - go forth to stop evil */
 void stopevil(void) {
-    int l = 0;
-    int p = 0;
+    int32 l = 0;
+    int32 p = 0;
 
     if(activesquad == NULL)
         return;
@@ -256,10 +256,10 @@ void stopevil(void) {
         }
     }
 
-    int page = 0;
-    long loc = -1;
+    int32 page = 0;
+    int32 loc = -1;
 
-    vector<long> temploc;
+    vector<int32> temploc;
 
     for(l = 0; l < location.size(); l++) {
         if(location[l]->parent == loc && location[l]->renting >= 0)
@@ -286,12 +286,12 @@ void stopevil(void) {
             addlocationname(location[loc]);
         }
 
-        int y = 10;
+        int32 y = 10;
 
         for(p = page * 11; p < temploc.size() && p < page * 11 + 11; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addch(y - 10 + (int)'A');
+            addch(y - 10 + (int32)'A');
             addstr(" - ");
 
             addlocationname(location[temploc[p]]);
@@ -361,7 +361,7 @@ void stopevil(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -373,10 +373,10 @@ void stopevil(void) {
             page++;
 
         if(c >= 'a' && c <= 'k') {
-            int sq = page * 11 + (int)(c - 'a');
+            int32 sq = page * 11 + (int32)(c - 'a');
 
             if(sq < temploc.size() && sq >= 0) {
-                int oldloc = loc;
+                int32 oldloc = loc;
                 loc = temploc[sq];
                 temploc.clear();
 
@@ -616,9 +616,9 @@ char liberalagenda(char won) {
         break;
     }
 
-    int y = 22 - LAWNUM;
+    int32 y = 22 - LAWNUM;
 
-    for(int l = 0; l < LAWNUM; l++) {
+    for(int32 l = 0; l < LAWNUM; l++) {
         if(won == -1)
             set_color(COLOR_RED, COLOR_BLACK, 1);
         else {
@@ -865,13 +865,13 @@ char liberalagenda(char won) {
         y++;
     }
 
-    int housemake[5] = {0, 0, 0, 0, 0};
+    int32 housemake[5] = {0, 0, 0, 0, 0};
 
-    for(int h = 0; h < 435; h++)
+    for(int32 h = 0; h < 435; h++)
         housemake[house[h] + 2]++;
 
-    int lsum = housemake[3] + housemake[4]
-               - housemake[0] - housemake[1];
+    int32 lsum = housemake[3] + housemake[4]
+                 - housemake[0] - housemake[1];
 
     if(lsum <= -145)
         set_color(COLOR_RED, COLOR_BLACK, 1);
@@ -906,9 +906,9 @@ char liberalagenda(char won) {
         addstr("Cons+");
     }
 
-    int senatemake[5] = {0, 0, 0, 0, 0};
+    int32 senatemake[5] = {0, 0, 0, 0, 0};
 
-    for(int s = 0; s < 100; s++)
+    for(int32 s = 0; s < 100; s++)
         senatemake[senate[s] + 2]++;
 
     lsum = senatemake[3] + senatemake[4]
@@ -949,9 +949,9 @@ char liberalagenda(char won) {
         addstr("The Congress consists of CEOs and televangelists.");
     }
 
-    int elibjudge = 0;
+    int32 elibjudge = 0;
 
-    for(int c = 0; c < 9; c++) {
+    for(int32 c = 0; c < 9; c++) {
         if(court[c] == 2)
             elibjudge++;
     }
@@ -992,7 +992,7 @@ char liberalagenda(char won) {
     if(won != -1) {
         y = 0;
 
-        for(int c = 0; c < 9; c++) {
+        for(int32 c = 0; c < 9; c++) {
             if(court[c] == -2)
                 set_color(COLOR_RED, COLOR_BLACK, 1);
             else if(court[c] == -1)
@@ -1028,7 +1028,7 @@ char liberalagenda(char won) {
 
         do {
             refresh();
-            int c = getch();
+            int32 c = getch();
             translategetch(c);
 
             if(c == 'l')
@@ -1043,7 +1043,7 @@ char liberalagenda(char won) {
 
         do {
             refresh();
-            int c = getch();
+            int32 c = getch();
             translategetch(c);
 
             if(c == 'l')
@@ -1058,7 +1058,7 @@ char liberalagenda(char won) {
 
         do {
             refresh();
-            int c = getch();
+            int32 c = getch();
             translategetch(c);
 
             if(c == 'd')
@@ -1076,7 +1076,7 @@ char liberalagenda(char won) {
 /* base - liberal agenda - disband */
 char confirmdisband(void) {
     char word[80];
-    int pos = 0;
+    int32 pos = 0;
 
     switch(LCSrandom(5)) {
     case 0:
@@ -1119,7 +1119,7 @@ char confirmdisband(void) {
         move(6, 0);
         addstr("Type this Liberal phrase to confirm (press a wrong letter to rethink it):");
 
-        for(int x = 0; x < strlen(word); x++) {
+        for(int32 x = 0; x < strlen(word); x++) {
             move(8, x);
 
             if(x == pos)
@@ -1132,7 +1132,7 @@ char confirmdisband(void) {
             addch(word[x]);
         }
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if((c == word[pos]) || ((c + 'A' - 'a') == word[pos])) {
@@ -1143,13 +1143,13 @@ char confirmdisband(void) {
 
             if(pos >= strlen(word)) {
                 //SET UP THE DISBAND
-                for(int p = 0; p < pool.size(); p++) {
+                for(int32 p = 0; p < pool.size(); p++) {
                     if(pool[p]->alive &&
                             !(pool[p]->flag & CREATUREFLAG_SLEEPER)) {
                         pool[p]->activity.type = ACTIVITY_NONE;
                         pool[p]->clinic = 0;
 
-                        for(int i = 0; i < LAWFLAGNUM; i++)
+                        for(int32 i = 0; i < LAWFLAGNUM; i++)
                             pool[p]->lawflag[i] = 0;
 
                         pool[p]->dating = 0;
@@ -1173,10 +1173,10 @@ char confirmdisband(void) {
 
 /* base - invest in this location */
 void investlocation(void) {
-    int loc = selectedsiege;
-    int ppress = 0;
+    int32 loc = selectedsiege;
+    int32 ppress = 0;
 
-    for(int i = 0; i < location.size(); i++) {
+    for(int32 i = 0; i < location.size(); i++) {
         if(location[i]->compound_walls == COMPOUND_PRINTINGPRESS)
             ppress = 1;
     }
@@ -1280,7 +1280,7 @@ void investlocation(void) {
         move(16, 1);
         addstr("Enter - Done");
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 10)
@@ -1409,12 +1409,12 @@ void investlocation(void) {
 
 /* base - assign a vehicle to this squad */
 void setvehicles(void) {
-    int p, l;
+    int32 p, l;
 
     if(activesquad == NULL)
         return;
 
-    int page = 0;
+    int32 page = 0;
 
     do {
         erase();
@@ -1425,7 +1425,7 @@ void setvehicles(void) {
 
         printparty();
 
-        int x = 1, y = 10;
+        int32 x = 1, y = 10;
         char str[200], str2[200];
 
         for(l = page * 18; l < vehicle.size() && l < page * 18 + 18; l++) {
@@ -1509,11 +1509,11 @@ void setvehicles(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch_cap(c);
 
         if(c >= 'A' && c <= 'R') {
-            int slot = c - 'A' + page * 18;
+            int32 slot = c - 'A' + page * 18;
 
             if(slot >= 0 && slot < vehicle.size()) {
                 move(8, 20);
@@ -1522,7 +1522,7 @@ void setvehicles(void) {
 
                 refresh();
 
-                int c = getch();
+                int32 c = getch();
                 translategetch(c);
 
                 if(c >= '1' && c <= '6') {
@@ -1539,7 +1539,7 @@ void setvehicles(void) {
         }
 
         if(c >= 'a' && c <= 'r') {
-            int slot = c - 'a' + page * 18;
+            int32 slot = c - 'a' + page * 18;
 
             if(slot >= 0 && slot < vehicle.size()) {
                 move(8, 20);
@@ -1548,7 +1548,7 @@ void setvehicles(void) {
 
                 refresh();
 
-                int c = getch();
+                int32 c = getch();
                 translategetch(c);
 
                 if(c >= '1' && c <= '6') {

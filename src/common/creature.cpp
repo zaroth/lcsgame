@@ -31,8 +31,8 @@ This file is part of Liberal Crime Squad.                                       
 
 
 /* rolls up a creature's stats and equipment */
-void makecreature(creaturest &cr, short type) {
-    int a = 0;
+void makecreature(creaturest &cr, int16 type) {
+    int32 a = 0;
     cr.creatureinit();
 
     cr.exists = 1;
@@ -45,15 +45,15 @@ void makecreature(creaturest &cr, short type) {
     cr.worklocation = cursite;
     verifyworklocation(cr);
 
-    int randomskills = LCSrandom(5) + 5;
+    int32 randomskills = LCSrandom(5) + 5;
 
-    int redistatts = 0;
-    int attcap[ATTNUM];
+    int32 redistatts = 0;
+    int32 attcap[ATTNUM];
 
     for(a = 0; a < ATTNUM; a++)
         attcap[a] = 10;
 
-    int sk;
+    int32 sk;
 
     switch(type) {
     case CREATURE_SECURITYGUARD:
@@ -3249,9 +3249,9 @@ void verifyworklocation(creaturest &cr) {
         } while(!okaysite[cr.worklocation]);
 
         //FIND ONE OF THESE
-        vector<int> goodlist;
+        vector<int32> goodlist;
 
-        for(int l = 0; l < location.size(); l++) {
+        for(int32 l = 0; l < location.size(); l++) {
             if(location[l]->type == cr.worklocation)
                 goodlist.push_back(l);
         }

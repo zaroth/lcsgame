@@ -32,11 +32,11 @@ This file is part of Liberal Crime Squad.                                       
 
 
 /* prints the 'map graphics' on the bottom right */
-void printsitemap(int x, int y, int z) {
-    int partysize = 0;
-    int partyalive = 0;
+void printsitemap(int32 x, int32 y, int32 z) {
+    int32 partysize = 0;
+    int32 partyalive = 0;
 
-    for(int p = 0; p < 6; p++) {
+    for(int32 p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL)
             partysize++;
         else
@@ -46,13 +46,13 @@ void printsitemap(int x, int y, int z) {
             partyalive++;
     }
 
-    int encsize = 0;
-    int freeable = 0;
-    int enemy = 0;
-    int majorenemy = 0;
-    int talkers = 0;
+    int32 encsize = 0;
+    int32 freeable = 0;
+    int32 enemy = 0;
+    int32 majorenemy = 0;
+    int32 talkers = 0;
 
-    for(int e = 0; e < ENCMAX; e++) {
+    for(int32 e = 0; e < ENCMAX; e++) {
         if(encounter[e].exists) {
             encsize++;
 
@@ -77,8 +77,8 @@ void printsitemap(int x, int y, int z) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
-    for(int sx = 57; sx < 80; sx++) {
-        for(int sy = 9; sy < 25; sy++) {
+    for(int32 sx = 57; sx < 80; sx++) {
+        for(int32 sy = 9; sy < 25; sy++) {
             move(sy, sx);
 
             if(sy == 24)
@@ -90,7 +90,7 @@ void printsitemap(int x, int y, int z) {
         }
     }
 
-    int px, py;
+    int32 px, py;
 
     //YOUR BLOCK
     px = 65;
@@ -529,12 +529,12 @@ void printsitemap(int x, int y, int z) {
 
 
 
-void printblock(int x, int y, int z, int px, int py) {
+void printblock(int32 x, int32 y, int32 z, int32 px, int32 py) {
     if(map[x][y][z].flag & SITEBLOCK_RESTRICTED) {
         set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
-        for(int px2 = px; px2 < px + 7; px2++) {
-            for(int py2 = py; py2 < py + 5; py2++) {
+        for(int32 px2 = px; px2 < px + 7; px2++) {
+            for(int32 py2 = py; py2 < py + 5; py2++) {
                 move(py2, px2);
                 addstr("x");
             }
@@ -708,14 +708,14 @@ void printblock(int x, int y, int z, int px, int py) {
 
 /* prints the names of creatures you see */
 void printencounter(void) {
-    for(int i = 19; i <= 24; i++) {
+    for(int32 i = 19; i <= 24; i++) {
         move(i, 1);
         addstr("                                                        ");
     }
 
-    int px = 1, py = 19;
+    int32 px = 1, py = 19;
 
-    for(int e = 0; e < ENCMAX; e++) {
+    for(int32 e = 0; e < ENCMAX; e++) {
         if(encounter[e].exists) {
             if(!encounter[e].alive)
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -744,25 +744,25 @@ void printencounter(void) {
 /* prints the names of creatures you see in car chases */
 void printchaseencounter(void) {
     if(chaseseq.enemycar.size() > 0) {
-        for(int i = 19; i <= 24; i++) {
+        for(int32 i = 19; i <= 24; i++) {
             move(i, 1);
             addstr("                                                     ");
         }
 
-        int carsy[4] = {20, 20, 20, 20};
+        int32 carsy[4] = {20, 20, 20, 20};
 
         char str[80];
 
-        for(int v = 0; v < chaseseq.enemycar.size(); v++) {
+        for(int32 v = 0; v < chaseseq.enemycar.size(); v++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(19, v * 20 + 1);
             getcarfull(str, *chaseseq.enemycar[v], 1);
             addstr(str);
         }
 
-        for(int e = 0; e < ENCMAX; e++) {
+        for(int32 e = 0; e < ENCMAX; e++) {
             if(encounter[e].exists) {
-                for(int v = 0; v < chaseseq.enemycar.size(); v++) {
+                for(int32 v = 0; v < chaseseq.enemycar.size(); v++) {
                     if(chaseseq.enemycar[v]->id == encounter[e].carid) {
                         set_color(COLOR_RED, COLOR_BLACK, 1);
                         move(carsy[v], v * 20 + 1);
@@ -786,7 +786,7 @@ void printchaseencounter(void) {
 void clearcommandarea(void) {
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
-    for(int y = 9; y < 16; y++) {
+    for(int32 y = 9; y < 16; y++) {
         move(y, 1);
         addstr("                                                        ");
     }
@@ -807,7 +807,7 @@ void clearmessagearea(void) {
 void clearmaparea(void) {
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
-    for(int y = 9; y < 24; y++) {
+    for(int32 y = 9; y < 24; y++) {
         move(y, 57);
         addstr("                       ");
     }

@@ -32,9 +32,9 @@ This file is part of Liberal Crime Squad.                                       
 /* base - activate the uninvolved */
 void activate(void) {
     vector<creaturest *> temppool;
-    int sq;
+    int32 sq;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(pool[p]->alive &&
                 pool[p]->align == 1 &&
                 pool[p]->clinic == 0 &&
@@ -61,7 +61,7 @@ void activate(void) {
     if(temppool.size() == 0)
         return;
 
-    short page = 0;
+    int16 page = 0;
 
     char str[80];
     char num[20];
@@ -80,9 +80,9 @@ void activate(void) {
         move(1, 57);
         addstr("ACTIVITY");
 
-        int y = 2;
+        int32 y = 2;
 
-        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -90,10 +90,10 @@ void activate(void) {
             addstr(temppool[p]->name);
 
             char bright = 0;
-            unsigned long skill = 0;
+            uint32 skill = 0;
 
-            for(int sk = 0; sk < SKILLNUM; sk++) {
-                skill += (unsigned long)temppool[p]->skill[sk];
+            for(int32 sk = 0; sk < SKILLNUM; sk++) {
+                skill += (uint32)temppool[p]->skill[sk];
 
                 if(temppool[p]->skill_ip[sk] >= 100 * ((10 + temppool[p]->skill[sk]) / 10) &&
                         temppool[p]->skill[sk] < temppool[p]->attval(skillatt(sk)) * 2)
@@ -141,7 +141,7 @@ void activate(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -153,7 +153,7 @@ void activate(void) {
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int p = page * 19 + (int)(c - 'a');
+            int32 p = page * 19 + (int32)(c - 'a');
 
             if(p < temppool.size())
                 activate(temppool[p]);
@@ -169,10 +169,10 @@ void activate(void) {
 
 
 void activate(creaturest *cr) {
-    int hostagecount = 0;
+    int32 hostagecount = 0;
     char havedead = 0;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(pool[p]->alive && pool[p]->align != 1)
             hostagecount++;
 
@@ -272,11 +272,11 @@ void activate(creaturest *cr) {
         addstr("Enter - Nothing for now.");
 
         refresh();
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'a') {
-            long flevel = select_troublefundinglevel(cr);
+            int32 flevel = select_troublefundinglevel(cr);
 
             if(flevel >= 0) {
                 cr->activity.type = ACTIVITY_TROUBLE;
@@ -369,9 +369,9 @@ void activate(creaturest *cr) {
 
 void activatebulk(void) {
     vector<creaturest *> temppool;
-    int sq;
+    int32 sq;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(pool[p]->alive &&
                 pool[p]->align == 1 &&
                 pool[p]->clinic == 0 &&
@@ -398,12 +398,12 @@ void activatebulk(void) {
     if(temppool.size() == 0)
         return;
 
-    short page = 0;
+    int16 page = 0;
 
     char str[80];
     char num[20];
 
-    int selectedactivity = 0;
+    int32 selectedactivity = 0;
 
     do {
         erase();
@@ -483,9 +483,9 @@ void activatebulk(void) {
         move(9, 51);
         addstr("8 - Stealing Cars.");
 
-        int y = 2;
+        int32 y = 2;
 
-        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -522,7 +522,7 @@ void activatebulk(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -534,7 +534,7 @@ void activatebulk(void) {
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int p = page * 19 + (int)(c - 'a');
+            int32 p = page * 19 + (int32)(c - 'a');
 
             if(p < temppool.size()) {
                 switch(selectedactivity) {
@@ -591,7 +591,7 @@ void activatebulk(void) {
 void select_tendhostage(creaturest *cr) {
     vector<creaturest *> temppool;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(pool[p]->align != 1 &&
                 pool[p]->alive)
             temppool.push_back(pool[p]);
@@ -600,7 +600,7 @@ void select_tendhostage(creaturest *cr) {
     if(temppool.size() == 0)
         return;
 
-    short page = 0;
+    int16 page = 0;
 
     char num[20];
 
@@ -617,9 +617,9 @@ void select_tendhostage(creaturest *cr) {
         move(1, 57);
         addstr("DAYS IN CAPTIVITY");
 
-        int y = 2;
+        int32 y = 2;
 
-        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -627,10 +627,10 @@ void select_tendhostage(creaturest *cr) {
             addstr(temppool[p]->name);
 
             char bright = 0;
-            unsigned long skill = 0;
+            uint32 skill = 0;
 
-            for(int sk = 0; sk < SKILLNUM; sk++) {
-                skill += (unsigned long)temppool[p]->skill[sk];
+            for(int32 sk = 0; sk < SKILLNUM; sk++) {
+                skill += (uint32)temppool[p]->skill[sk];
 
                 if(temppool[p]->skill_ip[sk] >= 100 * ((10 + temppool[p]->skill[sk]) / 10) &&
                         temppool[p]->skill[sk] < temppool[p]->attval(skillatt(sk)) * 2)
@@ -682,7 +682,7 @@ void select_tendhostage(creaturest *cr) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -694,10 +694,10 @@ void select_tendhostage(creaturest *cr) {
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int p = page * 19 + (int)(c - 'a');
+            int32 p = page * 19 + (int32)(c - 'a');
 
             if(p < temppool.size()) {
-                long flevel = select_hostagefundinglevel(cr, temppool[p]);
+                int32 flevel = select_hostagefundinglevel(cr, temppool[p]);
 
                 if(flevel >= 0) {
                     cr->activity.type = ACTIVITY_HOSTAGETENDING;
@@ -714,8 +714,8 @@ void select_tendhostage(creaturest *cr) {
 }
 
 
-long select_hostagefundinglevel(creaturest *cr, creaturest *hs) {
-    long flevel = -1;
+int32 select_hostagefundinglevel(creaturest *cr, creaturest *hs) {
+    int32 flevel = -1;
 
     erase();
 
@@ -761,7 +761,7 @@ long select_hostagefundinglevel(creaturest *cr, creaturest *hs) {
     addstr(".");
 
     refresh();
-    int c = getch();
+    int32 c = getch();
     translategetch(c);
 
     if(c == 'a')
@@ -792,9 +792,9 @@ long select_hostagefundinglevel(creaturest *cr, creaturest *hs) {
 
 /* base - activate - make clothing */
 void select_makeclothing(creaturest *cr) {
-    vector<int> armortype;
+    vector<int32> armortype;
 
-    for(int a = 0; a < ARMORNUM; a++) {
+    for(int32 a = 0; a < ARMORNUM; a++) {
         switch(a) {
         case ARMOR_NONE:
         case ARMOR_MITHRIL:
@@ -809,7 +809,7 @@ void select_makeclothing(creaturest *cr) {
         }
     }
 
-    short page = 0;
+    int16 page = 0;
 
     char str[200];
     char num[20];
@@ -826,9 +826,9 @@ void select_makeclothing(creaturest *cr) {
         move(1, 0);
         addstr("----NAME-----------------------------DIFFICULTY-------------COST----------------");
 
-        int y = 2, difficulty;
+        int32 y = 2, difficulty;
 
-        for(int p = page * 19; p < armortype.size() && p < page * 19 + 19; p++) {
+        for(int32 p = page * 19; p < armortype.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -920,7 +920,7 @@ void select_makeclothing(creaturest *cr) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -932,7 +932,7 @@ void select_makeclothing(creaturest *cr) {
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int p = page * 19 + (int)(c - 'a');
+            int32 p = page * 19 + (int32)(c - 'a');
 
             if(p < armortype.size()) {
                 cr->activity.type = ACTIVITY_MAKE_ARMOR;
@@ -948,8 +948,8 @@ void select_makeclothing(creaturest *cr) {
 
 
 
-long armor_makedifficulty(int type, creaturest *cr) {
-    long basedif;
+int32 armor_makedifficulty(int32 type, creaturest *cr) {
+    int32 basedif;
 
     switch(type) {
     case ARMOR_TOGA:
@@ -1009,8 +1009,8 @@ long armor_makedifficulty(int type, creaturest *cr) {
 
 
 
-long armor_makeprice(int type) {
-    long price = 0;
+int32 armor_makeprice(int32 type) {
+    int32 price = 0;
 
     switch(type) {
     case ARMOR_TOGA:
@@ -1065,8 +1065,8 @@ long armor_makeprice(int type) {
 
 
 /* base - activate - trouble */
-long select_troublefundinglevel(creaturest *cr) {
-    long flevel = -1;
+int32 select_troublefundinglevel(creaturest *cr) {
+    int32 flevel = -1;
 
     erase();
 
@@ -1102,7 +1102,7 @@ long select_troublefundinglevel(creaturest *cr) {
     addstr(".");
 
     refresh();
-    int c = getch();
+    int32 c = getch();
     translategetch(c);
 
     if(c == 'a')
@@ -1126,8 +1126,8 @@ long select_troublefundinglevel(creaturest *cr) {
 
 
 /* base - activate - select a topic to write about */
-char select_view(creaturest *cr, long &v) {
-    int page = 0;
+char select_view(creaturest *cr, int32 &v) {
+    int32 page = 0;
     char str[80];
 
     do {
@@ -1142,9 +1142,9 @@ char select_view(creaturest *cr, long &v) {
         move(2, 0);
         addstr("----TOPIC-----------------------------------INTEREST---------------------------");
 
-        int y = 3, x = 0;
+        int32 y = 3, x = 0;
 
-        for(int p = page * 18; p < VIEWNUM - 2 && p < page * 18 + 18; p++) {
+        for(int32 p = page * 18; p < VIEWNUM - 2 && p < page * 18 + 18; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, x);
             addch((p - page * 18) + 'A');
@@ -1185,7 +1185,7 @@ char select_view(creaturest *cr, long &v) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -1197,7 +1197,7 @@ char select_view(creaturest *cr, long &v) {
             page++;
 
         if(c >= 'a' && c <= 'a' + 18) {
-            int p = page * 18 + (int)(c - 'a');
+            int32 p = page * 18 + (int32)(c - 'a');
 
             if(p < VIEWNUM - 2) {
                 v = p;

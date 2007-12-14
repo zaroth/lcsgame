@@ -33,9 +33,9 @@ This file is part of Liberal Crime Squad.                                       
 
 /* handles end of round stuff for everyone */
 void creatureadvance(void) {
-    int e;
+    int32 e;
 
-    for(int p = 0; p < 6; p++) {
+    for(int32 p = 0; p < 6; p++) {
         if(activesquad->squad[p] == NULL)
             continue;
 
@@ -81,7 +81,7 @@ void creatureadvance(void) {
     }
 
     if(location[cursite]->siege.siege) {
-        for(int p = 0; p < pool.size(); p++) {
+        for(int32 p = 0; p < pool.size(); p++) {
             if(!pool[p]->alive)
                 continue;
 
@@ -176,9 +176,9 @@ void advancecreature(creaturest &cr) {
         }
     }
 
-    int bleed = 0;
+    int32 bleed = 0;
 
-    for(int w = 0; w < BODYPARTNUM; w++) {
+    for(int32 w = 0; w < BODYPARTNUM; w++) {
         if(cr.wound[w] & WOUND_BLEEDING)
             bleed++;
     }

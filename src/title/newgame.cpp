@@ -43,12 +43,12 @@ void makecharacter(void) {
     newcr->att[ATTRIBUTE_HEALTH] = 6;
     newcr->att[ATTRIBUTE_CHARISMA] = 4;
 
-    for(int sk = 0; sk < SKILLNUM; sk++)
+    for(int32 sk = 0; sk < SKILLNUM; sk++)
         newcr->skill[sk] = 0;
 
     name(newcr->propername);
 
-    for(int q = 0; q < 10; q++) {
+    for(int32 q = 0; q < 10; q++) {
         erase();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(0, 0);
@@ -260,7 +260,7 @@ void makecharacter(void) {
 
         refresh();
 
-        int c;
+        int32 c;
 
         do {
             c = getch();
@@ -783,7 +783,7 @@ void makecharacter(void) {
     newcr->squadid = 0;
     strcpy(newsq->name, "The Liberal Crime Squad");
 
-    for(int l = 0; l < location.size(); l++) {
+    for(int32 l = 0; l < location.size(); l++) {
         if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
             newcr->base = l;
             newcr->location = l;
@@ -821,7 +821,7 @@ void initliberal(creaturest &cr) {
     namecreature(cr);
 
     //STARTING SKILLS
-    int startsknum = cr.attval(ATTRIBUTE_WISDOM);
+    int32 startsknum = cr.attval(ATTRIBUTE_WISDOM);
 
     while(startsknum > 0) {
         cr.skill[LCSrandom(SKILLNUM)]++;

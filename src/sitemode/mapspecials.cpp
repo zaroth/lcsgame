@@ -43,14 +43,14 @@ void special_lab_cosmetics_cagedanimals(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
             char actual;
 
             if(unlock(UNLOCK_CAGE, actual)) {
-                int time = 20 + LCSrandom(10);
+                int32 time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -78,7 +78,7 @@ void special_lab_cosmetics_cagedanimals(void) {
 
 
 
-void special_readsign(int sign) {
+void special_readsign(int32 sign) {
     clearmessagearea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(16, 1);
@@ -102,7 +102,7 @@ void special_nuclear_onoff(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -144,14 +144,14 @@ void special_lab_genetic_cagedanimals(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
             char actual;
 
             if(unlock(UNLOCK_CAGE, actual)) {
-                int time = 20 + LCSrandom(10);
+                int32 time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -170,9 +170,9 @@ void special_lab_genetic_cagedanimals(void) {
                     move(16, 1);
                     addstr("Uh, maybe that idea was Conservative in retrospect...");
 
-                    int numleft = LCSrandom(6) + 1;
+                    int32 numleft = LCSrandom(6) + 1;
 
-                    for(int e = 0; e < ENCMAX; e++) {
+                    for(int32 e = 0; e < ENCMAX; e++) {
                         if(!encounter[e].exists) {
                             makecreature(encounter[e], CREATURE_GENETIC);
                             numleft--;
@@ -226,16 +226,16 @@ void special_policestation_lockup(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
             char actual;
 
             if(unlock(UNLOCK_DOOR, actual)) {
-                int numleft = LCSrandom(8) + 2;
+                int32 numleft = LCSrandom(8) + 2;
 
-                for(int e = 0; e < ENCMAX; e++) {
+                for(int32 e = 0; e < ENCMAX; e++) {
                     if(!encounter[e].exists) {
                         makecreature(encounter[e], CREATURE_PRISONER);
                         numleft--;
@@ -245,7 +245,7 @@ void special_policestation_lockup(void) {
                         break;
                 }
 
-                int time = 20 + LCSrandom(10);
+                int32 time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -294,16 +294,16 @@ void special_courthouse_lockup(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
             char actual;
 
             if(unlock(UNLOCK_DOOR, actual)) {
-                int numleft = LCSrandom(8) + 2;
+                int32 numleft = LCSrandom(8) + 2;
 
-                for(int e = 0; e < ENCMAX; e++) {
+                for(int32 e = 0; e < ENCMAX; e++) {
                     if(!encounter[e].exists) {
                         makecreature(encounter[e], CREATURE_PRISONER);
                         numleft--;
@@ -313,7 +313,7 @@ void special_courthouse_lockup(void) {
                         break;
                 }
 
-                int time = 20 + LCSrandom(10);
+                int32 time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -351,7 +351,7 @@ void special_courthouse_lockup(void) {
 
 
 void special_courthouse_jury(void) {
-    int p;
+    int32 p;
 
     if(sitealarm || sitealienate) {
         clearmessagearea();
@@ -378,7 +378,7 @@ void special_courthouse_jury(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -386,7 +386,7 @@ void special_courthouse_jury(void) {
 
             char succeed = 0;
 
-            int maxattack = 0;
+            int32 maxattack = 0;
 
             for(p = 0; p < 6; p++) {
                 if(activesquad->squad[p] != NULL) {
@@ -404,7 +404,7 @@ void special_courthouse_jury(void) {
                 }
             }
 
-            vector<int> goodp;
+            vector<int32> goodp;
 
             for(p = 0; p < 6; p++) {
                 if(activesquad->squad[p] != NULL) {
@@ -419,12 +419,12 @@ void special_courthouse_jury(void) {
             }
 
             if(goodp.size() > 0) {
-                int p = goodp[LCSrandom(goodp.size())];
+                int32 p = goodp[LCSrandom(goodp.size())];
 
-                short aroll = LCSrandom(21) + activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
+                int16 aroll = LCSrandom(21) + activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
                               activesquad->squad[p]->attval(ATTRIBUTE_HEART) + LCSrandom(activesquad->squad[p]->skill[SKILL_PERSUASION] + 1) +
                               LCSrandom(activesquad->squad[p]->skill[SKILL_LAW] + 1) * 2;
-                short troll = LCSrandom(21) + 20;
+                int16 troll = LCSrandom(21) + 20;
                 activesquad->squad[p]->skill_ip[SKILL_PERSUASION] += troll;
                 activesquad->squad[p]->skill_ip[SKILL_LAW] += troll;
 
@@ -505,9 +505,9 @@ void special_courthouse_jury(void) {
                     refresh();
                     getch();
 
-                    int numleft = 12;
+                    int32 numleft = 12;
 
-                    for(int e = 0; e < ENCMAX; e++) {
+                    for(int32 e = 0; e < ENCMAX; e++) {
                         if(!encounter[e].exists) {
                             makecreature(encounter[e], CREATURE_JUROR);
                             numleft--;
@@ -555,13 +555,13 @@ void special_prison_control(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            int numleft = LCSrandom(8) + 2;
+            int32 numleft = LCSrandom(8) + 2;
 
-            for(int e = 0; e < ENCMAX; e++) {
+            for(int32 e = 0; e < ENCMAX; e++) {
                 if(!encounter[e].exists) {
                     makecreature(encounter[e], CREATURE_PRISONER);
                     numleft--;
@@ -571,7 +571,7 @@ void special_prison_control(void) {
                     break;
             }
 
-            int time = 20 + LCSrandom(10);
+            int32 time = 20 + LCSrandom(10);
 
             if(time < 1)
                 time = 1;
@@ -631,7 +631,7 @@ void special_intel_supercomputer(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -654,7 +654,7 @@ void special_intel_supercomputer(void) {
             }
 
             if(actual) {
-                int time = 20 + LCSrandom(10);
+                int32 time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -692,11 +692,11 @@ void special_sweatshop_equipment(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            int time = 20 + LCSrandom(10);
+            int32 time = 20 + LCSrandom(10);
 
             if(time < 1)
                 time = 1;
@@ -733,11 +733,11 @@ void special_polluter_equipment(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            int time = 20 + LCSrandom(10);
+            int32 time = 20 + LCSrandom(10);
 
             if(time < 1)
                 time = 1;
@@ -776,7 +776,7 @@ void special_house_photos(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -794,7 +794,7 @@ void special_house_photos(void) {
                 it->loottype = LOOT_CEOPHOTOS;
                 activesquad->loot.push_back(it);
 
-                int time = 20 + LCSrandom(10);
+                int32 time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -837,7 +837,7 @@ void special_corporate_files(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -855,7 +855,7 @@ void special_corporate_files(void) {
                 it->loottype = LOOT_CORPFILES;
                 activesquad->loot.push_back(it);
 
-                int time = 20 + LCSrandom(10);
+                int32 time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -906,7 +906,7 @@ void special_radio_broadcaststudio(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -942,7 +942,7 @@ void special_news_broadcaststudio(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'y') {

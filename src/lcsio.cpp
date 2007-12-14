@@ -61,7 +61,7 @@ bool LCSFileExists(const char *filename) {
 
 
     struct stat st;
-    int ret = stat(filename, &st);
+    int32 ret = stat(filename, &st);
 
     if(ret == 0)
         return true;
@@ -115,7 +115,7 @@ bool LCSInitArtDir() {
     artprefix = art_search_paths[0];
     std::string tester;
 
-    for(int i = 1; artprefix != NULL; ++i) {
+    for(int32 i = 1; artprefix != NULL; ++i) {
         tester = artprefix;
         tester.append(arttest);
 
@@ -134,7 +134,7 @@ bool LCSInitArtDir() {
 
 
 
-FILE *LCSOpenFile(char *filename, char *mode, int flags) {
+FILE *LCSOpenFile(char *filename, char *mode, int32 flags) {
     if(!initialized) {
         LCSInitHomeDir();
         LCSInitArtDir();
@@ -153,7 +153,7 @@ FILE *LCSOpenFile(char *filename, char *mode, int flags) {
     return fopen(filepath.c_str(), mode);
 }
 
-void LCSDeleteFile(char *filename, int flags) {
+void LCSDeleteFile(char *filename, int32 flags) {
 
     if(!initialized) {
         LCSInitHomeDir();

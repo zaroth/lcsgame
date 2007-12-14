@@ -313,7 +313,7 @@ class vector {
     iterator _First, _Last, _End;
 };
 // CLASS vector<_Bool, allocator>
-typedef unsigned int _Vbase;
+typedef uint32 _Vbase;
 const int _VBITS = CHAR_BIT * sizeof (_Vbase);
 typedef allocator<_Vbase> _Bool_allocator;
 class vector<_Bool, _Bool_allocator> {

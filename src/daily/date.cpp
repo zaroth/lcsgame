@@ -32,8 +32,8 @@ This file is part of Liberal Crime Squad.                                       
 
 
 /* daily - date - dater p gets back from vacation */
-char completevacation(datest &d, int p, char &clearformess) {
-    int e = 0;
+char completevacation(datest &d, int32 p, char &clearformess) {
+    int32 e = 0;
 
     clearformess = 1;
 
@@ -43,11 +43,11 @@ char completevacation(datest &d, int p, char &clearformess) {
     addstr(pool[p]->name);
     addstr(" is back from vacation.");
 
-    short aroll = LCSrandom(51) + 10 + pool[p]->attval(ATTRIBUTE_CHARISMA) * 2 + LCSrandom(pool[p]->skill[SKILL_PERSUASION] * 2 + 1);
-    short troll = LCSrandom(21) + d.date[e]->attval(ATTRIBUTE_CHARISMA) + d.date[e]->attval(ATTRIBUTE_WISDOM) * 2;
+    int16 aroll = LCSrandom(51) + 10 + pool[p]->attval(ATTRIBUTE_CHARISMA) * 2 + LCSrandom(pool[p]->skill[SKILL_PERSUASION] * 2 + 1);
+    int16 troll = LCSrandom(21) + d.date[e]->attval(ATTRIBUTE_CHARISMA) + d.date[e]->attval(ATTRIBUTE_WISDOM) * 2;
     pool[p]->skill_ip[SKILL_PERSUASION] += LCSrandom(14) + 7;
 
-    int y = 2;
+    int32 y = 2;
 
     if(aroll > troll) {
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
@@ -165,8 +165,8 @@ char completevacation(datest &d, int p, char &clearformess) {
 
 
 /* daily - date - dater p goes on some dates */
-char completedate(datest &d, int p, char &clearformess) {
-    int e;
+char completedate(datest &d, int32 p, char &clearformess) {
+    int32 e;
     clearformess = 1;
 
     erase();
@@ -186,9 +186,9 @@ char completedate(datest &d, int p, char &clearformess) {
     for(e = 0; e < d.date.size(); e++) {
         addstr(d.date[e]->name);
 
-        if(e <= (int)d.date.size() - 3)
+        if(e <= (int32)d.date.size() - 3)
             addstr(", ");
-        else if(e == (int)d.date.size() - 2)
+        else if(e == (int32)d.date.size() - 2)
             addstr(" and ");
         else {
             if(pool[p]->clinic > 0) {
@@ -282,11 +282,11 @@ char completedate(datest &d, int p, char &clearformess) {
 
         do {
             refresh();
-            int c = getch();
+            int32 c = getch();
             translategetch(c);
 
-            short aroll = LCSrandom(21) + pool[p]->attval(ATTRIBUTE_CHARISMA) * 2 + LCSrandom(pool[p]->skill[SKILL_PERSUASION] * 2 + 1);
-            short troll = LCSrandom(21) + d.date[e]->attval(ATTRIBUTE_CHARISMA) + d.date[e]->attval(ATTRIBUTE_WISDOM) * 2;
+            int16 aroll = LCSrandom(21) + pool[p]->attval(ATTRIBUTE_CHARISMA) * 2 + LCSrandom(pool[p]->skill[SKILL_PERSUASION] * 2 + 1);
+            int16 troll = LCSrandom(21) + d.date[e]->attval(ATTRIBUTE_CHARISMA) + d.date[e]->attval(ATTRIBUTE_WISDOM) * 2;
             pool[p]->skill_ip[SKILL_PERSUASION] += LCSrandom(2) + 1;
 
             char test = 0;
@@ -303,7 +303,7 @@ char completedate(datest &d, int p, char &clearformess) {
                 test = 1;
 
             if(test) {
-                int y = 10;
+                int32 y = 10;
 
                 if(aroll > troll) {
                     set_color(COLOR_BLUE, COLOR_BLACK, 1);
@@ -419,9 +419,9 @@ char completedate(datest &d, int p, char &clearformess) {
                         // 1/2 chance of being arrested if more than 50 juice
                         if((pool[p]->juice < 50 && LCSrandom(2)) || LCSrandom(2)) {
                             // Find the police station
-                            long ps = -1;
+                            int32 ps = -1;
 
-                            for(long l = 0; l < location.size(); l++) {
+                            for(int32 l = 0; l < location.size(); l++) {
                                 if(location[l]->type == SITE_GOVERNMENT_POLICESTATION)
                                     ps = l;
                             }
@@ -473,7 +473,7 @@ char completedate(datest &d, int p, char &clearformess) {
             }
 
             if(c == 'c' && !pool[p]->clinic) {
-                for(int e2 = d.date.size() - 1; e2 >= 0; e2--) {
+                for(int32 e2 = d.date.size() - 1; e2 >= 0; e2--) {
                     if(e2 == e)
                         continue;
 
@@ -536,7 +536,7 @@ char completedate(datest &d, int p, char &clearformess) {
                     d.date.erase(d.date.begin() + e);
                     break;
                 } else {
-                    int y = 10;
+                    int32 y = 10;
 
                     if(LCSrandom(2)) {
                         set_color(COLOR_YELLOW, COLOR_BLACK, 1);
@@ -571,9 +571,9 @@ char completedate(datest &d, int p, char &clearformess) {
                         addstr("The Liberal has been arrested!");
 
                         // Find the police station
-                        long ps = -1;
+                        int32 ps = -1;
 
-                        for(long l = 0; l < location.size(); l++) {
+                        for(int32 l = 0; l < location.size(); l++) {
                             if(location[l]->type == SITE_GOVERNMENT_POLICESTATION)
                                 ps = l;
                         }

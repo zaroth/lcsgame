@@ -32,10 +32,10 @@ This file is part of Liberal Crime Squad.                                       
 
 
 void advanceday(char &clearformess, char canseethings) {
-    int p;
+    int32 p;
     showcarprefs = 0;
-    int w = 0;
-    int l2;
+    int32 w = 0;
+    int32 l2;
 
     //Save the game to autosave.dat each day.
     //autosave();
@@ -43,15 +43,15 @@ void advanceday(char &clearformess, char canseethings) {
     save();
 
     //CLEAR CAR STATES
-    vector<long> caridused;
+    vector<int32> caridused;
 
     for(p = 0; p < pool.size(); p++)
         pool[p]->carid = -1;
 
     //SHUFFLE AROUND THE SQUADLESS
-    int homes = -1;
+    int32 homes = -1;
 
-    for(int l = 0; l < location.size(); l++) {
+    for(int32 l = 0; l < location.size(); l++) {
         if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
             homes = l;
             break;
@@ -99,14 +99,14 @@ void advanceday(char &clearformess, char canseethings) {
     //ADVANCE SQUADS
     squadst *oactivesquad = activesquad;
 
-    for(int sq = 0; sq < squad.size(); sq++) {
+    for(int32 sq = 0; sq < squad.size(); sq++) {
         if(disbanding)
             break;
 
         //MAKE SURE MEMBERS DON'T ACT IF SQUAD DOES
 
         if(squad[sq]->activity.type != ACTIVITY_NONE) {
-            for(int p = 0; p < 6; p++) {
+            for(int32 p = 0; p < 6; p++) {
                 if(squad[sq]->squad[p] != NULL) {
                     if(squad[sq]->squad[p]->activity.type != ACTIVITY_NONE) {
                         if(clearformess)
@@ -159,11 +159,11 @@ void advanceday(char &clearformess, char canseethings) {
             }
 
             //CAR UP AS NECESSARY
-            vector<long> wantcar;
+            vector<int32> wantcar;
 
             for(p = 0; p < 6; p++) {
                 if(squad[sq]->squad[p] != NULL) {
-                    long wid = squad[sq]->squad[p]->pref_carid;
+                    int32 wid = squad[sq]->squad[p]->pref_carid;
 
                     if(wid == -1)
                         continue;
@@ -180,8 +180,8 @@ void advanceday(char &clearformess, char canseethings) {
 
             if(wantcar.size() > 0) {
                 //CULL UNAVAILABLE CARS
-                for(int c = wantcar.size() - 1; c >= 0; c--) {
-                    for(int c2 = 0; c2 < caridused.size(); c2++) {
+                for(int32 c = wantcar.size() - 1; c >= 0; c--) {
+                    for(int32 c2 = 0; c2 < caridused.size(); c2++) {
                         if(wantcar[c] == caridused[c2]) {
                             if(clearformess)
                                 erase();
@@ -192,7 +192,7 @@ void advanceday(char &clearformess, char canseethings) {
                             move(8, 1);
                             addstr(squad[sq]->name);
                             addstr(" couldn't use the ");
-                            long v = id_getcar(caridused[c2]);
+                            int32 v = id_getcar(caridused[c2]);
                             char str[80];
                             getcarfull(str, *vehicle[v]);
                             addstr(str);
@@ -209,8 +209,8 @@ void advanceday(char &clearformess, char canseethings) {
 
             //ASSIGN AVAILABLE CARS
             if(wantcar.size() > 0) {
-                vector<int> driver;
-                vector<int> passenger;
+                vector<int32> driver;
+                vector<int32> passenger;
 
                 for(w = 0; w < wantcar.size(); w++) {
                     driver.clear();
@@ -236,10 +236,10 @@ void advanceday(char &clearformess, char canseethings) {
                     if(driver.size() == 0) {
                         //MAKE BEST DRIVING PASSENGER INTO A DRIVER
                         if(passenger.size() > 0) {
-                            int max = 0;
+                            int32 max = 0;
 
                             for(p = 0; p < passenger.size(); p++) {
-                                long v = id_getcar(squad[sq]->squad[passenger[p]]->carid);
+                                int32 v = id_getcar(squad[sq]->squad[passenger[p]]->carid);
 
                                 if(v >= 0) {
                                     if(driveskill(*squad[sq]->squad[passenger[p]], vehicle[v]) > max &&
@@ -248,10 +248,10 @@ void advanceday(char &clearformess, char canseethings) {
                                 }
                             }
 
-                            vector<int> goodp;
+                            vector<int32> goodp;
 
                             for(p = 0; p < passenger.size(); p++) {
-                                long v = id_getcar(squad[sq]->squad[passenger[p]]->carid);
+                                int32 v = id_getcar(squad[sq]->squad[passenger[p]]->carid);
 
                                 if(v >= 0) {
                                     if(driveskill(*squad[sq]->squad[passenger[p]], vehicle[v]) == max &&
@@ -261,7 +261,7 @@ void advanceday(char &clearformess, char canseethings) {
                             }
 
                             if(goodp.size() > 0) {
-                                int p = goodp[LCSrandom(goodp.size())];
+                                int32 p = goodp[LCSrandom(goodp.size())];
                                 squad[sq]->squad[p]->is_driver = 1;
                             }
                         }
@@ -269,10 +269,10 @@ void advanceday(char &clearformess, char canseethings) {
                     //TOO MANY DRIVERS?
                     else if(driver.size() > 1) {
                         //TOSS ALL BUT THE BEST
-                        int max = 0;
+                        int32 max = 0;
 
                         for(p = 0; p < driver.size(); p++) {
-                            long v = id_getcar(squad[sq]->squad[driver[p]]->carid);
+                            int32 v = id_getcar(squad[sq]->squad[driver[p]]->carid);
 
                             if (v >= 0) {
                                 if(driveskill(*squad[sq]->squad[driver[p]], vehicle[v]) > max)
@@ -280,10 +280,10 @@ void advanceday(char &clearformess, char canseethings) {
                             }
                         }
 
-                        vector<int> goodp;
+                        vector<int32> goodp;
 
                         for(p = 0; p < driver.size(); p++) {
-                            long v = id_getcar(squad[sq]->squad[driver[p]]->carid);
+                            int32 v = id_getcar(squad[sq]->squad[driver[p]]->carid);
 
                             if (v >= 0) {
                                 if(driveskill(*squad[sq]->squad[driver[p]], vehicle[v]) == max)
@@ -292,9 +292,9 @@ void advanceday(char &clearformess, char canseethings) {
                         }
 
                         if(goodp.size() > 0) {
-                            int p = goodp[LCSrandom(goodp.size())];
+                            int32 p = goodp[LCSrandom(goodp.size())];
 
-                            for(int p2 = 0; p2 < driver.size(); p2++) {
+                            for(int32 p2 = 0; p2 < driver.size(); p2++) {
                                 if(p2 == p)
                                     continue;
 
@@ -306,7 +306,7 @@ void advanceday(char &clearformess, char canseethings) {
 
                 //PUT PEOPLE WITHOUT CARS INTO RANDOM CARS
                 //THESE PEOPLE WILL NOT DRIVE
-                for(int p = 0; p < 6; p++) {
+                for(int32 p = 0; p < 6; p++) {
                     if(squad[sq]->squad[p] != NULL) {
                         if(squad[sq]->squad[p]->carid == -1) {
                             squad[sq]->squad[p]->carid = wantcar[LCSrandom(wantcar.size())];
@@ -442,7 +442,7 @@ void advanceday(char &clearformess, char canseethings) {
                 else
                     makedelimiter(8, 0);
 
-                int c = 't';
+                int32 c = 't';
 
                 if(location[squad[sq]->activity.arg]->renting >= 0 &&
                         location[squad[sq]->activity.arg]->type == SITE_INDUSTRY_WAREHOUSE)
@@ -574,7 +574,7 @@ void advanceday(char &clearformess, char canseethings) {
 
     //DO RENT
     if(day == 3 && !disbanding) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int32 l = 0; l < location.size(); l++) {
             if(location[l]->renting > 0 &&
                     !location[l]->newrental) {
                 if(funds >= location[l]->renting) {
@@ -601,7 +601,7 @@ void advanceday(char &clearformess, char canseethings) {
                     location[l]->renting = -1;
 
                     //MOVE ALL ITEMS AND SQUAD MEMBERS
-                    int hs = 0;
+                    int32 hs = 0;
 
                     for(l2 = 0; l2 < location.size(); l2++) {
                         if(location[l2]->type == SITE_RESIDENTIAL_SHELTER) {
@@ -610,7 +610,7 @@ void advanceday(char &clearformess, char canseethings) {
                         }
                     }
 
-                    for(int p = 0; p < pool.size(); p++) {
+                    for(int32 p = 0; p < pool.size(); p++) {
                         if(pool[p]->location == l)
                             pool[p]->location = hs;
 
@@ -632,11 +632,11 @@ void advanceday(char &clearformess, char canseethings) {
     }
 
     //DO DATES
-    for(int d = date.size() - 1; d >= 0; d--) {
+    for(int32 d = date.size() - 1; d >= 0; d--) {
         if(disbanding)
             break;
 
-        int p = getpoolcreature(date[d]->mac_id);
+        int32 p = getpoolcreature(date[d]->mac_id);
 
         // Stand up dates if 1) dater does not exist, or 2) dater was not able to return to a safehous today (and is not in the hospital)
         if(p != -1 && pool[p]->location != -1 && (location[pool[p]->location]->renting != -1 ||
@@ -650,9 +650,9 @@ void advanceday(char &clearformess, char canseethings) {
                 pool[p]->dating = date[d]->timeleft;
 
                 if(date[d]->timeleft == 0) {
-                    int hs = -1;
+                    int32 hs = -1;
 
-                    for(int l = 0; l < location.size(); l++) {
+                    for(int32 l = 0; l < location.size(); l++) {
                         if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
                             hs = l;
                             break;
@@ -693,7 +693,7 @@ void advanceday(char &clearformess, char canseethings) {
                     pool[p]->dating = date[d]->timeleft;
 
                     if(pool[p]->dating > 0) {
-                        long sq = -1;
+                        int32 sq = -1;
 
                         //IF YOU ARE THE LAST PERSON IN YOUR SQUAD
                         //YOU HAVE TO DROP OFF THE EQUIPMENT WHEREVER YOUR BASE IS
@@ -761,7 +761,7 @@ void advanceday(char &clearformess, char canseethings) {
             continue;
         }
 
-        for(int s = 0; s < SKILLNUM; s++) {
+        for(int32 s = 0; s < SKILLNUM; s++) {
             while(pool[p]->skill_ip[s] >= 100 * ((10 + pool[p]->skill[s]) / 10) &&
                     pool[p]->skill[s] < pool[p]->attval(skillatt(s)) * 2) {
                 pool[p]->skill_ip[s] -= 100 * ((10 + pool[p]->skill[s]) / 10);
@@ -790,7 +790,7 @@ void advanceday(char &clearformess, char canseethings) {
 
 /* squad members with no chain of command lose contact */
 void dispersalcheck(char &clearformess) {
-    int p = 0;
+    int32 p = 0;
 
     //NUKE DISPERSED SQUAD MEMBERS WHOSE MASTERS ARE NOT AVAILABLE
     if(pool.size() > 0) {
@@ -815,7 +815,7 @@ void dispersalcheck(char &clearformess) {
         // preventing everyone who requires contact with that person
         // from being marked safe. After everyone reachable has been
         // reached and marked safe, all remaining squad members are nuked.
-        vector<int> nukeme;
+        vector<int32> nukeme;
         nukeme.resize(pool.size());
 
         for(p = pool.size() - 1; p >= 0; p--) {
@@ -865,7 +865,7 @@ void dispersalcheck(char &clearformess) {
 
                     // Find all subordinates if you didn't lose contact completely
                     if(nukeme[p] != 1) {
-                        for(int p2 = pool.size() - 1; p2 >= 0; p2--) {
+                        for(int32 p2 = pool.size() - 1; p2 >= 0; p2--) {
                             if(pool[p2]->hireid == pool[p]->id) {
                                 nukeme[p2] = 2; // Mark them as unreachable
                                 changed = 1; // Need another iteration
@@ -876,7 +876,7 @@ void dispersalcheck(char &clearformess) {
                 // Otherwise, if they're both alive and reachable
                 else if(nukeme[p] == 0 && alive && !inprison) {
                     // Start looking through the pool again.
-                    for(int p2 = pool.size() - 1; p2 >= 0; p2--) {
+                    for(int32 p2 = pool.size() - 1; p2 >= 0; p2--) {
                         // Locate each of this person's subordinates.
                         if(pool[p2]->hireid == pool[p]->id) {
                             // Protect them from being dispersed -- their boss is
@@ -936,9 +936,9 @@ void dispersalcheck(char &clearformess) {
                     delete pool[p];
                     pool.erase(pool.begin() + p);
                 } else {
-                    int hs = 0;
+                    int32 hs = 0;
 
-                    for(int l = 0; l < location.size(); l++) {
+                    for(int32 l = 0; l < location.size(); l++) {
                         if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
                             hs = l;
                             break;
@@ -965,7 +965,7 @@ void dispersalcheck(char &clearformess) {
 /* daily - manages too hot timer and when a site map should be re-seeded and renamed */
 void advancelocations(void) {
     //ADVANCE LOCATIONS
-    for(int l = 0; l < location.size(); l++) {
+    for(int32 l = 0; l < location.size(); l++) {
         if(location[l]->closed > 0) {
             location[l]->closed--;
 
@@ -991,7 +991,7 @@ void advancelocations(void) {
 
 
 /* daily - returns true if the site type supports high security */
-char securityable(int type) {
+char securityable(int32 type) {
     switch(type) {
     case SITE_BUSINESS_CIGARBAR:
     case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
@@ -1547,7 +1547,7 @@ void initlocation(locationst &loc) {
 
 
 /* daily - returns the number of days in the current month */
-int monthday(void) {
+int32 monthday(void) {
     switch(month) {
     case 4:
         return 30;

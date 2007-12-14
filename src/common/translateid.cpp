@@ -30,8 +30,8 @@ This file is part of Liberal Crime Squad.                                       
 #include <externs.h>
 
 /* transforms a squad id number into the index of that squad in the global vector */
-long getsquad(long id) {
-    for(int sq = 0; sq < squad.size(); sq++) {
+int32 getsquad(int32 id) {
+    for(int32 sq = 0; sq < squad.size(); sq++) {
         if(squad[sq]->id == id)
             return sq;
     }
@@ -40,8 +40,8 @@ long getsquad(long id) {
 }
 
 /* transforms a car id number into the index of that car in the global vector */
-long id_getcar(long id) {
-    for(long v = 0; v < vehicle.size(); v++) {
+int32 id_getcar(int32 id) {
+    for(int32 v = 0; v < vehicle.size(); v++) {
         if(vehicle[v]->id == id)
             return v;
     }
@@ -50,8 +50,8 @@ long id_getcar(long id) {
 }
 
 /* transforms a creature id number into the index of that person in the pool */
-int getpoolcreature(long id) {
-    for(int pl = 0; pl < pool.size(); pl++) {
+int32 getpoolcreature(int32 id) {
+    for(int32 pl = 0; pl < pool.size(); pl++) {
         if(pool[pl]->id == id)
             return pl;
     }

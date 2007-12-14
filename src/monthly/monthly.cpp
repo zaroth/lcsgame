@@ -33,9 +33,9 @@ This file is part of Liberal Crime Squad.                                       
 
 /* does end of month actions */
 void passmonth(char &clearformess, char canseethings) {
-    short oldlaw[LAWNUM];
-    memmove(oldlaw, law, sizeof(short)*LAWNUM);
-    int l, v, p;
+    int16 oldlaw[LAWNUM];
+    memmove(oldlaw, law, sizeof(int16)*LAWNUM);
+    int32 l, v, p;
 
     //TIME ADVANCE
     day = 1;
@@ -51,7 +51,7 @@ void passmonth(char &clearformess, char canseethings) {
         location[l]->newrental = 0;
 
     //YOUR PAPER AND PUBLIC OPINION AND STUFF
-    vector<int> nploc;
+    vector<int32> nploc;
 
     for(l = 0; l < location.size(); l++) {
         if((location[l]->compound_walls & COMPOUND_PRINTINGPRESS) &&
@@ -59,17 +59,17 @@ void passmonth(char &clearformess, char canseethings) {
             nploc.push_back(l);
     }
 
-    int guardianpower = 0;
+    int32 guardianpower = 0;
 
     if(nploc.size() > 0 && !disbanding) {
         //DO SPECIAL EDITIONS
-        int loottype = choosespecialedition(clearformess);
+        int32 loottype = choosespecialedition(clearformess);
 
         if(loottype != -1) {
             guardianpower += 10 * nploc.size();
             printnews(loottype, nploc.size());
 
-            for(int p = 0; p < pool.size(); p++) {
+            for(int32 p = 0; p < pool.size(); p++) {
                 if(pool[p]->alive && pool[p]->align == 1 &&
                         pool[p]->clinic == 0 && pool[p]->dating == 0 &&
                         pool[p]->hiding == 0) {
@@ -89,23 +89,23 @@ void passmonth(char &clearformess, char canseethings) {
 
             if(loottype == LOOT_INTHQDISK ||
                     loottype == LOOT_SECRETDOCUMENTS) {
-                for(int l = 0; l < nploc.size(); l++)
+                for(int32 l = 0; l < nploc.size(); l++)
                     criminalizepool(LAWFLAG_TREASON, -1, nploc[l]);
             }
         }
     }
 
-    int libpower[VIEWNUM] = {0};
-    int computernum = 0;
+    int32 libpower[VIEWNUM] = {0};
+    int32 computernum = 0;
 
     //STORIES STALE EVEN IF NOT PRINTED
     for(v = 0; v < VIEWNUM; v++)
         newspaper_topicwork1[v] = 0;
 
-    int conspower = 200 - attitude[VIEW_AMRADIO] - attitude[VIEW_CABLENEWS];
+    int32 conspower = 200 - attitude[VIEW_AMRADIO] - attitude[VIEW_CABLENEWS];
 
     //HAVING SLEEPERS
-    for(int pl = 0; pl < pool.size(); pl++) {
+    for(int32 pl = 0; pl < pool.size(); pl++) {
         if(pool[pl]->alive && (pool[pl]->flag & CREATUREFLAG_SLEEPER))
             sleepereffect(*pool[pl], clearformess, canseethings, libpower);
     }
@@ -252,7 +252,7 @@ void passmonth(char &clearformess, char canseethings) {
                 continue;
             } else {
                 //TRY TO GET RACKETEERING CHARGE
-                int copstrength = 100;
+                int32 copstrength = 100;
 
                 if(law[LAW_POLICEBEHAVIOR] == -2)
                     copstrength = 200;
@@ -269,7 +269,7 @@ void passmonth(char &clearformess, char canseethings) {
                 if(LCSrandom(copstrength) > pool[p]->juice + pool[p]->attval(ATTRIBUTE_HEART) * 5 - pool[p]->attval(ATTRIBUTE_WISDOM) * 5 &&
                         pool[p]->hireid != -1) {
                     if(pool[p]->hireid != -1) {
-                        for(int p2 = 0; p2 < pool.size(); p2++) {
+                        for(int32 p2 = 0; p2 < pool.size(); p2++) {
                             if(pool[p2]->alive == 1 && pool[p2]->id == pool[p]->hireid) {
                                 char conf = 0;
 
@@ -306,7 +306,7 @@ void passmonth(char &clearformess, char canseethings) {
                     getch();
                 }
 
-                for(int l = 0; l < location.size(); l++) {
+                for(int32 l = 0; l < location.size(); l++) {
                     if(location[l]->type == SITE_GOVERNMENT_COURTHOUSE)
                         pool[p]->location = l;
                 }
@@ -351,7 +351,7 @@ void passmonth(char &clearformess, char canseethings) {
         if(pool[p]->clinic > 0) {
             pool[p]->clinic--;
 
-            for(int w = 0; w < BODYPARTNUM; w++) {
+            for(int32 w = 0; w < BODYPARTNUM; w++) {
                 if((pool[p]->wound[w] & WOUND_NASTYOFF) ||
                         (pool[p]->wound[w] & WOUND_CLEANOFF))
                     pool[p]->wound[w] = (char)WOUND_CLEANOFF;
@@ -429,9 +429,9 @@ void passmonth(char &clearformess, char canseethings) {
                 addstr(location[pool[p]->location]->name);
                 addstr(".");
 
-                int hs = -1;
+                int32 hs = -1;
 
-                for(int l = 0; l < location.size(); l++) {
+                for(int32 l = 0; l < location.size(); l++) {
                     if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
                         hs = l;
                         break;
@@ -458,13 +458,13 @@ void passmonth(char &clearformess, char canseethings) {
 
 
 /* rename prison according to the new laws (add more buildings to this) */
-void updateworld_laws(short *law, short *oldlaw) {
+void updateworld_laws(int16 *law, int16 *oldlaw) {
     //RENAME PRISONS
     if(law[LAW_DEATHPENALTY] == -2 &&
             law[LAW_POLICEBEHAVIOR] == -2 &&
             (oldlaw[LAW_DEATHPENALTY] > -2 ||
              oldlaw[LAW_POLICEBEHAVIOR] > -2)) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int32 l = 0; l < location.size(); l++) {
             if(location[l]->type == SITE_GOVERNMENT_PRISON)
                 initlocation(*location[l]);
         }
@@ -474,7 +474,7 @@ void updateworld_laws(short *law, short *oldlaw) {
             oldlaw[LAW_POLICEBEHAVIOR] == -2 &&
             (law[LAW_DEATHPENALTY] > -2 ||
              law[LAW_POLICEBEHAVIOR] > -2)) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int32 l = 0; l < location.size(); l++) {
             if(location[l]->type == SITE_GOVERNMENT_PRISON)
                 initlocation(*location[l]);
         }

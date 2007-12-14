@@ -74,15 +74,15 @@
 #include "cursesgraphics.h"
 
 #ifdef CH_USE_CP437
-int translateGraphicsChar(int c) {
+int32 translateGraphicsChar(int32 c) {
     return c;
 }
 #else
-int translateGraphicsChar(int c) {
+int32 translateGraphicsChar(int32 c) {
     // This will be no good for Unicode...
 
-    int cin = c;
-    int cout = cin;
+    int32 cin = c;
+    int32 cout = cin;
 
 //	if ((cin >= 0) && (cin <32))
 //	{

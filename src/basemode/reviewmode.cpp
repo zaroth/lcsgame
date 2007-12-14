@@ -31,7 +31,7 @@ This file is part of Liberal Crime Squad.                                       
 
 /* base - review and reorganize liberals */
 void review(void) {
-    int page = 0;
+    int32 page = 0;
 
     do {
         erase();
@@ -43,9 +43,9 @@ void review(void) {
         move(1, 0);
         addstr("----SQUAD NAME-----------------LOCATION------------ACTIVITY----------------------");
 
-        int y = 2;
+        int32 y = 2;
 
-        for(int p = page * 19; p < squad.size() + REVIEWMODENUM && p < page * 19 + 19; p++) {
+        for(int32 p = page * 19; p < squad.size() + REVIEWMODENUM && p < page * 19 + 19; p++) {
             if(p < squad.size()) {
                 if(activesquad == squad[p])
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -69,10 +69,10 @@ void review(void) {
                     getactivity(str, squad[p]->activity);
 
                     if(squad[p]->activity.type == ACTIVITY_NONE) {
-                        int count = 0;
+                        int32 count = 0;
                         char haveact = 0;
 
-                        for(int p2 = 0; p2 < 6; p2++) {
+                        for(int32 p2 = 0; p2 < 6; p2++) {
                             if(squad[p]->squad[p2] == NULL)
                                 continue;
 
@@ -154,7 +154,7 @@ void review(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == interface_pgup && page > 0)
@@ -167,7 +167,7 @@ void review(void) {
             return;
 
         if(c >= 'a' && c <= 's') {
-            int sq = page * 19 + (int)(c - 'a');
+            int32 sq = page * 19 + (int32)(c - 'a');
 
             if(sq < squad.size() && sq >= 0) {
                 if(squad[sq] == activesquad)
@@ -178,7 +178,7 @@ void review(void) {
         }
 
         if(c >= '1' && c <= '7')
-            review_mode((int)(c - '1'));
+            review_mode((int32)(c - '1'));
 
         if(c == 'z') {
             assemblesquad(NULL);
@@ -197,10 +197,10 @@ void review(void) {
 
 
 
-void review_mode(short mode) {
+void review_mode(int16 mode) {
     vector<creaturest *> temppool;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         switch(mode) {
         case REVIEWMODE_LIBERALS:
             if(pool[p]->alive == 1 &&
@@ -275,7 +275,7 @@ void review_mode(short mode) {
     if(temppool.size() == 0)
         return;
 
-    short page = 0;
+    int16 page = 0;
 
     char num[20];
 
@@ -350,9 +350,9 @@ void review_mode(short mode) {
             break;
         }
 
-        int y = 2;
+        int32 y = 2;
 
-        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -360,10 +360,10 @@ void review_mode(short mode) {
             addstr(temppool[p]->name);
 
             char bright = 0;
-            unsigned long skill = 0;
+            uint32 skill = 0;
 
-            for(int sk = 0; sk < SKILLNUM; sk++) {
-                skill += (unsigned long)temppool[p]->skill[sk];
+            for(int32 sk = 0; sk < SKILLNUM; sk++) {
+                skill += (uint32)temppool[p]->skill[sk];
 
                 if(temppool[p]->skill_ip[sk] >= 100 * ((10 + temppool[p]->skill[sk]) / 10) &&
                         temppool[p]->skill[sk] < temppool[p]->attval(skillatt(sk)) * 2)
@@ -397,7 +397,7 @@ void review_mode(short mode) {
                 char usepers = 1;
 
                 if(temppool[p]->squadid != -1) {
-                    int sq = getsquad(temppool[p]->squadid);
+                    int32 sq = getsquad(temppool[p]->squadid);
 
                     if(sq != -1) {
                         if(squad[sq]->activity.type != ACTIVITY_NONE) {
@@ -552,7 +552,7 @@ void review_mode(short mode) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -564,7 +564,7 @@ void review_mode(short mode) {
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int p = page * 19 + (int)(c - 'a');
+            int32 p = page * 19 + (int32)(c - 'a');
 
             if(p < temppool.size()) {
                 do {
@@ -602,16 +602,16 @@ void review_mode(short mode) {
                     addstr("Press any other key to continue the Struggle");
 
                     refresh();
-                    int c = getch();
+                    int32 c = getch();
                     translategetch(c);
 
                     if(temppool.size() > 0 && (c == interface_pgup || c == interface_pgdn)) {
-                        int sx = 1;
+                        int32 sx = 1;
 
                         if(c == interface_pgup)
                             sx = -1;
 
-                        p = (p + (int)temppool.size() + sx) % ((int)temppool.size());
+                        p = (p + (int32)temppool.size() + sx) % ((int32)temppool.size());
                         continue;
                     }
 
@@ -648,8 +648,8 @@ void review_mode(short mode) {
 
 /* base - review - assemble a squad */
 void assemblesquad(squadst *cursquad) {
-    long culloc = -1;
-    int p;
+    int32 culloc = -1;
+    int32 p;
 
     if(cursquad != NULL)
         culloc = cursquad->squad[0]->location;
@@ -681,10 +681,10 @@ void assemblesquad(squadst *cursquad) {
 
     //BUILD LIST OF BASES FOR EACH SQUAD IN CASE IT ENDS UP EMPTY
     //THEN WILL DROP ITS LOOT THERE
-    vector<int> squadloc;
+    vector<int32> squadloc;
     squadloc.resize(squad.size());
 
-    for(int sl = 0; sl < squad.size(); sl++) {
+    for(int32 sl = 0; sl < squad.size(); sl++) {
         squadloc[sl] = squad[sl]->squad[0]->location;
 
         if(squadloc[sl] != -1) {
@@ -693,9 +693,9 @@ void assemblesquad(squadst *cursquad) {
         }
     }
 
-    short page = 0;
+    int16 page = 0;
 
-    int squadsize;
+    int32 squadsize;
 
     char num[20];
 
@@ -727,7 +727,7 @@ void assemblesquad(squadst *cursquad) {
         move(1, 0);
         addstr("----CODE NAME------------SKILL---HEALTH-----------PROFESSION--------------------");
 
-        int y = 2;
+        int32 y = 2;
 
         for(p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -737,10 +737,10 @@ void assemblesquad(squadst *cursquad) {
             addstr(temppool[p]->name);
 
             char bright = 0;
-            unsigned long skill = 0;
+            uint32 skill = 0;
 
-            for(int sk = 0; sk < SKILLNUM; sk++) {
-                skill += (unsigned long)temppool[p]->skill[sk];
+            for(int32 sk = 0; sk < SKILLNUM; sk++) {
+                skill += (uint32)temppool[p]->skill[sk];
 
                 if(temppool[p]->skill_ip[sk] >= 100 * ((10 + temppool[p]->skill[sk]) / 10) &&
                         temppool[p]->skill[sk] < temppool[p]->attval(skillatt(sk)) * 2)
@@ -815,7 +815,7 @@ void assemblesquad(squadst *cursquad) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -827,7 +827,7 @@ void assemblesquad(squadst *cursquad) {
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int p = page * 19 + (int)(c - 'a');
+            int32 p = page * 19 + (int32)(c - 'a');
 
             if(p < temppool.size()) {
                 char conf = 1;
@@ -867,7 +867,7 @@ void assemblesquad(squadst *cursquad) {
                     if(temppool[p]->squadid == cursquad->id) {
                         char flipstart = 0;
 
-                        for(int pt = 0; pt < 6; pt++) {
+                        for(int32 pt = 0; pt < 6; pt++) {
                             if(cursquad->squad[pt] == temppool[p]) {
                                 flipstart = 1;
                                 cursquad->squad[pt]->squadid = -1;
@@ -880,7 +880,7 @@ void assemblesquad(squadst *cursquad) {
                         if(flipstart)
                             cursquad->squad[5] = NULL;
                     } else if(squadsize < 6) {
-                        for(int pt = 0; pt < 6; pt++) {
+                        for(int32 pt = 0; pt < 6; pt++) {
                             if(cursquad->squad[pt] == NULL) {
                                 removesquadinfo(*temppool[p]);
                                 cursquad->squad[pt] = temppool[p];
@@ -898,7 +898,7 @@ void assemblesquad(squadst *cursquad) {
             char good = 1;
             char care = 0;
 
-            for(int p = 0; p < 6; p++) {
+            for(int32 p = 0; p < 6; p++) {
                 if(cursquad->squad[p] != NULL) {
                     if(cursquad->squad[p]->align == 1) {
                         care = 1;
@@ -926,7 +926,7 @@ void assemblesquad(squadst *cursquad) {
         }
 
         if(c == '9') {
-            for(int p = 0; p < 6; p++) {
+            for(int32 p = 0; p < 6; p++) {
                 if(cursquad->squad[p] != NULL) {
                     cursquad->squad[p]->squadid = -1;
                     cursquad->squad[p] = NULL;
@@ -970,10 +970,10 @@ void assemblesquad(squadst *cursquad) {
     }
 
     //NUKE ALL EMPTY SQUADS
-    for(int sq = squad.size() - 1; sq >= 0; sq--) {
+    for(int32 sq = squad.size() - 1; sq >= 0; sq--) {
         hasmembers = 0;
 
-        for(int p = 0; p < 6; p++) {
+        for(int32 p = 0; p < 6; p++) {
             if(squad[sq]->squad[p] != NULL) {
                 hasmembers = 1;
                 break;
@@ -982,7 +982,7 @@ void assemblesquad(squadst *cursquad) {
 
         if(!hasmembers) {
             if(squadloc[sq] != -1) {
-                for(int l = 0; l < squad[sq]->loot.size(); l++)
+                for(int32 l = 0; l < squad[sq]->loot.size(); l++)
                     location[squadloc[sq]]->loot.push_back(squad[sq]->loot[l]);
 
                 squad[sq]->loot.clear();
@@ -1001,8 +1001,8 @@ void assemblesquad(squadst *cursquad) {
 
 /* base - review - assign new bases to the squadless */
 void squadlessbaseassign(void) {
-    int p = 0;
-    int l = 0;
+    int32 p = 0;
+    int32 l = 0;
     vector<creaturest *> temppool;
 
     for(p = 0; p < pool.size(); p++) {
@@ -1023,7 +1023,7 @@ void squadlessbaseassign(void) {
     if(temppool.size() == 0)
         return;
 
-    vector<int> temploc;
+    vector<int32> temploc;
 
     for(l = 0; l < location.size(); l++) {
         if(location[l]->renting >= 0 && !location[l]->siege.siege)
@@ -1033,12 +1033,12 @@ void squadlessbaseassign(void) {
     if(temploc.size() == 0)
         return;
 
-    short page_lib = 0;
-    short page_loc = 0;
+    int16 page_lib = 0;
+    int16 page_loc = 0;
 
     char num[20];
 
-    int selectedbase = 0;
+    int32 selectedbase = 0;
 
     do {
         erase();
@@ -1053,7 +1053,7 @@ void squadlessbaseassign(void) {
         move(1, 51);
         addstr("NEW BASE");
 
-        int y = 2;
+        int32 y = 2;
 
         for(p = page_lib * 19; p < temppool.size() && p < page_lib * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -1108,7 +1108,7 @@ void squadlessbaseassign(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -1128,14 +1128,14 @@ void squadlessbaseassign(void) {
             page_loc++;
 
         if(c >= 'a' && c <= 's') {
-            int p = page_lib * 19 + (int)(c - 'a');
+            int32 p = page_lib * 19 + (int32)(c - 'a');
 
             if(p < temppool.size())
                 temppool[p]->base = temploc[selectedbase];
         }
 
         if(c >= '1' && c <= '9') {
-            int p = page_loc * 9 + (int)(c - '1');
+            int32 p = page_loc * 9 + (int32)(c - '1');
 
             if(p < temploc.size())
                 selectedbase = p;
@@ -1151,9 +1151,9 @@ void squadlessbaseassign(void) {
 /* base - review - promote liberals */
 void promoteliberals(void) {
     vector<creaturest *> temppool;
-    vector<int> level;
+    vector<int32> level;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(pool[p]->alive &&
                 pool[p]->align == 1 &&
                 !(pool[p]->flag & CREATUREFLAG_SLEEPER))
@@ -1167,7 +1167,7 @@ void promoteliberals(void) {
     sortbyhire(temppool, level);
 
     //PROMOTE
-    short page = 0;
+    int16 page = 0;
 
     char num[20];
 
@@ -1184,20 +1184,20 @@ void promoteliberals(void) {
         move(1, 54);
         addstr("CONTACT AFTER PROMOTION");
 
-        int y = 2;
+        int32 y = 2;
 
-        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
 
             move(y, 27);
-            int p2 = 0;
+            int32 p2 = 0;
 
 
             for(p2 = 0; p2 < pool.size(); p2++) {
-                int p3 = 0;
+                int32 p3 = 0;
 
                 if(pool[p2]->alive == 1 && pool[p2]->id == temppool[p]->hireid) {
                     // *JDS* If contact is in the justice system
@@ -1346,7 +1346,7 @@ void promoteliberals(void) {
 
         refresh();
 
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         //PAGE UP
@@ -1358,15 +1358,15 @@ void promoteliberals(void) {
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int p = page * 19 + (int)(c - 'a');
+            int32 p = page * 19 + (int32)(c - 'a');
 
             // *JDS* can't promote liberals in hiding
             if(p < temppool.size() && !pool[p]->hiding) {
-                for(int p2 = 0; p2 < pool.size(); p2++) {
+                for(int32 p2 = 0; p2 < pool.size(); p2++) {
                     if(pool[p2]->alive == 1 && pool[p2]->id == temppool[p]->hireid) {
                         addstr(pool[p2]->name);
 
-                        for(int p3 = 0; p3 < pool.size(); p3++) {
+                        for(int32 p3 = 0; p3 < pool.size(); p3++) {
                             if(pool[p3]->alive == 1 && pool[p3]->id == pool[p2]->hireid) {
                                 temppool[p]->hireid = pool[p2]->hireid;
                                 sortbyhire(temppool, level);
@@ -1387,11 +1387,11 @@ void promoteliberals(void) {
 
 
 
-void sortbyhire(vector<creaturest *> &temppool, vector<int> &level) {
+void sortbyhire(vector<creaturest *> &temppool, vector<int32> &level) {
     vector<creaturest *> newpool;
     level.clear();
 
-    for(int i = temppool.size() - 1; i >= 0; i--) {
+    for(int32 i = temppool.size() - 1; i >= 0; i--) {
         if(temppool[i]->hireid == -1) {
             newpool.insert(newpool.begin(), temppool[i]);
             level.insert(level.begin(), 0);
@@ -1404,8 +1404,8 @@ void sortbyhire(vector<creaturest *> &temppool, vector<int> &level) {
     do {
         changed = 0;
 
-        for(int i = 0; i < newpool.size(); i++) {
-            for(int j = temppool.size() - 1; j >= 0; j--) {
+        for(int32 i = 0; i < newpool.size(); i++) {
+            for(int32 j = temppool.size() - 1; j >= 0; j--) {
                 if(temppool[j]->hireid == newpool[i]->id) {
                     newpool.insert(newpool.begin() + i + 1, temppool[j]);
                     level.insert(level.begin() + i + 1, level[i] + 1);
@@ -1418,6 +1418,6 @@ void sortbyhire(vector<creaturest *> &temppool, vector<int> &level) {
 
     temppool.clear();
 
-    for(int p = 0; p < newpool.size(); p++)
+    for(int32 p = 0; p < newpool.size(); p++)
         temppool.push_back(newpool[p]);
 }

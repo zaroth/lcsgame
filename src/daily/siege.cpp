@@ -37,9 +37,9 @@ void siegecheck(char canseethings) {
         return;
 
     //FIRST, THE COPS
-    int numpres;
+    int32 numpres;
 
-    for(int l = 0; l < location.size(); l++) {
+    for(int32 l = 0; l < location.size(); l++) {
         if(location[l]->siege.siege)
             continue;
 
@@ -59,7 +59,7 @@ void siegecheck(char canseethings) {
 
                     // Hunt faster if location is extremely hot
                     if(location[l]->heat > 300) {
-                        int hunt_speed;
+                        int32 hunt_speed;
                         hunt_speed = location[l]->heat / 150;
 
                         while(hunt_speed && location[l]->siege.timeuntillocated > 1) {
@@ -75,9 +75,9 @@ void siegecheck(char canseethings) {
             }
 
             //CHECK FOR CRIMINALS AT THIS BASE
-            int crimes = 0;
+            int32 crimes = 0;
 
-            for(int p = 0; p < pool.size(); p++) {
+            for(int32 p = 0; p < pool.size(); p++) {
                 if(!pool[p]->alive)
                     continue;
 
@@ -100,7 +100,7 @@ void siegecheck(char canseethings) {
                     pool[p]->lawflag[LAWFLAG_SPEECH] = 0;
 
                 // Check for wanted persons!
-                for(int i = 0; i < LAWFLAGNUM; i++) {
+                for(int32 i = 0; i < LAWFLAGNUM; i++) {
                     if(pool[p]->lawflag[i]) {
                         // Count up crimes (extra pressure for high intensity)
                         crimes += pool[p]->lawflag[i] * lawflagheat(i);
@@ -118,7 +118,7 @@ void siegecheck(char canseethings) {
                 if(location[l]->heat < 0)
                     location[l]->heat = 0;
             } else if(crimes) {
-                int heatprotection = 0;
+                int32 heatprotection = 0;
 
                 // Determine how effective your current safehouse
                 // is at keeping the police confused
@@ -160,16 +160,16 @@ void siegecheck(char canseethings) {
                 if(location[l]->siege.timeuntillocated == -1 &&
                         location[l]->heat > 500) {
                     // Begin planning siege if high heat on location
-                    int siegetime = 5 * (1 + 1 * heatprotection);
+                    int32 siegetime = 5 * (1 + 1 * heatprotection);
                     location[l]->siege.timeuntillocated += siegetime + LCSrandom(siegetime);
                 }
             }
 
             // *JDS* Sleepers at the police department may give a warning just before police raids
             if(location[l]->siege.timeuntillocated == 1) {
-                int policesleepercount = 0;
+                int32 policesleepercount = 0;
 
-                for(int pl = 0; pl < pool.size(); pl++) {
+                for(int32 pl = 0; pl < pool.size(); pl++) {
                     if(pool[pl]->flag & CREATUREFLAG_SLEEPER &&
                             pool[pl]->location != -1 && // <- this must be executed before the line below it
                             location[pool[pl]->location]->type == SITE_GOVERNMENT_POLICESTATION)
@@ -269,9 +269,9 @@ void siegecheck(char canseethings) {
                     refresh();
                     getch();
 
-                    int y = 9;
+                    int32 y = 9;
 
-                    for(int p = pool.size() - 1; p >= 0; p--) {
+                    for(int32 p = pool.size() - 1; p >= 0; p--) {
                         if(pool[p]->location != l)
                             continue;
 
@@ -302,12 +302,12 @@ void siegecheck(char canseethings) {
                         }
                     }
 
-                    for(int l2 = 0; l2 < location[l]->loot.size(); l2++)
+                    for(int32 l2 = 0; l2 < location[l]->loot.size(); l2++)
                         delete location[l]->loot[l2];
 
                     location[l]->loot.clear();
 
-                    for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
+                    for(int32 v = (int32)vehicle.size() - 1; v >= 0; v--) {
                         if(vehicle[v]->location == l) {
                             removecarprefs_pool(vehicle[v]->id);
                             delete vehicle[v];
@@ -324,9 +324,9 @@ void siegecheck(char canseethings) {
                 numpres > 0) {
             location[l]->siege.timeuntilcorps = LCSrandom(3) + 1;
             // *JDS* CEO sleepers may give a warning before corp raids
-            int ceosleepercount = 0;
+            int32 ceosleepercount = 0;
 
-            for(int pl = 0; pl < pool.size(); pl++) {
+            for(int32 pl = 0; pl < pool.size(); pl++) {
                 if(pool[pl]->flag & CREATUREFLAG_SLEEPER &&
                         pool[pl]->type == CREATURE_CORPORATE_CEO)
                     ceosleepercount++;
@@ -384,9 +384,9 @@ void siegecheck(char canseethings) {
                 numpres > 0) {
             location[l]->siege.timeuntilcia = LCSrandom(3) + 1;
             // *JDS* agent sleepers may give a warning before corp raids
-            int agentsleepercount = 0;
+            int32 agentsleepercount = 0;
 
-            for(int pl = 0; pl < pool.size(); pl++) {
+            for(int32 pl = 0; pl < pool.size(); pl++) {
                 if(pool[pl]->flag & CREATUREFLAG_SLEEPER &&
                         pool[pl]->type == CREATURE_AGENT)
                     agentsleepercount++;
@@ -494,11 +494,11 @@ void siegeturn(char clearformess) {
     if(disbanding)
         return;
 
-    for(int l = 0; l < location.size(); l++) {
+    for(int32 l = 0; l < location.size(); l++) {
         if(location[l]->siege.siege &&
                 !location[l]->siege.underattack) {
             //EAT
-            int eat = numbereating(l);
+            int32 eat = numbereating(l);
 
             if(location[l]->compound_stores >= eat)
                 location[l]->compound_stores -= eat;
@@ -552,9 +552,9 @@ void siegeturn(char clearformess) {
                 if(location[l]->siege.escalationstate >= 3 && !LCSrandom(20)) {
                     no_bad = 0;
 
-                    vector<int> pol;
+                    vector<int32> pol;
 
-                    for(int p = 0; p < pool.size(); p++) {
+                    for(int32 p = 0; p < pool.size(); p++) {
                         if(pool[p]->alive && pool[p]->location == l)
                             pol.push_back(p);
                     }
@@ -567,7 +567,7 @@ void siegeturn(char clearformess) {
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
-                        int targ = pol[LCSrandom(pol.size())];
+                        int32 targ = pol[LCSrandom(pol.size())];
 
                         if(LCSrandom(50) > pool[targ]->juice) {
                             addstr("A National Guard sniper takes out ");
@@ -644,9 +644,9 @@ void siegeturn(char clearformess) {
                     }
 
                     if(!LCSrandom(20)) {
-                        vector<int> pol;
+                        vector<int32> pol;
 
-                        for(int p = 0; p < pool.size(); p++) {
+                        for(int32 p = 0; p < pool.size(); p++) {
                             if(pool[p]->alive && pool[p]->location == l)
                                 pol.push_back(p);
                         }
@@ -659,7 +659,7 @@ void siegeturn(char clearformess) {
 
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(8, 1);
-                            int targ = pol[LCSrandom(pol.size())];
+                            int32 targ = pol[LCSrandom(pol.size())];
 
                             if(LCSrandom(100) > pool[targ]->juice) {
                                 addstr(pool[targ]->name);
@@ -717,9 +717,9 @@ void siegeturn(char clearformess) {
                 }
 
                 //NEED GOOD THINGS TO BALANCE THE BAD
-                int livingpool = 0;
+                int32 livingpool = 0;
 
-                for(int p = 0; p < pool.size(); p++) {
+                for(int32 p = 0; p < pool.size(); p++) {
                     if(!pool[p]->alive)
                         continue;
 
@@ -867,9 +867,9 @@ void siegeturn(char clearformess) {
                     refresh();
                     getch();
 
-                    int best = -1, bestvalue = 0, sum;
+                    int32 best = -1, bestvalue = 0, sum;
 
-                    for(int p = 0; p < pool.size(); p++) {
+                    for(int32 p = 0; p < pool.size(); p++) {
                         if(!pool[p]->alive)
                             continue;
 
@@ -902,7 +902,7 @@ void siegeturn(char clearformess) {
                     refresh();
                     getch();
 
-                    int segmentpower = LCSrandom(bestvalue * 2 + 1);
+                    int32 segmentpower = LCSrandom(bestvalue * 2 + 1);
 
                     move(8, 1);
 
@@ -1033,9 +1033,9 @@ void siegeturn(char clearformess) {
                     //CHECK PUBLIC OPINION
                     change_public_opinion(VIEW_LIBERALCRIMESQUAD, 20, 0);
                     change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, (segmentpower - 25) / 2, 0);
-                    int viewhit;
+                    int32 viewhit;
 
-                    for(int v = 0; v < 5; v++) {
+                    for(int32 v = 0; v < 5; v++) {
                         do {
                             viewhit = LCSrandom(VIEWNUM);
                         } while(viewhit == VIEW_LIBERALCRIMESQUADPOS);
@@ -1055,7 +1055,7 @@ void siegeturn(char clearformess) {
 
 /* siege - handles giving up */
 void giveup(void) {
-    int loc = -1;
+    int32 loc = -1;
 
     if(selectedsiege != -1)
         loc = selectedsiege;
@@ -1071,9 +1071,9 @@ void giveup(void) {
 
     //IF POLICE, END SIEGE
     if(location[loc]->siege.siegetype == SIEGE_POLICE) {
-        int polsta = -1;
+        int32 polsta = -1;
 
-        for(int l = 0; l < location.size(); l++) {
+        for(int32 l = 0; l < location.size(); l++) {
             if(location[l]->type == SITE_GOVERNMENT_POLICESTATION) {
                 polsta = l;
                 break;
@@ -1087,13 +1087,13 @@ void giveup(void) {
         move(1, 1);
         addstr("The police confiscate everything, including Squad weapons.");
 
-        int kcount = 0;
-        int pcount = 0;
+        int32 kcount = 0;
+        int32 pcount = 0;
         char kname[100];
         char pname[100];
         char pcname[100];
-        int icount = 0;
-        int p;
+        int32 icount = 0;
+        int32 p;
 
         for(p = pool.size() - 1; p >= 0; p--) {
             if(pool[p]->location != loc)
@@ -1200,7 +1200,7 @@ void giveup(void) {
             if((pool[p]->flag & CREATUREFLAG_MISSING) ||
                     !pool[p]->alive) {
                 // Clear actions for anybody who was tending to this person
-                for(int i = 0; i < pool.size(); ++i) {
+                for(int32 i = 0; i < pool.size(); ++i) {
                     if(!pool[i]->alive)
                         continue;
 
@@ -1218,10 +1218,10 @@ void giveup(void) {
 
             //TAKE SQUAD EQUIPMENT
             if(pool[p]->squadid != -1) {
-                long sq = getsquad(pool[p]->squadid);
+                int32 sq = getsquad(pool[p]->squadid);
 
                 if(sq != -1) {
-                    for(int l = 0; l < squad[sq]->loot.size(); l++)
+                    for(int32 l = 0; l < squad[sq]->loot.size(); l++)
                         delete squad[sq]->loot[l];
 
                     squad[sq]->loot.clear();
@@ -1239,9 +1239,9 @@ void giveup(void) {
         }
     } else {
         //OTHERWISE IT IS SUICIDE
-        int killnumber = 0;
+        int32 killnumber = 0;
 
-        for(int p = pool.size() - 1; p >= 0; p--) {
+        for(int32 p = pool.size() - 1; p >= 0; p--) {
             if(pool[p]->location != loc)
                 continue;
 
@@ -1279,12 +1279,12 @@ void giveup(void) {
     }
 
     //CONFISCATE MATERIAL
-    for(int l = 0; l < location[loc]->loot.size(); l++)
+    for(int32 l = 0; l < location[loc]->loot.size(); l++)
         delete location[loc]->loot[l];
 
     location[loc]->loot.clear();
 
-    for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
+    for(int32 v = (int32)vehicle.size() - 1; v >= 0; v--) {
         if(vehicle[v]->location == loc) {
             removecarprefs_pool(vehicle[v]->id);
             delete vehicle[v];
@@ -1296,13 +1296,13 @@ void giveup(void) {
 
 
 /* siege - checks how many days of food left at the site */
-int fooddaysleft(int loc) {
-    int eaters = numbereating(loc);
+int32 fooddaysleft(int32 loc) {
+    int32 eaters = numbereating(loc);
 
     if(eaters == 0)
         return -1;
 
-    int days = location[loc]->compound_stores / eaters;
+    int32 days = location[loc]->compound_stores / eaters;
 
     if((location[loc]->compound_stores % eaters) > eaters / 2)
         days++;
@@ -1313,10 +1313,10 @@ int fooddaysleft(int loc) {
 
 
 /* siege - checks how many people are eating at the site */
-int numbereating(int loc) {
-    int eaters = 0;
+int32 numbereating(int32 loc) {
+    int32 eaters = 0;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(pool[p]->location != loc)
             continue;
 
@@ -1369,7 +1369,7 @@ void escape_engage(void) {
     move(17, 11);
     addstr("be in the Squad.  If less than six, then they all must.");
 
-    int loc = -1;
+    int32 loc = -1;
 
     if(selectedsiege != -1)
         loc = selectedsiege;
@@ -1402,13 +1402,13 @@ void escape_engage(void) {
         criminalizepool(LAWFLAG_RESIST, -1, loc);
 
     //DELETE ALL SQUADS IN THIS AREA UNLESS THEY ARE THE activesquad
-    for(int sq = squad.size() - 1; sq >= 0; sq--) {
+    for(int32 sq = squad.size() - 1; sq >= 0; sq--) {
         if(squad[sq] == activesquad)
             continue;
 
         if(squad[sq]->squad[0] != NULL) {
             if(squad[sq]->squad[0]->location == loc) {
-                for(int p = 0; p < 6; p++) {
+                for(int32 p = 0; p < 6; p++) {
                     if(squad[sq]->squad[p] == NULL)
                         continue;
 
@@ -1471,9 +1471,9 @@ void escapesiege(char won) {
         move(11, 11);
         addstr("doubtless be preparing another assault.");
 
-        int homes = -1;
+        int32 homes = -1;
 
-        for(int l = 0; l < location.size(); l++) {
+        for(int32 l = 0; l < location.size(); l++) {
             if(location[l]->type == SITE_RESIDENTIAL_SHELTER)
                 homes = l;
         }
@@ -1489,7 +1489,7 @@ void escapesiege(char won) {
         if(location[cursite]->renting > 1)
             location[cursite]->renting = -1;
 
-        for(int p = pool.size() - 1; p >= 0; p--) {
+        for(int32 p = pool.size() - 1; p >= 0; p--) {
             if(pool[p]->location != cursite)
                 continue;
 
@@ -1506,12 +1506,12 @@ void escapesiege(char won) {
             pool[p]->base = homes;
         }
 
-        for(int l2 = 0; l2 < location[cursite]->loot.size(); l2++)
+        for(int32 l2 = 0; l2 < location[cursite]->loot.size(); l2++)
             delete location[cursite]->loot[l2];
 
         location[cursite]->loot.clear();
 
-        for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
+        for(int32 v = (int32)vehicle.size() - 1; v >= 0; v--) {
             if(vehicle[v]->location == cursite) {
                 removecarprefs_pool(vehicle[v]->id);
                 delete vehicle[v];
@@ -1572,7 +1572,7 @@ void conquertext(void) {
 
     do {
         refresh();
-        int c = getch();
+        int32 c = getch();
         translategetch(c);
 
         if(c == 'c')
@@ -1583,14 +1583,14 @@ void conquertext(void) {
 
 
 /* siege - "you are wanted for _______ and other crimes..." */
-void statebrokenlaws(int loc) {
-    short breakercount[LAWFLAGNUM] = {0};
-    int typenum = 0;
-    int criminalcount = 0;
+void statebrokenlaws(int32 loc) {
+    int16 breakercount[LAWFLAGNUM] = {0};
+    int32 typenum = 0;
+    int32 criminalcount = 0;
     char kname[100];
-    int kidnapped = 0;
+    int32 kidnapped = 0;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(!pool[p]->alive)
             continue;
 
@@ -1605,13 +1605,13 @@ void statebrokenlaws(int loc) {
         if(iscriminal(*pool[p]))
             criminalcount++;
 
-        for(int i = 0; i < LAWFLAGNUM; i++) {
+        for(int32 i = 0; i < LAWFLAGNUM; i++) {
             if(pool[p]->lawflag[i])
                 breakercount[i]++;
         }
     }
 
-    for(int i = 0; i < LAWFLAGNUM; i++) {
+    for(int32 i = 0; i < LAWFLAGNUM; i++) {
         if(breakercount[i])
             typenum++;
     }

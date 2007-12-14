@@ -31,10 +31,10 @@ This file is part of Liberal Crime Squad.                                       
 
 
 /* common - test for possible game over */
-char endcheck(short cause) {
+char endcheck(int16 cause) {
     char dead = 1;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(pool[p]->alive &&
                 pool[p]->align == 1 &&
                 !(pool[p]->flag & CREATUREFLAG_SLEEPER)) {
@@ -79,8 +79,8 @@ char endcheck(short cause) {
 
 /* common - detatches all liberals from a specified car */
 //GETS RID OF CAR PREFERENCES FROM pool LIBERALS, BY CAR ID NUMBER
-void removecarprefs_pool(long carid) {
-    for(int p = 0; p < pool.size(); p++) {
+void removecarprefs_pool(int32 carid) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(pool[p]->pref_carid == carid)
             pool[p]->pref_carid = -1;
     }
@@ -89,7 +89,7 @@ void removecarprefs_pool(long carid) {
 /* common - tests if the person is a wanted criminal */
 // *JDS* Checks if the character is a criminal
 bool iscriminal(creaturest &cr) {
-    for(int i = 0; i < LAWFLAGNUM; i++)
+    for(int32 i = 0; i < LAWFLAGNUM; i++)
         if(cr.lawflag[i])
             return 1;
 
@@ -103,12 +103,12 @@ bool iscriminal(creaturest &cr) {
 *JDS* Hospitalize -- sends current person to the
 specified clinic or hospital.
 ***************************************************/
-void hospitalize(int loc, creaturest &patient) {
+void hospitalize(int32 loc, creaturest &patient) {
     // He's dead, Jim
     if(!patient.alive)
         return;
 
-    int time = clinictime(patient);
+    int32 time = clinictime(patient);
 
     if(time > 0) {
         squadst *patientsquad = NULL;
@@ -145,14 +145,14 @@ void hospitalize(int loc, creaturest &patient) {
         getch();
 
         if(patientsquad) {
-            for(int p = 0; p < 6; p++) {
+            for(int32 p = 0; p < 6; p++) {
                 if(patientsquad->squad[p] == &patient)
                     patientsquad->squad[p] = NULL;
             }
 
             // Reorganize patient's squad
-            for(int i = 0; i < 5; i++) {
-                for(int p2 = 1; p2 < 6; p2++) {
+            for(int32 i = 0; i < 5; i++) {
+                for(int32 p2 = 1; p2 < 6; p2++) {
                     if(patientsquad->squad[p2 - 1] == NULL && patientsquad->squad[p2] != NULL) {
                         patientsquad->squad[p2 - 1] = patientsquad->squad[p2];
                         patientsquad->squad[p2] = NULL;
@@ -168,10 +168,10 @@ void hospitalize(int loc, creaturest &patient) {
 
 
 /* common - determines how long a creature's injuries will take to heal */
-int clinictime(creaturest &g) {
-    int time = 0;
+int32 clinictime(creaturest &g) {
+    int32 time = 0;
 
-    for(int w = 0; w < BODYPARTNUM; w++) {
+    for(int32 w = 0; w < BODYPARTNUM; w++) {
         if(((g.wound[w] & WOUND_NASTYOFF) ||
                 (g.wound[w] & WOUND_CLEANOFF)) &&
                 (g.blood < 100))
@@ -235,23 +235,23 @@ Clears the squad of loot and cars if it has no
 members. Returns 0 if squad is okay, returns 1 if
 squad is cleared.
 ***************************************************/
-int testsquadclear(squadst &thissquad, int obase) {
+int32 testsquadclear(squadst &thissquad, int32 obase) {
     //SPLIT IF SQUAD IS GONE
     char hasmembers = 0;
 
-    for(int p = 0; p < 6; p++) {
+    for(int32 p = 0; p < 6; p++) {
         if(thissquad.squad[p] != NULL)
             hasmembers = 1;
     }
 
     if(!hasmembers) {
         //LOSE ALL CARS
-        for(int p = 0; p < 6; p++) {
+        for(int32 p = 0; p < 6; p++) {
             if(thissquad.squad[p] == NULL)
                 continue;
 
             if(thissquad.squad[p]->carid != -1) {
-                long v = id_getcar(thissquad.squad[p]->carid);
+                int32 v = id_getcar(thissquad.squad[p]->carid);
 
                 if(v != -1) {
                     removecarprefs_pool(vehicle[v]->id);
@@ -262,7 +262,7 @@ int testsquadclear(squadst &thissquad, int obase) {
         }
 
         //RETURN ALL LOOT ITEMS TO BASE
-        for(int l = 0; l < thissquad.loot.size(); l++)
+        for(int32 l = 0; l < thissquad.loot.size(); l++)
             location[obase]->loot.push_back(thissquad.loot[l]);
 
         thissquad.loot.clear();
@@ -275,7 +275,7 @@ int testsquadclear(squadst &thissquad, int obase) {
 
 
 /* common - returns the associated attribute for the given skill */
-int skillatt(int skill) {
+int32 skillatt(int32 skill) {
     switch(skill) {
     case SKILL_HANDTOHAND:
     case SKILL_CLUB:
@@ -310,11 +310,11 @@ int skillatt(int skill) {
 
 
 /* common - applies a crime to everyone in the active party */
-void criminalizeparty(short crime) {
+void criminalizeparty(int16 crime) {
     if(activesquad == NULL)
         return;
 
-    for(int p = 0; p < 6; p++) {
+    for(int32 p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
             if(!activesquad->squad[p]->alive)
                 continue;
@@ -327,8 +327,8 @@ void criminalizeparty(short crime) {
 
 
 /* common - applies a crime to everyone in a location, or the entire LCS */
-void criminalizepool(short crime, long exclude, short loc) {
-    for(int p = 0; p < pool.size(); p++) {
+void criminalizepool(int16 crime, int32 exclude, int16 loc) {
+    for(int32 p = 0; p < pool.size(); p++) {
         if(p == exclude)
             continue;
 
@@ -342,9 +342,9 @@ void criminalizepool(short crime, long exclude, short loc) {
 
 
 /* common - gives juice to everyone in the active party */
-void juiceparty(long juice) {
+void juiceparty(int32 juice) {
     if(activesquad != NULL) {
-        for(int p = 0; p < 6; p++) {
+        for(int32 p = 0; p < 6; p++) {
             if(activesquad->squad[p] != NULL) {
                 if(activesquad->squad[p]->alive)
                     addjuice(*activesquad->squad[p], juice);
@@ -356,7 +356,7 @@ void juiceparty(long juice) {
 
 
 /* common - gives juice to a given creature */
-void addjuice(creaturest &cr, long juice, long cap) {
+void addjuice(creaturest &cr, int32 juice, int32 cap) {
     if(cr.juice >= cap)
         return;
 
@@ -374,12 +374,12 @@ void addjuice(creaturest &cr, long juice, long cap) {
 /* common - removes the liberal from all squads */
 void removesquadinfo(creaturest &cr) {
     if(cr.squadid != -1) {
-        long sq = getsquad(cr.squadid);
+        int32 sq = getsquad(cr.squadid);
 
         if(sq != -1) {
             char flipstart = 0;
 
-            for(int pt = 0; pt < 6; pt++) {
+            for(int32 pt = 0; pt < 6; pt++) {
                 if(squad[sq]->squad[pt] == &cr)
                     flipstart = 1;
 
@@ -401,11 +401,11 @@ void removesquadinfo(creaturest &cr) {
 void cleangonesquads(void) {
     char hasmembers;
 
-    for(int sq = squad.size() - 1; sq >= 0; sq--) {
+    for(int32 sq = squad.size() - 1; sq >= 0; sq--) {
         //NUKE SQUAD IF IT IS GONE
         hasmembers = 0;
 
-        for(int p = 0; p < 6; p++) {
+        for(int32 p = 0; p < 6; p++) {
             if(squad[sq]->squad[p] != NULL)
                 hasmembers = 1;
         }
@@ -420,7 +420,7 @@ void cleangonesquads(void) {
         }
         //OTHERWISE YOU CAN TAKE ITS MONEY
         else {
-            for(int l = squad[sq]->loot.size() - 1; l >= 0; l--) {
+            for(int32 l = squad[sq]->loot.size() - 1; l >= 0; l--) {
                 if(squad[sq]->loot[l]->type == ITEM_MONEY) {
                     funds += squad[sq]->loot[l]->money;
                     stat_funds += squad[sq]->loot[l]->money;
@@ -436,13 +436,13 @@ void cleangonesquads(void) {
 
 
 /* common - moves all squad members and their cars to a new location */
-void locatesquad(squadst *st, long loc) {
-    for(int p = 0; p < 6; p++) {
+void locatesquad(squadst *st, int32 loc) {
+    for(int32 p = 0; p < 6; p++) {
         if(st->squad[p] != NULL) {
             st->squad[p]->location = loc;
 
             if(st->squad[p]->carid != -1) {
-                long v = id_getcar(st->squad[p]->carid);
+                int32 v = id_getcar(st->squad[p]->carid);
 
                 if(v != -1)
                     vehicle[v]->location = loc;
@@ -454,8 +454,8 @@ void locatesquad(squadst *st, long loc) {
 
 
 /* common - assigns a new base to all members of a squad */
-void basesquad(squadst *st, long loc) {
-    for(int p = 0; p < 6; p++) {
+void basesquad(squadst *st, int32 loc) {
+    for(int32 p = 0; p < 6; p++) {
         if(st->squad[p] != NULL)
             st->squad[p]->base = loc;
     }
@@ -464,27 +464,27 @@ void basesquad(squadst *st, long loc) {
 
 
 /* common - shifts public opinion on an issue */
-void change_public_opinion(int v, int power, char affect, char cap) {
+void change_public_opinion(int32 v, int32 power, char affect, char cap) {
     if(v == VIEW_LIBERALCRIMESQUAD)
         affect = 0;
 
     if(v == VIEW_LIBERALCRIMESQUADPOS)
         affect = 0;
 
-    int effpower = power;
+    int32 effpower = power;
 
     if(affect) {
-        int aff = attitude[VIEW_LIBERALCRIMESQUAD];
-        int rawpower = (int)((float)power * (float)(100 - aff) / 100.0f);
-        int affectedpower = power - rawpower;
+        int32 aff = attitude[VIEW_LIBERALCRIMESQUAD];
+        int32 rawpower = (int32)((float)power * (float)(100 - aff) / 100.0f);
+        int32 affectedpower = power - rawpower;
 
         if(affectedpower > 0) {
-            int dist = attitude[VIEW_LIBERALCRIMESQUADPOS] - 50;
+            int32 dist = attitude[VIEW_LIBERALCRIMESQUADPOS] - 50;
 
             if(dist < 0)
                 dist *= -1;
 
-            affectedpower = (int)(((float)affectedpower * (float)dist) / 10.0f);
+            affectedpower = (int32)(((float)affectedpower * (float)dist) / 10.0f);
 
             if(attitude[VIEW_LIBERALCRIMESQUADPOS] < 50)
                 affectedpower *= -1;
@@ -524,7 +524,7 @@ void change_public_opinion(int v, int power, char affect, char cap) {
 }
 
 /* returns the amount of heat associated with a given crime */
-int lawflagheat(int lawflag) {
+int32 lawflagheat(int32 lawflag) {
     switch(lawflag) {
     case LAWFLAG_KIDNAPPING:
         return 30;
