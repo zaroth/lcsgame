@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #include "compat.h"
+#include "endian.h"
 #define PICMAX 1000
 
 struct filelistst {
@@ -42,6 +43,8 @@ struct filelistst {
 
     void open_diskload(FILE *h);
     void open_disksave(FILE *h);
+
+    //Deprecated
     void smartappend(filelistst &list2);
 };
 
