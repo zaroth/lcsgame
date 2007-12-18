@@ -223,7 +223,7 @@ int32 yourscore = -1;
 
 
 
-int32 main(int32 argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     //start curses
     initscr();
 
@@ -263,7 +263,7 @@ int32 main(int32 argc, char *argv[]) {
 
     strcpy(slogan, "We need a slogan!");
 
-    for(int32 v = 0; v < VIEWNUM; v++) {
+    for(int v = 0; v < VIEWNUM; v++) {
         attitude[v] = 45;
         newspaper_topicwork1[v] = 0;
         newspaper_topicwork2[v] = 0;
@@ -289,12 +289,12 @@ int32 main(int32 argc, char *argv[]) {
 
     #ifdef SHITLAWS
 
-    for(int32 l = 0; l < LAWNUM; l++)
+    for(int l = 0; l < LAWNUM; l++)
         law[l] = -2;
 
     #endif
 
-    for(int32 s = 0; s < 100; s++) {
+    for(int s = 0; s < 100; s++) {
         if(s < 20)
             senate[s] = -2;
         else if(s < 45)
@@ -307,7 +307,7 @@ int32 main(int32 argc, char *argv[]) {
             senate[s] = 2;
     }
 
-    for(int32 h = 0; h < 435; h++) {
+    for(int h = 0; h < 435; h++) {
         if(h < 30)
             house[h] = -2;
         else if(h < 200)
@@ -320,7 +320,7 @@ int32 main(int32 argc, char *argv[]) {
             house[h] = 2;
     }
 
-    for(int32 c = 0; c < 9; c++) {
+    for(int c = 0; c < 9; c++) {
         if(c < 2)
             court[c] = -2;
         else if(c < 5)
@@ -335,7 +335,7 @@ int32 main(int32 argc, char *argv[]) {
         name(courtname[c]);
     }
 
-    for(int32 e = 0; e < EXECNUM; e++) {
+    for(int e = 0; e < EXECNUM; e++) {
         exec[e] = -1;
         name(execname[e]);
     }
