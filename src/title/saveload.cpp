@@ -186,16 +186,16 @@ void savegame(char *str) {
         delete temparr;
 
 
-        temparr = new int16[100];
+        temparr = new int16[9];
 
-        for(int i = 0; i < 100; i++)
+        for(int i = 0; i < 9; i++)
             temparr[i] = swap_endian_16(court[i]);
 
         numbytes = fwrite(temparr, sizeof(int16), 9, h);
         delete temparr;
 
         numbytes = fwrite(courtname, sizeof(char) * 80, 9, h);
-        temp = swap_endian_32(mode);
+
 
         temparr = new int16[EXECNUM];
 
@@ -211,7 +211,7 @@ void savegame(char *str) {
         //LOCATIONS
 
         dummy = location.size();
-        temp = swap_endian_32(mode);
+        temp = swap_endian_32(dummy);
         numbytes = fwrite(&temp, sizeof(int32), 1, h);
 
 
