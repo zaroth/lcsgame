@@ -447,6 +447,11 @@ struct weaponst {
 
         return 0;
     }
+
+    void makeSwapped(weaponst *wst) {
+        wst->type = swap_endian_16(type);
+        wst->ammo = swap_endian_16(ammo);
+    }
 };
 
 // *JDS* This should be expanded to cover
@@ -566,6 +571,13 @@ struct armorst {
     armorst() {
         quality = '1';
         flag = 0;
+    }
+
+    void makeSwapped(armorst *ast) {
+        ast->type = swap_endian_16(type);
+        ast->subtype = swap_endian_16(subtype);
+        ast->quality = quality;
+        ast->flag = swap_endian_16(flag);
     }
 };
 
@@ -707,6 +719,12 @@ struct activityst {
     int32 type;
     int32 arg;
     int32 arg2;
+
+    void makeSwapped(activityst *ast) {
+        ast->type = swap_endian_32(type);
+        ast->arg = swap_endian_32(arg);
+        ast->arg2 = swap_endian_32(arg2);
+    }
 };
 
 
@@ -772,6 +790,67 @@ struct creaturest {
     int32 pref_carid;
     char pref_is_driver;
     uint16 flag;
+
+    void outputToFile(FILE *f) {
+        //Continue working on this
+        int32 temp;
+        int16 temp2;
+        fwrite(name, 1, CREATURE_NAMELEN, f);
+        fwrite(propername, 1, CREATURE_NAMELEN, f);
+        temp = swap_endian_32(squadid);
+        fwrite(&temp, 1, sizeof(int32), f);
+        fwrite(&exists, 1, sizeof(char), f);
+        fwrite(&align, 1, sizeof(char), f);
+        fwrite(&alive, 1, sizeof(char), f);
+        temp2 = swap_endian_16(type);
+        fwrite(&temp2, 1, sizeof(int16), f);
+        fwrite(&animalgloss, 1, sizeof(char), f);
+        int16 specialattack;
+        int16 clinic;
+        int16 dating;
+        int16 hiding;
+        int16 trainingtime;
+        int16 trainingsubject;
+        creaturest *prisoner;
+        int16 sentence;
+        char deathpenalty;
+        int32 joindays;
+        int32 deathdays;
+        int32 id;
+        int32 hireid;
+
+        char forceinc;
+
+        int32 att[ATTNUM];
+        uint32 skill[SKILLNUM];
+        uint32 skill_ip[SKILLNUM];
+
+        weaponst weapon;
+        armorst armor;
+        int32 clip[CLIPNUM];
+
+        uint32 money;
+        int32 juice;
+
+        char wound[BODYPARTNUM];
+        int16 blood;
+        char special[SPECIALWOUNDNUM];
+
+        uint32 lawflag[LAWFLAGNUM];
+        int32 location;
+        int32 worklocation;
+
+        char cantbluff;
+
+        int32 base;
+        activityst activity;
+
+        int32 carid;
+        char is_driver;
+        int32 pref_carid;
+        char pref_is_driver;
+        uint16 flag;
+    }
 
     creaturest() {
         creatureinit();
@@ -878,6 +957,16 @@ struct itemst {
     itemst() {
         number = 1;
     }
+
+    void makeSwapped(itemst *ist) {
+        weapon.makeSwapped(&ist->weapon);
+        armor.makeSwapped(&ist->armor);
+        ist->money = swap_endian_32(money);
+        ist->cliptype = swap_endian_16(cliptype);
+        ist->loottype = swap_endian_16(loottype);
+        ist->type = swap_endian_16(type);
+        ist->number = swap_endian_32(number);
+    }
 };
 
 
@@ -911,6 +1000,20 @@ struct siegest {
         timeuntillocated = -1;
         timeuntilcorps = -1;
         timeuntilcia = -1;
+    }
+
+    void makeSwapped(siegest *sst) {
+        sst->siege = siege;
+        sst->siegetype = swap_endian_16(siegetype);
+        sst->underattack = underattack;
+        sst->attacktime = swap_endian_32(attacktime);
+        sst->kills = swap_endian_16(kills);
+        sst->escalationstate = swap_endian_16(escalationstate);
+        sst->lights_off = lights_off;
+        sst->cameras_off = cameras_off;
+        sst->timeuntillocated = swap_endian_16(timeuntillocated);
+        sst->timeuntilcorps = swap_endian_16(timeuntilcorps);
+        sst->timeuntilcia = swap_endian_16(timeuntilcia);
     }
 };
 
@@ -985,6 +1088,7 @@ struct vehiclest {
     int32 id;
 
     void init(int32 t);
+    void makeSwapped(vehiclest *vst);
 };
 
 
