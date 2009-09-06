@@ -26,8 +26,9 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
-#include <externs.h>
+//#include "includes.h"
+#include "news/news.h"
+#include "externs.h"
 
 void mode_title(void) {
     //title screen
@@ -48,12 +49,13 @@ void mode_title(void) {
     if(loaded) {
         char num[20];
 
-        int32 l = strlen(slogan);
+        int l = strlen(slogan);
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(8, 40 - (l >> 1));
         addstr(slogan);
 
         move(9, 10);
+
         addstr("Liberals Indoctrinated: ");
         itoa(stat_recruits, num, 10);
         addstr(num);
@@ -97,14 +99,19 @@ void mode_title(void) {
     strcpy(str, "v" PACKAGE_VERSION " Maintained by the Open Source Community");
     move(17, 39 - ((strlen(str) - 1) >> 1));
     addstr(str);
+    strcpy(str, "sourceforge.net/projects/lcsgame");
+    move(18, 39 - ((strlen(str) - 1) >> 1));
+    addstr(str);
     strcpy(str, "Press ESC now to quit.  Quitting later causes your progress to be saved.");
     move(20, 39 - ((strlen(str) - 1) >> 1));
     addstr(str);
     strcpy(str, "Press any other key to pursue your Liberal Agenda!");
     move(22, 39 - ((strlen(str) - 1) >> 1));
     addstr(str);
+    move(24, 79);
+    addstr("+");
 
-    int32 c = getch();
+    int c = getch();
     translategetch(c);
 
     if(c == 27)
@@ -112,8 +119,10 @@ void mode_title(void) {
 
     viewhighscores();
 
-    if(!loaded)
+    if(!loaded) {
+        setup_newgame();
         makecharacter();
+    }
 
     mode = GAMEMODE_BASE;
     mode_base();
@@ -134,10 +143,10 @@ void loadinitfile(void) {
     #endif
 
     if(fseed.is_open()) {
-        int32 count = 0;
+        int count = 0;
         char str[200];
         char word[3][205];
-        int32 wordnum, pos;
+        int wordnum, pos;
         char begin;
 
         while(fseed.getline(str, 198) && count < 10000) {
@@ -146,7 +155,7 @@ void loadinitfile(void) {
                 pos = 0;
                 begin = 1;
 
-                for(int32 l = 0; l < strlen(str); l++) {
+                for(int l = 0; l < strlen(str); l++) {
                     if(str[l] == ' ' || str[l] == '\t') {
                         if(str[l + 1] != ' ' && str[l + 1] != '\t' && !begin) {
                             word[wordnum][pos] = '\x0';

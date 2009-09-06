@@ -20,21 +20,21 @@ This file is part of Liberal Crime Squad.                                       
 */
 
 /*
-	This file was created by Chris Johnson (grundee@users.sourceforge.net)
-	by copying code from game.cpp.
-	To see descriptions of files and functions, see the list at
-	the bottom of includes.h in the top src folder.
+   This file was created by Chris Johnson (grundee@users.sourceforge.net)
+   by copying code from game.cpp.
+   To see descriptions of files and functions, see the list at
+   the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 /* base - activate the uninvolved */
 void activate(void) {
-    vector<creaturest *> temppool;
-    int32 sq;
+    vector<Creature *> temppool;
+    int sq;
 
-    for(int32 p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < pool.size(); p++) {
         if(pool[p]->alive &&
                 pool[p]->align == 1 &&
                 pool[p]->clinic == 0 &&
@@ -61,7 +61,7 @@ void activate(void) {
     if(temppool.size() == 0)
         return;
 
-    int16 page = 0;
+    int page = 0;
 
     char str[80];
     char num[20];
@@ -80,9 +80,9 @@ void activate(void) {
         move(1, 57);
         addstr("ACTIVITY");
 
-        int32 y = 2;
+        int y = 2;
 
-        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -90,13 +90,13 @@ void activate(void) {
             addstr(temppool[p]->name);
 
             char bright = 0;
-            uint32 skill = 0;
+            int skill = 0;
 
-            for(int32 sk = 0; sk < SKILLNUM; sk++) {
-                skill += (uint32)temppool[p]->skill[sk];
+            for(int sk = 0; sk < SKILLNUM; sk++) {
+                skill += temppool[p]->skill[sk];
 
-                if(temppool[p]->skill_ip[sk] >= 100 * ((10 + temppool[p]->skill[sk]) / 10) &&
-                        temppool[p]->skill[sk] < temppool[p]->attval(skillatt(sk)) * 2)
+                if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->skill[sk]) &&
+                        temppool[p]->skill[sk] < maxskill(sk, *temppool[p]))
                     bright = 1;
             }
 
@@ -117,7 +117,8 @@ void activate(void) {
             addstr(location[temppool[p]->location]->shortname);
 
             move(y, 57);
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            // Let's add some color here...
+            set_activity_color(temppool[p]->activity.type);
             getactivity(str, temppool[p]->activity);
             addstr(str);
 
@@ -128,32 +129,25 @@ void activate(void) {
         move(22, 0);
         addstr("Press a Letter to Assign an Activity.");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.");
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages.");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.");
-
+        addpagestr();
         move(24, 0);
         addstr("Press Z to assign simple tasks in bulk.");
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 19 < temppool.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 19 < temppool.size())
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int32 p = page * 19 + (int32)(c - 'a');
+            int p = page * 19 + (int)(c - 'a');
 
             if(p < temppool.size())
                 activate(temppool[p]);
@@ -168,19 +162,19 @@ void activate(void) {
 }
 
 
-void activate(creaturest *cr) {
-    int32 hostagecount = 0;
+void activate(Creature *cr) {
+    int hostagecount = 0;
+    int state = 0;
+    int choice = 0;
     char havedead = 0;
 
-    for(int32 p = 0; p < pool.size(); p++) {
-        if(pool[p]->alive && pool[p]->align != 1)
+    for(int p = 0; p < pool.size(); p++) {
+        if(pool[p]->alive && pool[p]->align != 1 && pool[p]->location == cr->location)
             hostagecount++;
 
         if(!pool[p]->alive)
             havedead = 1;
     }
-
-    char num[20];
 
     do {
         erase();
@@ -197,116 +191,588 @@ void activate(creaturest *cr) {
 
         makedelimiter(8, 0);
 
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        set_color(COLOR_WHITE, COLOR_BLACK, state == 'a');
         move(10, 1);
-        addstr("A - Perpetrating random acts of Liberal Disobedience.");
+        addstr("A - Engaging in Liberal Activism");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        set_color(COLOR_WHITE, COLOR_BLACK, state == 'b');
         move(11, 1);
-        addstr("D - Soliciting Donations.");
+        addstr("B - Legal Fundraising");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(11, 40);
-        addstr("B - Selling Brownies.");
-
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        set_color(COLOR_WHITE, COLOR_BLACK, state == 'c');
         move(12, 1);
-        addstr("C - Making Clothing.");
+        addstr("C - Illegal Fundraising");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(12, 40);
-        addstr("R - Repairing Clothing.");
-
-        if(hostagecount > 0)
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        else
-            set_color(COLOR_BLACK, COLOR_BLACK, 1);
-
+        set_color(COLOR_WHITE, COLOR_BLACK, state == 'd');
         move(13, 1);
-        addstr("H - Tending to a Conservative hostage.");
+        addstr("D - Make/Repair Clothing");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(13, 40);
-        addstr("P - Surfing the Net for opinion polls.");
-
+        set_color(COLOR_WHITE, COLOR_BLACK, state == 'e');
         move(14, 1);
+        addstr("E - Teaching Other Liberals");
 
-        if(cr->canwalk()) {
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            addstr("S - Stealing a Car.");
-        } else {
-            if(!(cr->flag & CREATUREFLAG_WHEELCHAIR))
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            else
-                set_color(COLOR_BLACK, COLOR_BLACK, 1);
-
-            addstr("S - Procuring a Wheelchair.");
-        }
-
-        if(location[cr->location]->compound_walls == COMPOUND_PRINTINGPRESS)
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        else
-            set_color(COLOR_BLACK, COLOR_BLACK, 1);
-
-        move(14, 40);
-        addstr("W - Writing for the Liberal Guardian.");
-
-        if(clinictime(*cr))
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        if(cr->skill[SKILL_FIRSTAID] != 0)
+            set_color(COLOR_WHITE, COLOR_BLACK, (cr->activity.type == ACTIVITY_HEAL || cr->activity.type == ACTIVITY_NONE) && state == 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
         move(15, 1);
-        addstr("M - Move to the Free CLINIC.");
+        addstr("H - Heal Liberals");
 
-        if(havedead)
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        move(16, 1);
+
+        if(cr->canwalk()) {
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STEALCARS && state == 0);
+            addstr("S - Stealing a Car");
+        } else {
+            if(!(cr->flag & CREATUREFLAG_WHEELCHAIR))
+                set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_WHEELCHAIR && state == 0);
+            else
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);
+
+            addstr("S - Procuring a Wheelchair");
+        }
+
+        if(clinictime(*cr))
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_CLINIC && state == 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
-        move(15, 40);
-        addstr("Z - Dispose of bodies.");
+        move(18, 1);
+        addstr("M - Move to the Free CLINIC");
+
+        if(hostagecount > 0)
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_HOSTAGETENDING && state == 0);
+        else
+            set_color(COLOR_BLACK, COLOR_BLACK, 1);
+
+        move(17, 1);
+        addstr("I - Tend to a Conservative hostage");
+
+        if(havedead)
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_BURY && state == 0);
+        else
+            set_color(COLOR_BLACK, COLOR_BLACK, 1);
+
+        move(19, 1);
+        addstr("Z - Dispose of bodies");
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(17, 1);
-        addstr("Enter - Nothing for now.");
+        move(20, 40);
+        addstr("Enter - Confirm Selection");
+
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        move(20, 1);
+        addstr("X - Nothing for Now");
+
+        switch(state) {
+        case 'a':
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_COMMUNITYSERVICE);
+            move(10, 40);
+            addstr("1 - Community Service");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_TROUBLE);
+            move(11, 40);
+            addstr("2 - Liberal Disobedience");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_GRAFFITI);
+            move(12, 40);
+            addstr("3 - Graffiti");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_POLLS);
+            move(13, 40);
+            addstr("4 - Search Opinion Polls");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_DOS_ATTACKS);
+            move(14, 40);
+            addstr("5 - Harass Websites");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_HACKING);
+            move(15, 40);
+            addstr("6 - Hacking");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_WRITE_LETTERS);
+            move(16, 40);
+            addstr("7 - Write to Newspapers");
+
+            if(cr->location != -1 &&
+                    location[cr->location]->compound_walls & COMPOUND_PRINTINGPRESS) {
+                set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_WRITE_GUARDIAN);
+                move(17, 40);
+                addstr("8 - Write for The Liberal Guardian");
+            }
+
+            break;
+
+        case 'b':
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_DONATIONS);
+            move(10, 40);
+            addstr("1 - Solicit Donations");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_SELL_TSHIRTS);
+            move(11, 40);
+            addstr("2 - Sell Tie-Dyed T-Shirts");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_SELL_ART);
+            move(12, 40);
+            addstr("3 - Sell Portrait Sketches");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_SELL_MUSIC);
+            move(13, 40);
+            addstr("4 - Play Street Music");
+            break;
+
+        case 'c':
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_SELL_DRUGS);
+            move(10, 40);
+            addstr("1 - Sell Brownies");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_PROSTITUTION);
+            move(11, 40);
+            addstr("2 - Prostitution");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_CCFRAUD);
+            move(12, 40);
+            addstr("3 - Steal Credit Card Numbers");
+
+            /*set_color(COLOR_WHITE,COLOR_BLACK,cr->activity.type==ACTIVITY_DOS_RACKET);
+            move(13,40);
+            addstr("4 - Electronic Protection Racket");*/
+            break;
+
+        case 'd':
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_MAKE_ARMOR);
+            move(10, 40);
+            addstr("1 - Make Clothing");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_REPAIR_ARMOR);
+            move(11, 40);
+            addstr("2 - Repair Clothing");
+            break;
+
+        case 'e':
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(10, 40);
+            addstr("Teach Liberals About What?");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_TEACH_GENERALED);
+            move(12, 40);
+            addstr("1 - General Education");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_TEACH_POLITICS);
+            move(13, 40);
+            addstr("2 - Political Leadership");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_TEACH_SURVIVAL);
+            move(14, 40);
+            addstr("3 - Street Survival");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_TEACH_FIGHTING);
+            move(15, 40);
+            addstr("4 - Fighting and Killing");
+
+            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_TEACH_COVERT);
+            move(16, 40);
+            addstr("5 - Covert Actions");
+        }
+
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+
+        switch(cr->activity.type) {
+        case ACTIVITY_COMMUNITYSERVICE:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will help old ladies cross the street.");
+            break;
+
+        case ACTIVITY_TROUBLE:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will create public disturbances.");
+            break;
+
+        case ACTIVITY_GRAFFITI:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will spray political graffiti.");
+            break;
+
+        case ACTIVITY_POLLS:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will search the internet for public opinion polls.");
+            break;
+
+        case ACTIVITY_DOS_ATTACKS:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will harass Conservative websites.");
+            break;
+
+        case ACTIVITY_HACKING:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will hack into private Conservative networks.");
+            break;
+
+        case ACTIVITY_WRITE_LETTERS:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will write letters to newspapers about current events.");
+            break;
+
+        case ACTIVITY_WRITE_GUARDIAN:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will write articles for the LCS's newspaper.");
+            break;
+
+        case ACTIVITY_DONATIONS:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will walk around and ask for donations to the LCS.");
+            break;
+
+        case ACTIVITY_SELL_TSHIRTS:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will tie-dye T-shirts and sell them on the street.");
+            break;
+
+        case ACTIVITY_SELL_ART:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will sketch people and sell portraits back to them.");
+            break;
+
+        case ACTIVITY_SELL_MUSIC:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will go out into the streets and drum on buckets,");
+            move(23, 3);
+            addstr("or play guitar if one is equipped.");
+            break;
+
+        case ACTIVITY_SELL_DRUGS:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will bake and sell special adult brownies that open");
+            move(23, 1);
+            addstr("magical shimmering doorways to the adamantium pits.");
+            break;
+
+        case ACTIVITY_PROSTITUTION:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will trade sex for money.");
+            break;
+
+        case ACTIVITY_CCFRAUD:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will commit credit card fraud online.");
+            break;
+
+        case ACTIVITY_DOS_RACKET:
+            move(22, 3);
+            addstr(cr->name);
+            addstr(" will demand money in exchange for not bringing down");
+            move(23, 1);
+            addstr("major websites.");
+            break;
+
+        case ACTIVITY_TEACH_GENERALED:
+            move(22, 1);
+            addstr("  Skills Trained: Computers, Writing, Music, Art, Science, Religion,");
+            move(23, 1);
+            addstr("Business, Psychology");
+            move(24, 1);
+            addstr("  Classes cost up to $200/day to conduct. All Liberals able will attend.");
+            break;
+
+        case ACTIVITY_TEACH_POLITICS:
+            //move(22,1);
+            //addstr("  Attributes Trained: Intelligence, Charisma, Heart, Wisdom");
+            move(22, 1);
+            addstr("  Skills Trained: Law, Persuasion, Leadership");
+            move(24, 1);
+            addstr("  Classes cost up to $200/day to conduct. All Liberals able will attend.");
+            break;
+
+        case ACTIVITY_TEACH_SURVIVAL:
+            //move(22,1);
+            //addstr("  Attributes Trained: Intelligence, Health, Agility");
+            move(22, 1);
+            addstr("  Skills Trained: Driving, First Aid, Cooking, Street Sense,");
+            move(23, 1);
+            addstr("Tailoring, Martial Arts, Theft");
+            move(24, 1);
+            addstr("  Classes cost up to $300/day to conduct. All Liberals able will attend.");
+            break;
+
+        case ACTIVITY_TEACH_FIGHTING:
+            //move(22,1);
+            //addstr("  Attributes Trained: Health, Agility, Strength");
+            move(22, 1);
+            addstr("  Skills Trained: All Weapon Skills");
+            move(24, 1);
+            addstr("  Classes cost up to $500/day to conduct. All Liberals able will attend.");
+            break;
+
+        case ACTIVITY_TEACH_COVERT:
+            //move(22,1);
+            //addstr("  Attributes Trained: Intelligence, Agility, Charisma");
+            move(22, 1);
+            addstr("  Skills Trained: Persuasion, Security, Disguise, Stealth, Seduction,");
+            move(23, 1);
+            addstr("Psychology");
+            move(24, 1);
+            addstr("  Classes cost up to $300/day to conduct. All Liberals able will attend.");
+            break;
+        }
 
         refresh();
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
-        if(c == 'a') {
-            int32 flevel = select_troublefundinglevel(cr);
 
-            if(flevel >= 0) {
-                cr->activity.type = ACTIVITY_TROUBLE;
-                cr->activity.arg = flevel;
-                return;
+
+        if(c >= 'a' && c <= 'z')
+            state = c;
+
+        if(c >= 'a' && c <= 'z' || c >= '1' && c <= '9') {
+            choice = c;
+
+            switch(state) {
+            case 'a':
+                switch(choice) {
+                case '1':
+                    cr->activity.type = ACTIVITY_COMMUNITYSERVICE;
+                    break;
+
+                case '2':
+                    cr->activity.type = ACTIVITY_TROUBLE;
+                    break;
+
+                case '3':
+                    cr->activity.type = ACTIVITY_GRAFFITI;
+                    cr->activity.arg = -1;
+                    break;
+
+                case '4':
+                    cr->activity.type = ACTIVITY_POLLS;
+                    break;
+
+                case '5':
+                    cr->activity.type = ACTIVITY_DOS_ATTACKS;
+                    break;
+
+                case '6':
+                    cr->activity.type = ACTIVITY_HACKING;
+                    break;
+
+                case '7':
+                    cr->activity.type = ACTIVITY_WRITE_LETTERS;
+                    break;
+
+                case '8':
+                    if(cr->location != -1 &&
+                            location[cr->location]->compound_walls & COMPOUND_PRINTINGPRESS) {
+                        cr->activity.type = ACTIVITY_WRITE_GUARDIAN;
+                        break;
+                    }
+
+                default:
+                    if(cr->attval(ATTRIBUTE_WISDOM) > 7) {
+                        cr->activity.type = ACTIVITY_COMMUNITYSERVICE;
+                        choice = '1';
+                    } else if(cr->attval(ATTRIBUTE_WISDOM) > 4) {
+                        cr->activity.type = ACTIVITY_TROUBLE;
+                        choice = '2';
+                    } else {
+                        if(cr->skill[SKILL_COMPUTERS] > 1) {
+                            cr->activity.type = ACTIVITY_DOS_ATTACKS;
+                            choice = '5';
+                        } else if(cr->skill[SKILL_ART] > 1) {
+                            cr->activity.type = ACTIVITY_GRAFFITI;
+                            cr->activity.arg = -1;
+                            choice = '3';
+                        } else {
+                            cr->activity.type = ACTIVITY_TROUBLE;
+                            choice = '2';
+                        }
+                    }
+                }
+
+                break;
+
+            case 'b':
+                switch(choice) {
+                case '1':
+                    cr->activity.type = ACTIVITY_DONATIONS;
+                    break;
+
+                case '2':
+                    cr->activity.type = ACTIVITY_SELL_TSHIRTS;
+                    break;
+
+                case '3':
+                    cr->activity.type = ACTIVITY_SELL_ART;
+                    break;
+
+                case '4':
+                    cr->activity.type = ACTIVITY_SELL_MUSIC;
+                    break;
+
+                default:
+                    if(cr->skill[SKILL_ART] > 1) {
+                        cr->activity.type = ACTIVITY_SELL_ART;
+                        choice = '3';
+                    } else if(cr->skill[SKILL_TAILORING] > 1) {
+                        cr->activity.type = ACTIVITY_SELL_TSHIRTS;
+                        choice = '2';
+                    } else if(cr->skill[SKILL_MUSIC] > 1) {
+                        cr->activity.type = ACTIVITY_SELL_MUSIC;
+                        choice = '4';
+                    } else {
+                        cr->activity.type = ACTIVITY_DONATIONS;
+                        choice = '1';
+                    }
+                }
+
+                break;
+
+            case 'c':
+                switch(choice) {
+                case '1':
+                    cr->activity.type = ACTIVITY_SELL_DRUGS;
+                    break;
+
+                case '2':
+                    cr->activity.type = ACTIVITY_PROSTITUTION;
+                    break;
+
+                case '3':
+                    cr->activity.type = ACTIVITY_CCFRAUD;
+                    break;
+
+                //case '4':cr->activity.type=ACTIVITY_DOS_RACKET;break;
+                default:
+                    if(cr->skill[SKILL_COMPUTERS] > 1) {
+                        cr->activity.type = ACTIVITY_CCFRAUD;
+                        choice = '3';
+                    } else if(cr->skill[SKILL_SEDUCTION] > 1) {
+                        cr->activity.type = ACTIVITY_PROSTITUTION;
+                        choice = '2';
+                    } else {
+                        cr->activity.type = ACTIVITY_SELL_DRUGS;
+                        choice = '1';
+                    }
+                }
+
+                break;
+
+            case 'd':
+                switch(choice) {
+                case '1':
+                    break;
+
+                case '2':
+                    cr->activity.type = ACTIVITY_REPAIR_ARMOR;
+                    choice = '2';
+                    break;
+
+                default:
+                    cr->activity.type = ACTIVITY_REPAIR_ARMOR;
+                    choice = '2';
+                    break;
+                }
+
+                break;
+
+            case 'e':
+                switch(choice) {
+                case '1':
+                    cr->activity.type = ACTIVITY_TEACH_GENERALED;
+                    break;
+
+                case '2':
+                    cr->activity.type = ACTIVITY_TEACH_POLITICS;
+                    break;
+
+                case '3':
+                    cr->activity.type = ACTIVITY_TEACH_SURVIVAL;
+                    break;
+
+                case '4':
+                    cr->activity.type = ACTIVITY_TEACH_FIGHTING;
+                    break;
+
+                case '5':
+                    cr->activity.type = ACTIVITY_TEACH_COVERT;
+                    break;
+
+                default:
+                    switch(cr->type) {
+                    case CREATURE_MERC:
+                    case CREATURE_SWAT:
+                    case CREATURE_DEATHSQUAD:
+                    case CREATURE_GANGUNIT:
+                    case CREATURE_SOLDIER:
+                    case CREATURE_VETERAN:
+                    case CREATURE_HARDENED_VETERAN:
+                    case CREATURE_GANGMEMBER:
+                        cr->activity.type = ACTIVITY_TEACH_FIGHTING;
+                        choice = '4';
+                        break;
+
+                    case CREATURE_PRISONER:
+                    case CREATURE_HSDROPOUT:
+                    case CREATURE_BUM:
+                    case CREATURE_CRACKHEAD:
+                    case CREATURE_MUTANT:
+                    case CREATURE_PROSTITUTE:
+                        cr->activity.type = ACTIVITY_TEACH_SURVIVAL;
+                        choice = '3';
+                        break;
+
+                    case CREATURE_JUDGE_LIBERAL:
+                    case CREATURE_JUDGE_CONSERVATIVE:
+                    case CREATURE_RADIOPERSONALITY:
+                    case CREATURE_NEWSANCHOR:
+                    case CREATURE_CRITIC_ART:
+                    case CREATURE_CRITIC_MUSIC:
+                    case CREATURE_SOCIALITE:
+                    case CREATURE_JOURNALIST:
+                        cr->activity.type = ACTIVITY_TEACH_POLITICS;
+                        choice = '2';
+                        break;
+
+                    case CREATURE_AGENT:
+                    case CREATURE_AMATEURMAGICIAN:
+                    case CREATURE_THIEF:
+                        cr->activity.type = ACTIVITY_TEACH_COVERT;
+                        choice = '4';
+                        break;
+
+                    default:
+                        cr->activity.type = ACTIVITY_TEACH_GENERALED;
+                        break;
+                    }
+
+                    break;
+                }
+
+                break;
             }
         }
 
-        if(c == 'd') {
-            cr->activity.type = ACTIVITY_FUNDS_LEGAL;
+        if(c == 'h' && cr->skillval(SKILL_FIRSTAID) != 0) {
+            cr->activity.type = ACTIVITY_HEAL;
             break;
         }
 
-        if(c == 'b') {
-            cr->activity.type = ACTIVITY_FUNDS_ILLEGAL;
-            break;
-        }
-
-        if(c == 'h' && hostagecount > 0) {
-            activityst oact = cr->activity;
-            cr->activity.type = ACTIVITY_NONE;
-            select_tendhostage(cr);
-
-            if(cr->activity.type == ACTIVITY_HOSTAGETENDING)
-                break;
-            else
-                cr->activity = oact;
-        }
-
-        if(c == 'c') {
+        if(state == 'd' && choice == '1') {
             activityst oact = cr->activity;
             cr->activity.type = ACTIVITY_NONE;
             select_makeclothing(cr);
@@ -317,14 +783,15 @@ void activate(creaturest *cr) {
                 cr->activity = oact;
         }
 
-        if(c == 'r') {
-            cr->activity.type = ACTIVITY_REPAIR_ARMOR;
-            break;
-        }
+        if(c == 'i' && hostagecount > 0) {
+            activityst oact = cr->activity;
+            cr->activity.type = ACTIVITY_NONE;
+            select_tendhostage(cr);
 
-        if(c == 'p') {
-            cr->activity.type = ACTIVITY_POLLS;
-            break;
+            if(cr->activity.type == ACTIVITY_HOSTAGETENDING)
+                break;
+            else
+                cr->activity = oact;
         }
 
         if(c == 's') {
@@ -337,18 +804,15 @@ void activate(creaturest *cr) {
             }
         }
 
-        if(c == 'w' && location[cr->location]->compound_walls == COMPOUND_PRINTINGPRESS) {
-            activityst oact = cr->activity;
-            cr->activity.type = ACTIVITY_NONE;
-
-            if(select_view(cr, cr->activity.arg))
-                cr->activity.type = ACTIVITY_WRITE;
-            else
-                cr->activity = oact;
-
-            break;
-        }
-
+        /*if(c=='w'&&location[cr->location]->compound_walls==COMPOUND_PRINTINGPRESS)
+        {
+           activityst oact=cr->activity;
+           cr->activity.type=ACTIVITY_NONE;
+           if(select_view(cr,cr->activity.arg))
+              cr->activity.type=ACTIVITY_WRITE_GUARDIAN;
+           else cr->activity=oact;
+           break;
+        }*/
         if(c == 'm' && clinictime(*cr)) {
             cr->activity.type = ACTIVITY_CLINIC;
             break;
@@ -359,19 +823,22 @@ void activate(creaturest *cr) {
             break;
         }
 
-        if(c == 10) {
+        if(c == 'x') {
             cr->activity.type = ACTIVITY_NONE;
             break;
         }
+
+        if(c == 10)
+            break;
     } while(1);
 }
 
 
 void activatebulk(void) {
-    vector<creaturest *> temppool;
-    int32 sq;
+    vector<Creature *> temppool;
+    int sq;
 
-    for(int32 p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < pool.size(); p++) {
         if(pool[p]->alive &&
                 pool[p]->align == 1 &&
                 pool[p]->clinic == 0 &&
@@ -398,12 +865,11 @@ void activatebulk(void) {
     if(temppool.size() == 0)
         return;
 
-    int16 page = 0;
+    int page = 0;
 
     char str[80];
-    char num[20];
 
-    int32 selectedactivity = 0;
+    int selectedactivity = 0;
 
     do {
         erase();
@@ -425,7 +891,7 @@ void activatebulk(void) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
         move(2, 51);
-        addstr("1 - Causing Trouble ($0).");
+        addstr("1 - Engaging in Liberal Activism");
 
         if(selectedactivity == 1)
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -433,7 +899,7 @@ void activatebulk(void) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
         move(3, 51);
-        addstr("2 - Causing Trouble ($20).");
+        addstr("2 - Legal Fundraising");
 
         if(selectedactivity == 2)
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -441,7 +907,7 @@ void activatebulk(void) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
         move(4, 51);
-        addstr("3 - Causing Trouble ($50).");
+        addstr("3 - Illegal Fundraising");
 
         if(selectedactivity == 3)
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -449,7 +915,7 @@ void activatebulk(void) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
         move(5, 51);
-        addstr("4 - Causing Trouble ($100).");
+        addstr("4 - Checking Polls");
 
         if(selectedactivity == 4)
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -457,7 +923,7 @@ void activatebulk(void) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
         move(6, 51);
-        addstr("5 - Causing Trouble ($500).");
+        addstr("5 - Stealing Cars");
 
         if(selectedactivity == 5)
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -465,27 +931,11 @@ void activatebulk(void) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
         move(7, 51);
-        addstr("6 - Soliciting Donations.");
+        addstr("6 - Community Service");
 
-        if(selectedactivity == 6)
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        else
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        int y = 2;
 
-        move(8, 51);
-        addstr("7 - Selling Brownies.");
-
-        if(selectedactivity == 7)
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        else
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
-
-        move(9, 51);
-        addstr("8 - Stealing Cars.");
-
-        int32 y = 2;
-
-        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -493,16 +943,16 @@ void activatebulk(void) {
             addstr(temppool[p]->name);
 
             move(y, 25);
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            set_activity_color(temppool[p]->activity.type);
             getactivity(str, temppool[p]->activity);
             addstr(str);
-
-            if(temppool[p]->activity.type == ACTIVITY_TROUBLE) {
-                addstr(" ($");
-                itoa(temppool[p]->activity.arg, num, 10);
-                addstr(num);
-                addstr(")");
-            }
+            /*if(temppool[p]->activity.type==ACTIVITY_TROUBLE)
+            {
+               addstr(" ($");
+               itoa(temppool[p]->activity.arg,num,10);
+               addstr(num);
+               addstr(")");
+            }*/
 
             y++;
         }
@@ -511,74 +961,81 @@ void activatebulk(void) {
         move(22, 0);
         addstr("Press a Letter to Assign an Activity.  Press a Number to select an Activity.");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.");
-
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.");
+        addpagestr();
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 19 < temppool.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 19 < temppool.size())
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int32 p = page * 19 + (int32)(c - 'a');
+            int p = page * 19 + (int)(c - 'a');
 
             if(p < temppool.size()) {
                 switch(selectedactivity) {
-                case 0:
-                    temppool[p]->activity.type = ACTIVITY_TROUBLE;
-                    temppool[p]->activity.arg = 0;
+                case 0: //Activism
+                    if(temppool[p]->attval(ATTRIBUTE_WISDOM) > 7)
+                        temppool[p]->activity.type = ACTIVITY_COMMUNITYSERVICE;
+                    else if(temppool[p]->attval(ATTRIBUTE_WISDOM) > 4)
+                        temppool[p]->activity.type = ACTIVITY_TROUBLE;
+                    else {
+                        if(temppool[p]->skillval(SKILL_COMPUTERS) > 1)
+                            temppool[p]->activity.type = ACTIVITY_DOS_ATTACKS;
+                        else if(temppool[p]->skillval(SKILL_ART) > 1) {
+                            temppool[p]->activity.type = ACTIVITY_GRAFFITI;
+                            temppool[p]->activity.arg = -1;
+                        } else
+                            temppool[p]->activity.type = ACTIVITY_TROUBLE;
+                    }
+
                     break;
 
-                case 1:
-                    temppool[p]->activity.type = ACTIVITY_TROUBLE;
-                    temppool[p]->activity.arg = 20;
+                case 1: //Fundraising
+                    if(temppool[p]->skillval(SKILL_ART) > 1)
+                        temppool[p]->activity.type = ACTIVITY_SELL_ART;
+                    else if(temppool[p]->skillval(SKILL_TAILORING) > 1)
+                        temppool[p]->activity.type = ACTIVITY_SELL_TSHIRTS;
+                    else if(temppool[p]->skillval(SKILL_MUSIC) > 1)
+                        temppool[p]->activity.type = ACTIVITY_SELL_MUSIC;
+                    else
+                        temppool[p]->activity.type = ACTIVITY_DONATIONS;
+
                     break;
 
-                case 2:
-                    temppool[p]->activity.type = ACTIVITY_TROUBLE;
-                    temppool[p]->activity.arg = 50;
+                case 2: //Illegal Fundraising
+                    if(temppool[p]->skillval(SKILL_COMPUTERS) > 1)
+                        temppool[p]->activity.type = ACTIVITY_CCFRAUD;
+                    else if(temppool[p]->skillval(SKILL_SEDUCTION) > 1)
+                        temppool[p]->activity.type = ACTIVITY_PROSTITUTION;
+                    else
+                        temppool[p]->activity.type = ACTIVITY_SELL_DRUGS;
+
                     break;
 
-                case 3:
-                    temppool[p]->activity.type = ACTIVITY_TROUBLE;
-                    temppool[p]->activity.arg = 100;
+                case 3: //Check polls
+                    temppool[p]->activity.type = ACTIVITY_POLLS;
                     break;
 
-                case 4:
-                    temppool[p]->activity.type = ACTIVITY_TROUBLE;
-                    temppool[p]->activity.arg = 500;
-                    break;
-
-                case 5:
-                    temppool[p]->activity.type = ACTIVITY_FUNDS_LEGAL;
-                    break;
-
-                case 6:
-                    temppool[p]->activity.type = ACTIVITY_FUNDS_ILLEGAL;
-                    break;
-
-                case 7:
+                case 4: //Steal cars
                     temppool[p]->activity.type = ACTIVITY_STEALCARS;
+                    break;
+
+                case 5: //Volunteer
+                    temppool[p]->activity.type = ACTIVITY_COMMUNITYSERVICE;
                     break;
                 }
             }
         }
 
-        if(c >= '1' && c <= '8')
+        if(c >= '1' && c <= '6')
             selectedactivity = c - '1';
 
         if(c == 10)
@@ -588,19 +1045,27 @@ void activatebulk(void) {
 
 
 /* base - activate - hostages */
-void select_tendhostage(creaturest *cr) {
-    vector<creaturest *> temppool;
+void select_tendhostage(Creature *cr) {
+    vector<Creature *> temppool;
 
-    for(int32 p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < pool.size(); p++) {
         if(pool[p]->align != 1 &&
-                pool[p]->alive)
+                pool[p]->alive &&
+                pool[p]->location == cr->location)
             temppool.push_back(pool[p]);
     }
 
     if(temppool.size() == 0)
         return;
 
-    int16 page = 0;
+    if(temppool.size() == 1) {
+        cr->activity.type = ACTIVITY_HOSTAGETENDING;
+        cr->activity.arg = temppool[0]->id;
+        return;
+    }
+
+
+    int page = 0;
 
     char num[20];
 
@@ -617,9 +1082,9 @@ void select_tendhostage(creaturest *cr) {
         move(1, 57);
         addstr("DAYS IN CAPTIVITY");
 
-        int32 y = 2;
+        int y = 2;
 
-        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -627,13 +1092,13 @@ void select_tendhostage(creaturest *cr) {
             addstr(temppool[p]->name);
 
             char bright = 0;
-            uint32 skill = 0;
+            int skill = 0;
 
-            for(int32 sk = 0; sk < SKILLNUM; sk++) {
-                skill += (uint32)temppool[p]->skill[sk];
+            for(int sk = 0; sk < SKILLNUM; sk++) {
+                skill += temppool[p]->skill[sk];
 
-                if(temppool[p]->skill_ip[sk] >= 100 * ((10 + temppool[p]->skill[sk]) / 10) &&
-                        temppool[p]->skill[sk] < temppool[p]->attval(skillatt(sk)) * 2)
+                if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->skill[sk]) &&
+                        temppool[p]->skill[sk] < maxskill(sk, *temppool[p]))
                     bright = 1;
             }
 
@@ -672,39 +1137,28 @@ void select_tendhostage(creaturest *cr) {
         move(22, 0);
         addstr("Press a Letter to select a Conservative");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.");
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages.");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.");
+        addpagestr();
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 19 < temppool.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 19 < temppool.size())
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int32 p = page * 19 + (int32)(c - 'a');
+            int p = page * 19 + (int)(c - 'a');
 
             if(p < temppool.size()) {
-                int32 flevel = select_hostagefundinglevel(cr, temppool[p]);
-
-                if(flevel >= 0) {
-                    cr->activity.type = ACTIVITY_HOSTAGETENDING;
-                    cr->activity.arg = temppool[p]->id;
-                    cr->activity.arg2 = flevel;
-                    return;
-                }
+                cr->activity.type = ACTIVITY_HOSTAGETENDING;
+                cr->activity.arg = temppool[p]->id;
+                return;
             }
         }
 
@@ -714,8 +1168,8 @@ void select_tendhostage(creaturest *cr) {
 }
 
 
-int32 select_hostagefundinglevel(creaturest *cr, creaturest *hs) {
-    int32 flevel = -1;
+long select_hostagefundinglevel(Creature *cr, Creature *hs) {
+    long flevel = -1;
 
     erase();
 
@@ -756,12 +1210,12 @@ int32 select_hostagefundinglevel(creaturest *cr, creaturest *hs) {
     addstr("K - This Conservative has become a liability and needs to be terminated.");
 
     move(10, 0);
-    addstr("X - On second thought, this isn't a job for ");
+    addstr("Enter - On second thought, this isn't a job for ");
     addstr(cr->name);
     addstr(".");
 
     refresh();
-    int32 c = getch();
+    int c = getch();
     translategetch(c);
 
     if(c == 'a')
@@ -791,16 +1245,24 @@ int32 select_hostagefundinglevel(creaturest *cr, creaturest *hs) {
 
 
 /* base - activate - make clothing */
-void select_makeclothing(creaturest *cr) {
-    vector<int32> armortype;
+void select_makeclothing(Creature *cr) {
+    vector<int> armortype;
 
-    for(int32 a = 0; a < ARMORNUM; a++) {
+    for(int a = 0; a < ARMORNUM; a++) {
         switch(a) {
         case ARMOR_NONE:
         case ARMOR_MITHRIL:
         case ARMOR_MASK:
-        case ARMOR_BALLISTICVEST:
-        case ARMOR_HEAVYBALLISTICVEST:
+        case ARMOR_SWATARMOR:
+        case ARMOR_POLICEARMOR:
+        case ARMOR_ARMYARMOR:
+        case ARMOR_HEAVYARMOR:
+            break;
+
+        case ARMOR_DEATHSQUADUNIFORM:
+            if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2)
+                armortype.push_back(a);
+
             break;
 
         default:
@@ -809,7 +1271,7 @@ void select_makeclothing(creaturest *cr) {
         }
     }
 
-    int16 page = 0;
+    int page = 0;
 
     char str[200];
     char num[20];
@@ -826,9 +1288,9 @@ void select_makeclothing(creaturest *cr) {
         move(1, 0);
         addstr("----NAME-----------------------------DIFFICULTY-------------COST----------------");
 
-        int32 y = 2, difficulty;
+        int y = 2, difficulty;
 
-        for(int32 p = page * 19; p < armortype.size() && p < page * 19 + 19; p++) {
+        for(int p = page * 19; p < armortype.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -909,30 +1371,23 @@ void select_makeclothing(creaturest *cr) {
         move(22, 0);
         addstr("Press a Letter to select a Type of Clothing");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.");
-
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages.");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.");
+        addpagestr();
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 19 < armortype.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 19 < armortype.size())
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int32 p = page * 19 + (int32)(c - 'a');
+            int p = page * 19 + (int)(c - 'a');
 
             if(p < armortype.size()) {
                 cr->activity.type = ACTIVITY_MAKE_ARMOR;
@@ -948,8 +1403,8 @@ void select_makeclothing(creaturest *cr) {
 
 
 
-int32 armor_makedifficulty(int32 type, creaturest *cr) {
-    int32 basedif;
+int armor_makedifficulty(int type, Creature *cr) {
+    long basedif;
 
     switch(type) {
     case ARMOR_TOGA:
@@ -977,16 +1432,24 @@ int32 armor_makedifficulty(int32 type, creaturest *cr) {
     case ARMOR_PRISONGUARD:
     case ARMOR_MILITARY:
     case ARMOR_POLICEUNIFORM:
+    case ARMOR_DEATHSQUADUNIFORM:
         basedif = 5;
         break;
 
     case ARMOR_CHEAPSUIT:
+    case ARMOR_CIVILLIANARMOR:
+    case ARMOR_DONKEYSUIT:
+    case ARMOR_ELEPHANTSUIT:
         basedif = 6;
         break;
 
     case ARMOR_BLACKSUIT:
     case ARMOR_BLACKDRESS:
         basedif = 7;
+        break;
+
+    case ARMOR_BUNKERGEAR:
+        basedif = 8;
         break;
 
     case ARMOR_EXPENSIVESUIT:
@@ -999,7 +1462,7 @@ int32 armor_makedifficulty(int32 type, creaturest *cr) {
         break;
     }
 
-    basedif -= cr->skill[SKILL_GARMENTMAKING] - 3;
+    basedif -= cr->skillval(SKILL_TAILORING) - 3;
 
     if(basedif < 0)
         basedif = 0;
@@ -1009,8 +1472,8 @@ int32 armor_makedifficulty(int32 type, creaturest *cr) {
 
 
 
-int32 armor_makeprice(int32 type) {
-    int32 price = 0;
+int armor_makeprice(int type) {
+    long price = 0;
 
     switch(type) {
     case ARMOR_TOGA:
@@ -1041,6 +1504,7 @@ int32 armor_makeprice(int32 type) {
     case ARMOR_PRISONGUARD:
     case ARMOR_MILITARY:
     case ARMOR_POLICEUNIFORM:
+    case ARMOR_DEATHSQUADUNIFORM:
         price = 40;
         break;
 
@@ -1055,7 +1519,14 @@ int32 armor_makeprice(int32 type) {
 
     case ARMOR_EXPENSIVESUIT:
     case ARMOR_EXPENSIVEDRESS:
+    case ARMOR_ELEPHANTSUIT:
+    case ARMOR_DONKEYSUIT:
         price = 300;
+        break;
+
+    case ARMOR_BUNKERGEAR:
+    case ARMOR_CIVILLIANARMOR:
+        price = 500;
         break;
     }
 
@@ -1065,8 +1536,8 @@ int32 armor_makeprice(int32 type) {
 
 
 /* base - activate - trouble */
-int32 select_troublefundinglevel(creaturest *cr) {
-    int32 flevel = -1;
+long select_troublefundinglevel(Creature *cr) {
+    long flevel = -1;
 
     erase();
 
@@ -1097,12 +1568,12 @@ int32 select_troublefundinglevel(creaturest *cr) {
     addstr("'s Numerous and Varied Liberal Acts.");
 
     move(9, 0);
-    addstr("X - On second thought, this isn't a job for ");
+    addstr("Enter - On second thought, this isn't a job for ");
     addstr(cr->name);
     addstr(".");
 
     refresh();
-    int32 c = getch();
+    int c = getch();
     translategetch(c);
 
     if(c == 'a')
@@ -1126,8 +1597,8 @@ int32 select_troublefundinglevel(creaturest *cr) {
 
 
 /* base - activate - select a topic to write about */
-char select_view(creaturest *cr, int32 &v) {
-    int32 page = 0;
+char select_view(Creature *cr, int &v) {
+    int page = 0;
     char str[80];
 
     do {
@@ -1142,9 +1613,9 @@ char select_view(creaturest *cr, int32 &v) {
         move(2, 0);
         addstr("----TOPIC-----------------------------------INTEREST---------------------------");
 
-        int32 y = 3, x = 0;
+        int y = 3, x = 0;
 
-        for(int32 p = page * 18; p < VIEWNUM - 2 && p < page * 18 + 18; p++) {
+        for(int p = page * 18; p < VIEWNUM - 3 && p < page * 18 + 18; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, x);
             addch((p - page * 18) + 'A');
@@ -1154,18 +1625,21 @@ char select_view(creaturest *cr, int32 &v) {
 
             move(y, 44);
 
-            if(newspaper_topicwork1[p] > 40) {
+            if(public_interest[p] > 100) {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
-                addstr("Major Controversy");
-            } else if(newspaper_topicwork1[p] > 10) {
+                addstr("Extremely Controversial");
+            } else if(public_interest[p] > 50) {
+                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+                addstr("Dinner Table Topic");
+            } else if(public_interest[p] > 10) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr("Significant");
-            } else if(newspaper_topicwork1[p] > 0) {
+                addstr("Significant Interest");
+            } else if(public_interest[p] > 0) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                addstr("Minor");
+                addstr("Minor Discussion");
             } else {
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
-                addstr("None");
+                addstr("Exhausted");
             }
 
             y++;
@@ -1175,31 +1649,25 @@ char select_view(creaturest *cr, int32 &v) {
         move(22, 0);
         addstr("Press a Letter to select a Topic");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.");
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages.");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.");
+        addpagestr();
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 16 < VIEWNUM - 2)
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 16 < VIEWNUM - 3)
             page++;
 
         if(c >= 'a' && c <= 'a' + 18) {
-            int32 p = page * 18 + (int32)(c - 'a');
+            int p = page * 18 + (int)(c - 'a');
 
-            if(p < VIEWNUM - 2) {
+            if(p < VIEWNUM - 3) {
                 v = p;
                 return 1;
             }

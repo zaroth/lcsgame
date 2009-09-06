@@ -26,13 +26,14 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+#define CONSOLE_SUPPORT
+//#include <includes.h>
 #include <externs.h>
 
 
 
 //sets current color to desired setting
-void set_color(int16 f, int16 b, char bright) {
+void set_color(short f, short b, char bright, char blink) {
     //color swap required for PDcurses
     if(f == 7 && b == 0) {
         f = 0;
@@ -42,9 +43,17 @@ void set_color(int16 f, int16 b, char bright) {
         b = 0;
     }
 
+    chtype blinky = 0, brighty = 0;
+
+    if(blink)
+        blinky = A_BLINK;
+
+    if(bright)
+        brighty = A_BOLD;
+
     //pick color pair based on foreground and background
     if(bright)
-        attrset(A_BOLD | COLOR_PAIR(f * 8 + b));
+        attrset(brighty | blinky | COLOR_PAIR(f * 8 + b));
     else
         attrset(COLOR_PAIR(f * 8 + b));
 }
@@ -52,7 +61,7 @@ void set_color(int16 f, int16 b, char bright) {
 
 
 //IN CASE FUNKY ARROW KEYS ARE SENT IN, TRANSLATE THEM BACK
-void translategetch(int32 &c) {
+void translategetch(int &c) {
     //if(c==-63)c='7';
     //if(c==-62)c='8';
     //if(c==-61)c='9';
@@ -136,23 +145,16 @@ void translategetch(int32 &c) {
     }
 
     /* Support Cursor Keys...*/
-    if(c == KEY_LEFT)
-        c = 'a';
-
-    if(c == KEY_RIGHT)
-        c = 'd';
-
-    if(c == KEY_UP)
-        c = 'w';
-
-    if(c == KEY_DOWN)
-        c = 'x';
+    //if(c==KEY_LEFT)c='a';
+    //if(c==KEY_RIGHT)c='d';
+    //if(c==KEY_UP)c='w';
+    //if(c==KEY_DOWN)c='x';
 
 }
 
 
 
-void translategetch_cap(int32 &c) {
+void translategetch_cap(int &c) {
     //if(c==-63)c='7';
     //if(c==-62)c='8';
     //if(c==-61)c='9';
@@ -192,3 +194,46 @@ void translategetch_cap(int32 &c) {
     */
 }
 
+#ifdef CH_USE_UNICODE
+char unicode_mode = 0;
+
+char setup_unicode() {
+    char *codeset;
+
+    // Get LC_CTYPE from environment.
+    setlocale(LC_CTYPE, "");
+
+    // Is it a UTF-8 locale?
+    codeset = nl_langinfo(CODESET);
+    unicode_mode = !strcmp(codeset, "UTF-8");
+
+    return unicode_mode;
+}
+
+int lookup_unicode_hack(int c) {
+    if (c < 128)
+        return c;
+
+    for (int i = 0;; i++) {
+        int unicode = unicode_hacks[i].unicode_char;
+
+        if (unicode == c || unicode == UNICODE_HACKS_END)
+            return unicode_hacks[i].hack_char;
+    }
+}
+
+int addch_unicode(int c) {
+    wchar_t wch;
+    cchar_t cch;
+
+    if (unicode_mode) {
+        // We can do this because we've already verified
+        // that __STDC_ISO_10646__ is set.
+        wch = c;
+
+        setcchar(&cch, &wch, 0, 0, NULL);
+        return add_wch(&cch);
+    } else
+        return addch(lookup_unicode_hack(c));
+}
+#endif

@@ -24,6 +24,8 @@ This file is part of Liberal Crime Squad.
 #include <string>
 #include <queue>
 #include "lcsio.h"
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -61,7 +63,7 @@ bool LCSFileExists(const char *filename) {
 
 
     struct stat st;
-    int32 ret = stat(filename, &st);
+    int ret = stat(filename, &st);
 
     if(ret == 0)
         return true;
@@ -115,7 +117,7 @@ bool LCSInitArtDir() {
     artprefix = art_search_paths[0];
     std::string tester;
 
-    for(int32 i = 1; artprefix != NULL; ++i) {
+    for(int i = 1; artprefix != NULL; ++i) {
         tester = artprefix;
         tester.append(arttest);
 
@@ -130,11 +132,12 @@ bool LCSInitArtDir() {
         return false;
 
     strncpy(artdir, artprefix, MAX_PATH_SIZE);
+    return true;
 }
 
 
 
-FILE *LCSOpenFile(char *filename, char *mode, int32 flags) {
+FILE *LCSOpenFile(char *filename, char *mode, int flags) {
     if(!initialized) {
         LCSInitHomeDir();
         LCSInitArtDir();
@@ -153,7 +156,7 @@ FILE *LCSOpenFile(char *filename, char *mode, int32 flags) {
     return fopen(filepath.c_str(), mode);
 }
 
-void LCSDeleteFile(char *filename, int32 flags) {
+void LCSDeleteFile(char *filename, int flags) {
 
     if(!initialized) {
         LCSInitHomeDir();

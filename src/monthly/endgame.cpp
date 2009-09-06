@@ -26,14 +26,14 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 
 
-/* endgame - attempts to pass a constitutional amendment to win the game */
+/* endgame - attempts to pass a constitutional amendment to help win the game */
 void tossjustices(char canseethings) {
-    int32 j;
+    int j;
 
     if(canseethings) {
         erase();
@@ -49,7 +49,7 @@ void tossjustices(char canseethings) {
 
     //STATE THE AMENDMENT
     if(canseethings) {
-        int32 tossnum = 0;
+        int tossnum = 0;
 
         for(j = 0; j < 9; j++) {
             if(court[j] <= 1)
@@ -68,7 +68,7 @@ void tossjustices(char canseethings) {
 
         addstr(" branded Arch-Conservative:");
 
-        int32 y = 4;
+        int y = 4;
 
         for(j = 0; j < 9; j++) {
             if(court[j] != 2) {
@@ -87,14 +87,16 @@ void tossjustices(char canseethings) {
         move(y + 4, 0);
         addstr("choosing to be replaced by Proper Justices, also of");
         move(y + 5, 0);
-        addstr("the President's choosing.");
+        addstr("the President's choosing with the advice and consent of");
+        move(y + 6, 0);
+        addstr("the Senate.");
 
         move(24, 0);
         addstr("Press 'C' to watch the ratification process unfold.");
 
         do {
             refresh();
-            int32 c = getch();
+            int c = getch();
             translategetch(c);
 
             if(c == 'c')
@@ -104,9 +106,9 @@ void tossjustices(char canseethings) {
 
     if(ratify(2, -1, -1, 1, canseethings)) {
         //BLAST JUSTICES
-        for(int32 j = 0; j < 9; j++) {
+        for(int j = 0; j < 9; j++) {
             if(court[j] != 2) {
-                name(courtname[j]);
+                generate_name(courtname[j]);
                 court[j] = 2;
             }
         }
@@ -122,7 +124,85 @@ void tossjustices(char canseethings) {
     }
 }
 
+/* endgame - attempts to pass a constitutional amendment to help win the game */
+void amendment_termlimits(char canseethings) {
+    if(termlimits)
+        return;  // Durr~! Don't pass this amendment if it's already passed!
 
+    int j;
+
+    if(canseethings) {
+        erase();
+
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+
+        move(12, 6);
+        addstr("A National Convention has proposed an ELITE LIBERAL AMENDMENT!");
+
+        refresh();
+        getch();
+    }
+
+    //STATE THE AMENDMENT
+    if(canseethings) {
+        int tossnum = 0;
+
+        for(j = 0; j < 9; j++) {
+            if(court[j] <= 1)
+                tossnum++;
+        }
+
+        amendmentheading();
+
+        move(2, 5);
+        addstr("In light of the Conservative nature of entrenched politicians,");
+        move(3, 0);
+        addstr("and the corrupting influence of incumbency on the democratic process,");
+        move(4, 0);
+        addstr("all members of the House of Representatives and Senate shall henceforth");
+        move(5, 0);
+        addstr("be limited to one term in office.  This shall be immediately enforced");
+        move(6, 0);
+        addstr("by holding elections to replace all members of Congress upon the");
+        move(7, 0);
+        addstr("ratification of this amendment.");
+
+        move(24, 0);
+        addstr("Press 'C' to watch the ratification process unfold.");
+
+        do {
+            refresh();
+            int c = getch();
+            translategetch(c);
+
+            if(c == 'c')
+                break;
+        } while(1);
+    }
+
+    if(ratify(2, -1, -1, 0, canseethings)) {
+        termlimits = true;
+
+        if(canseethings) {
+            move(24, 0);
+            addstr("Press any key to hold new elections!                           ");
+            refresh();
+            getch();
+        }
+
+        elections_senate(0, canseethings);
+        elections_senate(1, canseethings);
+        elections_senate(2, canseethings);
+        elections_house(canseethings);
+
+        amendnum++;
+    } else if(canseethings) {
+        move(24, 0);
+        addstr("Press any key to reflect on what has happened.");
+        refresh();
+        getch();
+    }
+}
 
 /* endgame - attempts to pass a constitutional amendment to lose the game */
 void reaganify(char canseethings) {
@@ -131,13 +211,7 @@ void reaganify(char canseethings) {
 
         erase();
         move(12, 6);
-        addstr("Two Thirds of the States have convened a Constitutional Convention!");
-        refresh();
-        getch();
-
-        erase();
-        move(12, 15);
-        addstr("They have proposed an ARCH-CONSERVATIVE AMENDMENT!");
+        addstr("The Arch Conservative Congress is proposing an ARCH-CONSERVATIVE AMENDMENT!");
         refresh();
         getch();
 
@@ -147,11 +221,11 @@ void reaganify(char canseethings) {
         move(2, 5);
         addstr("In recognition of the fact that society is degenerating under");
         move(3, 0);
-        addstr("the pressure of the elite liberal threat, we the People hereby");
+        addstr("the pressure of the elite liberal threat, WE THE PEOPLE HEREBY");
         move(4, 0);
-        addstr("repeal the Constitition.  The former United States are to be");
+        addstr("REPEAL THE CONSTITUTION.  The former United States are to be");
         move(5, 0);
-        addstr("reorganized into the Confederated States of America, with new");
+        addstr("reorganized into the CONFEDERATED STATES OF AMERICA, with new");
         move(6, 0);
         addstr("boundaries to be determined by leading theologians.");
         move(8, 5);
@@ -182,7 +256,7 @@ void reaganify(char canseethings) {
 
         do {
             refresh();
-            int32 c = getch();
+            int c = getch();
             translategetch(c);
 
             if(c == 'c')
@@ -190,13 +264,15 @@ void reaganify(char canseethings) {
         } while(1);
     }
 
-    if(ratify(-2, -1, -1, 0, canseethings)) {
+    if(ratify(-2, -1, -1, 1, canseethings)) {
         if(canseethings) {
             move(24, 0);
             addstr("Press any key to reflect on what has happened ONE LAST TIME.");
             refresh();
             getch();
         }
+
+        amendnum = 1; // Constitution repealed...
 
         //REAGANIFY
         if(canseethings) {
@@ -205,7 +281,7 @@ void reaganify(char canseethings) {
             strcpy(execname[EXEC_STATE], "Jesse Helms");
             strcpy(execname[EXEC_ATTORNEY], "Jerry Falwell");
 
-            for(int32 e = 0; e < EXECNUM; e++)
+            for(int e = 0; e < EXECNUM; e++)
                 exec[e] = -2;
 
             liberalagenda(-1);
@@ -335,9 +411,8 @@ void reaganify(char canseethings) {
 }
 
 
-
 /* endgame - checks if a constitutional amendment is ratified */
-char ratify(int32 level, int32 view, int32 lawview, char congress, char canseethings) {
+char ratify(int level, int lawview, int view, char congress, char canseethings) {
     if(canseethings) {
         erase();
 
@@ -348,7 +423,7 @@ char ratify(int32 level, int32 view, int32 lawview, char congress, char canseeth
     }
 
     //THE STATE VOTE WILL BE BASED ON VIEW OF LAW
-    int32 mood = publicmood(lawview);
+    int mood = publicmood(lawview);
 
     //OR OF A PARTICULAR ISSUE
     if(view != -1)
@@ -358,7 +433,7 @@ char ratify(int32 level, int32 view, int32 lawview, char congress, char canseeth
     char num[20];
     char ratified = 0;
 
-    int32 y = 0;
+    int y = 0;
 
     if(congress) {
         ratified = 1;
@@ -380,13 +455,13 @@ char ratify(int32 level, int32 view, int32 lawview, char congress, char canseeth
 
         char yeswin_h = 0;
         char yeswin_s = 0;
-        int32 yesvotes_h = 0;
-        int32 yesvotes_s = 0;
+        int yesvotes_h = 0;
+        int yesvotes_s = 0;
 
-        int32 vote;
-        int32 s = -1;
+        int vote;
+        int s = -1;
 
-        for(int32 l = 0; l < 435; l++) {
+        for(int l = 0; l < 435; l++) {
             vote = house[l];
 
             if(vote >= -1 && vote <= 1)
@@ -495,12 +570,12 @@ char ratify(int32 level, int32 view, int32 lawview, char congress, char canseeth
     if(ratified) {
         ratified = 0;
 
-        int32 yesstate = 0;
+        int yesstate = 0;
 
         if(canseethings) {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
-            for(int32 s = 0; s < 50; s++) {
+            for(int s = 0; s < 50; s++) {
                 if(s < 17)
                     move(5 + s, 0);
                 else if(s < 34)
@@ -508,10 +583,11 @@ char ratify(int32 level, int32 view, int32 lawview, char congress, char canseeth
                 else
                     move(5 + s - 34, 54);
 
-                switch(s) {
+                switch(s) { //XXX: I really think that states past voting records
+                //XXX:    *eyes Massachusetts* should influence this...
                 case 0:
                     addstr("Alabama");
-                    break;
+                    break;//                -- LK
 
                 case 1:
                     addstr("Alaska");
@@ -719,10 +795,10 @@ char ratify(int32 level, int32 view, int32 lawview, char congress, char canseeth
             nodelay(stdscr, TRUE);
         }
 
-        int32 vote;
-        int32 smood;
+        int vote;
+        int smood;
 
-        for(int32 s = 0; s < 50; s++) {
+        for(int s = 0; s < 50; s++) {
             smood = mood;
 
             switch(s) {
@@ -765,16 +841,16 @@ char ratify(int32 level, int32 view, int32 lawview, char congress, char canseeth
 
             vote = 0;
 
-            if((int16)LCSrandom(100) < smood)
+            if((short)LCSrandom(100) < smood)
                 vote++;
 
-            if((int16)LCSrandom(100) < smood)
+            if((short)LCSrandom(100) < smood)
                 vote++;
 
-            if((int16)LCSrandom(100) < smood)
+            if((short)LCSrandom(100) < smood)
                 vote++;
 
-            if((int16)LCSrandom(100) < smood)
+            if((short)LCSrandom(100) < smood)
                 vote++;
 
             vote -= 2;
@@ -874,7 +950,7 @@ void amendmentheading(void) {
 
 
 /* endgame - converts an integer into a roman numeral for amendments */
-void romannumeral(int32 amendnum) {
+void romannumeral(int amendnum) {
     while(amendnum >= 1000) {
         amendnum -= 1000;
         addch('M');

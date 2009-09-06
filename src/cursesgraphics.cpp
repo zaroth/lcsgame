@@ -65,25 +65,19 @@
 *
 */
 
-#ifdef WIN32
-#define CH_USE_CP437
-#else
-#define CH_USE_ASCII_HACK
-#endif
-
 #define CURSES_GRAPHICS
-#include "cursesgraphics.h"
+#include "includes.h"
 
 #ifdef CH_USE_CP437
-int32 translateGraphicsChar(int32 c) {
+int translateGraphicsChar(int c) {
     return c;
 }
 #else
-int32 translateGraphicsChar(int32 c) {
+int translateGraphicsChar(int c) {
     // This will be no good for Unicode...
 
-    int32 cin = c;
-    int32 cout = cin;
+    int cin = c;
+    int cout = cin;
 
 //	if ((cin >= 0) && (cin <32))
 //	{
@@ -99,4 +93,3 @@ int32 translateGraphicsChar(int32 c) {
     return cout;
 }
 #endif
-

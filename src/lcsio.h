@@ -35,8 +35,6 @@ This file is part of Liberal Crime Squad.
 #ifndef LCSIO_H_INCLUDED
 #define LCSIO_H_INCLUDED
 
-#include "compat.h"
-
 #ifdef WIN32
 #include <windows.h>
 #include <stdio.h>
@@ -58,7 +56,8 @@ This file is part of Liberal Crime Squad.
 */
 enum LCSIO_FLAGS {
     LCSIO_PRE_ART = 1, /// Append the given file name to the art directory path.
-    LCSIO_PRE_HOME = 2 /// Append the given file name to the home directory path.
+    LCSIO_PRE_HOME = 2, /// Append the given file name to the home directory path.
+    //LCSIO_PRE_CONFIG = 3 /// Append the given file name to the config directory path.
 };
 
 
@@ -82,7 +81,7 @@ enum LCSIO_FLAGS {
     \return FILE* handle. NULL on error.
 
 */
-FILE *LCSOpenFile(char *filename, char *mode, int32 flags);
+FILE *LCSOpenFile(char *filename, char *mode, int flags);
 
 /**
     \brief LCSIO Close an open file.
@@ -109,15 +108,15 @@ void LCSCloseFile(FILE *handle);
     \param handle FILE* handle that you get from LCSOpenFile.
     \return False on error, true if no error.
 */
-inline bool LCSWrite(void *buffer, size_t size, size_t count, FILE *handle) {
-    fwrite(buffer, size, count, handle);
-
+/*inline bool LCSWrite(void* buffer, size_t size, size_t count, FILE* handle)
+{
+    fwrite(buffer,size,count,handle);
     if(ferror(handle))
         return false;
 
     else
         return true;
-}
+} Deprecated function - SAV */
 
 
 /**
@@ -133,15 +132,15 @@ inline bool LCSWrite(void *buffer, size_t size, size_t count, FILE *handle) {
     \param handle FILE* handle that you get from LCSOpenFile.
      \return False on error, true if no error.
 */
-inline bool LCSRead(void *buffer, size_t size, size_t count, FILE *handle) {
-    fread(buffer, size, count, handle);
-
+/*inline bool LCSRead(void* buffer, size_t size, size_t count, FILE* handle)
+{
+    fread(buffer,size,count,handle);
     if(ferror(handle))
         return false;
 
     else
         return true;
-}
+}Deprecated function - SAV */
 
 /**
     \brief Deletes a file.

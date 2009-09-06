@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////////////
-//																						//
+//                                                                                      //
 //Copyright (c) 2002,2003,2004 by Tarn Adams											//
 //																						//
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -20,22 +20,18 @@
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA			//
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#include "compat.h"
-#include "lcsendian.h"
 #define PICMAX 1000
-
 struct filelistst {
     vector<char *> list;
 
     ~filelistst() {
-        for(int32 l = 0; l < list.size(); l++)
+        for(int l = 0; l < list.size(); l++)
             delete list[l];
 
         list.clear();
     }
-
     void clean(void) {
-        for(int32 l = 0; l < list.size(); l++)
+        for(int l = 0; l < list.size(); l++)
             delete list[l];
 
         list.clear();
@@ -43,20 +39,18 @@ struct filelistst {
 
     void open_diskload(FILE *h);
     void open_disksave(FILE *h);
-
-    //Deprecated
     void smartappend(filelistst &list2);
 };
 
 #define CM_FRAMEFLAG_OVERLAY BIT1
 
 struct CursesMovie_framest {
-    int16 frame;
-    int32 start, stop;
-    int16 sound;
-    int16 song;
-    int16 effect;
-    uint16 flag;
+    short frame;
+    long start, stop;
+    short sound;
+    short song;
+    short effect;
+    unsigned short flag;
 
     CursesMovie_framest() {
         frame = 0;
@@ -71,8 +65,8 @@ struct CursesMovie_framest {
 
 struct CursesMoviest {
     unsigned char picture[PICMAX][80][25][4];
-    uint32 picnum;
-    uint32 dimx, dimy;
+    unsigned long picnum;
+    unsigned long dimx, dimy;
     filelistst songlist;
     filelistst soundlist;
     vector<CursesMovie_framest *> frame;
@@ -82,14 +76,15 @@ struct CursesMoviest {
         dimx = 80;
         dimy = 25;
     }
+
     ~CursesMoviest() {
         clean();
     }
 
-    void savemovie(char *filename, int32 flags);
+    void savemovie(char *filename, int flags);
     void loadmovie(char *filename);
     void clean(void);
     void convertindices_song(filelistst &master);
     void convertindices_sound(filelistst &master);
-    void playmovie(int32 x, int32 y);
+    void playmovie(int x, int y);
 };

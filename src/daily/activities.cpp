@@ -26,13 +26,11 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 
-
-
-void adjustblogpower(int32 &power) {
+void adjustblogpower(int &power) {
     if(power < 20) {
         switch(LCSrandom(20)) {
         case 0:
@@ -65,6 +63,10 @@ void adjustblogpower(int32 &power) {
 
         case 7:
             addstr("an embarrasing");
+            break;
+
+        case 8:
+            addstr("a shameful");
             break;
 
         case 9:
@@ -110,13 +112,9 @@ void adjustblogpower(int32 &power) {
         case 19:
             addstr("an insane");
             break;
-
-        case 8:
-            addstr("a shameful");
-            break;
         }
 
-        power = -LCSrandom(2);
+        power = -signed(LCSrandom(2));
     } else if(power < 35) {
         switch(LCSrandom(1)) {
         //case 0:addstr("a fair");break;
@@ -265,648 +263,89 @@ void adjustblogpower(int32 &power) {
 }
 
 
-/* hostage tending */
-void tendhostage(creaturest *cr, char &clearformess) {
-    vector<creaturest *> temppool;
-    int32 p;
-
-    int32 hfunds = 0;
-    char notender = 1;
-    char terminatehostage = 0;
-    creaturest *killer = NULL;
-
-    for(p = 0; p < pool.size(); p++) {
-        if(!pool[p]->alive)
-            continue;
-
-        if(terminatehostage)
-            break;
-
-        if(pool[p]->activity.type == ACTIVITY_HOSTAGETENDING) {
-            if(pool[p]->activity.arg == cr->id) {
-                notender = 0;
-
-                if(pool[p]->activity.arg2 >= 1) {
-                    temppool.push_back(pool[p]);
-
-                    if(pool[p]->activity.arg2 == 666) {
-                        terminatehostage = 1;
-                        killer = pool[p];
-                    } else if(pool[p]->activity.arg2 >= 20)
-                        hfunds += pool[p]->activity.arg2;
-                }
-            }
-        }
-    }
-
-    if(temppool.size() == 0) {
-        //CHECK FOR HOSTAGE ESCAPE
-        if(notender &&
-                LCSrandom(200) < cr->attval(ATTRIBUTE_INTELLIGENCE) +
-                cr->attval(ATTRIBUTE_AGILITY) +
-                cr->attval(ATTRIBUTE_STRENGTH) &&
-                cr->joindays >= 2) {
-            for(int32 p = 0; p < pool.size(); p++) {
-                if(pool[p] == cr) {
-                    if(clearformess)
-                        erase();
-                    else
-                        makedelimiter(8, 0);
-
-                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                    move(8, 1);
-                    addstr(cr->name);
-                    addstr(" has escaped!");
-                    refresh();
-                    getch();
-
-                    delete pool[p];
-                    pool.erase(pool.begin() + p);
-                    break;
-                }
-            }
-        }
-
-        return;
-    }
-
-    clearformess = 1;
-
-    erase();
-    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-    move(0, 0);
-
-    if(terminatehostage)
-        addstr("The Final Education of ");
-    else
-        addstr("The Education of ");
-
-    addstr(cr->name);
-    addstr(": Day ");
-    char num[20];
-    itoa(cr->joindays, num, 10);
-    addstr(num);
-
-    refresh();
-    getch();
-
-    set_color(COLOR_WHITE, COLOR_BLACK, 0);
-
-    char turned = 0;
-
-    int32 y = 2;
-
-    if(terminatehostage) {
-        if(LCSrandom(10) < killer->juice &&
-                LCSrandom(9) + 1 >= killer->attval(ATTRIBUTE_HEART, 0)) {
-            set_color(COLOR_MAGENTA, COLOR_BLACK, 0);
-            cr->alive = 0;
-            stat_kills++;
-            move(y, 0);
-            y++;
-            addstr(killer->name);
-            addstr(" executes ");
-            addstr(cr->name);
-            addstr(" by ");
-
-            switch(LCSrandom(5)) {
-            case 0:
-                addstr("strangling it to death.");
-                break;
-
-            case 1:
-                addstr("beating it to death.");
-                break;
-
-            case 2:
-                addstr("burning photos of Reagan in front of it.");
-                break;
-
-            case 3:
-                addstr("telling it that taxes have been increased.");
-                break;
-
-            case 4:
-                addstr("telling it its parents wanted to abort it.");
-                break;
-            }
-
-            refresh();
-            getch();
-
-            if(killer->att[ATTRIBUTE_HEART] > 1) {
-                set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                move(y, 0);
-                y++;
-                addstr(killer->name);
-                addstr(" feels sick to the stomach afterward and ");
-                killer->att[ATTRIBUTE_HEART]--;
-                move(y, 0);
-                y++;
-
-                switch(LCSrandom(3)) {
-                case 0:
-                    addstr("throws up in a trash can.");
-                    break;
-
-                case 1:
-                    addstr("gets drunk, eventually falling asleep.");
-                    break;
-
-                case 2:
-                    addstr("curls up in a ball, crying softly.");
-                    break;
-                }
-            } else if(!LCSrandom(3)) {
-                set_color(COLOR_CYAN, COLOR_BLACK, 1);
-                move(y, 0);
-                y++;
-                addstr(killer->name);
-                addstr(" grows colder.");
-                killer->att[ATTRIBUTE_WISDOM]++;
-            }
-        } else {
-            set_color(COLOR_YELLOW, COLOR_BLACK, 0);
-            move(y, 0);
-            y++;
-            addstr(killer->name);
-            addstr(" is unable to get up the nerve to");
-            move(y, 0);
-            y++;
-            addstr("execute ");
-            addstr(cr->name);
-            addstr(" in cold blood.");
-        }
-    } else {
-        if(hfunds > funds)
-            hfunds = funds;
-
-        funds -= hfunds;
-        stat_spent += hfunds;
-        moneylost_hostage += hfunds;
-
-        if(hfunds == 0) {
-            //BEAT IT UP OR TALK IT DOWN
-            if(!LCSrandom(2)) {
-                int32 maxattack = 0;
-
-                for(p = 0; p < temppool.size(); p++) {
-                    if(temppool[p] != NULL) {
-                        if(temppool[p]->alive) {
-                            if((temppool[p]->attval(ATTRIBUTE_CHARISMA) +
-                                    temppool[p]->attval(ATTRIBUTE_HEART) +
-                                    temppool[p]->skill[SKILL_PERSUASION]) > maxattack) {
-                                maxattack = temppool[p]->attval(ATTRIBUTE_CHARISMA) +
-                                            temppool[p]->attval(ATTRIBUTE_HEART) +
-                                            temppool[p]->skill[SKILL_PERSUASION];
-                            }
-                        }
-                    }
-                }
-
-                vector<int32> goodp;
-
-                for(p = 0; p < temppool.size(); p++) {
-                    if(temppool[p] != NULL) {
-                        if(temppool[p]->alive) {
-                            if((temppool[p]->attval(ATTRIBUTE_CHARISMA) +
-                                    temppool[p]->attval(ATTRIBUTE_HEART) +
-                                    temppool[p]->skill[SKILL_PERSUASION]) == maxattack)
-                                goodp.push_back(p);
-                        }
-                    }
-                }
-
-                if(goodp.size() > 0) {
-                    creaturest *a = temppool[goodp[LCSrandom(goodp.size())]];
-
-                    int32 aroll = LCSrandom(a->attval(ATTRIBUTE_CHARISMA) +
-                                            a->attval(ATTRIBUTE_HEART) +
-                                            a->skill[SKILL_PERSUASION] + 1) + LCSrandom(10) + temppool.size();
-                    int32 troll = LCSrandom(cr->attval(ATTRIBUTE_CHARISMA) +
-                                            cr->attval(ATTRIBUTE_WISDOM) +
-                                            cr->skill[SKILL_PERSUASION] + 1) + LCSrandom(10);
-
-                    move(y, 0);
-                    addstr(a->name);
-                    addstr(" discusses the issues with ");
-                    addstr(cr->name);
-                    addstr(".");
-                    y++;
-
-                    refresh();
-                    getch();
-
-                    if(aroll > troll) {
-                        if(cr->att[ATTRIBUTE_WISDOM] > 1) {
-                            cr->att[ATTRIBUTE_WISDOM]--;
-
-                            if(LCSrandom(11) > (cr->att[ATTRIBUTE_WISDOM] * 5) - cr->joindays)
-                                turned = 1;
-                        } else
-                            turned = 1;
-
-                        move(y, 0);
-                        addstr(cr->name);
-                        addstr("'s resolve weakens...");
-                        y++;
-                    } else if(aroll > (troll >> 1)) {
-                        move(y, 0);
-                        addstr(cr->name);
-                        addstr(" holds firm.");
-                        y++;
-                    } else {
-                        a->att[ATTRIBUTE_WISDOM]++;
-
-                        move(y, 0);
-                        addstr(cr->name);
-                        addstr(" turns the tables on ");
-                        addstr(a->name);
-                        addstr("!");
-                        y++;
-
-                        refresh();
-                        getch();
-
-                        move(y, 0);
-                        addstr(a->name);
-                        addstr(" has gained wisdom!");
-                        y++;
-                    }
-
-                    a->skill_ip[SKILL_PERSUASION] += (troll >> 2) + 1;
-                }
-            } else {
-                move(y, 0);
-
-                if(temppool.size() == 1) {
-                    addstr(temppool[0]->name);
-                    addstr(" beats");
-                } else if(temppool.size() == 2) {
-                    addstr(temppool[0]->name);
-                    addstr(" and ");
-                    addstr(temppool[1]->name);
-                    addstr(" beat");
-                } else {
-                    addstr(cr->name);
-                    addstr("'s guards beat");
-                }
-
-                addstr(" the Automaton, yelling its");
-                y++;
-                move(y, 0);
-                addstr("favorite corporation's name.");
-                y++;
-
-                refresh();
-                getch();
-
-                int32 forceroll = LCSrandom(((int32)temppool.size()) * 10 + 1);
-
-                if(forceroll >= cr->attval(ATTRIBUTE_HEALTH)) {
-                    if(cr->att[ATTRIBUTE_WISDOM] > 1) {
-                        cr->att[ATTRIBUTE_WISDOM]--;
-
-                        if(LCSrandom(11) > (cr->att[ATTRIBUTE_WISDOM] * 5) - cr->joindays)
-                            turned = 1;
-                    } else
-                        turned = 1;
-
-                    move(y, 0);
-                    addstr(cr->name);
-                    addstr("'s resolve weakens...");
-                    y++;
-
-                    if(forceroll >= LCSrandom(cr->attval(ATTRIBUTE_HEALTH) * 5 + 1)) {
-                        refresh();
-                        getch();
-
-                        if(LCSrandom(5) && cr->att[ATTRIBUTE_HEALTH] > 1) {
-                            cr->att[ATTRIBUTE_HEALTH]--;
-                            move(y, 0);
-                            addstr(cr->name);
-                            addstr("'s health is damaged...");
-                            y++;
-                        } else {
-                            cr->alive = 0;
-                            stat_kills++;
-                            move(y, 0);
-                            addstr(cr->name);
-                            addstr(" dies from the savage attack!");
-                            y++;
-                        }
-                    }
-                } else {
-                    move(y, 0);
-                    addstr(cr->name);
-                    addstr(" takes it well.");
-                    y++;
-                }
-            }
-        } else {
-            int32 maxattack = 0;
-
-            for(int32 p = 0; p < temppool.size(); p++) {
-                if(temppool[p] != NULL) {
-                    if(temppool[p]->alive) {
-                        if((temppool[p]->attval(ATTRIBUTE_CHARISMA) +
-                                temppool[p]->attval(ATTRIBUTE_HEART) +
-                                temppool[p]->skill[SKILL_PERSUASION]) > maxattack) {
-                            maxattack = temppool[p]->attval(ATTRIBUTE_CHARISMA) +
-                                        temppool[p]->attval(ATTRIBUTE_HEART) +
-                                        temppool[p]->skill[SKILL_PERSUASION];
-                        }
-                    }
-                }
-            }
-
-            maxattack += hfunds / 20 + temppool.size();
-
-            int32 aroll = LCSrandom(maxattack) + LCSrandom(10);
-            int32 troll = LCSrandom(cr->attval(ATTRIBUTE_WISDOM) * 2) + LCSrandom(15);
-
-            if(hfunds <= 20) {
-                move(y, 0);
-                addstr(cr->name);
-
-                switch(LCSrandom(2)) {
-                case 0:
-                    addstr(" is forced to listen to FM radio in lieu of sleep");
-                    break;
-
-                case 1:
-                    addstr(" is forced to watch network news tapes in lieu of sleep");
-                    break;
-                }
-
-                addstr(".");
-                y++;
-
-                refresh();
-                getch();
-            } else if(hfunds <= 50) {
-                move(y, 0);
-                addstr(cr->name);
-
-                switch(LCSrandom(2)) {
-                case 0:
-                    addstr(" is forced to ingest psychotropic drugs.");
-                    y++;
-                    move(y, 0);
-                    addstr("Liberal tracts are then read to it");
-                    break;
-
-                case 1:
-                    addstr(" is forced to watch controversial avant-garde films");
-                    break;
-                }
-
-                addstr(".");
-                y++;
-
-                refresh();
-                getch();
-            } else if(hfunds <= 100) {
-                move(y, 0);
-                addstr(cr->name);
-                addstr(" tied to a chair while Origin of the Species blares on a PA");
-                y++;
-                move(y, 0);
-                addstr("and a silent video of ");
-
-                switch(LCSrandom(3)) {
-                case 0:
-                    addstr("atrocities in Cambodia");
-                    break;
-
-                case 1:
-                    addstr("chickens in a factory farm");
-                    break;
-
-                case 2:
-                    addstr("young sweatshop workers making toys");
-                    break;
-                }
-
-                addstr(" is played.");
-                y++;
-
-                refresh();
-                getch();
-            } else {
-                move(y, 0);
-                addstr(cr->name);
-                addstr(" is kept in a dark room and");
-                y++;
-                move(y, 0);
-                addstr("made to burn confederate flags for light,");
-                y++;
-                move(y, 0);
-                addstr("only to find upon illumination of the room that");
-
-                switch(LCSrandom(3)) {
-                case 0:
-                    addstr(" the walls have been");
-                    y++;
-                    move(y, 0);
-                    addstr("plastered with scenes from anime film Bible Black");
-                    break;
-
-                case 1:
-                    addstr(" the walls have been");
-                    y++;
-                    move(y, 0);
-                    addstr("papered with anarchy symbols");
-                    break;
-
-                case 2:
-                    addstr(" the walls have been");
-                    y++;
-                    move(y, 0);
-                    addstr("papered with illustrations of apes evolving into humans");
-                    break;
-                }
-
-                addstr(".");
-                y++;
-
-                refresh();
-                getch();
-            }
-
-            if(aroll > troll) {
-                if(aroll > troll * 4 && cr->att[ATTRIBUTE_WISDOM] > 1)
-                    cr->att[ATTRIBUTE_WISDOM]--;
-
-                if(aroll > troll * 3 && cr->att[ATTRIBUTE_WISDOM] > 1)
-                    cr->att[ATTRIBUTE_WISDOM]--;
-
-                if(aroll > troll * 2 && cr->att[ATTRIBUTE_WISDOM] > 1)
-                    cr->att[ATTRIBUTE_WISDOM]--;
-
-                if(cr->att[ATTRIBUTE_WISDOM] > 1) {
-                    cr->att[ATTRIBUTE_WISDOM]--;
-
-                    if(LCSrandom(11) > (cr->att[ATTRIBUTE_WISDOM] * 5) - cr->joindays)
-                        turned = 1;
-                } else
-                    turned = 1;
-
-                move(y, 0);
-                addstr(cr->name);
-                addstr("'s resolve weakens...");
-                y++;
-            } else {
-                move(y, 0);
-                addstr(cr->name);
-                addstr(" holds firm.");
-                y++;
-            }
-        }
-
-        #ifdef AUTOENLIGHTEN
-        turned = 1;
-        #endif
-
-        if(turned && cr->alive) {
-            refresh();
-            getch();
-
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            y++;
-            move(y, 0);
-            addstr("The Automaton has been Enlightened!   Your Liberal ranks are swelling!");
-            y += 2;
-            cr->align = 1;
-            stat_recruits++;
-
-            if(!(cr->flag & CREATUREFLAG_KIDNAPPED)) {
-                set_color(COLOR_CYAN, COLOR_BLACK, 1);
-                move(y, 0);
-                y++;
-                addstr(cr->name);
-                addstr("'s disappearance has not yet been reported.");
-                move(y, 0);
-                y += 2;
-                addstr("You now have a sleeper infiltrating Conservative Society.");
-                cr->flag &= ~CREATUREFLAG_MISSING;
-                cr->flag |= CREATUREFLAG_SLEEPER;
-                cr->location = cr->worklocation;
-                cr->base = cr->worklocation;
-            }
-        }
-    }
-
-    if(cr->align == 1 || !cr->alive) {
-        for(int32 p = 0; p < pool.size(); p++) {
-            if(!pool[p]->alive)
-                continue;
-
-            if(pool[p]->activity.type == ACTIVITY_HOSTAGETENDING) {
-                if(pool[p]->activity.arg == cr->id)
-                    pool[p]->activity.type = ACTIVITY_NONE;
-            }
-        }
-    }
-
-    refresh();
-    getch();
-
-    set_color(COLOR_WHITE, COLOR_BLACK, 0);
-    move(24, 0);
-    addstr("Press any key to reflect on this.");
-
-    refresh();
-    getch();
-}
-
-
-
 /* armor repair */
-void repairarmor(creaturest &cr, char &clearformess) {
-    armorst *it = NULL;
-    itemst *itm = NULL;
-    vector<itemst *> *lar = NULL;
+void repairarmor(Creature &cr, char &clearformess) {
+    armorst *armor = NULL;
+    itemst *pile = NULL;
+    vector<itemst *> *pilelist = NULL;
 
     if(cr.armor.type != ARMOR_NONE &&
-            ((cr.armor.flag & ARMORFLAG_DAMAGED) ||
-             (cr.armor.flag & ARMORFLAG_BLOODY)))
-        it = &cr.armor;
+            cr.armor.flag & (ARMORFLAG_DAMAGED | ARMORFLAG_BLOODY))
+        armor = &cr.armor;
     else if(cr.squadid != -1) {
-        int32 sq = getsquad(cr.squadid);
+        int sq = getsquad(cr.squadid);
 
-        for(int32 l = 0; l < squad[sq]->loot.size(); l++) {
+        for(int l = 0; l < squad[sq]->loot.size(); l++) {
             if(squad[sq]->loot[l]->type == ITEM_ARMOR &&
-                    ((squad[sq]->loot[l]->armor.flag & ARMORFLAG_DAMAGED) ||
-                     (squad[sq]->loot[l]->armor.flag & ARMORFLAG_BLOODY))) {
-                it = &squad[sq]->loot[l]->armor;
-                itm = squad[sq]->loot[l];
-                lar = &squad[sq]->loot;
+                    squad[sq]->loot[l]->armor.flag & (ARMORFLAG_DAMAGED | ARMORFLAG_BLOODY)) {
+                armor = &squad[sq]->loot[l]->armor;
+                pile = squad[sq]->loot[l];
+                pilelist = &squad[sq]->loot;
                 break;
             }
         }
     }
 
-    if(it == NULL && cr.location != -1) {
-        for(int32 l = 0; l < location[cr.location]->loot.size(); l++) {
+    if(armor == NULL && cr.location != -1) {
+        for(int l = 0; l < location[cr.location]->loot.size(); l++) {
             if(location[cr.location]->loot[l]->type == ITEM_ARMOR &&
-                    ((location[cr.location]->loot[l]->armor.flag & ARMORFLAG_DAMAGED) ||
-                     (location[cr.location]->loot[l]->armor.flag & ARMORFLAG_BLOODY))) {
-                it = &location[cr.location]->loot[l]->armor;
-                itm = location[cr.location]->loot[l];
-                lar = &location[cr.location]->loot;
+                    location[cr.location]->loot[l]->armor.flag & (ARMORFLAG_DAMAGED | ARMORFLAG_BLOODY)) {
+                armor = &location[cr.location]->loot[l]->armor;
+                pile = location[cr.location]->loot[l];
+                pilelist = &location[cr.location]->loot;
                 break;
             }
         }
     }
 
-    if(it != NULL) {
+    if(armor != NULL) {
         if(clearformess)
             erase();
         else
             makedelimiter(8, 0);
 
+        bool repairfailed = false;
+
+        if(armor->flag & ARMORFLAG_DAMAGED) {
+            long dif = (armor_makedifficulty(armor->type, &cr) >> 1);
+            cr.train(SKILL_TAILORING, dif + 1);
+
+            if((LCSrandom(1 + dif)))
+                repairfailed = true;
+        }
+
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(8, 1);
         addstr(cr.name);
 
-        if(it->flag & ARMORFLAG_DAMAGED)
-            addstr(" repairs ");
-        else
+        if(armor->flag & ARMORFLAG_DAMAGED) {
+            if(repairfailed)
+                addstr(" is working to repair ");
+            else
+                addstr(" repairs ");
+        } else
             addstr(" cleans ");
 
         char str[80];
-        getarmorfull(str, it->type, it->subtype);
+        getarmorfull(str, armor->type, armor->subtype);
         addstr(str);
 
-        if(itm != NULL) {
-            if(itm->number > 1) {
-                itemst *newi = new itemst;
-                *newi = *itm;
-                lar->push_back(newi);
-                newi->number = itm->number - 1;
-                itm->number = 1;
+        if(pile != NULL) {
+            if(pile->number > 1) {
+                itemst *newpile = new itemst;
+                *newpile = *pile;
+                pilelist->push_back(newpile);
+                newpile->number = pile->number - 1;
+                pile->number = 1;
             }
         }
 
-        it->flag &= ~ARMORFLAG_BLOODY;
-        it->flag &= ~ARMORFLAG_DAMAGED;
+        addstr(".");
 
-        int32 dif = (armor_makedifficulty(it->type, &cr) >> 1);
-        cr.skill_ip[SKILL_GARMENTMAKING] += dif + 1;
+        armor->flag &= ~ARMORFLAG_BLOODY;
 
-        if((LCSrandom(10) < dif || LCSrandom(10) < dif) && it->quality != '4' &&
-                (it->flag & ARMORFLAG_DAMAGED)) {
-            addstr(" but it is not quite the same.");
-            it->quality++;
-
-            if((LCSrandom(10) < dif || LCSrandom(10) < dif) && it->quality != '4')
-                it->quality++;
-
-            if((LCSrandom(10) < dif || LCSrandom(10) < dif) && it->quality != '4')
-                it->quality++;
-        } else
-            addstr(".");
+        if(!repairfailed)
+            armor->flag &= ~ARMORFLAG_DAMAGED;
 
         refresh();
         getch();
@@ -916,12 +355,12 @@ void repairarmor(creaturest &cr, char &clearformess) {
 
 
 /* armor manufacture */
-void makearmor(creaturest &cr, char &clearformess) {
-    int32 at = cr.activity.arg;
+void makearmor(Creature &cr, char &clearformess) {
+    int at = cr.activity.arg;
 
-    int32 cost = armor_makeprice(at);
-    int32 hcost = (armor_makeprice(at) >> 1) + 1;
-    int32 dif = armor_makedifficulty(at, &cr);
+    int cost = armor_makeprice(at);
+    int hcost = (armor_makeprice(at) >> 1) + 1;
+    int dif = armor_makedifficulty(at, &cr);
 
     if(funds < hcost) {
         if(clearformess)
@@ -941,13 +380,17 @@ void makearmor(creaturest &cr, char &clearformess) {
         char foundcloth = 0;
 
         if(cr.squadid != -1) {
-            int32 sq = getsquad(cr.squadid);
+            int sq = getsquad(cr.squadid);
 
-            for(int32 l = 0; l < squad[sq]->loot.size(); l++) {
+            for(int l = 0; l < squad[sq]->loot.size(); l++) {
                 if(squad[sq]->loot[l]->type == ITEM_LOOT &&
                         squad[sq]->loot[l]->loottype == LOOT_FINECLOTH) {
-                    delete squad[sq]->loot[l];
-                    squad[sq]->loot.erase(squad[sq]->loot.begin() + l);
+                    if(squad[sq]->loot[l]->number == 1) {
+                        delete squad[sq]->loot[l];
+                        squad[sq]->loot.erase(squad[sq]->loot.begin() + l);
+                    } else
+                        squad[sq]->loot[l]->number--;
+
                     foundcloth = 1;
                     break;
                 }
@@ -955,11 +398,15 @@ void makearmor(creaturest &cr, char &clearformess) {
         }
 
         if(!foundcloth) {
-            for(int32 l = 0; l < location[cr.location]->loot.size(); l++) {
+            for(int l = 0; l < location[cr.location]->loot.size(); l++) {
                 if(location[cr.location]->loot[l]->type == ITEM_LOOT &&
                         location[cr.location]->loot[l]->loottype == LOOT_FINECLOTH) {
-                    delete location[cr.location]->loot[l];
-                    location[cr.location]->loot.erase(location[cr.location]->loot.begin() + l);
+                    if(location[cr.location]->loot[l]->number == 1) {
+                        delete location[cr.location]->loot[l];
+                        location[cr.location]->loot.erase(location[cr.location]->loot.begin() + l);
+                    } else
+                        location[cr.location]->loot[l]->number--;
+
                     foundcloth = 1;
                     break;
                 }
@@ -990,7 +437,7 @@ void makearmor(creaturest &cr, char &clearformess) {
                 moneylost_manufacture += cost;
             }
 
-            cr.skill_ip[SKILL_GARMENTMAKING] += dif * 2 + 1;
+            cr.train(SKILL_TAILORING, dif * 2 + 1);
 
             itemst *it = new itemst;
             it->type = ITEM_ARMOR;
@@ -999,13 +446,13 @@ void makearmor(creaturest &cr, char &clearformess) {
             it->armor.flag = 0;
             location[cr.location]->loot.push_back(it);
 
-            if(LCSrandom(10) < dif || LCSrandom(10) < dif) {
+            if(4 < dif || LCSrandom(10) < dif) {
                 it->armor.quality = '2';
 
-                if(LCSrandom(10) < dif || LCSrandom(10) < dif) {
+                if(6 < dif || LCSrandom(10) < dif) {
                     it->armor.quality = '3';
 
-                    if(LCSrandom(10) < dif || LCSrandom(10) < dif)
+                    if(8 < dif || LCSrandom(10) < dif)
                         it->armor.quality = '4';
                 }
             }
@@ -1053,35 +500,46 @@ void makearmor(creaturest &cr, char &clearformess) {
 
 
 /* search for polls */
-void survey(creaturest *cr) {
-    int32 v;
-    int32 creatureskill = cr->skill[SKILL_COMPUTERS] + cr->attval(ATTRIBUTE_INTELLIGENCE);
-    int32 misschance = 0, noise = 2;
+void survey(Creature *cr) {
+    static const char SURVEY_PAGE_SIZE = 14;
 
-    if(creatureskill < 3) {
+    int v;
+    int creatureskill = cr->skillval(SKILL_COMPUTERS) + cr->attval(ATTRIBUTE_INTELLIGENCE);
+    int misschance = 30 - creatureskill, noise = 2;
+
+    if(misschance < 5)
+        misschance = 5;
+
+    if(creatureskill < 3)
         noise = 15;
-        misschance = (30 - creatureskill) * 3;
-    } else if(creatureskill < 7) {
+    else if(creatureskill < 7)
         noise = 7;
-        misschance = (20 - creatureskill) * 3;
-    } else if(creatureskill < 10) {
+    else if(creatureskill < 10)
         noise = 5;
-        misschance = (20 - creatureskill) * 2;
-    } else if(creatureskill < 15) {
+    else if(creatureskill < 15)
         noise = 4;
-        misschance = 20 - creatureskill;
-    } else if(creatureskill < 20) {
+    else if(creatureskill < 20)
         noise = 3;
-        misschance = 20 - creatureskill;
-    }
 
-    int32 survey[VIEWNUM];
+    int survey[VIEWNUM];
+
+    int maxview = -1;
 
     for(v = 0; v < VIEWNUM; v++) {
         survey[v] = attitude[v];
 
+        if(v != VIEW_LIBERALCRIMESQUAD && v != VIEW_LIBERALCRIMESQUADPOS && v != VIEW_POLITICALVIOLENCE) {
+            if(maxview != -1) {
+                if(public_interest[v] > public_interest[maxview])
+                    maxview = v;
+            } else {
+                if(public_interest[v] > 0)
+                    maxview = v;
+            }
+        }
+
         //MAKE SURVEY ACCURATE IF DEBUGGING
-        #ifdef NDEBUG
+        #ifndef SHOWMECHANICS
         survey[v] += LCSrandom(noise * 2 + 1) - noise;
 
         if(!LCSrandom(20)) {
@@ -1107,15 +565,18 @@ void survey(creaturest *cr) {
         if(survey[v] > 100)
             survey[v] = 100;
 
-        #ifdef NDEBUG
+        #ifndef SHOWMECHANICS
 
-        if(LCSrandom(100) < misschance)
+        if(LCSrandom(public_interest[v] + 50) < int(misschance))
             survey[v] = -1;
 
         #endif
 
         if(v == VIEW_LIBERALCRIMESQUAD && attitude[v] == 0)
-            survey[v] = 0;
+            survey[v] = -1;
+
+        if(v == VIEW_LIBERALCRIMESQUADPOS && survey[VIEW_LIBERALCRIMESQUAD] <= 0)
+            survey[v] = -1;
     }
 
     erase();
@@ -1124,125 +585,282 @@ void survey(creaturest *cr) {
     move(0, 0);
     addstr("Survey of Public Opinion, According to Recent Polls");
 
-    int32 y = 2;
+    int y = 8;
 
     char num[20];
 
-    for(v = 0; v < VIEWNUM; v++) {
-        if(survey[VIEW_LIBERALCRIMESQUAD] == 0 &&
-                v == VIEW_LIBERALCRIMESQUADPOS)
-            continue;
+    int approval = presidentapproval();
+    move(2, 0);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    itoa(approval / 10 + (LCSrandom(noise * 2 + 1) - noise), num, 10);
+    addstr(num);
+    addstr("% had a favorable opinion of ");
 
-        if(survey[v] == -1)
-            set_color(COLOR_BLACK, COLOR_BLACK, 1);
-        else if(survey[v] < 10)
-            set_color(COLOR_RED, COLOR_BLACK, 1);
-        else if(survey[v] < 30)
-            set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-        else if(survey[v] < 50)
-            set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-        else if(survey[v] < 70)
-            set_color(COLOR_BLUE, COLOR_BLACK, 1);
-        else if(survey[v] < 90)
-            set_color(COLOR_CYAN, COLOR_BLACK, 1);
-        else
-            set_color(COLOR_GREEN, COLOR_BLACK, 1);
+    switch(exec[EXEC_PRESIDENT]) {
+    case -2:
+        set_color(COLOR_RED, COLOR_BLACK, 1);
+        break;
 
-        move(y, 0);
+    case -1:
+        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
+        break;
 
-        if(survey[v] == -1)
-            addstr("Unknown how many ");
-        else {
-            itoa(survey[v], num, 10);
-            addstr(num);
-            addstr("% ");
-        }
+    case 0:
+        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+        break;
 
-        switch(v) {
-        case VIEW_ABORTION:
-            addstr("supported abortion.");
-            break;
+    case 1:
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
+        break;
 
+    case 2:
+        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+        break;
+    }
+
+    addstr("President ");
+    addstr(execname[EXEC_PRESIDENT]);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    addstr(".");
+
+    //Top excitement issue
+    if(maxview != -1) {
+        move(4, 0);
+        addstr("The people are most concerned about ");
+
+        switch(maxview) {
         case VIEW_GAY:
-            addstr("were in favor of equal rights for homosexuals.");
+            if(attitude[VIEW_GAY] > 50)
+                addstr("protecting gay rights.");
+            else
+                addstr("protecting the traditional family.");
+
             break;
 
         case VIEW_DEATHPENALTY:
-            addstr("opposed the death penalty.");
+            if(attitude[VIEW_DEATHPENALTY] > 50)
+                addstr("the unjust death penalty.");
+            else {
+                if(law[LAW_DEATHPENALTY] = 2)
+                    addstr("restoring the death penalty.");
+                else
+                    addstr("protecting the death penalty.");
+            }
+
             break;
 
         case VIEW_TAXES:
-            addstr("were against cutting taxes.");
+            if(attitude[VIEW_TAXES] > 50)
+                addstr("the oppressive tax structure.");
+            else
+                addstr("the excessive tax burden.");
+
             break;
 
         case VIEW_NUCLEARPOWER:
-            addstr("were terrified of nuclear power.");
+            if(attitude[VIEW_NUCLEARPOWER] > 50)
+                addstr("the dangers of nuclear power.");
+            else {
+                if(law[LAW_NUCLEARPOWER] = 2)
+                    addstr("legalizing nuclear power.");
+                else
+                    addstr("threats to nuclear power.");
+            }
+
             break;
 
         case VIEW_ANIMALRESEARCH:
-            addstr("deplored animal research.");
+            if(attitude[VIEW_ANIMALRESEARCH] > 50)
+                addstr("brutal animal research practices.");
+            else
+                addstr("excessive regulation of animal research.");
+
             break;
 
         case VIEW_POLICEBEHAVIOR:
-            addstr("were critical of the police.");
+            if(attitude[VIEW_POLICEBEHAVIOR] > 50)
+                addstr("preventing police brutality.");
+            else
+                addstr("expanding police powers.");
+
             break;
 
         case VIEW_INTELLIGENCE:
-            addstr("thought the intelligence community invades privacy.");
+            if(attitude[VIEW_INTELLIGENCE] > 50)
+                addstr("civil liberties and personal privacy.");
+            else
+                addstr("national security and intelligence.");
+
             break;
 
         case VIEW_FREESPEECH:
-            addstr("believed in unfettered free speech.");
+            if(attitude[VIEW_FREESPEECH] > 50)
+                addstr("protecting free speech.");
+            else
+                addstr("ending hate speech.");
+
             break;
 
         case VIEW_GENETICS:
-            addstr("abhorred genetically altered food products.");
+            if(attitude[VIEW_GENETICS] > 50)
+                addstr("the dangers of genetic engineering.");
+            else
+                addstr("excessive regulation of genetic research.");
+
             break;
 
         case VIEW_JUSTICES:
-            addstr("were for the appointment of Liberal justices.");
+            if(attitude[VIEW_JUSTICES] > 50)
+                addstr("appointing proper Liberal justices.");
+            else
+                addstr("appointing proper Conservative justices.");
+
             break;
 
         case VIEW_SWEATSHOPS:
-            addstr("would boycott companies that used sweatshops.");
+            if(attitude[VIEW_SWEATSHOPS] > 50)
+                addstr("threats to labor rights.");
+            else
+                addstr("excessive regulation of labor practices.");
+
             break;
 
         case VIEW_POLLUTION:
-            addstr("thought industry should lower pollution.");
+            if(attitude[VIEW_POLLUTION] > 50)
+                addstr("threats to the environment.");
+            else
+                addstr("excessive regulation of industry.");
+
             break;
 
         case VIEW_CORPORATECULTURE:
-            addstr("were disgusted by corporate malfeasance.");
+            if(attitude[VIEW_CORPORATECULTURE] > 50)
+                addstr("corporate corruption.");
+            else
+                addstr("excessive regulation of corporations.");
+
             break;
 
         case VIEW_CEOSALARY:
-            addstr("believed that CEO salaries are too great.");
+            if(attitude[VIEW_CEOSALARY] > 50)
+                addstr("severe income inequality.");
+            else
+                addstr("resisting communist wage limits.");
+
+            break;
+
+        case VIEW_POLITICALVIOLENCE:
+            if(attitude[VIEW_POLITICALVIOLENCE] > 50)
+                addstr("taking strong action.");
+            else
+                addstr("political terrorism.");
+
+            break;
+
+        case VIEW_IMMIGRATION:
+            if(attitude[VIEW_IMMIGRATION] > 50)
+                addstr("immigrant rights.");
+            else {
+                if(law[LAW_IMMIGRATION] >= 1)
+                    addstr("uncontrolled immigration.");
+                else
+                    addstr("illegal immigration.");
+            }
+
+            break;
+
+        case VIEW_DRUGS:
+            if(attitude[VIEW_DRUGS] > 50)
+                addstr("drug rights.");
+            else
+                addstr("drug abuse.");
+
+            break;
+
+        case VIEW_WOMEN:
+            if(attitude[VIEW_WOMEN] > 50)
+                addstr("women's equality.");
+            else
+                addstr("women.");
+
+            break;
+
+        case VIEW_CIVILRIGHTS:
+            if(attitude[VIEW_CIVILRIGHTS] > 50)
+                addstr("civil rights.");
+            else
+                addstr("troublemaking minorities.");
+
+            break;
+
+        case VIEW_GUNCONTROL:
+            if(attitude[VIEW_GUNCONTROL] > 50)
+                addstr("gun violence.");
+            else
+                addstr("protecting the Second Amendment.");
+
+            break;
+
+        case VIEW_MILITARY:
+            if(attitude[VIEW_MILITARY] > 50)
+                addstr("the large military.");
+            else
+                addstr("strengthening the military.");
+
             break;
 
         case VIEW_LIBERALCRIMESQUAD:
-            addstr("had heard of the Liberal Crime Squad.");
+        case VIEW_LIBERALCRIMESQUADPOS:
+            if(attitude[VIEW_LIBERALCRIMESQUAD] < 50) {
+                addstr("activist political groups.");
+                break;
+            }
+
+            if(attitude[VIEW_LIBERALCRIMESQUADPOS] > 50)
+                addstr("the Liberal Crime Squad.");
+            else
+                addstr("the LCS terrorists.");
+
             break;
 
-        case VIEW_LIBERALCRIMESQUADPOS:
-            addstr("of these held the Liberal Crime Squad in high regard.");
+        case VIEW_CONSERVATIVECRIMESQUAD:
+            if(attitude[VIEW_CONSERVATIVECRIMESQUAD] < 50) {
+                addstr("the Conservative Crime Squad.");
+                break;
+            } else
+                addstr("the CCS terrorists.");
+
             break;
 
         case VIEW_PRISONS:
-            addstr("think the prison system needs reform.");
+            if(attitude[VIEW_PRISONS] > 50)
+                addstr("horrific prison conditions.");
+            else
+                addstr("lax prison conditions.");
+
             break;
 
         case VIEW_AMRADIO:
-            addstr("do not like AM radio.");
-            break;
-
         case VIEW_CABLENEWS:
-            addstr("have a negative opinion of cable news programs.");
+            if(attitude[VIEW_AMRADIO] + attitude[VIEW_CABLENEWS] > 100)
+                addstr("Conservative Media Bias.");
+            else
+                addstr("Liberal Media Bias.");
+
             break;
         }
-
-        y++;
+    } else {
+        move(4, 0);
+        addstr("The public is not concerned with politics right now.");
     }
 
+    //Header for issue box
+    move(6, 0);
+    addstr("Additional notable findings:");
+    move(7, 0);
+    addstr("XX% Issue ------------------------------------------------- Public Interest");
+
+    //Footer
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(23, 0);
     addstr("Results are +/- ");
@@ -1250,10 +868,284 @@ void survey(creaturest *cr) {
     addstr(num);
     addstr(" Liberal percentage points.");
     move(24, 0);
-    addstr("Press any key to reflect on these results.");
+    addstr("Enter - Done");
+    move(24, 40);
+    addprevpagestr();
+    addstr("    ");
+    addnextpagestr();
 
-    refresh();
-    getch();
+    int page = 0;
+    const int maxpage = VIEWNUM / SURVEY_PAGE_SIZE;
+
+    while(1) {
+        //Keep pages within bounds
+        if(page < 0)
+            page = maxpage;
+
+        if(page > maxpage)
+            page = 0;
+
+        //Start from the top
+        y = 8;
+
+        //Draw each line
+        for(v = page * SURVEY_PAGE_SIZE; v < (page + 1)*SURVEY_PAGE_SIZE; v++) {
+            if(v >= VIEWNUM || (v == VIEW_CONSERVATIVECRIMESQUAD && (endgamestate >= ENDGAME_CCS_DEFEATED || newscherrybusted < 2))) {
+                move(y++, 0);
+                addstr("                                                                                ");
+                continue;
+            }
+
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(y, 4);
+            addstr("........................................................");
+
+            if(noise >= 7 || survey[v] == -1)
+                addstr("Unknown  ");
+            else if(noise >= 4) {
+                if(public_interest[v] > 50)
+                    addstr("High     ");
+                else
+                    addstr("Low      ");
+            } else {
+                if(public_interest[v] > 100)
+                    addstr("Very High");
+                else if(public_interest[v] > 50)
+                    addstr("High     ");
+                else if(public_interest[v] > 10)
+                    addstr("Moderate ");
+                else if(public_interest[v])
+                    addstr("Low      ");
+                else
+                    addstr("None     ");
+            }
+
+            if(survey[v] == -1)
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);
+            else if(survey[v] < 10)
+                set_color(COLOR_RED, COLOR_BLACK, 1);
+            else if(survey[v] < 30)
+                set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
+            else if(survey[v] < 50)
+                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+            else if(survey[v] < 70)
+                set_color(COLOR_BLUE, COLOR_BLACK, 1);
+            else if(survey[v] < 90)
+                set_color(COLOR_CYAN, COLOR_BLACK, 1);
+            else
+                set_color(COLOR_GREEN, COLOR_BLACK, 1);
+
+            move(y, 0);
+
+            if(survey[v] == -1)
+                addstr("??");
+            else {
+                itoa(survey[v], num, 10);
+
+                if(strlen(num) == 1)
+                    addstr("0");
+
+                addstr(num);
+            }
+
+            addstr("% ");
+
+            switch(v) {
+            case VIEW_GAY:
+                addstr("were in favor of equal rights for homosexuals");
+                break;
+
+            case VIEW_DEATHPENALTY:
+                addstr("opposed the death penalty");
+                break;
+
+            case VIEW_TAXES:
+                addstr("were against cutting taxes");
+                break;
+
+            case VIEW_NUCLEARPOWER:
+                addstr("were terrified of nuclear power");
+                break;
+
+            case VIEW_ANIMALRESEARCH:
+                addstr("deplored animal research");
+                break;
+
+            case VIEW_POLICEBEHAVIOR:
+                addstr("were critical of the police");
+                break;
+
+            case VIEW_INTELLIGENCE:
+                addstr("thought the intelligence community invades privacy");
+                break;
+
+            case VIEW_FREESPEECH:
+                addstr("believed in unfettered free speech");
+                break;
+
+            case VIEW_GENETICS:
+                addstr("abhorred genetically altered food products");
+                break;
+
+            case VIEW_JUSTICES:
+                addstr("were for the appointment of Liberal justices");
+                break;
+
+            case VIEW_SWEATSHOPS:
+                addstr("would boycott companies that used sweatshops");
+                break;
+
+            case VIEW_POLLUTION:
+                addstr("thought industry should lower pollution");
+                break;
+
+            case VIEW_CORPORATECULTURE:
+                addstr("were disgusted by corporate malfeasance");
+                break;
+
+            case VIEW_CEOSALARY:
+                addstr("believed that CEO salaries are too great");
+                break;
+
+            case VIEW_WOMEN:
+                addstr("favored doing more for gender equality");
+                break;
+
+            case VIEW_CIVILRIGHTS:
+                addstr("felt more work was needed for racial equality");
+                break;
+
+            case VIEW_GUNCONTROL:
+                addstr("are concerned about gun violence");
+                break;
+
+            case VIEW_DRUGS:
+                if(law[LAW_DRUGS] >= 1)
+                    addstr("supported keeping marijuana legal");
+                else
+                    addstr("believed in legalizing marijuana");
+
+                break;
+
+            case VIEW_IMMIGRATION:
+                if(law[LAW_IMMIGRATION] >= 1)
+                    addstr("condemned unnecessary immigration regulations");
+                else
+                    addstr("wanted amnesty for illegal immigrants");
+
+                break;
+
+            case VIEW_MILITARY:
+                addstr("opposed increasing military spending");
+                break;
+
+            case VIEW_LIBERALCRIMESQUAD:
+                addstr("respected the power of the Liberal Crime Squad");
+                break;
+
+            case VIEW_LIBERALCRIMESQUADPOS:
+                addstr("of these held the Liberal Crime Squad in high regard");
+                break;
+
+            case VIEW_CONSERVATIVECRIMESQUAD:
+                addstr("held the Conservative Crime Squad in contempt");
+                break;
+
+            case VIEW_PRISONS:
+                addstr("think the prison system needs reform");
+                break;
+
+            case VIEW_AMRADIO:
+                addstr("do not like AM radio");
+                break;
+
+            case VIEW_CABLENEWS:
+                addstr("have a negative opinion of cable news programs");
+                break;
+
+            case VIEW_POLITICALVIOLENCE:
+                addstr("thought political violence was justified");
+                break;
+            }
+
+            y++;
+        }
+
+        while(1) {
+            refresh();
+            char key = getch();
+
+            if(key == 10)
+                return;
+            else if(key == interface_pgup) {
+                page--;
+                break;
+            } else if(key == interface_pgdn) {
+                page++;
+                break;
+            }
+        }
+    }
+
+
+}
+
+// Police accost your liberal!
+void attemptarrest(Creature &liberal, const char *string, int clearformess) {
+    if(string) {
+        if(clearformess)
+            erase();
+        else
+            makedelimiter(8, 0);
+
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+        move(8, 1);
+        addstr("Police are attempting to arrest ");
+        addstr(liberal.name);
+        addstr(" while ");
+        addstr(string);
+        addstr(".");
+
+        refresh();
+        getch();
+    }
+
+    // Chase sequence! Wee!
+    makechasers(-1, 5);
+
+    chaseseq.clean();
+    chaseseq.location = 0;
+    footchase(liberal);
+}
+
+// While galavanting in public, your liberals may be ambushed by police
+int checkforarrest(Creature &liberal, const char *string, int clearformess) {
+    bool arrest = false;
+
+    if(!liberal.animalgloss && liberal.armor.type == ARMOR_NONE && LCSrandom(2)) {
+        criminalize(liberal, LAWFLAG_DISTURBANCE);
+
+        newsstoryst *ns = new newsstoryst;
+        ns->type = NEWSSTORY_NUDITYARREST;
+        newsstory.push_back(ns);
+        sitestory = ns;
+
+        arrest = true;
+    } else if(liberal.heat > liberal.skillval(SKILL_STREETSENSE) * 10) {
+        if(!LCSrandom(50)) {
+            newsstoryst *ns = new newsstoryst;
+            ns->type = NEWSSTORY_WANTEDARREST;
+            newsstory.push_back(ns);
+            sitestory = ns;
+
+            arrest = true;
+        }
+    }
+
+    if(arrest)
+        attemptarrest(liberal, string, clearformess);
+
+    return arrest;
 }
 
 
@@ -1261,86 +1153,102 @@ void survey(creaturest *cr) {
 /* misc activation related things */
 // *JDSRETURN*
 void funds_and_trouble(char &clearformess) {
-    int32 s;
+    int s;
     //FIND A POLICE STATION
     //and a clinic too
-    int32 ps = -1;
-    int32 clinic = -1;
+    //and a homeless shelter three!
+    int ps = -1;
+    int clinic = -1;
+    int shelter = -1;
 
-    for(int32 l = 0; l < location.size(); l++) {
+    for(int l = 0; l < location.size(); l++) {
         if(location[l]->type == SITE_GOVERNMENT_POLICESTATION)
             ps = l;
 
         if(location[l]->type == SITE_HOSPITAL_CLINIC)
             clinic = l;
+
+        if(location[l]->type == SITE_RESIDENTIAL_SHELTER)
+            shelter = l;
     }
 
     //ACTIVITIES FOR INDIVIDUALS
-    vector<creaturest *> trouble;
-    int32 tfund = 0;
-    vector<creaturest *> hack;
-    int32 hfund = 0;
-    vector<creaturest *> bury;
-    vector<creaturest *> solicit;
-    vector<creaturest *> brownies;
+    vector<Creature *> trouble;
+    vector<Creature *> hack;
+    vector<Creature *> bury;
+    vector<Creature *> solicit;
+    vector<Creature *> tshirts;
+    vector<Creature *> art;
+    vector<Creature *> music;
+    vector<Creature *> graffiti;
+    vector<Creature *> brownies;
+    vector<Creature *> prostitutes;
+    vector<Creature *> teachers;
 
-    for(int32 p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < pool.size(); p++) {
         if(!pool[p]->alive)
             continue;
 
+        if(pool[p]->location == -1) {
+            pool[p]->activity.type = ACTIVITY_NONE;
+            continue;
+        }
+
         switch(pool[p]->activity.type) {
+        case ACTIVITY_TEACH_GENERALED:
+        case ACTIVITY_TEACH_FIGHTING:
+        case ACTIVITY_TEACH_SURVIVAL:
+        case ACTIVITY_TEACH_POLITICS:
+        case ACTIVITY_TEACH_COVERT:
+            teachers.push_back(pool[p]);
+            break;
+
+        case ACTIVITY_CCFRAUD:
+        case ACTIVITY_DOS_RACKET:
+        case ACTIVITY_DOS_ATTACKS:
+        case ACTIVITY_HACKING:
+            hack.push_back(pool[p]);
+            break;
+
+        case ACTIVITY_GRAFFITI:
+            graffiti.push_back(pool[p]);
+            break;
+
         case ACTIVITY_TROUBLE:
-            if(pool[p]->skill[SKILL_COMPUTERS] >= 2 &&
-                    pool[p]->skill[SKILL_COMPUTERS] +
-                    pool[p]->attval(ATTRIBUTE_INTELLIGENCE) >= 7 &&
-                    pool[p]->juice >= 0) {
-                hack.push_back(pool[p]);
-
-                if(funds >= pool[p]->activity.arg) {
-                    hfund += pool[p]->activity.arg;
-                    funds -= pool[p]->activity.arg;
-                    stat_spent += pool[p]->activity.arg;
-                    moneylost_trouble += pool[p]->activity.arg;
-                } else {
-                    hfund += funds;
-                    stat_spent += funds;
-                    moneylost_trouble += funds;
-                    funds = 0;
-                }
-            } else {
-                trouble.push_back(pool[p]);
-
-                if(pool[p]->juice >= 0) {
-                    if(funds >= pool[p]->activity.arg) {
-                        tfund += pool[p]->activity.arg;
-                        funds -= pool[p]->activity.arg;
-                        stat_spent += pool[p]->activity.arg;
-                        moneylost_trouble += pool[p]->activity.arg;
-                    } else {
-                        tfund += funds;
-                        moneylost_trouble += funds;
-                        stat_spent += funds;
-                        funds = 0;
-                    }
-                }
-            }
-
+            trouble.push_back(pool[p]);
             break;
 
-        case ACTIVITY_FUNDS_LEGAL:
-            if(pool[p]->juice < 0)
-                trouble.push_back(pool[p]);
-            else
-                solicit.push_back(pool[p]);
+        case ACTIVITY_COMMUNITYSERVICE:
+            addjuice(*pool[p], 1, 0);
 
+            if(pool[p]->heat && !LCSrandom(10))
+                pool[p]->heat--;
+
+            change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 1, 0, 80);
             break;
 
-        case ACTIVITY_FUNDS_ILLEGAL:
-            if(pool[p]->juice < 0)
-                trouble.push_back(pool[p]);
-            else
-                brownies.push_back(pool[p]);
+        case ACTIVITY_SELL_TSHIRTS:
+            tshirts.push_back(pool[p]);
+            break;
 
+        case ACTIVITY_SELL_ART:
+            art.push_back(pool[p]);
+            break;
+
+        case ACTIVITY_SELL_MUSIC:
+            music.push_back(pool[p]);
+            break;
+
+        case ACTIVITY_DONATIONS:
+            solicit.push_back(pool[p]);
+            break;
+
+        case ACTIVITY_SELL_DRUGS:
+            brownies.push_back(pool[p]);
+            break;
+
+        case ACTIVITY_PROSTITUTION:
+            prostitutes.push_back(pool[p]);
             break;
 
         case ACTIVITY_BURY:
@@ -1352,260 +1260,1226 @@ void funds_and_trouble(char &clearformess) {
             hospitalize(clinic, *pool[p]);
             pool[p]->activity.type = ACTIVITY_NONE;
             break;
+
+        case ACTIVITY_SLEEPER_JOINLCS:
+            if(!location[shelter]->siege.siege) {
+                pool[p]->activity.type = ACTIVITY_NONE;
+                pool[p]->flag &= ~CREATUREFLAG_SLEEPER;
+                pool[p]->location = shelter;
+            }
         }
     }
 
-    int32 money;
+    long money;
 
     //SOLICITORS
     for(s = 0; s < solicit.size(); s++) {
-        money = LCSrandom(solicit[s]->skill[SKILL_PERSUASION] +
-                          solicit[s]->attval(ATTRIBUTE_CHARISMA) +
-                          solicit[s]->attval(ATTRIBUTE_HEART) + 1);
+        if(!checkforarrest(*solicit[s], "soliciting donations", clearformess)) {
+            money = LCSrandom(((solicit[s]->skillval(SKILL_PERSUASION) +
+                                solicit[s]->skillval(SKILL_BUSINESS) +
+                                solicit[s]->attval(ATTRIBUTE_CHARISMA) +
+                                solicit[s]->attval(ATTRIBUTE_HEART)) *
+                               attitude[VIEW_LIBERALCRIMESQUADPOS] *
+                               (attitude[VIEW_LIBERALCRIMESQUAD] + 5) *
+                               (solicit[s]->armor.professionalism())) / 20000 + 1);
 
-        if(LCSrandom(100) > attitude[VIEW_LIBERALCRIMESQUADPOS])
-            money = 0;
+            funds += money;
+            stat_funds += money;
+            moneygained_donate += money;
+            solicit[s]->train(SKILL_PERSUASION, max(7 - solicit[s]->skill[SKILL_PERSUASION], 2));
+            solicit[s]->train(SKILL_BUSINESS, max(3 - solicit[s]->skill[SKILL_BUSINESS], 1));
+        }
+    }
 
-        funds += money;
-        stat_funds += money;
-        moneygained_donate += money;
+    //TSHIRTS
+    int mood = publicmood(-1);
 
-        if(solicit[s]->skill[SKILL_PERSUASION] < 3)
-            solicit[s]->skill_ip[SKILL_PERSUASION] += LCSrandom(2) + 1;
+    for(s = 0; s < tshirts.size(); s++) {
+        if(!checkforarrest(*tshirts[s], "selling shirts", clearformess)) {
+            int competitionpenalty = tshirts.size();
+            competitionpenalty -= tshirts[s]->skillval(SKILL_PERSUASION);
+
+            if(competitionpenalty < 0)
+                competitionpenalty = 0;
+
+            if(competitionpenalty > 6)
+                competitionpenalty = 6;
+
+            const int costofsupplies = 12;
+
+            if(funds < costofsupplies) {
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
+
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+                addstr(tshirts[s]->name);
+                addstr(" can't afford to buy blank shirts and dyes.");
+                tshirts[s]->activity.type = ACTIVITY_NONE;
+                refresh();
+                getch();
+                continue;
+            }
+
+            int productquality = tshirts[s]->skillval(SKILL_TAILORING) * 4 + 8;
+            int demand = mood + 10 * (tshirts[s]->skillval(SKILL_BUSINESS) - competitionpenalty);
+
+            if(demand < 10)
+                demand = 10;
+
+            money = LCSrandom((productquality * demand) / 50 + 1) - costofsupplies;
+
+            funds += money;
+
+            if(money > 0)
+                stat_funds += money;
+
+            moneygained_goods += money + costofsupplies;
+            moneylost_goods += costofsupplies;
+
+            tshirts[s]->train(SKILL_TAILORING, max(6 - tshirts[s]->skill[SKILL_TAILORING], 4));
+            tshirts[s]->train(SKILL_BUSINESS, max(4 - tshirts[s]->skill[SKILL_BUSINESS], 2));
+        }
+    }
+
+    //ART
+    for(s = 0; s < art.size(); s++) {
+        if(!checkforarrest(*art[s], "sketching portraits", clearformess)) {
+            int competitionpenalty = art.size();
+            competitionpenalty -= art[s]->skillval(SKILL_ART);
+
+            if(competitionpenalty < 0)
+                competitionpenalty = 0;
+
+            if(competitionpenalty > 6)
+                competitionpenalty = 6;
+
+            const int costofsupplies = 8;
+
+            if(funds < costofsupplies) {
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
+
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+                addstr(art[s]->name);
+                addstr(" can't afford to buy art supplies.");
+                art[s]->activity.type = ACTIVITY_NONE;
+                refresh();
+                getch();
+                continue;
+            }
+
+            int productquality = art[s]->skillval(SKILL_ART) * 4 + 4;
+            int demand = mood + 10 * (art[s]->skillval(SKILL_BUSINESS) - competitionpenalty);
+
+            if(demand < 10)
+                demand = 10;
+
+            money = LCSrandom((productquality * demand) / 50 + 1) - costofsupplies;
+
+            funds += money;
+
+            if(money > 0)
+                stat_funds += money;
+
+            moneygained_goods += money + costofsupplies;
+            moneylost_goods += costofsupplies;
+
+            art[s]->train(SKILL_ART, max(6 - art[s]->skill[SKILL_ART], 4));
+            art[s]->train(SKILL_BUSINESS, max(4 - art[s]->skill[SKILL_BUSINESS], 2));
+        }
+    }
+
+    //MUSIC
+    for(s = 0; s < music.size(); s++) {
+        if(!checkforarrest(*music[s], "playing music", clearformess)) {
+            int competitionpenalty = music.size() / 4;
+
+            if(competitionpenalty < 0)
+                competitionpenalty = 0;
+
+            int productquality = music[s]->skillval(SKILL_MUSIC);
+
+            if(music[s]->weapon.type == WEAPON_GUITAR)
+                productquality *= 4;
+
+            int demand = mood - 10 * competitionpenalty;
+
+            if(demand < 10)
+                demand = 10;
+
+            money = LCSrandom((productquality * demand) / 50 + 2);
+
+            funds += money;
+            stat_funds += money;
+            moneygained_goods += money;
+
+            music[s]->train(SKILL_MUSIC, max(6 - music[s]->skill[SKILL_MUSIC], 4));
+        }
     }
 
     //BROWNIES
-    int32 dodgelawroll;
+    int dodgelawroll;
 
     for(s = 0; s < brownies.size(); s++) {
-        money = LCSrandom(brownies[s]->skill[SKILL_PERSUASION] * 5 +
-                          brownies[s]->attval(ATTRIBUTE_CHARISMA) * 5 +
-                          brownies[s]->attval(ATTRIBUTE_INTELLIGENCE) * 5 + 1);
+        money = LCSrandom(brownies[s]->skillval(SKILL_PERSUASION) * 2 +
+                          brownies[s]->skillval(SKILL_COOKING) * 2 +
+                          brownies[s]->skillval(SKILL_STREETSENSE) * 2 +
+                          brownies[s]->attval(ATTRIBUTE_CHARISMA) * 2 + 1);
+
+        // more money when more illegal
+        if(law[LAW_DRUGS] == -2)
+            money *= 4;
+
+        if(law[LAW_DRUGS] == -1)
+            money *= 2;
+
+        if(law[LAW_DRUGS] == 1)
+            money /= 4;
+
+        if(law[LAW_DRUGS] == 2)
+            money /= 8;
+
         funds += money;
         stat_funds += money;
         moneygained_brownies += money;
-        brownies[s]->skill_ip[SKILL_PERSUASION] += LCSrandom(2) + 1;
+        // Make the sale
+        brownies[s]->train(SKILL_PERSUASION, max(4 - brownies[s]->skill[SKILL_PERSUASION], 1));
+        // Know the streets
+        brownies[s]->train(SKILL_STREETSENSE, max(5 - brownies[s]->skill[SKILL_STREETSENSE], 3));
+        // Buy low, sell high
+        brownies[s]->train(SKILL_BUSINESS, max(3 - brownies[s]->skill[SKILL_BUSINESS], 1));
+        // Baking brownies :)
+        brownies[s]->train(SKILL_COOKING, max(3 - brownies[s]->skill[SKILL_COOKING], 1));
 
-        dodgelawroll = LCSrandom(brownies[s]->skill[SKILL_PERSUASION] +
-                                 brownies[s]->skill[SKILL_DISGUISE] +
-                                 brownies[s]->attval(ATTRIBUTE_CHARISMA) +
-                                 brownies[s]->attval(ATTRIBUTE_AGILITY) +
-                                 brownies[s]->attval(ATTRIBUTE_INTELLIGENCE) + 1);
+        //Check for police search
+        dodgelawroll = LCSrandom(1 + 30 * law[LAW_DRUGS] + 3);
 
-        if(dodgelawroll == 0) {
-            if(clearformess)
-                erase();
-            else
-                makedelimiter(8, 0);
+        //Saved by street sense?
+        if(dodgelawroll == 0)
+            dodgelawroll = LCSrandom(brownies[s]->skillval(SKILL_STREETSENSE) + 1);
 
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            move(8, 1);
-            addstr(brownies[s]->name);
-            addstr(" has been arrested while selling brownies.");
+        if(dodgelawroll == 0 && law[LAW_DRUGS] <= 0) { // Busted! Sort of
+            newsstoryst *ns = new newsstoryst;
+            ns->type = NEWSSTORY_DRUGARREST;
+            newsstory.push_back(ns);
+            sitestory = ns;
 
-            refresh();
-            getch();
-
-            removesquadinfo(*brownies[s]);
-            brownies[s]->carid = -1;
-            brownies[s]->location = ps;
-            brownies[s]->weapon.type = WEAPON_NONE;
-            brownies[s]->weapon.ammo = 0;
-            brownies[s]->activity.type = ACTIVITY_NONE;
-            brownies[s]->lawflag[LAWFLAG_BROWNIES]++;
+            criminalize(*brownies[s], LAWFLAG_BROWNIES);
+            attemptarrest(*brownies[s], "selling brownies", clearformess);
         }
     }
 
     //HACKING
     if(hack.size() > 0) {
-        int32 hskill = 0;
+        int h;
+        vector<Creature *> cc;
+        vector<Creature *> web;
+        vector<Creature *> ddos;
+        vector<Creature *> truehack;
 
-        for(int32 h = 0; h < hack.size(); h++) {
-            hskill += hack[h]->skill[SKILL_COMPUTERS];
-            hskill += hack[h]->attval(ATTRIBUTE_INTELLIGENCE);
-            hack[h]->skill_ip[SKILL_COMPUTERS] += LCSrandom(2) + 1;
+        int cc_skill = 0, cc_succeeded = 0;
+        int web_skill = 0, web_succeeded = 0;
+        int ddos_skill = 0, ddos_succeeded = 0;
+        int hack_skill = 0, hack_succeeded = 0;
+
+        //First, do accounting to figure out who's doing what
+        for(h = 0; h < hack.size(); h++) {
+            switch(hack[h]->activity.type) {
+            case ACTIVITY_CCFRAUD:
+                if(hack[h]->skillval(SKILL_COMPUTERS) > 1) {
+                    cc_skill += hack[h]->skillval(SKILL_COMPUTERS) - 1;
+                    cc_succeeded = 1;
+                }
+
+                cc.push_back(hack[h]);
+                break;
+
+            case ACTIVITY_DOS_ATTACKS:
+                if(hack[h]->skillval(SKILL_COMPUTERS) > 1) {
+                    web_skill += hack[h]->skillval(SKILL_COMPUTERS) - 1;
+                    web_succeeded = 1;
+                }
+
+                web.push_back(hack[h]);
+                break;
+
+            case ACTIVITY_DOS_RACKET:
+                if(hack[h]->skillval(SKILL_COMPUTERS) > 5) {
+                    ddos_skill += hack[h]->skillval(SKILL_COMPUTERS) - 4;
+                    ddos_skill += hack[h]->attval(ATTRIBUTE_INTELLIGENCE) - 7;
+                    ddos_succeeded = 1;
+                }
+
+                ddos.push_back(hack[h]);
+                break;
+
+            case ACTIVITY_HACKING:
+                if(hack[h]->skillval(SKILL_COMPUTERS) > 5) {
+                    hack_skill += hack[h]->skillval(SKILL_COMPUTERS) - 4;
+                    hack_skill += hack[h]->attval(ATTRIBUTE_INTELLIGENCE) - 7;
+                    hack_succeeded = 1;
+                }
+
+                truehack.push_back(hack[h]);
+                break;
+            }
         }
 
-        //MAJOR HACKING EVENT
-        if(LCSrandom(10000) <= hfund + hskill * 2) { // *JDS* hacking skill multiplier dropped significantly on major events
-            if(clearformess)
-                erase();
-            else
-                makedelimiter(8, 0);
+        //Now that we know what's being tried and what's being pulled off,
+        //loop through again to assign experince
+        for(h = 0; h < hack.size(); h++) {
+            switch(hack[h]->activity.type) {
+            case ACTIVITY_CCFRAUD:
+                if(cc_succeeded && hack[h]->skillval(SKILL_COMPUTERS) < 7)
+                    hack[h]->train(SKILL_COMPUTERS, LCSrandom(5));
+                else
+                    hack[h]->train(SKILL_COMPUTERS, LCSrandom(2));
 
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            move(8, 1);
+                break;
 
-            if(hack.size() > 1)
-                addstr("Your Hackers have ");
-            else {
-                addstr(hack[0]->name);
-                addstr(" has ");
-            }
+            case ACTIVITY_DOS_ATTACKS:
+                if(web_succeeded && hack[h]->skillval(SKILL_COMPUTERS) < 7)
+                    hack[h]->train(SKILL_COMPUTERS, LCSrandom(5));
+                else
+                    hack[h]->train(SKILL_COMPUTERS, LCSrandom(2));
 
-            int32 trackdif = 0;
-            uint16 crime = 0;
+                break;
 
-            int32 juiceval = 0;
+            case ACTIVITY_DOS_RACKET:
+                if(ddos_succeeded && hack[h]->skillval(SKILL_COMPUTERS) < 14)
+                    hack[h]->train(SKILL_COMPUTERS, LCSrandom(8));
+                else
+                    hack[h]->train(SKILL_COMPUTERS, LCSrandom(2));
 
-            switch(LCSrandom(2)) {
-            case 0: {
-                addstr("pilfered files from a Corporate server.");
+                break;
 
-                itemst *it = new itemst;
-                it->type = ITEM_LOOT;
-                it->loottype = LOOT_CORPFILES;
-                location[hack[0]->location]->loot.push_back(it);
+            case ACTIVITY_HACKING:
+                if(hack_succeeded && hack[h]->skillval(SKILL_COMPUTERS) < 18)
+                    hack[h]->train(SKILL_COMPUTERS, LCSrandom(10));
+                else
+                    hack[h]->train(SKILL_COMPUTERS, LCSrandom(2));
 
-                trackdif = 20;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 10;
                 break;
             }
-
-            case 1: // *JDS* Penetrated government networks; don't get any loot, but do scare the info community
-                addstr("caused a scare by breaking into a CIA network.");
-
-                trackdif = 30;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 20;
-                change_public_opinion(VIEW_INTELLIGENCE, 3, 0, 75);
-                break;
-            }
-
-            if(trackdif > LCSrandom(hskill + 1) + LCSrandom(10)) {
-                for(int32 h = 0; h < hack.size(); h++)
-                    hack[h]->lawflag[crime]++;
-            }
-
-            for(int32 h = 0; h < hack.size(); h++)
-                addjuice(*hack[h], juiceval, 20);
-
-            refresh();
-            getch();
         }
-        //MINOR HACKING EVENT
-        else if(LCSrandom(1000) <= hfund + hskill * 10) {
-            if(clearformess)
-                erase();
-            else
-                makedelimiter(8, 0);
 
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            move(8, 1);
+        char msg[80] = {0};
 
-            if(hack.size() > 1)
-                addstr("Your Hackers have ");
-            else {
-                addstr(hack[0]->name);
-                addstr(" has ");
+        //MAJOR HACKING
+        if(truehack.size()) {
+            if(!hack_succeeded) {
+                switch(LCSrandom(16)) {
+                case 0:
+                    strcpy(msg, "Your hackers have no idea how to do what you've asked them to do.");
+                    break;
+
+                case 1:
+                    strcpy(msg, "Your hackers can't even figure out where to start.");
+                    break;
+
+                case 2:
+                    strcpy(msg, "Your hackers need to get their feet wet on something less ambitious.");
+                    break;
+
+                case 3:
+                    strcpy(msg, "Your hackers are just playing video games.");
+                    break;
+
+                default:
+                    strcpy(msg, "");
+                    break;
+                }
+            } else {
+                if(LCSrandom(150) <= hack_skill) {
+                    if(truehack.size() > 1)
+                        strcpy(msg, "Your Hackers have ");
+                    else {
+                        strcpy(msg, truehack[0]->name);
+                        strcat(msg, " has ");
+                    }
+
+                    int trackdif = 0;
+                    int short crime = 0;
+
+                    int juiceval = 0;
+
+                    switch(LCSrandom(5)) {
+                    case 0: {
+                        strcat(msg, "pilfered files from a Corporate server.");
+
+                        itemst *it = new itemst;
+                        it->type = ITEM_LOOT;
+                        it->loottype = LOOT_CORPFILES;
+                        location[hack[0]->location]->loot.push_back(it);
+
+                        trackdif = 20;
+                        crime = LAWFLAG_INFORMATION;
+                        juiceval = 5;
+                        break;
+                    }
+
+                    case 1: // *JDS* Penetrated government networks; don't get any loot, but do scare the info community
+                        strcat(msg, "caused a scare by breaking into a CIA network.");
+
+                        trackdif = 30;
+                        crime = LAWFLAG_INFORMATION;
+                        juiceval = 20;
+                        change_public_opinion(VIEW_INTELLIGENCE, 10, 0, 75);
+                        break;
+
+                    case 2:
+                        strcat(msg, "sabotaged a genetics research company's network.");
+
+                        trackdif = 20;
+                        crime = LAWFLAG_INFORMATION;
+                        juiceval = 5;
+                        change_public_opinion(VIEW_GENETICS, 2, 0, 75);
+                        break;
+
+                    case 3: {
+                        strcat(msg, "intercepted internal media emails.");
+
+                        itemst *it = new itemst;
+                        it->type = ITEM_LOOT;
+                        it->loottype = LOOT_CABLENEWSFILES;
+                        location[hack[0]->location]->loot.push_back(it);
+
+                        trackdif = 20;
+                        crime = LAWFLAG_INFORMATION;
+                        juiceval = 5;
+                        break;
+                    }
+
+                    case 4:
+                        strcat(msg, "broke into military networks leaving LCS slogans.");
+
+                        trackdif = 30;
+                        crime = LAWFLAG_INFORMATION;
+                        juiceval = 5;
+                        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 5, 0, 75);
+                        break;
+                    }
+
+                    if(trackdif > LCSrandom(hack_skill + 1) + LCSrandom(10)) {
+                        for(int h = 0; h < truehack.size(); h++)
+                            criminalize(*hack[h], crime);
+                    }
+
+                    for(int h = 0; h < truehack.size(); h++)
+                        addjuice(*truehack[h], juiceval, 50);
+                }
             }
 
-            int32 trackdif = 0;
-            uint16 crime = 0;
+            if(msg[0]) {
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
 
-            int32 juiceval = 0;
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
 
-            switch(LCSrandom(3)) {
-            case 0: // DDoS on corporate site
-                addstr("launched a denial of service attack on a Corporate site.");
+                addstr(msg);
+                msg[0] = 0;
 
-                trackdif = 3;
-                crime = LAWFLAG_COMMERCE;
-                juiceval = 2;
-                break;
+                refresh();
+                getch();
+            }
+        }
 
-            case 1: { // Credit Card fraud
-                addstr("stolen some credit card numbers, netting $");
-                char num[20];
-                // *JDS* You get between $1 and $500, plus an extra $1-250 every
+        //CREDIT CARD FRAUD
+        if(cc.size()) {
+            if(!cc_succeeded) {
+                switch(LCSrandom(16)) {
+                case 0:
+                    strcpy(msg, "Nobody on your credit card fraud team knows what to do.");
+                    break;
+
+                case 1:
+                    strcpy(msg, "Your credit card fraud team needs skilled hackers.");
+                    break;
+
+                case 2:
+                    strcpy(msg, "Your credit card fraud team needs a programmer.");
+                    break;
+
+                case 3:
+                    strcpy(msg, "Your credit card fraud team is just playing video games.");
+                    break;
+
+                default:
+                    strcpy(msg, "");
+                    break;
+                }
+            } else if(LCSrandom(15) <= cc_skill) {
+                /*if(cc.size()>1)strcpy(msg,"Your credit card fraud team has ");
+                else {strcpy(msg,cc[0]->name);strcat(msg," has ");}
+
+                strcat(msg,"run some numbers, netting $");
+                char num[20];*/
+                // *JDS* You get between $1 and $100, plus an extra $1-50 every
                 // time you pass a check against your hacking skill, where chance of
                 // failure is one over the adjusted hackers' skill divided by four. Once
                 // a check fails, no more money is gained. This check will be made
                 // up to 20 times, at which point the loop breaks. The skill check
                 // here doesn't take into account funding.
-                int32 fundgain = LCSrandom(501);
+                int fundgain = LCSrandom(101);
 
-                for(int32 i = 0; i < 20 && LCSrandom(hskill / 4); i++)
-                    fundgain += LCSrandom(251);
+                for(int i = 0; i < 20 && LCSrandom(cc_skill / 4); i++)
+                    fundgain += LCSrandom(51);
 
                 funds += fundgain;
                 stat_funds += fundgain;
                 moneygained_ccfraud += fundgain;
-                itoa(fundgain, num, 10);
-                addstr(num);
-                addstr(".");
+                /*itoa(fundgain,num,10);
+                strcat(msg,num);
+                strcat(msg,".");*/
 
-                trackdif = 10;
-                crime = LAWFLAG_CCFRAUD;
-                break;
+                if(fundgain / 100 > LCSrandom(cc_skill + 1)) {
+                    for(int h = 0; h < cc.size(); h++)
+                        criminalize(*cc[h], LAWFLAG_CCFRAUD);
+                }
             }
 
-            case 2: { // *JDS* Website defacement... very small effect, but can hit any issue but media and LCS views
-                int32 issue = LCSrandom(VIEWNUM - 4);
-                addstr("defaced a prominent Conservative website.");
+            if(msg[0]) {
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
+
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+
+                addstr(msg);
+                msg[0] = 0;
+
+                refresh();
+                getch();
+            }
+        }
+
+        //DENIAL OF SERVICE RACKET
+        if(ddos.size()) {
+            if(!ddos_succeeded) {
+                switch(LCSrandom(16)) {
+                case 0:
+                    strcpy(msg, "Nobody on your denial of service racket team knows what to do.");
+                    break;
+
+                case 1:
+                    strcpy(msg, "Your denial of service racket team needs a skilled hacker.");
+                    break;
+
+                case 2:
+                    strcpy(msg, "Your denial of service racket team isn't scaring anyone.");
+                    break;
+
+                case 3:
+                    strcpy(msg, "Your denial of service racket team needs a programmer.");
+                    break;
+
+                default:
+                    strcpy(msg, "");
+                    break;
+                }
+            } else if(LCSrandom(100) <= ddos_skill) {
+                if(ddos.size() > 1)
+                    strcpy(msg, "Your DoS team has ");
+                else {
+                    strcpy(msg, ddos[0]->name);
+                    strcat(msg, " has ");
+                }
+
+                int trackdif = 0;
+
+                // hit means they had to take the site down;
+                // no hit means the target surrendered before
+                // the attack was launched
+                bool hit = LCSrandom(100) > ddos_skill;
+
+                if(hit)
+                    strcat(msg, "hit a ");
+                else
+                    strcat(msg, "extorted a ");
+
+                switch(LCSrandom(5)) {
+                case 0:
+                    strcat(msg, "large corporation");
+                    break;
+
+                case 1:
+                    strcat(msg, "betting company");
+                    break;
+
+                case 2:
+                    strcat(msg, "political website");
+                    break;
+
+                case 3:
+                    strcat(msg, "news agency");
+                    break;
+
+                case 4:
+                    strcat(msg, "government agency");
+                    break;
+                }
+
+                strcat(msg, ", netting $");
+                char num[20];
+
+                long fundgain = 200;
+
+                for(int i = 0; i < 19 && LCSrandom(ddos_skill / (2 + i)); i++)
+                    fundgain += 200;
+
+                funds += fundgain;
+                stat_funds += fundgain;
+                moneygained_extortion += fundgain;
+                itoa(fundgain, num, 10);
+                strcat(msg, num);
+                strcat(msg, ".");
+
+                if(hit)
+                    trackdif = fundgain / 1000;  // Easier to track if they fight
+                else
+                    trackdif = !LCSrandom(3);  // Harder to track if they give in
+
+                if(trackdif > LCSrandom(ddos_skill + 1)) {
+                    for(int h = 0; h < ddos.size(); h++)
+                        criminalize(*ddos[h], LAWFLAG_RACKETEERING);
+                }
+            }
+
+            if(msg[0]) {
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
+
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+
+                addstr(msg);
+                msg[0] = 0;
+
+                refresh();
+                getch();
+            }
+        }
+
+        //HARASS WEBSITES
+        if(web.size()) {
+            if(!web_succeeded) {
+                switch(LCSrandom(16)) {
+                case 0:
+                    strcpy(msg, "Your website harassment team trolls some forums.");
+                    break;
+
+                case 1:
+                    strcpy(msg, "Your website harassment team sends spam emails.");
+                    break;
+
+                case 2:
+                    strcpy(msg, "Your website harassment team posts mean comments.");
+                    break;
+
+                case 3:
+                    strcpy(msg, "Your website harassment team bad-mouths a website.");
+                    break;
+
+                default:
+                    strcpy(msg, "");
+                    break;
+                }
+            } else if(LCSrandom(10) <= web_skill) {
+                int issue = LCSrandom(VIEWNUM - 6);
+                int crime;
+
                 // Maybe do a switch on issue here to specify which website it was, but I don't feel like
                 // doing that right now
-                juiceval = 2;
-                trackdif = 2;
-                crime = LAWFLAG_INFORMATION;
-                change_public_opinion(issue, 1, 0, 75);
-                break;
-            }
+
+                if(web.size() > 1)
+                    strcpy(msg, "Your website harassment team has ");
+                else {
+                    strcpy(msg, web[0]->name);
+                    strcat(msg, " has ");
+                }
+
+                switch(LCSrandom(5)) {
+                case 0:
+                    strcat(msg, "defaced");
+                    crime = LAWFLAG_INFORMATION;
+                    break;
+
+                case 1:
+                    strcat(msg, "knocked out");
+                    crime = LAWFLAG_COMMERCE;
+                    break;
+
+                case 2:
+                    strcat(msg, "slandered");
+                    crime = LAWFLAG_SPEECH;
+                    break;
+
+                case 3:
+                    strcat(msg, "threatened");
+                    crime = LAWFLAG_SPEECH;
+                    break;
+
+                case 4:
+                    strcat(msg, "hacked");
+                    crime = LAWFLAG_INFORMATION;
+                    break;
+                }
+
+                strcat(msg, " a ");
+
+                switch(LCSrandom(5)) {
+                case 0:
+                    strcat(msg, "corporate website");
+                    break;
+
+                case 1:
+                    strcat(msg, "Conservative forum");
+                    break;
+
+                case 2:
+                    strcat(msg, "Conservative blog");
+                    break;
+
+                case 3:
+                    strcat(msg, "news website");
+                    break;
+
+                case 4:
+                    strcat(msg, "government website");
+                    break;
+                }
+
+                strcat(msg, ".");
+
+                change_public_opinion(issue, 1);
+
+                if(!LCSrandom(web_skill + 1)) {
+                    for(int h = 0; h < web.size(); h++)
+                        criminalize(*web[h], crime);
+                }
             }
 
-            if(trackdif > LCSrandom(hskill + 1) + LCSrandom(10)) {
-                for(int32 h = 0; h < hack.size(); h++)
-                    hack[h]->lawflag[crime]++;
+            if(msg[0]) {
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
+
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+
+                addstr(msg);
+                msg[0] = 0;
+
+                refresh();
+                getch();
+            }
+        }
+    }
+
+    //GRAFFITI
+    if(graffiti.size() >= 0) {
+        for(s = 0; s < graffiti.size(); ++s) {
+            if(graffiti[s]->weapon.type != WEAPON_SPRAYCAN) {
+
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
+
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+                addstr(graffiti[s]->name);
+
+                //TODO: CHECK BASE INVENTORY FOR A SPRAYCAN BEFORE BUYING ONE
+
+                if(funds >= 20) {
+                    moneylost_goods += 20;
+                    funds -= 20;
+                    addstr(" bought spraypaint for graffiti.");
+                    refresh();
+                    getch();
+
+                    // drop your gun
+                    if(graffiti[s]->weapon.type != WEAPON_NONE) {
+                        itemst *i = new itemst;
+                        i->type = ITEM_WEAPON;
+                        i->weapon = graffiti[s]->weapon;
+                        location[graffiti[s]->base]->loot.push_back(i);
+
+                        graffiti[s]->weapon.type = WEAPON_NONE;
+                        graffiti[s]->weapon.ammo = 0;
+
+                        //DROP ALL CLIPS
+                        for(int c = 0; c < CLIPNUM; c++) {
+                            for(int p2 = 0; p2 < graffiti[s]->clip[c]; p2++) {
+                                if(c == CLIP_MOLOTOV) {
+                                    itemst *newi = new itemst;
+                                    newi->type = ITEM_WEAPON;
+                                    newi->weapon.type = WEAPON_MOLOTOV;
+                                    newi->weapon.ammo = 1;
+                                    location[graffiti[s]->base]->loot.push_back(newi);
+                                } else {
+                                    itemst *newi = new itemst;
+                                    newi->type = ITEM_CLIP;
+                                    newi->cliptype = c;
+                                    location[graffiti[s]->base]->loot.push_back(newi);
+                                }
+                            }
+
+                            graffiti[s]->clip[c] = 0;
+                        }
+
+                        consolidateloot(location[graffiti[s]->base]->loot);
+                    }
+
+                    graffiti[s]->weapon.type = WEAPON_SPRAYCAN;
+                } else {
+                    addstr(" needs a spraycan equipped to do graffiti.");
+                    graffiti[s]->activity.type = ACTIVITY_NONE;
+                    refresh();
+                    getch();
+                    continue;
+                }
             }
 
-            for(int32 h = 0; h < hack.size(); h++)
-                addjuice(*hack[h], juiceval, 20);
+            int issue = VIEW_LIBERALCRIMESQUAD;
+            int power = 1;
+            int caught = 0;
+
+            if(clearformess)
+                erase();
+            else
+                makedelimiter(8, 0);
+
+            if(!LCSrandom((graffiti[s]->skillval(SKILL_STREETSENSE) * 3 +
+                           graffiti[s]->attval(ATTRIBUTE_INTELLIGENCE)) * 3)) {
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
+
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+
+                if(LCSrandom(graffiti[s]->skillval(SKILL_STREETSENSE) * 3 +
+                             graffiti[s]->attval(ATTRIBUTE_AGILITY) * 3)) {
+                    addstr(graffiti[s]->name);
+                    addstr(" was spotted by the police");
+                    criminalize(*graffiti[s], LAWFLAG_VANDALISM);
+                    graffiti[s]->train(SKILL_STREETSENSE, 20);
+
+                    if(graffiti[s]->activity.arg != -1) {
+                        addstr(" and forced to abandon the mural.");
+                        graffiti[s]->activity.arg = -1;
+                    } else
+                        addstr(" while spraying an LCS tag.");
+
+                    newsstoryst *ns = new newsstoryst;
+                    ns->type = NEWSSTORY_GRAFFITIARREST;
+                    ns->positive = 0;
+                    newsstory.push_back(ns);
+                    sitestory = ns;
+
+                    attemptarrest(*graffiti[s], NULL, clearformess);
+
+                    refresh();
+                    getch();
+                } else
+                    caught = 1;
+            } else if(graffiti[s]->activity.arg != -1) {
+                power = 0;
+
+                if(!LCSrandom(3)) {
+                    char issuestr[60];
+                    getview(issuestr, graffiti[s]->activity.arg);
+                    issue = graffiti[s]->activity.arg;
+                    power = LCSrandom((graffiti[s]->skillval(SKILL_ART) + graffiti[s]->attval(ATTRIBUTE_HEART)) / 5 + 1) + 1;
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(8, 1);
+                    addstr(graffiti[s]->name);
+                    addstr(" has completed a");
+
+                    if(power > 3)
+                        addstr(" beautiful");
+
+                    addstr(" mural about ");
+                    addstr(issuestr);
+                    addstr(".");
+
+                    graffiti[s]->activity.arg = -1;
+                    addjuice(*graffiti[s], power, power * 20);
+                    change_public_opinion(issue, power);
+                    graffiti[s]->train(SKILL_ART, MAX(10 - graffiti[s]->skillval(SKILL_ART) / 2, 1));
+                    refresh();
+                    getch();
+                } else {
+                    power = 0;
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(8, 1);
+                    addstr(graffiti[s]->name);
+                    addstr(" works through the night on a large mural.");
+                    graffiti[s]->train(SKILL_ART, MAX(10 - graffiti[s]->skillval(SKILL_ART) / 2, 1));
+                    refresh();
+                    getch();
+                }
+            } else if(!LCSrandom(MAX(30 - graffiti[s]->skillval(SKILL_ART) * 2, 5))) {
+                issue = randomissue();
+                char issuestr[60];
+                getview(issuestr, issue);
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+                addstr(graffiti[s]->name);
+                addstr(" has begun work on a large mural about ");
+                addstr(issuestr);
+                addstr(".");
+                graffiti[s]->activity.arg = issue;
+                power = 0;
+                graffiti[s]->train(SKILL_ART, MAX(10 - graffiti[s]->skillval(SKILL_ART) / 2, 1));
+                refresh();
+                getch();
+            }
+
+            graffiti[s]->train(SKILL_ART, MAX(4 - graffiti[s]->skillval(SKILL_ART), 0));
+
+            if(issue == VIEW_LIBERALCRIMESQUAD) {
+                change_public_opinion(VIEW_LIBERALCRIMESQUAD, LCSrandom(2), 0, 65);
+                change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, !LCSrandom(8), 0, 65);
+                public_interest[issue] += power;
+            } else {
+                change_public_opinion(VIEW_LIBERALCRIMESQUAD, LCSrandom(2) + 1, 0, 85);
+                change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, !LCSrandom(4), 0, 65);
+                public_interest[issue] += power;
+                background_liberal_influence[issue] += power;
+            }
+        }
+    }
+
+    //PROSTITUTION
+    for(int p = prostitutes.size() - 1; p >= 0; p--) {
+        if(LCSrandom(3))
+            continue;
+
+        char num[20];
+
+        long fundgain = 0;
+        char caught = 0;
+
+        if(clearformess)
+            erase();
+        else
+            makedelimiter(8, 0);
+
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+        move(8, 1);
+        addstr(prostitutes[p]->name);
+        addstr(" gives it up for $");
+
+        if(prostitutes[p]->skillval(SKILL_SEDUCTION) > 9)
+            fundgain = LCSrandom(201) + 200;
+        else if(prostitutes[p]->skillval(SKILL_SEDUCTION))fundgain = LCSrandom(20 * prostitutes[p]->skillval(SKILL_SEDUCTION) + 1) +
+                    5 * prostitutes[p]->skillval(SKILL_SEDUCTION);
+        else
+            fundgain = LCSrandom(21) + 20;
+
+        itoa(fundgain, num, 10);
+        addstr(num);
+        addstr("!");
+
+        if(!LCSrandom(3))
+            addjuice(*prostitutes[p], -!LCSrandom(3));
+
+        prostitutes[p]->train(SKILL_SEDUCTION, MAX(10 - prostitutes[p]->skillval(SKILL_SEDUCTION), 0));
+
+        refresh();
+        getch();
+
+
+        if(!LCSrandom(100) &&                                    // Police sting?
+                !LCSrandom(prostitutes[p]->skillval(SKILL_STREETSENSE))) { // Street sense to avoid
+            if(clearformess)
+                erase();
+            else
+                makedelimiter(8, 0);
+
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            move(8, 1);
+            addstr(prostitutes[p]->name);
+            addstr(" has been arrested in a prostitution sting.");
+
+            addjuice(*prostitutes[p], -7);
 
             refresh();
             getch();
+
+            caught = 1;
+
+            removesquadinfo(*prostitutes[p]);
+            prostitutes[p]->carid = -1;
+            prostitutes[p]->location = ps;
+            prostitutes[p]->weapon.type = WEAPON_NONE;
+            prostitutes[p]->weapon.ammo = 0;
+            prostitutes[p]->activity.type = ACTIVITY_NONE;
+            criminalize(*prostitutes[p], LAWFLAG_PROSTITUTION);
+        } else
+            prostitutes[p]->train(SKILL_STREETSENSE, MAX(5 - prostitutes[p]->skill[SKILL_STREETSENSE], 0));
+
+        /*{ //HUSTLING CODE NOT CURRENTLY USED
+           if(clearformess)erase();
+           else
+           {
+              makedelimiter(8,0);
+           }
+
+           set_color(COLOR_WHITE,COLOR_BLACK,1);
+           move(8,1);
+           addstr(trouble[t]->name);
+           switch(LCSrandom(2))
+           {
+              case 0:addstr(" made some money playing shell games.");break;
+              case 1:addstr(" found some money on the ground.");break;
+           }
+
+           refresh();
+           getch();
+
+           fundgain=LCSrandom(11)+10;
+        }*/
+
+        if(!caught) {
+            funds += fundgain;
+            stat_funds += fundgain;
+            moneygained_hustling += fundgain;
         }
     }
 
     //TROUBLE
     if(trouble.size() > 0) {
-        //FIRST DEAL WITH LAME-Os
-        char num[20];
+        long juiceval = 0;
+        char done = 0;
+        short crime = 0;
 
-        for(int32 t = trouble.size() - 1; t >= 0; t--) {
-            if(trouble[t]->juice < 0) {
-                int32 fundgain = 0;
-                char caught = 0;
+        if(clearformess)
+            erase();
+        else
+            makedelimiter(8, 0);
 
-                if(!LCSrandom(4)) {
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+        move(8, 1);
+
+        if(trouble.size() > 1)
+            addstr("Your Activists have ");
+        else {
+            addstr(trouble[0]->name);
+            addstr(" has ");
+        }
+
+        int power = 0;
+
+        for(int t = 0; t < trouble.size(); t++) {
+            power += trouble[t]->skillval(SKILL_PERSUASION) +
+                     trouble[t]->attval(ATTRIBUTE_CHARISMA) +
+                     trouble[t]->attval(ATTRIBUTE_AGILITY) +
+                     trouble[t]->attval(ATTRIBUTE_HEART) +
+                     trouble[t]->attval(ATTRIBUTE_STRENGTH) +
+                     trouble[t]->attval(ATTRIBUTE_INTELLIGENCE);
+        }
+
+        int mod = 1;
+
+        if(LCSrandom(100) < power)
+            mod++;
+
+        if(LCSrandom(100) < power)
+            mod++;
+
+        if(LCSrandom(1000) < power)
+            mod++;
+
+        if(LCSrandom(1000) < power)
+            mod++;
+
+        if(LCSrandom(10000) < power)
+            mod++;
+
+        if(LCSrandom(10000) < power)
+            mod++;
+
+        do {
+            switch(LCSrandom(8)) {
+            case 0:
+                addstr("run around uptown splashing paint on fur coats!");
+                juiceval = 2;
+                crime = LAWFLAG_ASSAULT;
+                change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod);
+                change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod >> 1, 0, 70);
+                public_interest[VIEW_ANIMALRESEARCH] += mod;
+                background_liberal_influence[VIEW_ANIMALRESEARCH] += mod;
+                done = 1;
+                break;
+
+            case 1: {
+                if(law[LAW_GAY] < 2) {
+                    addstr("disrupted a traditional wedding at a church!");
+                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod);
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                    public_interest[VIEW_GAY] += mod;
+                    background_liberal_influence[VIEW_GAY] += mod;
+                    juiceval = 2;
+                    crime = LAWFLAG_DISTURBANCE;
+                    done = 1;
+                }
+
+                break;
+            }
+
+            case 2: {
+                if(law[LAW_ABORTION] < 2) {
+                    addstr("posted horrifying dead abortion doctor pictures downtown!");
+                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod);
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                    public_interest[VIEW_WOMEN] += mod;
+                    background_liberal_influence[VIEW_WOMEN] += mod;
+                    juiceval = 1;
+                    done = 1;
+                }
+
+                break;
+            }
+
+            case 3: {
+                addstr("distributed fliers graphically illustrating prison life!");
+                change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod);
+                change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                public_interest[VIEW_PRISONS] += mod;
+                background_liberal_influence[VIEW_PRISONS] += mod;
+                juiceval = 1;
+                done = 1;
+                break;
+            }
+
+            case 4: {
+                if(law[LAW_POLICEBEHAVIOR] < 2) {
+                    addstr("gone downtown and reenacted a police beating!");
+                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod);
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                    public_interest[VIEW_POLICEBEHAVIOR] += mod;
+                    background_liberal_influence[VIEW_POLICEBEHAVIOR] += mod;
+                    juiceval = 2;
+                    crime = LAWFLAG_DISTURBANCE;
+                    done = 1;
+                }
+
+                break;
+            }
+
+            case 5: {
+                if(law[LAW_NUCLEARPOWER] < 2) {
+                    if(trouble.size() > 1)
+                        addstr("dressed up and pretended to be radioactive mutants!");
+                    else
+                        addstr("dressed up and pretended to be a radioactive mutant!");
+
+                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod);
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                    public_interest[VIEW_NUCLEARPOWER] += mod;
+                    background_liberal_influence[VIEW_NUCLEARPOWER] += mod;
+                    juiceval = 2;
+                    crime = LAWFLAG_DISTURBANCE;
+                    done = 1;
+                }
+
+                break;
+            }
+
+            case 6: {
+                if(law[LAW_POLLUTION] < 2) {
+                    addstr("squirted business people with fake polluted water!");
+                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod);
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                    public_interest[VIEW_POLLUTION] += mod;
+                    background_liberal_influence[VIEW_POLLUTION] += mod;
+                    juiceval = 2;
+                    crime = LAWFLAG_DISTURBANCE;
+                    done = 1;
+                }
+
+                break;
+            }
+
+            case 7: {
+                if(law[LAW_DEATHPENALTY] < 2) {
+                    addstr("distributed fliers graphically illustrating executions!");
+                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod);
+                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
+                    public_interest[VIEW_DEATHPENALTY] += mod;
+                    background_liberal_influence[VIEW_DEATHPENALTY] += mod;
+                    juiceval = 1;
+                    done = 1;
+                }
+
+                break;
+            }
+            }
+        } while(!done);
+
+        refresh();
+        getch();
+
+        if(crime != 0) {
+            for(int t = 0; t < trouble.size(); t++) {
+                if(!LCSrandom(10) &&                                         // Police called?
+                        !LCSrandom(trouble[t]->attval(ATTRIBUTE_AGILITY) +
+                                   trouble[t]->attval(ATTRIBUTE_INTELLIGENCE) +   // Use your instincts...
+                                   trouble[t]->skillval(SKILL_DISGUISE) +
+                                   trouble[t]->skillval(SKILL_STREETSENSE))) {       // ...and your skills!
                     if(clearformess)
                         erase();
                     else
                         makedelimiter(8, 0);
 
-                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                    move(8, 1);
-                    addstr(trouble[t]->name);
-                    addstr(" gives it up for $");
+                    if(LCSrandom(2)) {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(8, 1);
+                        addstr(trouble[t]->name);
+                        addstr(" has been arrested.");
 
-                    if(trouble[t]->juice <= -50)
-                        fundgain = LCSrandom(21) + 20;
-                    else if(trouble[t]->juice <= -50)
-                        fundgain = LCSrandom(21) + 20;
-                    else
-                        fundgain = LCSrandom(21) + 20;
+                        refresh();
+                        getch();
 
-                    itoa(fundgain, num, 10);
-                    addstr(num);
-                    addstr("!");
+                        removesquadinfo(*trouble[t]);
+                        trouble[t]->carid = -1;
+                        trouble[t]->location = ps;
+                        trouble[t]->weapon.type = WEAPON_NONE;
+                        trouble[t]->weapon.ammo = 0;
+                        trouble[t]->activity.type = ACTIVITY_NONE;
+                        criminalize(*trouble[t], crime);
+                    } else if(trouble[t]->weapon.type == WEAPON_NONE &&
+                              trouble[t]->skillval(SKILL_HANDTOHAND) == 0) {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(8, 1);
+                        addstr(trouble[t]->name);
+                        addstr(" is cornered by a mob of angry rednecks.");
 
-                    addjuice(*trouble[t], -3);
+                        refresh();
+                        getch();
 
-                    refresh();
-                    getch();
+                        trouble[t]->activity.type = ACTIVITY_CLINIC;
 
-
-                    if(!LCSrandom(4)) {
                         if(clearformess)
                             erase();
                         else
@@ -1614,405 +2488,252 @@ void funds_and_trouble(char &clearformess) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
                         addstr(trouble[t]->name);
-                        addstr(" has been arrested in a prostitution sting.");
-
-                        addjuice(*trouble[t], -7);
+                        addstr(" is severely beaten before the mob is broken up.");
 
                         refresh();
                         getch();
 
-                        caught = 1;
+                        if(trouble[t]->juice >= 100 || signed(LCSrandom(100)) < trouble[t]->juice) {
+                            addjuice(*trouble[t], -5);
 
-                        removesquadinfo(*trouble[t]);
-                        trouble[t]->carid = -1;
-                        trouble[t]->location = ps;
-                        trouble[t]->weapon.type = WEAPON_NONE;
-                        trouble[t]->weapon.ammo = 0;
-                        trouble[t]->activity.type = ACTIVITY_NONE;
-                        trouble[t]->lawflag[LAWFLAG_PROSTITUTION];
-                    }
-                } else {
-                    if(clearformess)
-                        erase();
-                    else
-                        makedelimiter(8, 0);
-
-                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                    move(8, 1);
-                    addstr(trouble[t]->name);
-
-                    switch(LCSrandom(2)) {
-                    case 0:
-                        addstr(" made some money playing shell games.");
-                        break;
-
-                    case 1:
-                        addstr(" found some money on the ground.");
-                        break;
-                    }
-
-                    refresh();
-                    getch();
-
-                    fundgain = LCSrandom(11) + 10;
-                }
-
-                if(!caught) {
-                    funds += fundgain;
-                    stat_funds += fundgain;
-                    moneygained_hustling += fundgain;
-                }
-
-                trouble.erase(trouble.begin() + t);
-            }
-        }
-
-        //NOW DO THE REST
-        if(trouble.size() > 0) {
-            int32 juiceval = 0;
-            char done = 0;
-            uint16 crime = 0;
-
-            if(clearformess)
-                erase();
-            else
-                makedelimiter(8, 0);
-
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            move(8, 1);
-
-            if(trouble.size() > 1)
-                addstr("Your Activists have ");
-            else {
-                addstr(trouble[0]->name);
-                addstr(" has ");
-            }
-
-            int32 power = 0;
-
-            for(int32 t = 0; t < trouble.size(); t++) {
-                power += trouble[t]->skill[SKILL_PERSUASION] +
-                         trouble[t]->attval(ATTRIBUTE_CHARISMA) +
-                         trouble[t]->attval(ATTRIBUTE_AGILITY) +
-                         trouble[t]->attval(ATTRIBUTE_HEART) +
-                         trouble[t]->attval(ATTRIBUTE_STRENGTH) +
-                         trouble[t]->attval(ATTRIBUTE_INTELLIGENCE);
-            }
-
-            power += tfund / 10;
-
-            int32 mod = 1;
-
-            if(LCSrandom(100) < power)
-                mod++;
-
-            if(LCSrandom(100) < power)
-                mod++;
-
-            if(LCSrandom(1000) < power)
-                mod++;
-
-            if(LCSrandom(1000) < power)
-                mod++;
-
-            if(LCSrandom(10000) < power)
-                mod++;
-
-            if(LCSrandom(10000) < power)
-                mod++;
-
-            do {
-                switch(LCSrandom(8)) {
-                case 0:
-                    addstr("run around uptown splashing paint on fur coats!");
-                    juiceval = 2;
-                    crime = LAWFLAG_ASSAULT;
-                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
-                    change_public_opinion(VIEW_ANIMALRESEARCH, mod, 0, 75);
-                    done = 1;
-                    break;
-
-                case 1: {
-                    if(law[LAW_GAY] < 2) {
-                        addstr("disrupted a traditional wedding at a church!");
-                        change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
-                        change_public_opinion(VIEW_GAY, mod, 0, 75);
-                        juiceval = 2;
-                        crime = LAWFLAG_DISTURBANCE;
-                        done = 1;
-                    }
-
-                    break;
-                }
-
-                case 2: {
-                    if(law[LAW_ABORTION] < 2) {
-                        addstr("posted horrifying dead abortion doctor pictures downtown!");
-                        change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
-                        change_public_opinion(VIEW_ABORTION, mod, 0, 75);
-                        juiceval = 1;
-                        done = 1;
-                    }
-
-                    break;
-                }
-
-                case 3: {
-                    addstr("distributed fliers graphically illustrating prison life!");
-                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
-                    change_public_opinion(VIEW_PRISONS, mod, 0, 75);
-                    juiceval = 1;
-                    done = 1;
-                    break;
-                }
-
-                case 4: {
-                    if(law[LAW_POLICEBEHAVIOR] < 2) {
-                        addstr("gone downtown and reenacted a police beating!");
-                        change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
-                        change_public_opinion(VIEW_POLICEBEHAVIOR, mod, 0, 75);
-                        juiceval = 2;
-                        crime = LAWFLAG_DISTURBANCE;
-                        done = 1;
-                    }
-
-                    break;
-                }
-
-                case 5: {
-                    if(law[LAW_NUCLEARPOWER] < 2) {
-                        if(trouble.size() > 1)
-                            addstr("dressed up and pretended to be radioactive mutants!");
-                        else
-                            addstr("dressed up and pretended to be a radioactive mutant!");
-
-                        change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
-                        change_public_opinion(VIEW_NUCLEARPOWER, mod, 0, 75);
-                        juiceval = 2;
-                        crime = LAWFLAG_DISTURBANCE;
-                        done = 1;
-                    }
-
-                    break;
-                }
-
-                case 6: {
-                    if(law[LAW_POLLUTION] < 2) {
-                        addstr("squirted business people with fake polluted water!");
-                        change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
-                        change_public_opinion(VIEW_POLLUTION, mod, 0, 75);
-                        juiceval = 2;
-                        crime = LAWFLAG_DISTURBANCE;
-                        done = 1;
-                    }
-
-                    break;
-                }
-
-                case 7: {
-                    if(law[LAW_DEATHPENALTY] < 2) {
-                        addstr("distributed fliers graphically illustrating executions!");
-                        change_public_opinion(VIEW_LIBERALCRIMESQUAD, mod, 0);
-                        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, mod, 0, 70);
-                        change_public_opinion(VIEW_DEATHPENALTY, mod, 0, 75);
-                        juiceval = 1;
-                        done = 1;
-                    }
-
-                    break;
-                }
-                }
-            } while(!done);
-
-            refresh();
-            getch();
-
-            if(crime != 0) {
-                for(int32 t = 0; t < trouble.size(); t++) {
-                    dodgelawroll = LCSrandom(trouble[t]->skill[SKILL_PERSUASION] +
-                                             trouble[t]->skill[SKILL_DISGUISE] +
-                                             trouble[t]->attval(ATTRIBUTE_CHARISMA) +
-                                             trouble[t]->attval(ATTRIBUTE_AGILITY) +
-                                             trouble[t]->attval(ATTRIBUTE_INTELLIGENCE) + 1) +
-                                   LCSrandom(tfund / 100 + 1);
-
-                    if(dodgelawroll == 0) {
-                        if(clearformess)
-                            erase();
-                        else
-                            makedelimiter(8, 0);
-
-                        if(LCSrandom(2)) {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(8, 1);
-                            addstr(trouble[t]->name);
-                            addstr(" has been arrested.");
-
-                            refresh();
-                            getch();
-
-                            removesquadinfo(*trouble[t]);
-                            trouble[t]->carid = -1;
-                            trouble[t]->location = ps;
-                            trouble[t]->weapon.type = WEAPON_NONE;
-                            trouble[t]->weapon.ammo = 0;
-                            trouble[t]->activity.type = ACTIVITY_NONE;
-                            trouble[t]->lawflag[crime]++;
+                            if(trouble[t]->blood > 50)
+                                trouble[t]->blood = 50;
                         } else {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(8, 1);
-                            addstr(trouble[t]->name);
-                            addstr(" is cornered by a mob of angry rednecks.");
+                            addjuice(*trouble[t], -10);
 
-                            refresh();
-                            getch();
+                            if(trouble[t]->blood > 10)
+                                trouble[t]->blood = 10;
 
-                            trouble[t]->activity.type = ACTIVITY_CLINIC;
-
-                            if(clearformess)
-                                erase();
-                            else
-                                makedelimiter(8, 0);
-
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(8, 1);
-                            addstr(trouble[t]->name);
-                            addstr(" is severely beaten before the mob is broken up.");
-
-                            refresh();
-                            getch();
-
-                            if(trouble[t]->juice >= 100 || LCSrandom(100) < trouble[t]->juice) {
-                                addjuice(*trouble[t], -5);
-
-                                if(trouble[t]->blood > 50)
-                                    trouble[t]->blood = 50;
-                            } else {
-                                addjuice(*trouble[t], -10);
-
-                                if(trouble[t]->blood > 10)
-                                    trouble[t]->blood = 10;
-
-                                if(!LCSrandom(5)) {
-                                    switch(LCSrandom(15)) {
-                                    case 0:
-                                        if(trouble[t]->special[SPECIALWOUND_LOWERSPINE] == 1) {
-                                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                            move(8, 1);
-                                            addstr(trouble[t]->name);
-                                            addstr("'s lower spine has been broken!");
-                                            trouble[t]->special[SPECIALWOUND_LOWERSPINE] = 0;
-                                            refresh();
-                                            getch();
-                                        }
-
-                                        break;
-
-                                    case 1:
-                                        if(trouble[t]->special[SPECIALWOUND_UPPERSPINE] == 1) {
-                                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                            move(8, 1);
-                                            addstr(trouble[t]->name);
-                                            addstr("'s upper spine has been broken!");
-                                            trouble[t]->special[SPECIALWOUND_UPPERSPINE] = 0;
-                                            refresh();
-                                            getch();
-                                        }
-
-                                        break;
-
-                                    case 2:
-                                        if(trouble[t]->special[SPECIALWOUND_NECK] == 1) {
-                                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                            move(8, 1);
-                                            addstr(trouble[t]->name);
-                                            addstr("'s neck has been broken!");
-                                            trouble[t]->special[SPECIALWOUND_NECK] = 0;
-                                            refresh();
-                                            getch();
-                                        }
-
-                                        break;
-
-                                    case 3:
-                                        if(trouble[t]->special[SPECIALWOUND_TEETH] > 0) {
-                                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                            move(8, 1);
-                                            addstr(trouble[t]->name);
-
-                                            if(trouble[t]->special[SPECIALWOUND_TEETH] > 1)
-                                                addstr("'s teeth have been smashed out on the curb.");
-                                            else
-                                                addstr("'s tooth has been pulled out with pliers!");
-
-                                            trouble[t]->special[SPECIALWOUND_TEETH] = 0;
-                                            refresh();
-                                            getch();
-                                        }
-
-                                        break;
-
-                                    default: {
-                                        if(trouble[t]->special[SPECIALWOUND_RIBS] > 0) {
-                                            int32 ribminus = LCSrandom(RIBNUM) + 1;
-
-                                            if(ribminus > trouble[t]->special[SPECIALWOUND_RIBS])
-                                                ribminus = trouble[t]->special[SPECIALWOUND_RIBS];
-
-                                            char num[20];
-                                            itoa(ribminus, num, 10);
-
-                                            move(8, 1);
-
-                                            if(ribminus > 1) {
-                                                addstr(num);
-                                                addstr(" of ");
-                                                addstr(trouble[t]->name);
-                                                addstr("'s ribs are ");
-                                            } else if(trouble[t]->special[SPECIALWOUND_RIBS] > 1) {
-                                                addstr("One of ");
-                                                addstr(trouble[t]->name);
-                                                addstr("'s rib is ");
-                                            } else {
-                                                addstr(trouble[t]->name);
-                                                addstr("'s last unbroken rib is ");
-                                            }
-
-                                            addstr("broken!");
-                                            refresh();
-                                            getch();
-
-                                            trouble[t]->special[SPECIALWOUND_RIBS] -= ribminus;
-                                        }
-
-                                        break;
+                            if(!LCSrandom(5)) {
+                                switch(LCSrandom(15)) {
+                                case 0:
+                                    if(trouble[t]->special[SPECIALWOUND_LOWERSPINE] == 1) {
+                                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                        move(8, 1);
+                                        addstr(trouble[t]->name);
+                                        addstr("'s lower spine has been broken!");
+                                        trouble[t]->special[SPECIALWOUND_LOWERSPINE] = 0;
+                                        refresh();
+                                        getch();
                                     }
+
+                                    break;
+
+                                case 1:
+                                    if(trouble[t]->special[SPECIALWOUND_UPPERSPINE] == 1) {
+                                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                        move(8, 1);
+                                        addstr(trouble[t]->name);
+                                        addstr("'s upper spine has been broken!");
+                                        trouble[t]->special[SPECIALWOUND_UPPERSPINE] = 0;
+                                        refresh();
+                                        getch();
                                     }
+
+                                    break;
+
+                                case 2:
+                                    if(trouble[t]->special[SPECIALWOUND_NECK] == 1) {
+                                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                        move(8, 1);
+                                        addstr(trouble[t]->name);
+                                        addstr("'s neck has been broken!");
+                                        trouble[t]->special[SPECIALWOUND_NECK] = 0;
+                                        refresh();
+                                        getch();
+                                    }
+
+                                    break;
+
+                                case 3:
+                                    if(trouble[t]->special[SPECIALWOUND_TEETH] > 0) {
+                                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                        move(8, 1);
+                                        addstr(trouble[t]->name);
+
+                                        if(trouble[t]->special[SPECIALWOUND_TEETH] > 1)
+                                            addstr("'s teeth have been smashed out on the curb.");
+                                        else
+                                            addstr("'s tooth has been pulled out with pliers!");
+
+                                        trouble[t]->special[SPECIALWOUND_TEETH] = 0;
+                                        refresh();
+                                        getch();
+                                    }
+
+                                    break;
+
+                                default: {
+                                    if(trouble[t]->special[SPECIALWOUND_RIBS] > 0) {
+                                        int ribminus = LCSrandom(RIBNUM) + 1;
+
+                                        if(ribminus > trouble[t]->special[SPECIALWOUND_RIBS])
+                                            ribminus = trouble[t]->special[SPECIALWOUND_RIBS];
+
+                                        char num[20];
+                                        itoa(ribminus, num, 10);
+
+                                        move(8, 1);
+
+                                        if(ribminus > 1) {
+                                            addstr(num);
+                                            addstr(" of ");
+                                            addstr(trouble[t]->name);
+                                            addstr("'s ribs are ");
+                                        } else if(trouble[t]->special[SPECIALWOUND_RIBS] > 1) {
+                                            addstr("One of ");
+                                            addstr(trouble[t]->name);
+                                            addstr("'s rib is ");
+                                        } else {
+                                            addstr(trouble[t]->name);
+                                            addstr("'s last unbroken rib is ");
+                                        }
+
+                                        addstr("broken!");
+                                        refresh();
+                                        getch();
+
+                                        trouble[t]->special[SPECIALWOUND_RIBS] -= ribminus;
+                                    }
+
+                                    break;
+                                }
                                 }
                             }
                         }
                     }
                 }
             }
-
-            for(int32 h = 0; h < trouble.size(); h++)
-                addjuice(*trouble[h], juiceval, 20);
         }
+
+        for(int h = 0; h < trouble.size(); h++)
+            addjuice(*trouble[h], juiceval, 20);
+    }
+
+    //Teaching
+    for(int t = 0; t < teachers.size(); t++) {
+        int skillarray[12];
+        int cost, students = 0;
+
+        //Build a list of skills to train and determine the cost for running
+        //a class depending on what the teacher is teaching
+        switch(teachers[t]->activity.type) {
+        case ACTIVITY_TEACH_GENERALED:
+            cost = 20;
+            skillarray[0] = SKILL_COMPUTERS;
+            skillarray[1] = SKILL_WRITING;
+            skillarray[2] = SKILL_MUSIC;
+            skillarray[3] = SKILL_ART;
+            skillarray[4] = SKILL_RELIGION;
+            skillarray[5] = SKILL_BUSINESS;
+            skillarray[6] = SKILL_SCIENCE;
+            skillarray[7] = SKILL_PSYCHOLOGY;
+            skillarray[8] = -1;
+            break;
+
+        case ACTIVITY_TEACH_POLITICS:
+            cost = 20;
+            skillarray[0] = SKILL_LAW;
+            skillarray[1] = SKILL_PERSUASION;
+            skillarray[2] = SKILL_LEADERSHIP;
+            skillarray[3] = -1;
+            break;
+
+        case ACTIVITY_TEACH_SURVIVAL:
+            cost = 30;
+            skillarray[0] = SKILL_DRIVING;
+            skillarray[1] = SKILL_FIRSTAID;
+            skillarray[2] = SKILL_STREETSENSE;
+            skillarray[3] = SKILL_TAILORING;
+            skillarray[4] = SKILL_HANDTOHAND;
+            skillarray[5] = SKILL_COOKING;
+            skillarray[6] = SKILL_THEFT;
+            skillarray[7] = -1;
+            break;
+
+        case ACTIVITY_TEACH_FIGHTING:
+            cost = 50;
+            skillarray[0] = SKILL_KNIFE;
+            skillarray[1] = SKILL_SWORD;
+            skillarray[2] = SKILL_CLUB;
+            skillarray[3] = SKILL_PISTOL;
+            skillarray[4] = SKILL_RIFLE;
+            skillarray[5] = SKILL_SHOTGUN;
+            skillarray[6] = SKILL_FLAMETHROWER;
+            skillarray[7] = SKILL_AXE;
+            skillarray[8] = SKILL_SMG;
+            skillarray[9] = SKILL_THROWING;
+            skillarray[10] = -1;
+            break;
+
+        case ACTIVITY_TEACH_COVERT:
+            cost = 40;
+            skillarray[0] = SKILL_PERSUASION;
+            skillarray[1] = SKILL_SECURITY;
+            skillarray[2] = SKILL_DISGUISE;
+            skillarray[3] = SKILL_STEALTH;
+            skillarray[4] = SKILL_SEDUCTION;
+            skillarray[5] = SKILL_PSYCHOLOGY;
+            skillarray[6] = -1;
+            break;
+        }
+
+        //Walk through and train people
+        for(int p = 0; p < pool.size(); p++) {
+            //If they're at the location
+            if(pool[p]->location == teachers[t]->location &&
+                    pool[p]->align == ALIGN_LIBERAL) {
+                //Step through the array of skills to train
+                for(int i = 0; i < 11; i++) {
+                    //If no more skills to train, stop
+                    if(skillarray[i] == -1)
+                        break;
+
+                    //Otherwise, if the student has less skill than the teacher, train the student
+                    //proportional to the difference in skill between teacher and student times the
+                    //teacher's ability at teaching
+                    if(pool[p]->skill[skillarray[i]] < teachers[t]->skill[skillarray[i]] - 1 &&
+                            pool[p]->skill[skillarray[i]] < teachers[t]->skill[SKILL_TEACHING] + 2 &&
+                            funds > cost &&
+                            pool[p]->skill[skillarray[i]] < maxskill(skillarray[i], *pool[p])) {
+                        // Teach based on teacher's skill in the topic plus skill in teaching, minus
+                        // student's skill in the topic
+                        int teach = teachers[t]->skill[skillarray[i]] +
+                                    teachers[t]->skill[SKILL_TEACHING] -
+                                    pool[p]->skill[skillarray[i]];
+
+                        // Cap at 10 points per day
+                        if(teach > 10)
+                            teach = 10;
+
+                        pool[p]->train(skillarray[i], teach);
+
+                        if(students < 10) {
+                            students++;
+                            funds -= cost;
+                            moneylost_training += cost;
+
+                            if(students == 10)
+                                cost = 0;
+                        }
+
+                        //No crime for now
+                        /*if(pool[p]->heat>teachers[t]->heat)
+                        {
+                           if(teachers[t]->lawflag[LAWFLAG_RACKETEERING]==0)
+                              teachers[t]->lawflag[LAWFLAG_RACKETEERING]=1;
+                        }*/
+                    }
+                }
+            }
+        }
+
+        teachers[t]->train(SKILL_TEACHING, students);
     }
 
     //BURY THE DEAD
     if(bury.size() > 0) {
-        char haveburied = 0;
-        char caught = 0;
-
-        for(int32 p = pool.size() - 1; p >= 0; p--) {
+        for(int p = pool.size() - 1; p >= 0; p--) {
             if(pool[p]->alive)
                 continue;
 
@@ -2023,51 +2744,21 @@ void funds_and_trouble(char &clearformess) {
             delete pool[p];
             pool.erase(pool.begin() + p);
 
-            if(!caught) {
-                int32 dodgelawroll = 0, ndodgelawroll;
+            for(int b = 0; b < bury.size(); b++) {
+                if(!LCSrandom(bury[b]->skillval(SKILL_PERSUASION) +
+                              bury[b]->skillval(SKILL_DISGUISE) +
+                              bury[b]->skillval(SKILL_STREETSENSE) +
+                              bury[b]->attval(ATTRIBUTE_CHARISMA) +
+                              bury[b]->attval(ATTRIBUTE_AGILITY) +
+                              bury[b]->attval(ATTRIBUTE_INTELLIGENCE) + 1)) {
+                    newsstoryst *ns = new newsstoryst;
+                    ns->type = NEWSSTORY_BURIALARREST;
+                    newsstory.push_back(ns);
+                    sitestory = ns;
 
-                for(int32 b = 0; b < bury.size(); b++) {
-                    ndodgelawroll = LCSrandom(bury[b]->skill[SKILL_PERSUASION] +
-                                              bury[b]->skill[SKILL_DISGUISE] +
-                                              bury[b]->attval(ATTRIBUTE_CHARISMA) +
-                                              bury[b]->attval(ATTRIBUTE_AGILITY) +
-                                              bury[b]->attval(ATTRIBUTE_INTELLIGENCE) + 1);
-
-                    if(ndodgelawroll > dodgelawroll)
-                        dodgelawroll = ndodgelawroll;
+                    criminalize(*bury[b], LAWFLAG_BURIAL);
+                    attemptarrest(*bury[b], "disposing of bodies", clearformess);
                 }
-
-                if(dodgelawroll == 0)
-                    caught = 1;
-            }
-        }
-
-        if(caught) {
-            if(clearformess)
-                erase();
-            else
-                makedelimiter(8, 0);
-
-            if(bury.size() > 0)
-                addstr("Some Liberals have");
-            else {
-                addstr(bury[0]->name);
-                addstr(" has");
-            }
-
-            addstr(" been while disposing of bodies.");
-
-            refresh();
-            getch();
-
-            for(int32 b = 0; b < bury.size(); b++) {
-                removesquadinfo(*bury[b]);
-                bury[b]->carid = -1;
-                bury[b]->location = ps;
-                bury[b]->weapon.type = WEAPON_NONE;
-                bury[b]->weapon.ammo = 0;
-                bury[b]->activity.type = ACTIVITY_NONE;
-                bury[b]->lawflag[LAWFLAG_BURIAL]++;
             }
         }
     }
@@ -2076,21 +2767,21 @@ void funds_and_trouble(char &clearformess) {
 
 
 /* steal a car */
-char stealcar(creaturest &cr, char &clearformess) {
+char stealcar(Creature &cr, char &clearformess) {
     clearformess = 1;
 
-    int16 cartype;
+    short cartype;
     char str[80];
 
     if(carselect(cr, cartype)) {
-        int32 diff = difficulty_carfind(cartype);
+        int diff = difficulty_carfind(cartype);
 
         vehiclest *v = new vehiclest;
 
-        int32 old = cartype;
+        int old = cartype;
 
         //ROUGH DAY
-        if(LCSrandom(10) < diff) {
+        if(LCSrandom(10) < diff - cr.skillval(SKILL_STREETSENSE)) {
             do {
                 cartype = LCSrandom(VEHICLENUM);
 
@@ -2165,7 +2856,7 @@ char stealcar(creaturest &cr, char &clearformess) {
 
         refresh();
 
-        int32 c;
+        int c;
 
         do {
             c = getch();
@@ -2274,8 +2965,8 @@ char stealcar(creaturest &cr, char &clearformess) {
                 }
 
                 if(c == 'x') {
-                    delete v;
-                    return 1;
+                    delete v;    /* try again tomorrow */
+                    return 0;
                 }
             } while(1);
 
@@ -2283,11 +2974,11 @@ char stealcar(creaturest &cr, char &clearformess) {
 
             //PICK LOCK
             if(method == 0) {
-                int32 attack = cr.skill[SKILL_SECURITY];
+                int attack = cr.skillval(SKILL_SECURITY);
+                //if(!LCSrandom(20))attack++;
 
-                cr.skill_ip[SKILL_SECURITY] += 7;
-
-                if(LCSrandom(11) < attack) {
+                if(LCSrandom(6) < attack) {
+                    cr.train(SKILL_SECURITY, MAX(5 - cr.skillval(SKILL_SECURITY), 0));
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 0);
                     addstr(cr.name);
@@ -2308,8 +2999,8 @@ char stealcar(creaturest &cr, char &clearformess) {
 
             //BREAK WINDOW
             if(method == 1) {
-                int32 attack = cr.attval(ATTRIBUTE_STRENGTH) +
-                               bashstrengthmod(cr.weapon.type);
+                int attack = cr.attval(ATTRIBUTE_STRENGTH) +
+                             bashstrengthmod(cr.weapon.type);
 
                 if(LCSrandom(11) < attack + windowdamage) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -2320,7 +3011,7 @@ char stealcar(creaturest &cr, char &clearformess) {
                     if(bashstrengthmod(cr.weapon.type) > 0) {
                         addstr(" with a ");
                         char str[80];
-                        getweaponfull(str, cr.weapon.type);
+                        getweaponfull(str, cr.weapon.type, 2);
                         addstr(str);
                     }
 
@@ -2340,7 +3031,7 @@ char stealcar(creaturest &cr, char &clearformess) {
                     if(bashstrengthmod(cr.weapon.type) > 0) {
                         addstr(" with a ");
                         char str[80];
-                        getweaponfull(str, cr.weapon.type);
+                        getweaponfull(str, cr.weapon.type, 2);
                         addstr(str);
                     }
 
@@ -2354,7 +3045,7 @@ char stealcar(creaturest &cr, char &clearformess) {
             }
 
             //ALARM CHECK
-            int32 y = 17;
+            int y = 17;
 
             if(touchalarm || sensealarm) {
                 if(!alarmon) {
@@ -2390,8 +3081,9 @@ char stealcar(creaturest &cr, char &clearformess) {
                 if(footchase(cr)) {
                     mode = GAMEMODE_BASE;
                     delete v;
-                    return 1;
-                } else {
+                    return 0;
+                } // Switched to return 0; this will cause you to try again tomorrow
+                else {
                     mode = GAMEMODE_BASE;
                     delete v;
                     return 0;
@@ -2404,11 +3096,15 @@ char stealcar(creaturest &cr, char &clearformess) {
 
         //START CAR
         char keys_in_car = 0;
+        char ignition_progress = 0;
+        char key_search_total = 0;
+        int nervous_counter = 0;
 
         if(!LCSrandom(5))
             keys_in_car = 1;
 
         do {
+            nervous_counter++;
             erase();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(0, 0);
@@ -2418,7 +3114,7 @@ char stealcar(creaturest &cr, char &clearformess) {
 
             getcarfull(str, *v);
 
-            int32 y = 10;
+            int y = 10;
 
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
@@ -2495,11 +3191,40 @@ char stealcar(creaturest &cr, char &clearformess) {
 
             //HOTWIRE CAR
             if(method == 0) {
-                int32 attack = cr.skill[SKILL_SECURITY];
+                if(!LCSrandom(10)) {
+                    ignition_progress++;
+                    set_color(COLOR_CYAN, COLOR_BLACK, 1);
+                    move(y, 0);
+                    y++;
+                    addstr(cr.name);
 
-                cr.skill_ip[SKILL_SECURITY] += 7;
+                    switch(LCSrandom(5)) {
+                    case 0:
+                        addstr(" figures out some of the wiring in the console!");
+                        break;
+
+                    case 1:
+                        addstr(" makes some significant progress!");
+                        break;
+
+                    case 2:
+                        addstr(" remembers a key piece of information!");
+                        break;
+
+                    case 3:
+                        addstr(" remembers a wiring diagram that helps make sense of things!");
+                        break;
+
+                    case 4:
+                        addstr(" is closer to figuring out this ignition system!");
+                        break;
+                    }
+                }
+
+                int attack = cr.skillval(SKILL_SECURITY) + ignition_progress;
 
                 if(LCSrandom(11) < attack) {
+                    cr.train(SKILL_SECURITY, MAX(7 - cr.skillval(SKILL_SECURITY), 0));
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(y, 0);
                     y++;
@@ -2514,7 +3239,29 @@ char stealcar(creaturest &cr, char &clearformess) {
                     move(y, 0);
                     y++;
                     addstr(cr.name);
-                    addstr(" fiddles with ignition, but the car doesn't start.");
+
+                    switch(LCSrandom(5)) {
+                    case 0:
+                        addstr(" fiddles with the ignition, but the car doesn't start.");
+                        break;
+
+                    case 1:
+                        addstr(" digs around in the steering column, but the car doesn't start.");
+                        break;
+
+                    case 2:
+                        addstr(" touches some wires together, but the car doesn't start.");
+                        break;
+
+                    case 3:
+                        addstr(" makes something in the engine click, but the car doesn't start.");
+                        break;
+
+                    case 4:
+                        addstr(" manages to turn on some dash lights, but the car doesn't start.");
+                        break;
+                    }
+
                     refresh();
                     getch();
                 }
@@ -2522,7 +3269,7 @@ char stealcar(creaturest &cr, char &clearformess) {
 
             //KEYS
             if(method == 1) {
-                int32 attack = cr.attval(ATTRIBUTE_INTELLIGENCE);
+                int attack = cr.attval(ATTRIBUTE_INTELLIGENCE);
 
                 if(LCSrandom(11) < attack && keys_in_car) {
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
@@ -2543,28 +3290,28 @@ char stealcar(creaturest &cr, char &clearformess) {
                         break;
 
                     case 1:
-                        addstr("under the front seat");
+                        addstr("under the front seat!");
                         break;
 
                     case 2:
-                        addstr("under the back seat");
+                        addstr("under the back seat!");
                         break;
 
                     case 3:
-                        addstr("above the pull-down sunblock thingy");
+                        addstr("above the pull-down sunblock thingy!");
                         break;
 
                     case 4:
-                        addstr("in the glove compartment.");
+                        addstr("in the glove compartment!");
                         break;
                     }
 
-                    addstr("!");
                     refresh();
                     getch();
 
                     started = 1;
                 } else {
+                    key_search_total++;
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(y, 0);
                     y++;
@@ -2572,34 +3319,64 @@ char stealcar(creaturest &cr, char &clearformess) {
                     addstr(": <rummaging> ");
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
 
-                    switch(LCSrandom(5)) {
-                    case 0:
-                        addstr("They've gotta be in here somewhere...");
-                        break;
+                    if (key_search_total == 5)
+                        addstr("Are they even in here?");
+                    else if (key_search_total == 10)
+                        addstr("I don't think they're in here...");
+                    else if (key_search_total == 15)
+                        addstr("If they were here, I'd have found them by now.");
+                    else if (key_search_total > 15) {
+                        switch(LCSrandom(5)) {
+                        case 0:
+                            addstr("This isn't working!");
+                            break;
 
-                    case 1:
-                        if(law[LAW_FREESPEECH] == -2)
-                            addstr("[Shoot]!  Where are they?!");
-                        else
-                            addstr("Fuck!  Where are they?!");
+                        case 1:
+                            addstr("Why me?");
+                            break;
 
-                        break;
+                        case 2:
+                            addstr("What do I do now?");
+                            break;
 
-                    case 2:
-                        addstr("Come on, baby, come to me...");
-                        break;
+                        case 3:
+                            addstr("Oh no...");
+                            break;
 
-                    case 3:
-                        if(law[LAW_FREESPEECH] == -2)
-                            addstr("[Darn] it...");
-                        else
-                            addstr("Dammit...");
+                        case 4:
+                            addstr("I'm going to get arrested, aren't I?");
+                            break;
+                        }
+                    } else {
+                        switch(LCSrandom(5)) {
+                        case 0:
+                            addstr("Please be in here somewhere...");
+                            break;
 
-                        break;
+                        case 1:
+                            if(law[LAW_FREESPEECH] == -2)
+                                addstr("[Shoot]!  Where are they?!");
+                            else
+                                addstr("Fuck!  Where are they?!");
 
-                    case 4:
-                        addstr("I wish I could hotwire this thing...");
-                        break;
+                            break;
+
+                        case 2:
+                            addstr("Come on, baby, come to me...");
+                            break;
+
+                        case 3:
+                            if(law[LAW_FREESPEECH] == -2)
+                                addstr("[Darn] it...");
+                            else
+                                addstr("Dammit...");
+
+                            break;
+
+                        case 4:
+                            addstr("I wish I could hotwire this thing...");
+                            break;
+                        }
                     }
 
                     refresh();
@@ -2637,6 +3414,32 @@ char stealcar(creaturest &cr, char &clearformess) {
                 }
             }
 
+            // Nervous message check
+            else if ((LCSrandom(7) + 5) < nervous_counter) {
+                nervous_counter = 0;
+                move(++y, 0);
+                y++;
+                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+                addstr(cr.name);
+
+                switch(LCSrandom(3)) {
+                case 0:
+                    addstr(" can hear someone calling the cops.");
+                    break;
+
+                case 1:
+                    addstr(" is getting nervous being out here this long.");
+                    break;
+
+                case 2:
+                    addstr(" sees a police car driving around a few blocks away.");
+                    break;
+                }
+
+                refresh();
+                getch();
+            }
+
             if(started)
                 break;
         } while(1);
@@ -2647,11 +3450,20 @@ char stealcar(creaturest &cr, char &clearformess) {
                 v->type == VEHICLE_POLICECAR)
             addjuice(cr, 2, 50);
 
+        v->heat = 14;
+
+        if(v->type == VEHICLE_SPORTSCAR)
+            v->heat += 5;
+
+        if(v->type == VEHICLE_POLICECAR)
+            v->heat += 16;
+
         chaseseq.clean();
         chaseseq.location = 0;
-        int32 chaselev = !LCSrandom(13 - windowdamage);
+        int chaselev = !LCSrandom(13 - windowdamage);
 
         if(chaselev > 0 || (v->type == VEHICLE_POLICECAR && LCSrandom(2))) {
+            v->heat += 10;
             chaselev = 1;
             newsstoryst *ns = new newsstoryst;
             ns->type = NEWSSTORY_CARTHEFT;
@@ -2674,7 +3486,7 @@ char stealcar(creaturest &cr, char &clearformess) {
 
 
 
-int32 difficulty_carfind(int32 type) {
+int difficulty_carfind(int type) {
     switch(type) {
     case VEHICLE_VAN:
         return 2;
@@ -2709,17 +3521,17 @@ int32 difficulty_carfind(int32 type) {
 
 
 
-char carselect(creaturest &cr, int16 &cartype) {
+char carselect(Creature &cr, short &cartype) {
     cartype = -1;
 
-    vector<int32> cart;
+    vector<int> cart;
 
-    for(int32 a = 0; a < VEHICLENUM; a++) {
+    for(int a = 0; a < VEHICLENUM; a++) {
         if(difficulty_carfind(a) < 10)
             cart.push_back(a);
     }
 
-    int16 page = 0;
+    int page = 0;
 
     char str[200];
 
@@ -2735,9 +3547,9 @@ char carselect(creaturest &cr, int16 &cartype) {
         move(1, 0);
         addstr("----TYPE-----------------------------------------DIFFICULTY TO FIND UNATTENDED--");
 
-        int32 y = 2, difficulty;
+        int y = 2, difficulty;
 
-        for(int32 p = page * 19; p < cart.size() && p < page * 19 + 19; p++) {
+        for(int p = page * 19; p < cart.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -2812,29 +3624,23 @@ char carselect(creaturest &cr, int16 &cartype) {
         move(22, 0);
         addstr("Press a Letter to select a Type of Car");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.");
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages.");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.");
+        addpagestr();
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 19 < cart.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 19 < cart.size())
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int32 p = page * 19 + (int32)(c - 'a');
+            int p = page * 19 + (int)(c - 'a');
 
             if(p < cart.size()) {
                 cartype = cart[p];
@@ -2842,8 +3648,11 @@ char carselect(creaturest &cr, int16 &cartype) {
             }
         }
 
-        if(c == 10)
-            break;
+        // Too easy to accidentally back out
+        // Not a big problem if this page isn't skippable
+        // (There's no immediate risk in picking a car)
+        // - JDS
+        //if(c==10)break;
     } while(1);
 
     return 0;
@@ -2851,8 +3660,8 @@ char carselect(creaturest &cr, int16 &cartype) {
 
 
 
-int32 sensealarmchance(int32 ct) {
-    switch(ct) {
+int sensealarmchance(int cartype) {
+    switch(cartype) {
     case VEHICLE_SPORTSCAR:
         return 15;
 
@@ -2872,8 +3681,8 @@ int32 sensealarmchance(int32 ct) {
 }
 
 
-int32 touchalarmchance(int32 ct) {
-    switch(ct) {
+int touchalarmchance(int cartype) {
+    switch(cartype) {
     case VEHICLE_SPORTSCAR:
         return 95;
 
@@ -2895,7 +3704,7 @@ int32 touchalarmchance(int32 ct) {
 
 
 /* get a wheelchair */
-void getwheelchair(creaturest &cr, char &clearformess) {
+void getwheelchair(Creature &cr, char &clearformess) {
     if(clearformess)
         erase();
     else

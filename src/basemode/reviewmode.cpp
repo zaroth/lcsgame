@@ -26,12 +26,12 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 /* base - review and reorganize liberals */
 void review(void) {
-    int32 page = 0;
+    int page = 0;
 
     do {
         erase();
@@ -43,9 +43,9 @@ void review(void) {
         move(1, 0);
         addstr("----SQUAD NAME-----------------LOCATION------------ACTIVITY----------------------");
 
-        int32 y = 2;
+        int y = 2;
 
-        for(int32 p = page * 19; p < squad.size() + REVIEWMODENUM && p < page * 19 + 19; p++) {
+        for(int p = page * 19; p < squad.size() + REVIEWMODENUM + 1 && p < page * 19 + 19; p++) {
             if(p < squad.size()) {
                 if(activesquad == squad[p])
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -69,10 +69,10 @@ void review(void) {
                     getactivity(str, squad[p]->activity);
 
                     if(squad[p]->activity.type == ACTIVITY_NONE) {
-                        int32 count = 0;
+                        int count = 0;
                         char haveact = 0;
 
-                        for(int32 p2 = 0; p2 < 6; p2++) {
+                        for(int p2 = 0; p2 < 6; p2++) {
                             if(squad[p]->squad[p2] == NULL)
                                 continue;
 
@@ -107,7 +107,7 @@ void review(void) {
                 move(y, 0);
                 addch('3');
                 addstr(" - ");
-                addstr("CLINIC");
+                addstr("Hospital");
             } else if(p == squad.size() + 3) {
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
                 move(y, 0);
@@ -132,6 +132,12 @@ void review(void) {
                 addch('7');
                 addstr(" - ");
                 addstr("Away");
+            } else if(p == squad.size() + 7) {
+                set_color(COLOR_CYAN, COLOR_BLACK, 1);
+                move(y, 0);
+                addch('8');
+                addstr(" - ");
+                addstr("Review and Move Equipment");
             }
 
             y++;
@@ -141,33 +147,27 @@ void review(void) {
         move(22, 0);
         addstr("Press a Letter to select a squad.  1-7 to view Liberal groups.");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.  Press U to Promote Liberals.");
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages. Press U to Promote Liberals.");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.  Press U to Promote Liberals.");
-
+        addpagestr();
+        addstr("  Press U to Promote Liberals.");
         move(24, 0);
         addstr("Press Z to Assemble a New Squad.  Press T to Assign New Bases to the Squadless.");
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
-        if(c == interface_pgdn && (page + 1) * 19 < squad.size() + REVIEWMODENUM)
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 19 < squad.size() + REVIEWMODENUM)
             page++;
 
         if(c == 10)
             return;
 
         if(c >= 'a' && c <= 's') {
-            int32 sq = page * 19 + (int32)(c - 'a');
+            int sq = page * 19 + (int)(c - 'a');
 
             if(sq < squad.size() && sq >= 0) {
                 if(squad[sq] == activesquad)
@@ -178,7 +178,10 @@ void review(void) {
         }
 
         if(c >= '1' && c <= '7')
-            review_mode((int32)(c - '1'));
+            review_mode((int)(c - '1'));
+
+        if(c == '8')
+            equipmentbaseassign();
 
         if(c == 'z') {
             assemblesquad(NULL);
@@ -197,10 +200,10 @@ void review(void) {
 
 
 
-void review_mode(int16 mode) {
-    vector<creaturest *> temppool;
+void review_mode(short mode) {
+    vector<Creature *> temppool;
 
-    for(int32 p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < pool.size(); p++) {
         switch(mode) {
         case REVIEWMODE_LIBERALS:
             if(pool[p]->alive == 1 &&
@@ -275,7 +278,7 @@ void review_mode(int16 mode) {
     if(temppool.size() == 0)
         return;
 
-    int16 page = 0;
+    int page = 0;
 
     char num[20];
 
@@ -350,9 +353,9 @@ void review_mode(int16 mode) {
             break;
         }
 
-        int32 y = 2;
+        int y = 2;
 
-        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -360,13 +363,13 @@ void review_mode(int16 mode) {
             addstr(temppool[p]->name);
 
             char bright = 0;
-            uint32 skill = 0;
+            int skill = 0;
 
-            for(int32 sk = 0; sk < SKILLNUM; sk++) {
-                skill += (uint32)temppool[p]->skill[sk];
+            for(int sk = 0; sk < SKILLNUM; sk++) {
+                skill += (int)temppool[p]->skill[sk];
 
-                if(temppool[p]->skill_ip[sk] >= 100 * ((10 + temppool[p]->skill[sk]) / 10) &&
-                        temppool[p]->skill[sk] < temppool[p]->attval(skillatt(sk)) * 2)
+                if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->skill[sk]) &&
+                        temppool[p]->skill[sk] < maxskill(sk, *temppool[p]))
                     bright = 1;
             }
 
@@ -397,7 +400,7 @@ void review_mode(int16 mode) {
                 char usepers = 1;
 
                 if(temppool[p]->squadid != -1) {
-                    int32 sq = getsquad(temppool[p]->squadid);
+                    int sq = getsquad(temppool[p]->squadid);
 
                     if(sq != -1) {
                         if(squad[sq]->activity.type != ACTIVITY_NONE) {
@@ -409,7 +412,8 @@ void review_mode(int16 mode) {
                 }
 
                 if(usepers) {
-                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    // Let's add some color here...
+                    set_activity_color(temppool[p]->activity.type);
                     char str[80];
                     getactivity(str, temppool[p]->activity);
                     addstr(str);
@@ -470,15 +474,15 @@ void review_mode(int16 mode) {
             case REVIEWMODE_CLINIC: {
                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
                 char num[20];
-                addstr("Out in ");
                 itoa(temppool[p]->clinic, num, 10);
+                addstr("Out in ");
                 addstr(num);
                 addstr(" ");
 
                 if(temppool[p]->clinic > 1)
-                    addstr("Months");
+                    addstr("Weeks");
                 else
-                    addstr("Month");
+                    addstr("Week");
 
                 break;
             }
@@ -542,31 +546,28 @@ void review_mode(int16 mode) {
         move(22, 0);
         addstr("Press a Letter to View Status.");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.");
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages.");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.");
+        addpagestr();
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 19 < temppool.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 19 < temppool.size())
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int32 p = page * 19 + (int32)(c - 'a');
+            int p = page * 19 + (int)(c - 'a');
 
             if(p < temppool.size()) {
+                int page = 0;
+                const int pagenum = 2;
+
                 do {
                     erase();
 
@@ -580,38 +581,55 @@ void review_mode(int16 mode) {
                         addstr("Profile of a Liberal");
                     }
 
-                    printliberalstats(*temppool[p], 0);
+                    if(page == 0)
+                        printliberalstats(*temppool[p]);
+                    else if(page == 1)
+                        printliberalskills(*temppool[p]);
 
                     move(23, 0);
+
 
                     if(temppool[p]->align != 1)
                         addstr("Press N to change this Automaton's Code Name");
                     else
-                        addstr("Press N to change this Liberal's Code Name");
+                        addstr("N - Change Code Name      G - Fix Gender Label");
 
-                    if(temppool.size() > 1) {
-                        if(interface_pgup == '[')
-                            addstr(", [] to view the others");
-                        else if(interface_pgup == '.')
-                            addstr(", ; and : to view the others");
-                        else
-                            addstr(", PGUP/PGDN to view the others");
-                    }
+                    if(temppool.size() > 1)
+                        addstr("    LEFT/RIGHT - View Others");
 
                     move(24, 0);
                     addstr("Press any other key to continue the Struggle");
+                    addstr("    UP/DOWN  - More Info");
 
                     refresh();
-                    int32 c = getch();
+                    int c = getch();
                     translategetch(c);
 
-                    if(temppool.size() > 0 && (c == interface_pgup || c == interface_pgdn)) {
-                        int32 sx = 1;
+                    if(temppool.size() > 0 && ((c == KEY_LEFT) || (c == KEY_RIGHT))) {
+                        int sx = 1;
 
-                        if(c == interface_pgup)
+                        if((c == KEY_LEFT))
                             sx = -1;
 
-                        p = (p + (int32)temppool.size() + sx) % ((int32)temppool.size());
+                        p = (p + (int)temppool.size() + sx) % ((int)temppool.size());
+                        continue;
+                    }
+
+                    if(c == KEY_DOWN) {
+                        page++;
+
+                        if(page > 1)
+                            page = 0;
+
+                        continue;
+                    }
+
+                    if(c == KEY_UP) {
+                        page--;
+
+                        if(page < 0)
+                            page = 1;
+
                         continue;
                     }
 
@@ -627,12 +645,18 @@ void review_mode(int16 mode) {
                         echo();
                         curs_set(1);
                         move(24, 0);
-                        enter_name(temppool[p]->name, CREATURE_NAMELEN);
+                        enter_name(temppool[p]->name, CREATURE_NAMELEN,
+                                   temppool[p]->propername);
 
                         curs_set(0);
                         noecho();
                         raw_output(TRUE);
                         keypad(stdscr, TRUE);
+                    } else if(c == 'g' && temppool[p]->align == 1) {
+                        temppool[p]->gender_liberal++;
+
+                        if(temppool[p]->gender_liberal > 2)
+                            temppool[p]->gender_liberal = 0;
                     } else
                         break;
                 } while(1);
@@ -648,8 +672,8 @@ void review_mode(int16 mode) {
 
 /* base - review - assemble a squad */
 void assemblesquad(squadst *cursquad) {
-    int32 culloc = -1;
-    int32 p;
+    int culloc = -1;
+    int p;
 
     if(cursquad != NULL)
         culloc = cursquad->squad[0]->location;
@@ -663,14 +687,15 @@ void assemblesquad(squadst *cursquad) {
         newsquad = 1;
     }
 
-    vector<creaturest *> temppool;
+    vector<Creature *> temppool;
 
     for(p = 0; p < pool.size(); p++) {
         if(pool[p]->alive == 1 &&
                 pool[p]->align == 1 &&
                 pool[p]->clinic == 0 &&
                 pool[p]->dating == 0 &&
-                pool[p]->hiding == 0) {
+                pool[p]->hiding == 0 &&
+                !(pool[p]->flag & CREATUREFLAG_SLEEPER)) {
             if(location[pool[p]->location]->type != SITE_GOVERNMENT_POLICESTATION &&
                     location[pool[p]->location]->type != SITE_GOVERNMENT_COURTHOUSE &&
                     location[pool[p]->location]->type != SITE_GOVERNMENT_PRISON &&
@@ -681,10 +706,10 @@ void assemblesquad(squadst *cursquad) {
 
     //BUILD LIST OF BASES FOR EACH SQUAD IN CASE IT ENDS UP EMPTY
     //THEN WILL DROP ITS LOOT THERE
-    vector<int32> squadloc;
+    vector<int> squadloc;
     squadloc.resize(squad.size());
 
-    for(int32 sl = 0; sl < squad.size(); sl++) {
+    for(int sl = 0; sl < squad.size(); sl++) {
         squadloc[sl] = squad[sl]->squad[0]->location;
 
         if(squadloc[sl] != -1) {
@@ -693,9 +718,9 @@ void assemblesquad(squadst *cursquad) {
         }
     }
 
-    int16 page = 0;
+    int page = 0;
 
-    int32 squadsize;
+    int squadsize;
 
     char num[20];
 
@@ -727,7 +752,7 @@ void assemblesquad(squadst *cursquad) {
         move(1, 0);
         addstr("----CODE NAME------------SKILL---HEALTH-----------PROFESSION--------------------");
 
-        int32 y = 2;
+        int y = 2;
 
         for(p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -737,13 +762,13 @@ void assemblesquad(squadst *cursquad) {
             addstr(temppool[p]->name);
 
             char bright = 0;
-            uint32 skill = 0;
+            int skill = 0;
 
-            for(int32 sk = 0; sk < SKILLNUM; sk++) {
-                skill += (uint32)temppool[p]->skill[sk];
+            for(int sk = 0; sk < SKILLNUM; sk++) {
+                skill += (int)temppool[p]->skill[sk];
 
-                if(temppool[p]->skill_ip[sk] >= 100 * ((10 + temppool[p]->skill[sk]) / 10) &&
-                        temppool[p]->skill[sk] < temppool[p]->attval(skillatt(sk)) * 2)
+                if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->skill[sk]) &&
+                        temppool[p]->skill[sk] < maxskill(sk, *temppool[p]))
                     bright = 1;
             }
 
@@ -790,20 +815,13 @@ void assemblesquad(squadst *cursquad) {
         move(22, 0);
         addstr("Press a Letter to add or remove a Liberal from the squad.");
         move(23, 0);
-
-        if(interface_pgup == '[')
-            addstr("[] to view other Liberal pages.");
-        else if(interface_pgup == '.')
-            addstr("; and : to view other Liberal pages.");
-        else
-            addstr("PGUP/PGDN to view other Liberal pages.");
-
+        addpagestr();
         move(24, 0);
 
         if(squadsize > 0)
-            addstr("1 - The squad is ready.");
+            addstr("Enter - The squad is ready.");
         else
-            addstr("1 - I need no squad!");
+            addstr("Enter - I need no squad!");
 
         if(squadsize > 0)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -815,19 +833,19 @@ void assemblesquad(squadst *cursquad) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 19 < temppool.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 19 < temppool.size())
             page++;
 
         if(c >= 'a' && c <= 's') {
-            int32 p = page * 19 + (int32)(c - 'a');
+            int p = page * 19 + (int)(c - 'a');
 
             if(p < temppool.size()) {
                 char conf = 1;
@@ -867,7 +885,7 @@ void assemblesquad(squadst *cursquad) {
                     if(temppool[p]->squadid == cursquad->id) {
                         char flipstart = 0;
 
-                        for(int32 pt = 0; pt < 6; pt++) {
+                        for(int pt = 0; pt < 6; pt++) {
                             if(cursquad->squad[pt] == temppool[p]) {
                                 flipstart = 1;
                                 cursquad->squad[pt]->squadid = -1;
@@ -880,7 +898,7 @@ void assemblesquad(squadst *cursquad) {
                         if(flipstart)
                             cursquad->squad[5] = NULL;
                     } else if(squadsize < 6) {
-                        for(int32 pt = 0; pt < 6; pt++) {
+                        for(int pt = 0; pt < 6; pt++) {
                             if(cursquad->squad[pt] == NULL) {
                                 removesquadinfo(*temppool[p]);
                                 cursquad->squad[pt] = temppool[p];
@@ -893,12 +911,12 @@ void assemblesquad(squadst *cursquad) {
             }
         }
 
-        if(c == '1') {
+        if(c == 10) {
             //CHECK IF GOOD
             char good = 1;
             char care = 0;
 
-            for(int32 p = 0; p < 6; p++) {
+            for(int p = 0; p < 6; p++) {
                 if(cursquad->squad[p] != NULL) {
                     if(cursquad->squad[p]->align == 1) {
                         care = 1;
@@ -926,7 +944,7 @@ void assemblesquad(squadst *cursquad) {
         }
 
         if(c == '9') {
-            for(int32 p = 0; p < 6; p++) {
+            for(int p = 0; p < 6; p++) {
                 if(cursquad->squad[p] != NULL) {
                     cursquad->squad[p]->squadid = -1;
                     cursquad->squad[p] = NULL;
@@ -970,19 +988,19 @@ void assemblesquad(squadst *cursquad) {
     }
 
     //NUKE ALL EMPTY SQUADS
-    for(int32 sq = squad.size() - 1; sq >= 0; sq--) {
+    for(int sq = squad.size() - 1; sq >= 0; sq--) {
         hasmembers = 0;
 
-        for(int32 p = 0; p < 6; p++) {
+        for(int p = 0; p < 6; p++) {
             if(squad[sq]->squad[p] != NULL) {
                 hasmembers = 1;
                 break;
             }
         }
 
-        if(!hasmembers) {
+        if(!hasmembers && mode == GAMEMODE_BASE) {
             if(squadloc[sq] != -1) {
-                for(int32 l = 0; l < squad[sq]->loot.size(); l++)
+                for(int l = 0; l < squad[sq]->loot.size(); l++)
                     location[squadloc[sq]]->loot.push_back(squad[sq]->loot[l]);
 
                 squad[sq]->loot.clear();
@@ -1001,9 +1019,9 @@ void assemblesquad(squadst *cursquad) {
 
 /* base - review - assign new bases to the squadless */
 void squadlessbaseassign(void) {
-    int32 p = 0;
-    int32 l = 0;
-    vector<creaturest *> temppool;
+    int p = 0;
+    int l = 0;
+    vector<Creature *> temppool;
 
     for(p = 0; p < pool.size(); p++) {
         if(pool[p]->alive &&
@@ -1023,7 +1041,7 @@ void squadlessbaseassign(void) {
     if(temppool.size() == 0)
         return;
 
-    vector<int32> temploc;
+    vector<int> temploc;
 
     for(l = 0; l < location.size(); l++) {
         if(location[l]->renting >= 0 && !location[l]->siege.siege)
@@ -1033,12 +1051,10 @@ void squadlessbaseassign(void) {
     if(temploc.size() == 0)
         return;
 
-    int16 page_lib = 0;
-    int16 page_loc = 0;
+    int page_lib = 0;
+    int page_loc = 0;
 
-    char num[20];
-
-    int32 selectedbase = 0;
+    int selectedbase = 0;
 
     do {
         erase();
@@ -1053,7 +1069,7 @@ void squadlessbaseassign(void) {
         move(1, 51);
         addstr("NEW BASE");
 
-        int32 y = 2;
+        int y = 2;
 
         for(p = page_lib * 19; p < temppool.size() && p < page_lib * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -1091,14 +1107,7 @@ void squadlessbaseassign(void) {
 
         if(temppool.size() > 19) {
             move(23, 0);
-
-            if(interface_pgup == '[')
-                addstr("[] to view other Liberal pages.");
-
-            else if(interface_pgup == '.')
-                addstr("; and : to view other liberal pages.");
-            else
-                addstr("PGUP/PGDN to view other Liberal pages.");
+            addpagestr();
         }
 
         if(temploc.size() > 9) {
@@ -1108,15 +1117,15 @@ void squadlessbaseassign(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page_lib > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page_lib > 0)
             page_lib--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page_lib + 1) * 19 < temppool.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page_lib + 1) * 19 < temppool.size())
             page_lib++;
 
         //PAGE UP
@@ -1128,14 +1137,14 @@ void squadlessbaseassign(void) {
             page_loc++;
 
         if(c >= 'a' && c <= 's') {
-            int32 p = page_lib * 19 + (int32)(c - 'a');
+            int p = page_lib * 19 + (int)(c - 'a');
 
             if(p < temppool.size())
                 temppool[p]->base = temploc[selectedbase];
         }
 
         if(c >= '1' && c <= '9') {
-            int32 p = page_loc * 9 + (int32)(c - '1');
+            int p = page_loc * 9 + (int)(c - '1');
 
             if(p < temploc.size())
                 selectedbase = p;
@@ -1146,17 +1155,88 @@ void squadlessbaseassign(void) {
     } while(1);
 }
 
+// prints a formatted name, used by promoteliberals
+static void printname(Creature &cr) {
+    int bracketcolor = -1;
+    int namecolor;
+    int brightness;
 
+    if(cr.hiding)
+        bracketcolor = COLOR_BLACK;
+
+    // Determine bracket color, if any, based on location
+    if(cr.location != -1) {
+        switch(location[cr.location]->type) {
+        case SITE_GOVERNMENT_POLICESTATION:
+        case SITE_GOVERNMENT_COURTHOUSE:
+            if(!(cr.flag & CREATUREFLAG_SLEEPER))
+                bracketcolor = COLOR_YELLOW;
+
+            break;
+
+        case SITE_GOVERNMENT_PRISON:
+            if(!(cr.flag & CREATUREFLAG_SLEEPER))
+                bracketcolor = COLOR_RED;
+
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    // Determine name color, based on recruitment style
+    if(cr.flag & CREATUREFLAG_LOVESLAVE)
+        namecolor = COLOR_MAGENTA;
+    else if(cr.flag & CREATUREFLAG_BRAINWASHED)
+        namecolor = COLOR_YELLOW;
+    else
+        namecolor = COLOR_WHITE;
+
+    // Determine name brightness, based on subordinates left
+    /*if(subordinatesleft(cr))
+       brightness=1;
+    else*/
+    brightness = 0;
+
+    // add bracket (if used)
+    if(bracketcolor != -1) {
+        set_color(bracketcolor, COLOR_BLACK, 1);
+        addstr("[");
+    }
+
+    if(cr.flag & CREATUREFLAG_SLEEPER) {
+        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        addstr("[");
+    }
+
+    // add name
+    set_color(namecolor, COLOR_BLACK, brightness);
+    addstr(cr.name);
+
+    // add close bracket (if used)
+    if(cr.flag & CREATUREFLAG_SLEEPER) {
+        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        addstr("]");
+    }
+
+    if(bracketcolor != -1) {
+        set_color(bracketcolor, COLOR_BLACK, 1);
+        addstr("]");
+    }
+
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+}
 
 /* base - review - promote liberals */
 void promoteliberals(void) {
-    vector<creaturest *> temppool;
-    vector<int32> level;
+    const static int PAGELENGTH = 19;
+    vector<Creature *> temppool;
+    vector<int> level;
 
-    for(int32 p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < pool.size(); p++) {
         if(pool[p]->alive &&
-                pool[p]->align == 1 &&
-                !(pool[p]->flag & CREATUREFLAG_SLEEPER))
+                pool[p]->align == 1)
             temppool.push_back(pool[p]);
     }
 
@@ -1167,9 +1247,7 @@ void promoteliberals(void) {
     sortbyhire(temppool, level);
 
     //PROMOTE
-    int16 page = 0;
-
-    char num[20];
+    int page = 0;
 
     do {
         erase();
@@ -1184,190 +1262,122 @@ void promoteliberals(void) {
         move(1, 54);
         addstr("CONTACT AFTER PROMOTION");
 
-        int32 y = 2;
+        int y = 2;
 
-        for(int32 p = page * 19; p < temppool.size() && p < page * 19 + 19; p++) {
+        for(int p = page * PAGELENGTH; p < temppool.size() && p < page * PAGELENGTH + PAGELENGTH; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
 
             move(y, 27);
-            int32 p2 = 0;
+            int p2 = 0;
 
 
             for(p2 = 0; p2 < pool.size(); p2++) {
-                int32 p3 = 0;
+                int p3 = 0;
 
                 if(pool[p2]->alive == 1 && pool[p2]->id == temppool[p]->hireid) {
-                    // *JDS* If contact is in the justice system
-                    if(pool[p2]->location != -1 &&
-                            (location[pool[p2]->location]->type == SITE_GOVERNMENT_POLICESTATION ||
-                             location[pool[p2]->location]->type == SITE_GOVERNMENT_COURTHOUSE)) {
-                        // print name in yellow if arrested
-                        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-                        addstr("[");
-                        addstr(pool[p2]->name);
-                        addstr("]");
-                        //addstr("[A]");
-                        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                    } else if(pool[p2]->location != -1 &&
-                              location[pool[p2]->location]->type == SITE_GOVERNMENT_PRISON) {
-                        // print name in red if in prison
-                        set_color(COLOR_RED, COLOR_BLACK, 1);
-                        addstr("[");
-                        addstr(pool[p2]->name);
-                        addstr("]");
-                        //addstr("[P]");
-                        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                    }
-                    // If contact is hiding
-                    else if(pool[p2]->hiding) {
-                        // Print their name in light black
-                        set_color(COLOR_BLACK, COLOR_BLACK, 1);
-                        addstr("[");
-                        addstr(pool[p2]->name);
-                        addstr("]");
-                        //addstr("[H]");
-                        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                    } else
-                        addstr(pool[p2]->name);
+                    printname(*pool[p2]);
 
                     move(y, 54);
 
                     for(p3 = 0; p3 < pool.size(); p3++) {
                         if(pool[p3]->alive == 1 && pool[p3]->id == pool[p2]->hireid) {
-                            // If contact's contact is in the justice system
-                            if(pool[p3]->location != -1 &&
-                                    (location[pool[p3]->location]->type == SITE_GOVERNMENT_POLICESTATION ||
-                                     location[pool[p3]->location]->type == SITE_GOVERNMENT_COURTHOUSE)) {
-                                // Print their name in yellow if arrested
-                                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-                                addstr("[");
-                                addstr(pool[p3]->name);
-                                addstr("]");
-                                //addstr("[A]");
-                                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                            } else if(pool[p3]->location != -1 &&
-                                      location[pool[p3]->location]->type == SITE_GOVERNMENT_PRISON) {
-                                // Print their name in red if in prison
-                                set_color(COLOR_RED, COLOR_BLACK, 1);
-                                addstr("[");
-                                addstr(pool[p3]->name);
-                                addstr("]");
-                                //addstr("[P]");
-                                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                            }
-                            // If contact's contact is hiding
-                            else if(pool[p3]->hiding) {
-                                // Print their name in light black
-                                set_color(COLOR_BLACK, COLOR_BLACK, 1);
-                                addstr("[");
-                                addstr(pool[p3]->name);
-                                addstr("]");
-                                //addstr("[H]");
-                                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                            }
+                            if(temppool[p]->flag & CREATUREFLAG_LOVESLAVE)
+                                addstr("<Refuses Promotion>");
+                            else if(!subordinatesleft(*pool[p3]) && !(temppool[p]->flag & CREATUREFLAG_BRAINWASHED))
+                                addstr("<Can't Lead More>");
+                            else
+                                printname(*pool[p3]);
 
-                            addstr(pool[p3]->name);
                             break;
                         }
                     }
 
-                    //if(p3==pool.size())addstr("<Liberal Comrade>");
                     break;
                 }
             }
 
             if(p2 == pool.size())
-                addstr("<LCS Founder>");
+                addstr("<LCS Leader>");
 
             move(y, 4 + level[p]);
-
-            // *JDS* If in the justice system
-            if(temppool[p]->location != -1 &&
-                    (location[temppool[p]->location]->type == SITE_GOVERNMENT_POLICESTATION ||
-                     location[temppool[p]->location]->type == SITE_GOVERNMENT_COURTHOUSE)) {
-                // print name in yellow
-                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-                addstr("[");
-                addstr(temppool[p]->name);
-                addstr("]");
-                //addstr("[A]");
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            } else if(temppool[p]->location != -1 && location[temppool[p]->location]->type == SITE_GOVERNMENT_PRISON) {
-                // print name in red
-                set_color(COLOR_RED, COLOR_BLACK, 1);
-                addstr("[");
-                addstr(temppool[p]->name);
-                addstr("]");
-                //addstr("[P]");
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            }
-            // If hiding
-            else if(temppool[p]->hiding) {
-                // Print their name in light black
-                set_color(COLOR_BLACK, COLOR_BLACK, 1);
-                addstr("[");
-                addstr(temppool[p]->name);
-                addstr("]");
-                //addstr("[H]");
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            } else
-                addstr(temppool[p]->name);
+            printname(*temppool[p]);
 
             y++;
         }
 
-        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-        move(21, 8);
-        addstr("[Arrested]");
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-        move(21, 32);
-        addstr("[In Prison]");
-        set_color(COLOR_BLACK, COLOR_BLACK, 1);
-        move(21, 57);
-        addstr("[In Hiding]");
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(23, 0);
+        move(21, 0);
+        addstr("Recruited/");
+        set_color(COLOR_MAGENTA, COLOR_BLACK, 0);
+        addstr("Seduced");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        addstr("/");
+        set_color(COLOR_YELLOW, COLOR_BLACK, 0);
+        addstr("Enlightened");
+        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+        addstr("   [");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        addstr("Arrested");
+        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+        addstr("]");
+        set_color(COLOR_RED, COLOR_BLACK, 1);
+        addstr(" [");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        addstr("In Jail");
+        set_color(COLOR_RED, COLOR_BLACK, 1);
+        addstr("]");
+        set_color(COLOR_BLACK, COLOR_BLACK, 1);
+        addstr(" [");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        addstr("In Hiding");
+        set_color(COLOR_BLACK, COLOR_BLACK, 1);
+        addstr("]");
+        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        addstr(" [");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        addstr("Sleeper");
+        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        addstr("]");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        move(22, 0);
         addstr("Press a Letter to Promote a Liberal. You can not Promote Liberals in Hiding.");
+        move(23, 0);
+        addstr("Enlightened liberals follow anyone. Seduced liberals follow only their lover.");
 
-        if(temppool.size() > 19) {
+        if(temppool.size() > PAGELENGTH) {
             move(24, 0);
-
-            if(interface_pgup == '[')
-                addstr("[] to view other Liberal pages.");
-
-            else if(interface_pgup == '.')
-                addstr("; and : to view other liberal pages.");
-            else
-                addstr("PGUP/PGDN to view other Liberal pages.");
+            addpagestr();
         }
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 19 < temppool.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1)*PAGELENGTH < temppool.size())
             page++;
 
-        if(c >= 'a' && c <= 's') {
-            int32 p = page * 19 + (int32)(c - 'a');
+        if(c >= 'a' && c <= 'a' + PAGELENGTH) {
+            int p = page * PAGELENGTH + (int)(c - 'a');
 
-            // *JDS* can't promote liberals in hiding
-            if(p < temppool.size() && !pool[p]->hiding) {
-                for(int32 p2 = 0; p2 < pool.size(); p2++) {
+            // *JDS* can't promote liberals in hiding OR loveslaves
+            if(p < temppool.size() && !temppool[p]->hiding && !(temppool[p]->flag & CREATUREFLAG_LOVESLAVE)) {
+                for(int p2 = 0; p2 < pool.size(); p2++) {
                     if(pool[p2]->alive == 1 && pool[p2]->id == temppool[p]->hireid) {
                         addstr(pool[p2]->name);
 
-                        for(int32 p3 = 0; p3 < pool.size(); p3++) {
-                            if(pool[p3]->alive == 1 && pool[p3]->id == pool[p2]->hireid) {
+                        for(int p3 = 0; p3 < pool.size(); p3++) {
+                            // Can't promote if new boss can't accept more subordinates
+                            if(pool[p3]->alive == 1 && pool[p3]->id == pool[p2]->hireid &&
+                                    (temppool[p]->flag & CREATUREFLAG_BRAINWASHED || subordinatesleft(*pool[p3]))) {
                                 temppool[p]->hireid = pool[p2]->hireid;
                                 sortbyhire(temppool, level);
                                 break;
@@ -1387,11 +1397,11 @@ void promoteliberals(void) {
 
 
 
-void sortbyhire(vector<creaturest *> &temppool, vector<int32> &level) {
-    vector<creaturest *> newpool;
+void sortbyhire(vector<Creature *> &temppool, vector<int> &level) {
+    vector<Creature *> newpool;
     level.clear();
 
-    for(int32 i = temppool.size() - 1; i >= 0; i--) {
+    for(int i = temppool.size() - 1; i >= 0; i--) {
         if(temppool[i]->hireid == -1) {
             newpool.insert(newpool.begin(), temppool[i]);
             level.insert(level.begin(), 0);
@@ -1404,8 +1414,8 @@ void sortbyhire(vector<creaturest *> &temppool, vector<int32> &level) {
     do {
         changed = 0;
 
-        for(int32 i = 0; i < newpool.size(); i++) {
-            for(int32 j = temppool.size() - 1; j >= 0; j--) {
+        for(int i = 0; i < newpool.size(); i++) {
+            for(int j = temppool.size() - 1; j >= 0; j--) {
                 if(temppool[j]->hireid == newpool[i]->id) {
                     newpool.insert(newpool.begin() + i + 1, temppool[j]);
                     level.insert(level.begin() + i + 1, level[i] + 1);
@@ -1418,6 +1428,6 @@ void sortbyhire(vector<creaturest *> &temppool, vector<int32> &level) {
 
     temppool.clear();
 
-    for(int32 p = 0; p < newpool.size(); p++)
+    for(int p = 0; p < newpool.size(); p++)
         temppool.push_back(newpool[p]);
 }

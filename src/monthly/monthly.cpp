@@ -26,16 +26,16 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 
 
 /* does end of month actions */
 void passmonth(char &clearformess, char canseethings) {
-    int16 oldlaw[LAWNUM];
-    memmove(oldlaw, law, sizeof(int16)*LAWNUM);
-    int32 l, v, p;
+    short oldlaw[LAWNUM];
+    memmove(oldlaw, law, sizeof(short)*LAWNUM);
+    int l, v, p;
 
     //TIME ADVANCE
     day = 1;
@@ -46,12 +46,40 @@ void passmonth(char &clearformess, char canseethings) {
         year++;
     }
 
+    switch(endgamestate) {
+    case ENDGAME_NONE:
+        if((attitude[VIEW_POLITICALVIOLENCE] > 60 || publicmood(-1) > 60)) {
+            endgamestate = ENDGAME_CCS_APPEARANCE;
+            attitude[VIEW_CONSERVATIVECRIMESQUAD] = 100 - attitude[VIEW_POLITICALVIOLENCE];
+        }
+
+        break;
+
+    case ENDGAME_CCS_APPEARANCE:
+        if(!LCSrandom(12))
+            endgamestate = ENDGAME_CCS_ATTACKS;
+
+        break;
+
+    case ENDGAME_CCS_ATTACKS:
+        if(!LCSrandom(12))
+            endgamestate = ENDGAME_CCS_SIEGES;
+
+        break;
+
+    case ENDGAME_CCS_SIEGES:
+    case ENDGAME_CCS_DEFEATED:
+        //if(publicmood(-1)>85&&presparty==1)
+        //   endgamestate=ENDGAME_MARTIALLAW;
+        break;
+    }
+
     //CLEAR RENT EXEMPTIONS
     for(l = 0; l < location.size(); l++)
         location[l]->newrental = 0;
 
     //YOUR PAPER AND PUBLIC OPINION AND STUFF
-    vector<int32> nploc;
+    vector<int> nploc;
 
     for(l = 0; l < location.size(); l++) {
         if((location[l]->compound_walls & COMPOUND_PRINTINGPRESS) &&
@@ -59,62 +87,100 @@ void passmonth(char &clearformess, char canseethings) {
             nploc.push_back(l);
     }
 
-    int32 guardianpower = 0;
+    int guardianpower = 0;
 
     if(nploc.size() > 0 && !disbanding) {
         //DO SPECIAL EDITIONS
-        int32 loottype = choosespecialedition(clearformess);
+        int loottype = choosespecialedition(clearformess);
 
         if(loottype != -1) {
             guardianpower += 10 * nploc.size();
             printnews(loottype, nploc.size());
 
-            for(int32 p = 0; p < pool.size(); p++) {
-                if(pool[p]->alive && pool[p]->align == 1 &&
-                        pool[p]->clinic == 0 && pool[p]->dating == 0 &&
-                        pool[p]->hiding == 0) {
-                    if(pool[p]->location != -1) {
-                        if(location[pool[p]->location]->type != SITE_GOVERNMENT_PRISON &&
-                                location[pool[p]->location]->type != SITE_GOVERNMENT_COURTHOUSE &&
-                                location[pool[p]->location]->type != SITE_GOVERNMENT_POLICESTATION) {
-                            if(loottype == LOOT_INTHQDISK ||
-                                    loottype == LOOT_SECRETDOCUMENTS)
-                                addjuice(*pool[p], 100);
-                            else
-                                addjuice(*pool[p], 50);
-                        }
-                    }
-                }
-            }
-
             if(loottype == LOOT_INTHQDISK ||
                     loottype == LOOT_SECRETDOCUMENTS) {
-                for(int32 l = 0; l < nploc.size(); l++)
+                for(int l = 0; l < nploc.size(); l++)
                     criminalizepool(LAWFLAG_TREASON, -1, nploc[l]);
             }
         }
     }
 
-    int32 libpower[VIEWNUM] = {0};
-    int32 computernum = 0;
+    int libpower[VIEWNUM] = {0};
 
     //STORIES STALE EVEN IF NOT PRINTED
     for(v = 0; v < VIEWNUM; v++)
-        newspaper_topicwork1[v] = 0;
+        public_interest[v] /= 2;
 
-    int32 conspower = 200 - attitude[VIEW_AMRADIO] - attitude[VIEW_CABLENEWS];
+    int conspower = 200 - attitude[VIEW_AMRADIO] - attitude[VIEW_CABLENEWS];
 
     //HAVING SLEEPERS
-    for(int32 pl = 0; pl < pool.size(); pl++) {
+    for(int pl = pool.size() - 1; pl > 0; pl--) {
         if(pool[pl]->alive && (pool[pl]->flag & CREATUREFLAG_SLEEPER))
             sleepereffect(*pool[pl], clearformess, canseethings, libpower);
     }
 
+    //Manage graffiti
+    for(int l = 0; l < location.size(); l++) { // Check each location
+        for(int c = location[l]->changes.size() - 1; c >= 0; c--) { // Each change to the map
+            if(location[l]->changes[c].flag == SITEBLOCK_GRAFFITI ||
+                    location[l]->changes[c].flag == SITEBLOCK_GRAFFITI_CCS ||
+                    location[l]->changes[c].flag == SITEBLOCK_GRAFFITI_OTHER) { // Find changes that refer specifically to graffiti
+                int power;
+                int align;
+
+                if(location[l]->changes[c].flag == SITEBLOCK_GRAFFITI)
+                    align = 1;
+
+                if(location[l]->changes[c].flag == SITEBLOCK_GRAFFITI_CCS)
+                    align = -1;
+
+                //Purge graffiti from more secure sites (or from non-secure
+                //sites about once every five years), but these will
+                //influence people more for the current month
+                if(securityable(location[l]->type)) {
+                    location[l]->changes.erase(location[l]->changes.begin() + c);
+                    power = 5;
+                } else {
+                    if(location[l]->renting == -2) { // CCS Safehouse
+                        location[l]->changes[c].flag = SITEBLOCK_GRAFFITI_CCS; // Convert to CCS tags
+                    } else if(location[l]->renting == 0) { // LCS Permanent Safehouse
+                        location[l]->changes[c].flag = SITEBLOCK_GRAFFITI; // Convert to LCS tags
+                    } else {
+                        power = 1;
+
+                        if(!LCSrandom(10))
+                            location[l]->changes[c].flag = SITEBLOCK_GRAFFITI_OTHER;  // Convert to other tags
+
+                        if(!LCSrandom(10) && endgamestate < ENDGAME_CCS_DEFEATED && endgamestate > 0)
+                            location[l]->changes[c].flag = SITEBLOCK_GRAFFITI_CCS;  // Convert to CCS tags
+
+                        if(!LCSrandom(30))
+                            location[l]->changes.erase(location[l]->changes.begin() + c);  // Clean up
+                    }
+                }
+
+                if(align == 1) {
+                    background_liberal_influence[VIEW_LIBERALCRIMESQUAD] += power;
+                    background_liberal_influence[VIEW_CONSERVATIVECRIMESQUAD] += power;
+                } else if(align == -1) {
+                    background_liberal_influence[VIEW_LIBERALCRIMESQUAD] -= power;
+                    background_liberal_influence[VIEW_CONSERVATIVECRIMESQUAD] -= power;
+                }
+            }
+        }
+    }
+
+    int mediabalance = 0;
+    int issuebalance[VIEWNUM - 6];
+    int stimulus = 0;
+    double cost = 0;
+    double tax = 0;
+
     //PUBLIC OPINION NATURAL MOVES
     for(v = 0; v < VIEWNUM; v++) {
         // Liberal essays add their power to the effect of sleepers
-        libpower[v] += newspaper_topicwork2[v];
-        newspaper_topicwork2[v] = 0;
+        libpower[v] += background_liberal_influence[v];
+        background_liberal_influence[v] = 0;
 
         if(v == VIEW_LIBERALCRIMESQUADPOS)
             continue;
@@ -122,29 +188,98 @@ void passmonth(char &clearformess, char canseethings) {
         if(v == VIEW_LIBERALCRIMESQUAD)
             continue;
 
-        if(v != VIEW_AMRADIO && v != VIEW_CABLENEWS) {
-            // Natural movement
-            if(LCSrandom(200) > conspower || LCSrandom(3))
-                change_public_opinion(v, LCSrandom(2) * 2 - 1, 0);
-            // Or the CONSERVATIVE MEDIA forces public opinion down
-            else {
-                change_public_opinion(v, -1, 0);
-
-                // Crushing conservative media silences liberal influence!
-                libpower[v] = 0;
-            }
+        if(v == VIEW_POLITICALVIOLENCE) {
+            change_public_opinion(VIEW_POLITICALVIOLENCE, -1, 0);
+            continue;
         }
 
-        // Sleepers and editorials act as the Liberal counterpart to the conservative media
-        if(LCSrandom(200) < libpower[v])
-            change_public_opinion(v, 1, 0);
+        if(v == VIEW_CONSERVATIVECRIMESQUAD)
+            continue;
 
-        // AM Radio and Cable News become more influential over time
-        if(v == VIEW_AMRADIO || v == VIEW_CABLENEWS) {
-            if(!LCSrandom(3))
+        if(v != VIEW_AMRADIO && v != VIEW_CABLENEWS) {
+            issuebalance[v] = libpower[v] - conspower;
+            mediabalance += issuebalance[v];
+
+            // Heavy randomization -- balance of power just biases the roll
+            int roll = issuebalance[v] + LCSrandom(400) - 200;
+
+            // If +/-50 to either side, that side wins the tug-of-war
+            if(roll < -50)
                 change_public_opinion(v, -1, 0);
+            else if(roll > 50)
+                change_public_opinion(v, 1, 0);
+            else   // Else random movement
+                change_public_opinion(v, LCSrandom(2) * 2 - 1, 0);
+        }
+
+        // AM Radio and Cable News popularity slowly shift to reflect public
+        // opinion over time -- if left unchecked, their subtle influence
+        // on society will become a self-perpetuating Conservative nightmare!
+        else if(v == VIEW_AMRADIO || v == VIEW_CABLENEWS) {
+            if((int)publicmood(-1) < attitude[v])
+                change_public_opinion(v, -1);
+            else
+                change_public_opinion(v, 1);
         }
     }
+
+    // Seduction monthly experience stipends for those liberals
+    // who have been getting it on with their love slaves/masters
+    // in the background
+    for(int p = 0; p < pool.size(); p++) {
+        pool[p]->train(SKILL_SEDUCTION, loveslaves(*pool[p]) * 5);
+
+        if(pool[p]->flag & CREATUREFLAG_LOVESLAVE)
+            pool[p]->train(SKILL_SEDUCTION, 5);
+    }
+
+    /*******************************************************
+    *                                                      *
+    *     INTELLIGENCE REPORT - MOVE TO SEPARATE FILE      *
+    *        EYES ONLY - LCS PROPERTY - TOP SECRET         *
+    *******************************************************/
+    /*{
+       int y;
+       char str[20];
+       erase();
+       move(0,0);
+       set_color(COLOR_WHITE,COLOR_BLACK,1);
+       addstr("LCS MONTHLY INTELLIGENCE REPORT");
+
+       move(2,2);
+       addstr("ESTIMATED POLITICAL INFLUENCE");
+       y=3;
+       for(int i=0;i<VIEWNUM-6;i++)
+       {
+          set_color(COLOR_WHITE,COLOR_BLACK,0);
+          move(y,1);
+          getview(str,i);
+          addstr(str);
+          move(y,20);
+          set_color(COLOR_WHITE,COLOR_BLACK,1);
+          addstr("---------");
+
+          // Calculate location for pip (with a bit of randomness for imprecision!)
+          int pip=(issuebalance[i]+225)/50+LCSrandom(3)-1;
+
+          // Select color and limit to ends of spectrum
+          if(pip<=0)     { pip=0; set_color(COLOR_RED,    COLOR_BLACK,1); }
+          else if(pip<4) {        set_color(COLOR_MAGENTA,COLOR_BLACK,1); }
+          else if(pip==4){        set_color(COLOR_YELLOW, COLOR_BLACK,1); }
+          else if(pip<8) {        set_color(COLOR_CYAN,   COLOR_BLACK,1); }
+          else           { pip=8; set_color(COLOR_GREEN,  COLOR_BLACK,1); }
+
+          move(y++,20+pip);
+          addch('O');
+       }
+       refresh();
+       getch();
+    }*/
+    /*******************************************************
+    *                                                      *
+    *              END INTELLIGENCE REPORT                 *
+    *                                                      *
+    *******************************************************/
 
     //ELECTIONS
     if(month == 11) {
@@ -169,12 +304,6 @@ void passmonth(char &clearformess, char canseethings) {
         clearformess = 1;
     }
 
-    //REAGANIFY?
-    if(publicmood(-1) <= 8) {
-        reaganify(canseethings);
-        clearformess = 1;
-    }
-
     //DID YOU WIN?
     if(wincheck()) {
         liberalagenda(1);
@@ -190,21 +319,21 @@ void passmonth(char &clearformess, char canseethings) {
 
         erase();
         move(12, 10);
-        addstr("You disappeared safely, but you hadn't done enough.");
+        addstr("The Liberal Crime Squad is now just a memory.");
         refresh();
         getch();
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         erase();
         move(12, 12);
-        addstr("The Conservatives have made the world in their image.");
+        addstr("The last LCS members have all been hunted down.");
         refresh();
         getch();
 
         set_color(COLOR_BLACK, COLOR_BLACK, 1);
         erase();
         move(12, 14);
-        addstr("They'll round the last of you up eventually.  All is lost.");
+        addstr("They will never see the utopia they dreamed of...");
         refresh();
         getch();
 
@@ -237,22 +366,69 @@ void passmonth(char &clearformess, char canseethings) {
             else
                 makedelimiter(8, 0);
 
-            if(pool[p]->flag & CREATUREFLAG_ILLEGALALIEN) {
+            if(pool[p]->flag & CREATUREFLAG_MISSING) {
                 set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
                 move(8, 1);
                 addstr(pool[p]->name);
-                addstr(" has been shipped out to the INS to face deportation.");
+                addstr(" has been rehabilitated from LCS brainwashing.");
 
                 refresh();
                 getch();
 
                 removesquadinfo(*pool[p]);
+
+                if(pool[p]->align == 1) {
+                    int boss = getpoolcreature(pool[p]->hireid);
+
+                    if(boss != -1 && pool[boss]->juice > 50) {
+                        int juice = pool[boss]->juice - 50;
+
+                        if(juice > 10)
+                            juice = 10;
+
+                        addjuice(*pool[boss], -juice);
+                    }
+                }
+
+                delete pool[p];
+                pool.erase(pool.begin() + p);
+                continue;
+            } else if(pool[p]->flag & CREATUREFLAG_ILLEGALALIEN && law[LAW_IMMIGRATION] != 2) {
+                set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
+                move(8, 1);
+                addstr(pool[p]->name);
+                addstr(" has been shipped out to the INS to face ");
+
+                if(law[LAW_IMMIGRATION] == -2 && law[LAW_DEATHPENALTY] == -2)
+                    addstr("execution.");
+                else
+                    addstr("deportation.");
+
+                refresh();
+                getch();
+
+                removesquadinfo(*pool[p]);
+
+                if(pool[p]->align == 1) {
+                    int boss = getpoolcreature(pool[p]->hireid);
+
+                    if(boss != -1 && pool[boss]->juice > 50) {
+                        int juice = pool[boss]->juice - 50;
+
+                        if(juice > 10)
+                            juice = 10;
+
+                        addjuice(*pool[boss], -juice);
+                    }
+                }
+
                 delete pool[p];
                 pool.erase(pool.begin() + p);
                 continue;
             } else {
                 //TRY TO GET RACKETEERING CHARGE
-                int32 copstrength = 100;
+                int copstrength = 100;
+                float heat = 0;
 
                 if(law[LAW_POLICEBEHAVIOR] == -2)
                     copstrength = 200;
@@ -266,47 +442,76 @@ void passmonth(char &clearformess, char canseethings) {
                 if(law[LAW_POLICEBEHAVIOR] == 2)
                     copstrength = 50;
 
-                if(LCSrandom(copstrength) > pool[p]->juice + pool[p]->attval(ATTRIBUTE_HEART) * 5 - pool[p]->attval(ATTRIBUTE_WISDOM) * 5 &&
-                        pool[p]->hireid != -1) {
-                    if(pool[p]->hireid != -1) {
-                        for(int32 p2 = 0; p2 < pool.size(); p2++) {
-                            if(pool[p2]->alive == 1 && pool[p2]->id == pool[p]->hireid) {
-                                char conf = 0;
+                for(int i = 0; i < LAWFLAGNUM; i++)
+                    heat += (pool[p]->heat) / 4.0f;
 
-                                if(pool[p2]->location == -1)
-                                    conf = 1;
-                                else if(location[pool[p2]->location]->type != SITE_GOVERNMENT_PRISON)
-                                    conf = 1;
+                copstrength = static_cast<int>(copstrength * heat);
 
-                                if(conf)
-                                    pool[p2]->lawflag[LAWFLAG_RACKETEERING]++;
-                            }
+                if(copstrength > 200)
+                    copstrength = 200;
+
+                //Confession check
+                if(LCSrandom(copstrength) > pool[p]->juice  +  pool[p]->attval(ATTRIBUTE_HEART) * 5  -
+                        pool[p]->attval(ATTRIBUTE_WISDOM) * 5  +  pool[p]->skillval(SKILL_PSYCHOLOGY) * 5
+                        /*+ pool[p]->skillval(SKILL_SURVIVAL)*5*/  &&  pool[p]->hireid != -1) {
+                    int nullify = 0;
+                    int p2 = getpoolcreature(pool[p]->hireid);
+
+                    if(pool[p2]->alive && (pool[p2]->location == -1 || location[pool[p2]->location]->type != SITE_GOVERNMENT_PRISON)) {
+                        //Leadership check to nullify subordinate's confession
+                        if(LCSrandom(pool[p2]->skillval(SKILL_LEADERSHIP) + 1))
+                            nullify = 1;
+                        else {
+                            //Charge the boss with racketeering!
+                            criminalize(*pool[p2], LAWFLAG_RACKETEERING);
+                            //Rack up testimonies against the boss in court!
+                            pool[p2]->confessions++;
                         }
                     }
 
-                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                    move(8, 1);
-                    addstr(pool[p]->name);
-                    addstr(" has broken under the pressure and ratted you out!");
+                    if(!nullify) {
+                        //Issue a raid on this guy's base!
+                        if(pool[p]->base >= 0)
+                            location[pool[p]->base]->heat += 300;
 
-                    refresh();
-                    getch();
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(8, 1);
+                        addstr(pool[p]->name);
+                        addstr(" has broken under the pressure and ratted you out!");
 
-                    removesquadinfo(*pool[p]);
-                    delete pool[p];
-                    pool.erase(pool.begin() + p);
-                    continue;
-                } else {
-                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                    move(8, 1);
-                    addstr(pool[p]->name);
-                    addstr(" is moved to the courthouse for trial.");
+                        refresh();
+                        getch();
 
-                    refresh();
-                    getch();
+                        removesquadinfo(*pool[p]);
+
+                        int boss = getpoolcreature(pool[p]->hireid);
+
+                        if(boss != -1 && pool[boss]->juice > 50) {
+                            int juice = pool[boss]->juice - 50;
+
+                            if(juice > 5)
+                                juice = 5;
+
+                            addjuice(*pool[boss], -juice);
+                        }
+
+                        delete pool[p];
+                        pool.erase(pool.begin() + p);
+                        continue; //no trial for this person; skip to next person
+                    }
+
+                    //else continue to trial
                 }
 
-                for(int32 l = 0; l < location.size(); l++) {
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
+                addstr(pool[p]->name);
+                addstr(" is moved to the courthouse for trial.");
+
+                refresh();
+                getch();
+
+                for(int l = 0; l < location.size(); l++) {
                     if(location[l]->type == SITE_GOVERNMENT_COURTHOUSE)
                         pool[p]->location = l;
                 }
@@ -329,8 +534,10 @@ void passmonth(char &clearformess, char canseethings) {
 
         if(location[pool[p]->location]->type == SITE_GOVERNMENT_PRISON && !pool[p]->alive) {
             removesquadinfo(*pool[p]);
-            delete pool[p];
-            pool.erase(pool.begin() + p);
+            pool[p]->alive = 0;
+            pool[p]->location = -1;
+            //delete pool[p];
+            //pool.erase(pool.begin() + p);
         }
     }
 
@@ -343,144 +550,88 @@ void passmonth(char &clearformess, char canseethings) {
     //FUND REPORTS
     fundreport(clearformess);
 
-    //HEAL CLINIC PEOPLE AND TRAIN
-    for(p = 0; p < pool.size(); p++) {
-        if(disbanding)
-            break;
 
-        if(pool[p]->clinic > 0) {
-            pool[p]->clinic--;
-
-            for(int32 w = 0; w < BODYPARTNUM; w++) {
-                if((pool[p]->wound[w] & WOUND_NASTYOFF) ||
-                        (pool[p]->wound[w] & WOUND_CLEANOFF))
-                    pool[p]->wound[w] = (char)WOUND_CLEANOFF;
-                else
-                    pool[p]->wound[w] = 0;
-            }
-
-            if(pool[p]->special[SPECIALWOUND_RIGHTLUNG] != 1) {
-                pool[p]->special[SPECIALWOUND_RIGHTLUNG] = 1;
-
-                if(LCSrandom(2)) {
-                    pool[p]->att[ATTRIBUTE_HEALTH]--;
-
-                    if(pool[p]->att[ATTRIBUTE_HEALTH] <= 0)
-                        pool[p]->att[ATTRIBUTE_HEALTH] = 1;
-                }
-            }
-
-            if(pool[p]->special[SPECIALWOUND_LEFTLUNG] != 1) {
-                pool[p]->special[SPECIALWOUND_LEFTLUNG] = 1;
-
-                if(LCSrandom(2)) {
-                    pool[p]->att[ATTRIBUTE_HEALTH]--;
-
-                    if(pool[p]->att[ATTRIBUTE_HEALTH] <= 0)
-                        pool[p]->att[ATTRIBUTE_HEALTH] = 1;
-                }
-            }
-
-            if(pool[p]->special[SPECIALWOUND_HEART] != 1) {
-                pool[p]->special[SPECIALWOUND_HEART] = 1;
-
-                if(LCSrandom(3)) {
-                    pool[p]->att[ATTRIBUTE_HEALTH]--;
-
-                    if(pool[p]->att[ATTRIBUTE_HEALTH] <= 0)
-                        pool[p]->att[ATTRIBUTE_HEALTH] = 1;
-                }
-            }
-
-            pool[p]->special[SPECIALWOUND_LIVER] = 1;
-            pool[p]->special[SPECIALWOUND_STOMACH] = 1;
-            pool[p]->special[SPECIALWOUND_RIGHTKIDNEY] = 1;
-            pool[p]->special[SPECIALWOUND_LEFTKIDNEY] = 1;
-            pool[p]->special[SPECIALWOUND_SPLEEN] = 1;
-            pool[p]->special[SPECIALWOUND_RIBS] = RIBNUM;
-
-            if(!pool[p]->special[SPECIALWOUND_NECK])
-                pool[p]->special[SPECIALWOUND_NECK] = 2;
-
-            if(!pool[p]->special[SPECIALWOUND_UPPERSPINE])
-                pool[p]->special[SPECIALWOUND_UPPERSPINE] = 2;
-
-            if(!pool[p]->special[SPECIALWOUND_LOWERSPINE])
-                pool[p]->special[SPECIALWOUND_LOWERSPINE] = 2;
-
-            if(pool[p]->blood <= 20 && pool[p]->clinic <= 2)
-                pool[p]->blood = 50;
-
-            if(pool[p]->blood <= 50 && pool[p]->clinic <= 1)
-                pool[p]->blood = 75;
-
-            if(pool[p]->clinic == 0) {
-                pool[p]->blood = 100;
-
-                if(clearformess)
-                    erase();
-                else
-                    makedelimiter(8, 0);
-
-                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                move(8, 1);
-                addstr(pool[p]->name);
-                addstr(" has left ");
-                addstr(location[pool[p]->location]->name);
-                addstr(".");
-
-                int32 hs = -1;
-
-                for(int32 l = 0; l < location.size(); l++) {
-                    if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
-                        hs = l;
-                        break;
-                    }
-                }
-
-                if (hs == -1) {
-                    //TODO: Error unable to find location
-                    hs = 0;
-                }
-
-                if(location[pool[p]->base]->siege.siege)
-                    pool[p]->base = hs;
-
-                pool[p]->location = pool[p]->base;
-
-                refresh();
-                getch();
-            }
-        }
-    }
 }
 
+/* rename various buildings according to the new laws */
+void updateworld_laws(short *law, short *oldlaw) {
+    if((law[LAW_DEATHPENALTY] == -2 || oldlaw[LAW_DEATHPENALTY] == -2) &&
+            law[LAW_DEATHPENALTY] != oldlaw[LAW_DEATHPENALTY]) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_GOVERNMENT_PRISON)   // Prison or re-ed camp?
+                initlocation(*location[l]);
 
-
-/* rename prison according to the new laws (add more buildings to this) */
-void updateworld_laws(int16 *law, int16 *oldlaw) {
-    //RENAME PRISONS
-    if(law[LAW_DEATHPENALTY] == -2 &&
-            law[LAW_POLICEBEHAVIOR] == -2 &&
-            (oldlaw[LAW_DEATHPENALTY] > -2 ||
-             oldlaw[LAW_POLICEBEHAVIOR] > -2)) {
-        for(int32 l = 0; l < location.size(); l++) {
-            if(location[l]->type == SITE_GOVERNMENT_PRISON)
+            if(location[l]->type == SITE_GOVERNMENT_COURTHOUSE)   // Courthouse or judge hall?
                 initlocation(*location[l]);
         }
     }
-    //RENAME CAMPS
-    else if(oldlaw[LAW_DEATHPENALTY] == -2 &&
-            oldlaw[LAW_POLICEBEHAVIOR] == -2 &&
-            (law[LAW_DEATHPENALTY] > -2 ||
-             law[LAW_POLICEBEHAVIOR] > -2)) {
-        for(int32 l = 0; l < location.size(); l++) {
-            if(location[l]->type == SITE_GOVERNMENT_PRISON)
+
+    if(law[LAW_GUNCONTROL] == 2 && oldlaw[LAW_GUNCONTROL] < 2) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_BUSINESS_PAWNSHOP)   // Do they mention guns in the title?
+                initlocation(*location[l]);
+        }
+    }
+
+    if((law[LAW_POLICEBEHAVIOR] == -2 || oldlaw[LAW_POLICEBEHAVIOR] == -2) &&
+            law[LAW_POLICEBEHAVIOR] != oldlaw[LAW_POLICEBEHAVIOR]) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_GOVERNMENT_PRISON)   // Prison or re-ed camp?
+                initlocation(*location[l]);
+
+            if(location[l]->type == SITE_GOVERNMENT_INTELLIGENCEHQ)   // Intelligence HQ or ministry of love?
+                initlocation(*location[l]);
+        }
+    }
+
+    if((law[LAW_FREESPEECH] == -2 || oldlaw[LAW_FREESPEECH] == -2) &&
+            law[LAW_FREESPEECH] != oldlaw[LAW_FREESPEECH]) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_GOVERNMENT_FIRESTATION)   // Fire station or Fireman HQ?
+                initlocation(*location[l]);
+        }
+    }
+
+    if((law[LAW_PRIVACY] == -2 || oldlaw[LAW_PRIVACY] == -2) &&
+            law[LAW_PRIVACY] != oldlaw[LAW_PRIVACY]) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_GOVERNMENT_INTELLIGENCEHQ)   // Intelligence HQ or min. of love?
+                initlocation(*location[l]);
+        }
+    }
+
+    if((law[LAW_CORPORATE] == -2 || oldlaw[LAW_CORPORATE] == -2) &&
+            law[LAW_CORPORATE] != oldlaw[LAW_CORPORATE]) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_CORPORATE_HOUSE)   // CEO house or CEO Castle?
+                initlocation(*location[l]);
+        }
+    }
+
+    if((law[LAW_TAX] == -2 || oldlaw[LAW_TAX] == -2) &&
+            law[LAW_TAX] != oldlaw[LAW_TAX]) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_CORPORATE_HOUSE)   // CEO house or CEO Castle?
+                initlocation(*location[l]);
+        }
+    }
+
+    if((law[LAW_DRUGS] == 2 || oldlaw[LAW_DRUGS] == 2) &&
+            law[LAW_DRUGS] != oldlaw[LAW_DRUGS]) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_BUSINESS_CRACKHOUSE)   // Crack House, or Recreational Drugs Center?
+                initlocation(*location[l]);
+        }
+    }
+
+    if((law[LAW_NUCLEARPOWER] == 2 || oldlaw[LAW_NUCLEARPOWER] == 2) &&
+            law[LAW_NUCLEARPOWER] != oldlaw[LAW_NUCLEARPOWER]) {
+        for(int l = 0; l < location.size(); l++) {
+            if(location[l]->type == SITE_INDUSTRY_NUCLEAR)   // Nuclear Power Plant, or Nuclear Waste Center?
                 initlocation(*location[l]);
         }
     }
 }
-
 
 
 

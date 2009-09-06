@@ -26,7 +26,7 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 
@@ -72,28 +72,33 @@ void guardianupdate(char size, char power) {
 
 
 /* monthly - lets the player choose a special edition for the guardian */
-int32 choosespecialedition(char &clearformess) {
-    int32 page = 0;
+int choosespecialedition(char &clearformess) {
+    int page = 0;
 
     char havetype[LOOTNUM];
 
-    for(int32 l = 0; l < LOOTNUM; l++)
+    for(int l = 0; l < LOOTNUM; l++)
         havetype[l] = 0;
 
-    vector<int32> loottype;
+    vector<int> loottype;
 
     //FIND ALL LOOT TYPES
-    for(int32 loc = 0; loc < location.size(); loc++) {
+    for(int loc = 0; loc < location.size(); loc++) {
         if(location[loc]->renting == -1)
             continue;
 
-        for(int32 l = 0; l < location[loc]->loot.size(); l++) {
+        for(int l = 0; l < location[loc]->loot.size(); l++) {
             if(location[loc]->loot[l]->type != ITEM_LOOT)
                 continue;
 
             if(location[loc]->loot[l]->loottype != LOOT_CEOPHOTOS &&
                     location[loc]->loot[l]->loottype != LOOT_INTHQDISK &&
                     location[loc]->loot[l]->loottype != LOOT_CORPFILES &&
+                    location[loc]->loot[l]->loottype != LOOT_JUDGEFILES &&
+                    location[loc]->loot[l]->loottype != LOOT_RESEARCHFILES &&
+                    location[loc]->loot[l]->loottype != LOOT_PRISONFILES &&
+                    location[loc]->loot[l]->loottype != LOOT_CABLENEWSFILES &&
+                    location[loc]->loot[l]->loottype != LOOT_AMRADIOFILES &&
                     location[loc]->loot[l]->loottype != LOOT_SECRETDOCUMENTS &&
                     location[loc]->loot[l]->loottype != LOOT_POLICERECORDS)
                 continue;
@@ -105,14 +110,19 @@ int32 choosespecialedition(char &clearformess) {
         }
     }
 
-    for(int32 sq = 0; sq < squad.size(); sq++) {
-        for(int32 l = 0; l < squad[sq]->loot.size(); l++) {
+    for(int sq = 0; sq < squad.size(); sq++) {
+        for(int l = 0; l < squad[sq]->loot.size(); l++) {
             if(squad[sq]->loot[l]->type != ITEM_LOOT)
                 continue;
 
             if(squad[sq]->loot[l]->loottype != LOOT_CEOPHOTOS &&
                     squad[sq]->loot[l]->loottype != LOOT_INTHQDISK &&
                     squad[sq]->loot[l]->loottype != LOOT_CORPFILES &&
+                    squad[sq]->loot[l]->loottype != LOOT_JUDGEFILES &&
+                    squad[sq]->loot[l]->loottype != LOOT_RESEARCHFILES &&
+                    squad[sq]->loot[l]->loottype != LOOT_PRISONFILES &&
+                    squad[sq]->loot[l]->loottype != LOOT_CABLENEWSFILES &&
+                    squad[sq]->loot[l]->loottype != LOOT_AMRADIOFILES &&
                     squad[sq]->loot[l]->loottype != LOOT_SECRETDOCUMENTS &&
                     squad[sq]->loot[l]->loottype != LOOT_POLICERECORDS)
                 continue;
@@ -137,10 +147,10 @@ int32 choosespecialedition(char &clearformess) {
         move(0, 0);
         addstr("Do you want to run a special edition?");
 
-        int32 x = 1, y = 10;
+        int x = 1, y = 10;
         char str[200], str2[200];
 
-        for(int32 l = page * 18; l < loottype.size() && l < page * 18 + 18; l++) {
+        for(int l = page * 18; l < loottype.size() && l < page * 18 + 18; l++) {
             getloot(str2, loottype[l]);
             str[0] = l - page * 18 + 'A';
             str[1] = '\x0';
@@ -161,25 +171,13 @@ int32 choosespecialedition(char &clearformess) {
         //PAGE UP
         if(page > 0) {
             move(17, 1);
-
-            if(interface_pgup == '[')
-                addstr("[ - Previous");
-            else if(interface_pgup == '.')
-                addstr("; - Previous");
-            else
-                addstr("PGUP - Previous");
+            addprevpagestr();
         }
 
         //PAGE DOWN
         if((page + 1) * 18 < loottype.size()) {
             move(17, 53);
-
-            if(interface_pgup == '[')
-                addstr("] - Next");
-            else if(interface_pgup == '.')
-                addstr(": - Next");
-            else
-                addstr("PGDN - Next");
+            addnextpagestr();
         }
 
         move(24, 1);
@@ -187,19 +185,19 @@ int32 choosespecialedition(char &clearformess) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c >= 'a' && c <= 'r') {
-            int32 slot = c - 'a' + page * 18;
+            int slot = c - 'a' + page * 18;
 
             if(slot >= 0 && slot < loottype.size()) {
                 //DELETE THE ITEM
-                for(int32 loc = 0; loc < location.size(); loc++) {
+                for(int loc = 0; loc < location.size(); loc++) {
                     if(location[loc]->renting == -1)
                         continue;
 
-                    for(int32 l = 0; l < location[loc]->loot.size(); l++) {
+                    for(int l = 0; l < location[loc]->loot.size(); l++) {
                         if(location[loc]->loot[l]->type != ITEM_LOOT)
                             continue;
 
@@ -211,8 +209,8 @@ int32 choosespecialedition(char &clearformess) {
                     }
                 }
 
-                for(int32 sq = 0; sq < squad.size(); sq++) {
-                    for(int32 l = 0; l < squad[sq]->loot.size(); l++) {
+                for(int sq = 0; sq < squad.size(); sq++) {
+                    for(int l = 0; l < squad[sq]->loot.size(); l++) {
                         if(squad[sq]->loot[l]->type != ITEM_LOOT)
                             continue;
 
@@ -233,11 +231,11 @@ int32 choosespecialedition(char &clearformess) {
             return -1;
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 18 < loottype.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < loottype.size())
             page++;
 
     } while(1);
@@ -248,7 +246,10 @@ int32 choosespecialedition(char &clearformess) {
 
 
 /* monthly - guardian - prints liberal guardian special editions */
-void printnews(int16 l, int16 newspaper) {
+void printnews(short l, short newspaper) {
+    if(law[LAW_FREESPEECH] == -2)
+        offended_firemen = 1;
+
     erase();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
@@ -257,11 +258,13 @@ void printnews(int16 l, int16 newspaper) {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring photos of a major CEO");
         move(7, 1);
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
 
         switch(LCSrandom(10)) {
         case 0:
-            addstr("engaging in lude behavior with animals.");
-            change_public_opinion(VIEW_ANIMALRESEARCH, 15, 0);
+            addstr("engaging in lewd behavior with animals.");
+            change_public_opinion(VIEW_ANIMALRESEARCH, 15);
             break;
 
         case 1:
@@ -270,8 +273,8 @@ void printnews(int16 l, int16 newspaper) {
 
         case 2:
             addstr("participating in a murder.");
-            change_public_opinion(VIEW_POLICEBEHAVIOR, 15, 0);
-            change_public_opinion(VIEW_JUSTICES, 10, 0);
+            change_public_opinion(VIEW_POLICEBEHAVIOR, 15);
+            change_public_opinion(VIEW_JUSTICES, 10);
             break;
 
         case 3:
@@ -284,8 +287,8 @@ void printnews(int16 l, int16 newspaper) {
 
         case 5:
             addstr("making out with an FDA official overseeing the CEO's products.");
-            change_public_opinion(VIEW_GENETICS, 10, 0);
-            change_public_opinion(VIEW_POLLUTION, 10, 0);
+            change_public_opinion(VIEW_GENETICS, 10);
+            change_public_opinion(VIEW_POLLUTION, 10);
             break;
 
         case 6:
@@ -298,7 +301,7 @@ void printnews(int16 l, int16 newspaper) {
 
         case 8:
             addstr("torturing an employee with a hot iron.");
-            change_public_opinion(VIEW_SWEATSHOPS, 10, 0);
+            change_public_opinion(VIEW_SWEATSHOPS, 10);
             break;
 
         case 9:
@@ -311,10 +314,8 @@ void printnews(int16 l, int16 newspaper) {
         move(9, 1);
         addstr("This is bound to get the Corporations a little riled up.");
 
-        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10, 0);
-        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10, 0);
-        change_public_opinion(VIEW_CEOSALARY, 50, 0);
-        change_public_opinion(VIEW_CORPORATECULTURE, 50, 0);
+        change_public_opinion(VIEW_CEOSALARY, 50);
+        change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
         break;
 
@@ -323,30 +324,33 @@ void printnews(int16 l, int16 newspaper) {
         addstr("The Liberal Guardian runs a story featuring Corporate files");
         move(7, 1);
 
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, newspaper * 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, newspaper * 10);
+
         switch(LCSrandom(5)) {
         case 0:
             addstr("describing a genetic monster created in a lab.");
-            change_public_opinion(VIEW_GENETICS, 50, 0);
+            change_public_opinion(VIEW_GENETICS, 50);
             break;
 
         case 1:
             addstr("with a list of gay employees entitled \"Homo-workers\".");
-            change_public_opinion(VIEW_GAY, 50, 0);
+            change_public_opinion(VIEW_GAY, 50);
             break;
 
         case 2:
             addstr("containing a memo: \"Terminate the pregnancy, I terminate you.\"");
-            change_public_opinion(VIEW_ABORTION, 50, 0);
+            change_public_opinion(VIEW_WOMEN, 50);
             break;
 
         case 3:
             addstr("cheerfully describing foreign corporate sweatshops.");
-            change_public_opinion(VIEW_SWEATSHOPS, 50, 0);
+            change_public_opinion(VIEW_SWEATSHOPS, 50);
             break;
 
         case 4:
             addstr("describing an intricate tax scheme.");
-            change_public_opinion(VIEW_TAXES, 50, 0);
+            change_public_opinion(VIEW_TAXES, 50);
             break;
         }
 
@@ -355,10 +359,8 @@ void printnews(int16 l, int16 newspaper) {
         move(9, 1);
         addstr("This is bound to get the Corporations a little riled up.");
 
-        change_public_opinion(VIEW_LIBERALCRIMESQUAD, newspaper * 10, 0);
-        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, newspaper * 10, 0);
-        change_public_opinion(VIEW_CEOSALARY, 50, 0);
-        change_public_opinion(VIEW_CORPORATECULTURE, 50, 0);
+        change_public_opinion(VIEW_CEOSALARY, 50);
+        change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
         break;
 
@@ -368,6 +370,9 @@ void printnews(int16 l, int16 newspaper) {
         addstr("The Liberal Guardian runs a story featuring CIA and other intelligence files");
         move(7, 1);
 
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
+
         switch(LCSrandom(6)) {
         case 0:
             addstr("documenting the overthrow of a government.");
@@ -375,7 +380,7 @@ void printnews(int16 l, int16 newspaper) {
 
         case 1:
             addstr("documenting the planned assassination of a Liberal federal judge.");
-            change_public_opinion(VIEW_JUSTICES, 50, 0);
+            change_public_opinion(VIEW_JUSTICES, 50);
             break;
 
         case 2:
@@ -384,17 +389,17 @@ void printnews(int16 l, int16 newspaper) {
 
         case 3:
             addstr("documenting \"harmful speech\" made by innocent citizens.");
-            change_public_opinion(VIEW_FREESPEECH, 50, 0);
+            change_public_opinion(VIEW_FREESPEECH, 50);
             break;
 
         case 4:
             addstr("used to keep tabs on gay citizens.");
-            change_public_opinion(VIEW_GAY, 50, 0);
+            change_public_opinion(VIEW_GAY, 50);
             break;
 
         case 5:
             addstr("documenting the infiltration of a pro-choice group.");
-            change_public_opinion(VIEW_ABORTION, 50, 0);
+            change_public_opinion(VIEW_WOMEN, 50);
             break;
         }
 
@@ -403,9 +408,7 @@ void printnews(int16 l, int16 newspaper) {
         move(9, 1);
         addstr("This is bound to get the Government a little riled up.");
 
-        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10, 0);
-        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10, 0);
-        change_public_opinion(VIEW_INTELLIGENCE, 50, 0);
+        change_public_opinion(VIEW_INTELLIGENCE, 50);
         offended_cia = 1;
         break;
 
@@ -413,6 +416,9 @@ void printnews(int16 l, int16 newspaper) {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring police records");
         move(7, 1);
+
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
 
         switch(LCSrandom(6)) {
         case 0:
@@ -425,7 +431,7 @@ void printnews(int16 l, int16 newspaper) {
 
         case 2:
             addstr("documenting a systematic invasion of privacy by the force.");
-            change_public_opinion(VIEW_INTELLIGENCE, 15, 0);
+            change_public_opinion(VIEW_INTELLIGENCE, 15);
             break;
 
         case 3:
@@ -437,8 +443,8 @@ void printnews(int16 l, int16 newspaper) {
             break;
 
         case 5:
-            addstr("documenting gladiatory matches held between prisoners by guards.");
-            change_public_opinion(VIEW_PRISONS, 50, 0);
+            addstr("documenting gladiatorial matches held between prisoners by guards.");
+            change_public_opinion(VIEW_PRISONS, 50);
             break;
         }
 
@@ -447,10 +453,173 @@ void printnews(int16 l, int16 newspaper) {
         move(9, 1);
         addstr("This is bound to get the police a little riled up.");
 
-        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10, 0);
-        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10, 0);
-        change_public_opinion(VIEW_POLICEBEHAVIOR, 50, 0);
+        change_public_opinion(VIEW_POLICEBEHAVIOR, 50);
         offended_cops = 1;
+        break;
+
+    case LOOT_JUDGEFILES:
+        move(6, 1);
+        addstr("The Liberal Guardian runs a story with evidence of a Conservative judge");
+        move(7, 1);
+
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
+
+        switch(LCSrandom(2)) {
+        case 0:
+            addstr("taking bribes to acquit murderers.");
+            break;
+
+        case 1:
+            addstr("promising Conservative rulings in exchange for appointments.");
+            break;
+        }
+
+        move(8, 1);
+        addstr("The major networks and publications take it up and run it for weeks.");
+        //move(9,1);
+        //addstr("This is bound to get the police a little riled up.");
+
+        change_public_opinion(VIEW_JUSTICES, 50);
+        //offended_cops=1;
+        break;
+
+    case LOOT_RESEARCHFILES:
+        move(6, 1);
+        addstr("The Liberal Guardian runs a story featuring research papers");
+        move(7, 1);
+
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
+
+        switch(LCSrandom(4)) {
+        case 0:
+            addstr("documenting horrific animal rights abuses.");
+            change_public_opinion(VIEW_ANIMALRESEARCH, 50);
+            break;
+
+        case 1:
+            addstr("studying the effects of torture on cats.");
+            change_public_opinion(VIEW_ANIMALRESEARCH, 50);
+            break;
+
+        case 2:
+            addstr("covering up the accidental creation of a genetic monster.");
+            change_public_opinion(VIEW_GENETICS, 50);
+            break;
+
+        case 3:
+            addstr("showing human test subjects dying under genetic research.");
+            change_public_opinion(VIEW_GENETICS, 50);
+            break;
+        }
+
+        move(8, 1);
+        addstr("The major networks and publications take it up and run it for weeks.");
+        //move(9,1);
+        //addstr("This is bound to get the police a little riled up.");
+
+        //offended_cops=1;
+        break;
+
+    case LOOT_PRISONFILES:
+        move(6, 1);
+        addstr("The Liberal Guardian runs a story featuring prison documents");
+        move(7, 1);
+
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
+
+        switch(LCSrandom(4)) {
+        case 0:
+            addstr("documenting human rights abuses by prison guards.");
+            break;
+
+        case 1:
+            addstr("documenting a prison torture case.");
+            break;
+
+        case 2:
+            addstr("documenting widespread corruption among prison employees.");
+            break;
+
+        case 3:
+            addstr("documenting gladiatorial matches held between prisoners by guards.");
+        }
+
+        move(8, 1);
+        addstr("The major networks and publications take it up and run it for weeks.");
+        move(9, 1);
+        addstr("This is bound to get the police a little riled up.");
+
+        change_public_opinion(VIEW_PRISONS, 50);
+        offended_cops = 1;
+        break;
+
+    case LOOT_CABLENEWSFILES:
+        move(6, 1);
+        addstr("The Liberal Guardian runs a story featuring cable news memos");
+        move(7, 1);
+
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
+
+        switch(LCSrandom(4)) {
+        case 0:
+            addstr("calling their news 'the vanguard of Conservative thought'.");
+            break;
+
+        case 1:
+            addstr("mandating negative coverage of Liberal politicians.");
+            break;
+
+        case 2:
+            addstr("planning to drum up a false scandal about a Liberal figure.");
+            break;
+
+        case 3:
+            addstr("instructing a female anchor to 'get sexier or get a new job'.");
+            break;
+        }
+
+        move(8, 1);
+        addstr("The major networks and publications take it up and run it for weeks.");
+        move(9, 1);
+        addstr("This is bound to get the Conservative masses a little riled up.");
+
+        change_public_opinion(VIEW_CABLENEWS, 50);
+        offended_cablenews = 1;
+        break;
+
+    case LOOT_AMRADIOFILES:
+        move(6, 1);
+        addstr("The Liberal Guardian runs a story featuring AM radio plans");
+        move(7, 1);
+
+        change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+        change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
+
+        switch(LCSrandom(4)) {
+        case 0:
+            addstr("calling listeners 'sheep to be told what to think'.");
+            break;
+
+        case 1:
+            addstr("saying 'it's okay to lie, they don't need the truth'.");
+            break;
+
+        case 2:
+            addstr("planning to drum up a false scandal about a Liberal figure.");
+            break;
+        }
+
+        move(8, 1);
+        addstr("The major networks and publications take it up and run it for weeks.");
+        move(9, 1);
+        addstr("This is bound to get the Conservative masses a little riled up.");
+
+        change_public_opinion(VIEW_AMRADIO, 50);
+        offended_cablenews = 1;
         break;
     }
 
@@ -468,6 +637,7 @@ void fundreport(char &clearformess) {
     //MUST HAVE CATEGORIES FOR ALL FUND CHANGES
     if(moneygained_donate > 0 ||
             moneygained_brownies > 0 ||
+            moneygained_embezzlement > 0 ||
             moneylost_trouble > 0 ||
             moneylost_manufacture > 0 ||
             moneylost_rent > 0 ||
@@ -477,6 +647,8 @@ void fundreport(char &clearformess) {
             moneygained_hustling > 0 ||
             moneygained_thievery > 0 ||
             moneylost_goods > 0 ||
+            moneylost_food > 0 ||
+            moneylost_training > 0 ||
             moneylost_compound > 0 ||
             moneylost_hostage > 0) {
         clearformess = 1;
@@ -487,15 +659,15 @@ void fundreport(char &clearformess) {
         move(0, 0);
         addstr("Liberal Crime Squad:   Monthly Action Report");
 
-        int32 y = 2;
+        int y = 2;
 
-        int32 totalmoney = 0;
+        long totalmoney = 0;
 
         //DONATIONS
         if(moneygained_donate > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Donations . . . . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Donations . . . . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_GREEN, COLOR_BLACK, 0);
             move(y, 60);
@@ -513,7 +685,7 @@ void fundreport(char &clearformess) {
         if(moneygained_brownies > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Brownies   . . . . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Brownies. . . . . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_GREEN, COLOR_BLACK, 0);
             move(y, 60);
@@ -531,7 +703,7 @@ void fundreport(char &clearformess) {
         if(moneygained_ccfraud > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Credit Card Fraud . . . . . . . . . . . . . . . . . . . .");
+            addstr("Credit Card Fraud . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_GREEN, COLOR_BLACK, 0);
             move(y, 60);
@@ -549,7 +721,7 @@ void fundreport(char &clearformess) {
         if(moneygained_hustling > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Hustling   . . . . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Hustling. . . . . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_GREEN, COLOR_BLACK, 0);
             move(y, 60);
@@ -563,11 +735,29 @@ void fundreport(char &clearformess) {
             totalmoney += moneygained_hustling;
         }
 
+        //HUSTLING
+        if(moneygained_extortion > 0) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(y, 0);
+            addstr("Extortion . . . . . . . . . . . . . . . . . . . . . . . . .");
+
+            set_color(COLOR_GREEN, COLOR_BLACK, 0);
+            move(y, 60);
+            char num[20];
+            itoa(moneygained_extortion, num, 10);
+            addstr("$");
+            addstr(num);
+
+            y++;
+
+            totalmoney += moneygained_extortion;
+        }
+
         //THIEVERY
         if(moneygained_thievery > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Thievery   . . . . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Thievery. . . . . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_GREEN, COLOR_BLACK, 0);
             move(y, 60);
@@ -585,7 +775,7 @@ void fundreport(char &clearformess) {
         if(moneygained_goods > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Sale of Goods . . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Sale of Goods . . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_GREEN, COLOR_BLACK, 0);
             move(y, 60);
@@ -599,11 +789,29 @@ void fundreport(char &clearformess) {
             totalmoney += moneygained_goods;
         }
 
+        //EMBEZZLEMENT
+        if(moneygained_embezzlement > 0) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(y, 0);
+            addstr("Embezzlement. . . . . . . . . . . . . . . . . . . . . . . .");
+
+            set_color(COLOR_GREEN, COLOR_BLACK, 0);
+            move(y, 60);
+            char num[20];
+            itoa(moneygained_embezzlement, num, 10);
+            addstr("$");
+            addstr(num);
+
+            y++;
+
+            totalmoney += moneygained_embezzlement;
+        }
+
         //PURCHASE
         if(moneylost_goods > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Purchase of Goods . . . . . . . . . . . . . . . . . . . .");
+            addstr("Purchase of Goods . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_RED, COLOR_BLACK, 0);
             move(y, 60);
@@ -621,7 +829,7 @@ void fundreport(char &clearformess) {
         if(moneylost_trouble > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Liberal Disobedience   . . . . . . . . . . . . . . . . . .");
+            addstr("Liberal Disobedience. . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_RED, COLOR_BLACK, 0);
             move(y, 60);
@@ -639,7 +847,7 @@ void fundreport(char &clearformess) {
         if(moneylost_rent > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Rent   . . . . . . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Rent. . . . . . . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_RED, COLOR_BLACK, 0);
             move(y, 60);
@@ -653,11 +861,29 @@ void fundreport(char &clearformess) {
             totalmoney -= moneylost_rent;
         }
 
+        //Training
+        if(moneylost_training > 0) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(y, 0);
+            addstr("Training. . . . . . . . . . . . . . . . . . . . . . . . . .");
+
+            set_color(COLOR_RED, COLOR_BLACK, 0);
+            move(y, 60);
+            char num[20];
+            itoa(moneylost_training, num, 10);
+            addstr("$");
+            addstr(num);
+
+            y++;
+
+            totalmoney -= moneylost_training;
+        }
+
         //MANUFACTURE
         if(moneylost_manufacture > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Manufacture . . . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Manufacture . . . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_RED, COLOR_BLACK, 0);
             move(y, 60);
@@ -675,7 +901,7 @@ void fundreport(char &clearformess) {
         if(moneylost_legal > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Legal Fees   . . . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Legal Fees. . . . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_RED, COLOR_BLACK, 0);
             move(y, 60);
@@ -689,11 +915,47 @@ void fundreport(char &clearformess) {
             totalmoney -= moneylost_legal;
         }
 
+        //Food
+        if(moneylost_food > 0) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(y, 0);
+            addstr("Groceries and Maintenance . . . . . . . . . . . . . . . . .");
+
+            set_color(COLOR_RED, COLOR_BLACK, 0);
+            move(y, 60);
+            char num[20];
+            itoa(moneylost_food, num, 10);
+            addstr("$");
+            addstr(num);
+
+            y++;
+
+            totalmoney -= moneylost_food;
+        }
+
+        //Dating
+        if(moneylost_dating > 0) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(y, 0);
+            addstr("Dating. . . . . . . . . . . . . . . . . . . . . . . . . . .");
+
+            set_color(COLOR_RED, COLOR_BLACK, 0);
+            move(y, 60);
+            char num[20];
+            itoa(moneylost_dating, num, 10);
+            addstr("$");
+            addstr(num);
+
+            y++;
+
+            totalmoney -= moneylost_dating;
+        }
+
         //COMPOUND
         if(moneylost_compound > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Infrastructure   . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Infrastructure. . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_RED, COLOR_BLACK, 0);
             move(y, 60);
@@ -711,7 +973,7 @@ void fundreport(char &clearformess) {
         if(moneylost_hostage > 0) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addstr("Hostage Tending . . . . . . . . . . . . . . . . . . . . .");
+            addstr("Hostage Tending . . . . . . . . . . . . . . . . . . . . . .");
 
             set_color(COLOR_RED, COLOR_BLACK, 0);
             move(y, 60);
@@ -723,6 +985,24 @@ void fundreport(char &clearformess) {
             y++;
 
             totalmoney -= moneylost_hostage;
+        }
+
+        //CONFISCATED
+        if(moneylost_confiscated > 0) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(y, 0);
+            addstr("Confiscated by Law Enforcement. . . . . . . . . . . . . . .");
+
+            set_color(COLOR_RED, COLOR_BLACK, 0);
+            move(y, 60);
+            char num[20];
+            itoa(moneylost_confiscated, num, 10);
+            addstr("$");
+            addstr(num);
+
+            y++;
+
+            totalmoney -= moneylost_confiscated;
         }
 
         //TOTAL
@@ -761,238 +1041,22 @@ void fundreport(char &clearformess) {
         moneygained_goods = 0;
         moneygained_ccfraud = 0;
         moneygained_hustling = 0;
+        moneygained_extortion = 0;
         moneygained_thievery = 0;
+        moneygained_embezzlement = 0;
         moneylost_goods = 0;
         moneylost_trouble = 0;
         moneylost_manufacture = 0;
         moneylost_rent = 0;
+        moneylost_training = 0;
         moneylost_legal = 0;
+        moneylost_food = 0;
+        moneylost_dating = 0;
         moneylost_compound = 0;
         moneylost_hostage = 0;
+        moneylost_confiscated = 0;
     }
 }
 
 
 
-/* monthly - sleeper behavior */
-/**********************************************************************
-** *JDS*
-** ----- The sleeper system has been completely reworked.
-** - Sleepers no longer directly inflence the issues. They now affect
-** the broad "liberal power" stats across many issues, which are used
-** as a kind of monthly liberal roll akin to AM Radio and Cable News.
-** - Each sleeper can affect one or more issue, throwing their power
-** into the "abstracted debate" on that issue.
-** - After all of the sleepers have contributed to the liberal power
-** stats, a roll is made on each issue to see whether the liberals
-** make background progress on those issues.
-** - Several sleepers have special abilities. Lawyers and Judges, as
-** always, can aid your people in the legal system. Police officers,
-** corporate managers, CEOs, and agents can all now leak secret
-** documents of the appropriate types, and they will make a check
-** each month. This will only happen if the homeless shelter is not
-** under siege, and "canseethings" is enabled (eg, you're not in prison
-** or disbanded or some other situation where your sleeper can't get
-** in touch with anyone in your squad).
-** - News Anchors and Radio Personalities remain the two most powerful
-** sleepers.
-**********************************************************************/
-void sleepereffect(creaturest &cr, char &clearformess, char canseethings, int32 *libpower) {
-    int32 power = (cr.attval(ATTRIBUTE_CHARISMA) +
-                   cr.attval(ATTRIBUTE_HEART) + cr.attval(ATTRIBUTE_INTELLIGENCE) +
-                   cr.skill[SKILL_PERSUASION]);
-
-    // Adjust power for sleepers
-    switch(cr.type) {
-    case CREATURE_CORPORATE_CEO:
-    case CREATURE_DEATHSQUAD:
-    case CREATURE_EDUCATOR:
-        power *= 4;
-        break;
-
-    case CREATURE_SCIENTIST_EMINENT:
-    case CREATURE_ACTOR:
-    case CREATURE_GANGUNIT:
-        power *= 3;
-        break;
-
-    default:
-        power *= 2;
-        break;
-    }
-
-    int32 homes = -1; // find homeless shelter
-
-    for(int32 l = 0; l < location.size(); l++) {
-        if(location[l]->type == SITE_RESIDENTIAL_SHELTER)
-            homes = l;
-    }
-
-    switch(cr.type) {
-    /* Cultural leaders block - small influence on everything */
-    case CREATURE_RADIOPERSONALITY:
-        libpower[VIEW_AMRADIO] += power;
-        break;
-
-    case CREATURE_NEWSANCHOR:
-        libpower[VIEW_CABLENEWS] += power;
-        break;
-
-    case CREATURE_PAINTER:
-    case CREATURE_SCULPTOR:
-    case CREATURE_AUTHOR:
-    case CREATURE_JOURNALIST:
-    case CREATURE_MUSICIAN:
-    case CREATURE_CRITIC_ART:
-    case CREATURE_CRITIC_MUSIC:
-    case CREATURE_ACTOR:
-        for(int32 i = 0; i < VIEWNUM; i++)
-            libpower[i] += power / 4;
-
-        break;
-
-    /* Legal block - influences an array of social issues */
-    case CREATURE_LAWYER:
-    case CREATURE_JUDGE_CONSERVATIVE:
-        libpower[VIEW_ABORTION] += power;
-        libpower[VIEW_GAY] += power;
-        libpower[VIEW_DEATHPENALTY] += power;
-        libpower[VIEW_FREESPEECH] += power;
-        libpower[VIEW_JUSTICES] += power;
-        libpower[VIEW_INTELLIGENCE] += power;
-        libpower[VIEW_ANIMALRESEARCH] += power;
-        break;
-
-    /* Scientists block */
-    case CREATURE_SCIENTIST_LABTECH:
-    case CREATURE_SCIENTIST_EMINENT:
-        libpower[VIEW_NUCLEARPOWER] += power;
-        libpower[VIEW_ANIMALRESEARCH] += power;
-        libpower[VIEW_GENETICS] += power;
-        break;
-
-    /* Corporate block */
-    case CREATURE_CORPORATE_CEO:
-
-        // CEO can leak corporate files to you
-        if(!LCSrandom(10) && !location[homes]->siege.siege && canseethings) {
-            itemst *it = new itemst;
-            it->type = ITEM_LOOT;
-            it->loottype = LOOT_CORPFILES;
-            location[homes]->loot.push_back(it);
-
-            erase();
-            move(6, 1);
-            addstr("Sleeper ");
-            addstr(cr.name);
-            addstr(" has leaked secret corporate documents.");
-            move(7, 1);
-            addstr("They are stashed at the homeless shelter.");
-        }
-
-        libpower[VIEW_CEOSALARY] += power;
-        libpower[VIEW_TAXES] += power;
-        libpower[VIEW_CORPORATECULTURE] += power;
-        break;
-
-    case CREATURE_CORPORATE_MANAGER:
-
-        // Corporate manager can leak corporate files to you
-        if(!LCSrandom(70) && !location[homes]->siege.siege && canseethings) {
-            itemst *it = new itemst;
-            it->type = ITEM_LOOT;
-            it->loottype = LOOT_CORPFILES;
-            location[homes]->loot.push_back(it);
-
-            erase();
-            move(6, 1);
-            addstr("Sleeper ");
-            addstr(cr.name);
-            addstr(" has leaked secret corporate documents.");
-            move(7, 1);
-            addstr("They are stashed at the homeless shelter.");
-        }
-
-        libpower[VIEW_CEOSALARY] += power;
-        libpower[VIEW_TAXES] += power;
-        libpower[VIEW_CORPORATECULTURE] += power;
-        break;
-
-    /* Law enforcement block */
-    case CREATURE_DEATHSQUAD:
-        libpower[VIEW_DEATHPENALTY] += power; // No break
-
-    case CREATURE_SWAT:
-    case CREATURE_COP:
-    case CREATURE_GANGUNIT:
-
-        // Cops can leak police files to you
-        if(!LCSrandom(70) && !location[homes]->siege.siege && canseethings) {
-            itemst *it = new itemst;
-            it->type = ITEM_LOOT;
-            it->loottype = LOOT_POLICERECORDS;
-            location[homes]->loot.push_back(it);
-
-            erase();
-            move(6, 1);
-            addstr("Sleeper ");
-            addstr(cr.name);
-            addstr(" has leaked secret police records.");
-            move(7, 1);
-            addstr("They are stashed at the homeless shelter.");
-        }
-
-        libpower[VIEW_POLICEBEHAVIOR] += power;
-        break;
-
-    /* Prison block */
-    case CREATURE_EDUCATOR:
-        libpower[VIEW_DEATHPENALTY] += power; // no break intended
-
-    case CREATURE_PRISONGUARD:
-    case CREATURE_PRISONER:
-        libpower[VIEW_PRISONS] += power;
-        break;
-
-    /* Intelligence block */
-    case CREATURE_AGENT:
-
-        // Agents can leak intelligence files to you
-        if(!LCSrandom(20) && !location[homes]->siege.siege && canseethings) {
-            itemst *it = new itemst;
-            it->type = ITEM_LOOT;
-            it->loottype = LOOT_SECRETDOCUMENTS;
-            location[homes]->loot.push_back(it);
-
-            erase();
-            move(6, 1);
-            addstr("Sleeper ");
-            addstr(cr.name);
-            addstr(" has leaked secret intelligence files.");
-            move(7, 1);
-            addstr("They are stashed at the homeless shelter.");
-        }
-
-        libpower[VIEW_INTELLIGENCE] += power;
-        break;
-
-    /* No influence at all block - for people were liberal anyway, or have no way of doing any good */
-    case CREATURE_WORKER_FACTORY_CHILD:
-    case CREATURE_GENETIC:
-    case CREATURE_GUARDDOG:
-    case CREATURE_JUROR:
-    case CREATURE_BUM:
-    case CREATURE_CRACKHEAD:
-    case CREATURE_TANK:
-    case CREATURE_HIPPIE: // too liberal to be a proper sleeper
-    case CREATURE_WORKER_FACTORY_UNION: // same
-    case CREATURE_JUDGE_LIBERAL: // more again
-    case CREATURE_MUTANT:
-        return;
-
-    /* Talk up LCS block -- includes everyone else */
-    default:
-        libpower[VIEW_LIBERALCRIMESQUAD] += power;
-        libpower[VIEW_LIBERALCRIMESQUADPOS] += power;
-    }
-}

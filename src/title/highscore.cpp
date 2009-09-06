@@ -26,15 +26,15 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 /* displays the high score board */
 void viewhighscores(void) {
-    int32 s;
+    int s;
     loadhighscores();
 
-    int16 validsum = 0;
+    short validsum = 0;
 
     for(s = 0; s < SCORENUM; s++) {
         if(score[s].valid)
@@ -52,7 +52,7 @@ void viewhighscores(void) {
 
     char num[20];
 
-    int32 y = 2;
+    int y = 2;
 
     for(s = 0; s < SCORENUM; s++) {
         if(score[s].valid) {
@@ -126,6 +126,14 @@ void viewhighscores(void) {
 
             case END_DISPERSED:
                 addstr("The Liberal Crime Squad was scattered in ");
+                break;
+
+            case END_CCS:
+                addstr("The Liberal Crime Squad was out-Crime Squadded in ");
+                break;
+
+            case END_FIREMEN:
+                addstr("The Liberal Crime Squad was burned in ");
                 break;
             }
 
@@ -280,33 +288,33 @@ void viewhighscores(void) {
 
 /* loads the high scores file */
 void loadhighscores(void) {
-    for(int32 s = 0; s < SCORENUM; s++)
+    for(int s = 0; s < SCORENUM; s++)
         score[s].valid = 0;
 
     //LOAD FILE
-    uint32 loadversion;
+    int loadversion;
 
-    uint32 numbytes;
+    int numbytes;
     FILE *h;
 
     h = LCSOpenFile("score.dat", "rb", LCSIO_PRE_HOME);
 
     if(h != NULL) {
-        numbytes = fread(&loadversion, sizeof(uint32), 1, h);
+        numbytes = fread(&loadversion, sizeof(int), 1, h);
 
         if(loadversion < lowestloadscoreversion) {
             LCSCloseFile(h);
             return;
         }
 
-        numbytes = fread(&ustat_recruits, sizeof(uint32), 1, h);
-        numbytes = fread(&ustat_dead, sizeof(uint32), 1, h);
-        numbytes = fread(&ustat_kills, sizeof(uint32), 1, h);
-        numbytes = fread(&ustat_kidnappings, sizeof(uint32), 1, h);
-        numbytes = fread(&ustat_funds, sizeof(uint32), 1, h);
-        numbytes = fread(&ustat_spent, sizeof(uint32), 1, h);
-        numbytes = fread(&ustat_buys, sizeof(uint32), 1, h);
-        numbytes = fread(&ustat_burns, sizeof(uint32), 1, h);
+        numbytes = fread(&ustat_recruits, sizeof(int), 1, h);
+        numbytes = fread(&ustat_dead, sizeof(int), 1, h);
+        numbytes = fread(&ustat_kills, sizeof(int), 1, h);
+        numbytes = fread(&ustat_kidnappings, sizeof(int), 1, h);
+        numbytes = fread(&ustat_funds, sizeof(int), 1, h);
+        numbytes = fread(&ustat_spent, sizeof(int), 1, h);
+        numbytes = fread(&ustat_buys, sizeof(int), 1, h);
+        numbytes = fread(&ustat_burns, sizeof(int), 1, h);
         numbytes = fread(score, sizeof(highscorest), SCORENUM, h);
 
         LCSCloseFile(h);
@@ -330,7 +338,7 @@ void savehighscore(char endtype) {
     //PLACE THIS HIGH SCORE BY DATE IF NECESSARY
     yourscore = -1;
 
-    for(int32 s = 0; s < SCORENUM; s++) {
+    for(int s = 0; s < SCORENUM; s++) {
         if((endtype == END_WON && score[s].endtype == END_WON &&
                 year == score[s].year && month == score[s].month &&
                 stat_spent + stat_funds > score[s].stat_spent + score[s].stat_funds) ||
@@ -345,7 +353,7 @@ void savehighscore(char endtype) {
                  stat_spent + stat_funds > score[s].stat_spent + score[s].stat_funds) ||
 
                 score[s].valid == 0) {
-            for(int32 s2 = SCORENUM - 1; s2 >= s + 1; s2--)
+            for(int s2 = SCORENUM - 1; s2 >= s + 1; s2--)
                 score[s2] = score[s2 - 1];
 
             strcpy(score[s].slogan, slogan);
@@ -368,22 +376,22 @@ void savehighscore(char endtype) {
     }
 
 
-    uint32 numbytes;
+    int numbytes;
     FILE *h;
     h = LCSOpenFile("score.dat", "wb", LCSIO_PRE_HOME);
 
     if(h != NULL) {
-        uint32 lversion = version;
-        numbytes = fwrite(&lversion, sizeof(uint32), 1, h);
+        int lversion = version;
+        numbytes = fwrite(&lversion, sizeof(int), 1, h);
 
-        numbytes = fwrite(&ustat_recruits, sizeof(uint32), 1, h);
-        numbytes = fwrite(&ustat_dead, sizeof(uint32), 1, h);
-        numbytes = fwrite(&ustat_kills, sizeof(uint32), 1, h);
-        numbytes = fwrite(&ustat_kidnappings, sizeof(uint32), 1, h);
-        numbytes = fwrite(&ustat_funds, sizeof(uint32), 1, h);
-        numbytes = fwrite(&ustat_spent, sizeof(uint32), 1, h);
-        numbytes = fwrite(&ustat_buys, sizeof(uint32), 1, h);
-        numbytes = fwrite(&ustat_burns, sizeof(uint32), 1, h);
+        numbytes = fwrite(&ustat_recruits, sizeof(int), 1, h);
+        numbytes = fwrite(&ustat_dead, sizeof(int), 1, h);
+        numbytes = fwrite(&ustat_kills, sizeof(int), 1, h);
+        numbytes = fwrite(&ustat_kidnappings, sizeof(int), 1, h);
+        numbytes = fwrite(&ustat_funds, sizeof(int), 1, h);
+        numbytes = fwrite(&ustat_spent, sizeof(int), 1, h);
+        numbytes = fwrite(&ustat_buys, sizeof(int), 1, h);
+        numbytes = fwrite(&ustat_burns, sizeof(int), 1, h);
         numbytes = fwrite(score, sizeof(highscorest), SCORENUM, h);
 
         LCSCloseFile(h);

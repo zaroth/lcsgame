@@ -97,26 +97,25 @@ using namespace std;
 
 #include "cursesmovie.h"
 extern CursesMoviest movie;
-void set_color(int16 f, int16 b, char bright);
-void translategetch(int32 &c);
+void set_color(short f, short b, char bright, char blink = 0);
+void translategetch(int &c);
 
 void filelistst::open_diskload(FILE *h) {
-    int32 dummy;
-    int16 dummy2;
-    uint32 numbytes;
+    int dummy;
+    short dummy2;
+    int numbytes;
 
     clean();
 
-    numbytes = fread(&dummy, sizeof(int32), 1, h);
-    dummy = swap_endian_32(dummy);
+    numbytes = fread(&dummy, sizeof(int), 1, h);
     list.resize(dummy);
 
-    for(int32 l = 0; l < list.size(); l++) {
-        numbytes = fread(&dummy2, sizeof(int16), 1, h);
-        dummy2 = swap_endian_32(dummy2);
+    for(int l = 0; l < list.size(); l++) {
+        numbytes = fread(&dummy2, sizeof(short), 1, h);
 
         if(dummy2 > 0) {
             list[l] = new char[dummy2 + 1];
+            numbytes = fread(list[l], 1, dummy2, h);
             list[l][dummy2] = '\x0';
         } else
             list[l] = NULL;
@@ -124,25 +123,23 @@ void filelistst::open_diskload(FILE *h) {
 }
 
 void filelistst::open_disksave(FILE *h) {
-    int32 dummy;
-    int16 dummy2;
-    uint32 numbytes;
+    int dummy;
+    short dummy2;
+    int numbytes;
 
-    dummy = swap_endian_32(list.size());
+    dummy = list.size();
+    numbytes = fwrite(&dummy, sizeof(int), 1, h);
 
-    numbytes = fwrite(&dummy, sizeof(int32), 1, h);
-
-    for(int32 l = 0; l < list.size(); l++) {
+    for(int l = 0; l < list.size(); l++) {
         if(list[l] != NULL) {
-            dummy2 = swap_endian_16(strlen(list[l]));
-            numbytes = fwrite(&dummy2, sizeof(int16), 1, h);
+            dummy2 = strlen(list[l]);
+            numbytes = fwrite(&dummy2, sizeof(short), 1, h);
 
             if(dummy2 > 0)
                 numbytes = fwrite(list[l], dummy2, 1, h);
             else {
-                dummy2 = swap_endian_16(0);
-
-                numbytes = fwrite(&dummy2, sizeof(int16), 1, h);
+                dummy2 = 0;
+                numbytes = fwrite(&dummy2, sizeof(short), 1, h);
             }
         }
     }
@@ -151,14 +148,14 @@ void filelistst::open_disksave(FILE *h) {
 void filelistst::smartappend(filelistst &list2) {
     char conf;
 
-    for(int32 l2 = 0; l2 < list2.list.size(); l2++) {
+    for(int l2 = 0; l2 < list2.list.size(); l2++) {
         if(list2.list[l2] == NULL)
             continue;
 
         conf = 1;
 
-        for(int32 l = 0; l < list.size(); l++) {
-            if(!stricmp(list2.list[l2], list[l])) {
+        for(int l = 0; l < list.size(); l++) {
+            if(!strcmp(list2.list[l2], list[l])) {
                 conf = 0;
                 break;
             }
@@ -172,43 +169,29 @@ void filelistst::smartappend(filelistst &list2) {
     }
 }
 
-void CursesMoviest::savemovie(char *filename, int32 flags = 0) {
-    uint32 numbytes;
+void CursesMoviest::savemovie(char *filename, int flags = 0) {
+    int numbytes;
     FILE *h;
     h = LCSOpenFile(filename, "wb", flags);
 
-    int32 dummy;
+    long dummy;
 
     if(h != NULL) {
-        uint32 temp;
-        uint16 temp2;
-
-        temp = swap_endian_32(picnum);
-        numbytes = fwrite(&temp, sizeof(uint32), 1, h);
-        temp = swap_endian_32(dimx);
-        numbytes = fwrite(&temp, sizeof(uint32), 1, h);
-        temp = swap_endian_32(dimy);
-        numbytes = fwrite(&temp, sizeof(uint32), 1, h);
-        numbytes = fwrite(picture, sizeof(unsigned char), 80 * 25 * 4 * picnum, h);
+        numbytes = fwrite(&picnum, sizeof(int), 1, h);
+        numbytes = fwrite(&dimx, sizeof(int), 1, h);
+        numbytes = fwrite(&dimy, sizeof(int), 1, h);
+        numbytes = fwrite(picture, sizeof(char), 80 * 25 * 4 * picnum, h);
         dummy = frame.size();
-        temp = swap_endian_32(dummy);
-        numbytes = fwrite(&temp, sizeof(int32), 1, h);
+        numbytes = fwrite(&dummy, sizeof(long), 1, h);
 
-        for(int32 f = 0; f < dummy; f++) {
-            temp2 = swap_endian_16(frame[f]->frame);
-            numbytes = fwrite(&temp2, sizeof(int16), 1, h);
-            temp = swap_endian_32(frame[f]->start);
-            numbytes = fwrite(&temp, sizeof(int32), 1, h);
-            temp = swap_endian_32(frame[f]->stop);
-            numbytes = fwrite(&temp, sizeof(int32), 1, h);
-            temp2 = swap_endian_16(frame[f]->sound);
-            numbytes = fwrite(&temp2, sizeof(int16), 1, h);
-            temp2 = swap_endian_16(frame[f]->song);
-            numbytes = fwrite(&temp2, sizeof(int16), 1, h);
-            temp2 = swap_endian_16(frame[f]->effect);
-            numbytes = fwrite(&temp2, sizeof(int16), 1, h);
-            temp2 = swap_endian_16(frame[f]->flag);
-            numbytes = fwrite(&temp2, sizeof(int16), 1, h);
+        for(int f = 0; f < dummy; f++) {
+            numbytes = fwrite(&frame[f]->frame, sizeof(short), 1, h);
+            numbytes = fwrite(&frame[f]->start, sizeof(long), 1, h);
+            numbytes = fwrite(&frame[f]->stop, sizeof(long), 1, h);
+            numbytes = fwrite(&frame[f]->sound, sizeof(short), 1, h);
+            numbytes = fwrite(&frame[f]->song, sizeof(short), 1, h);
+            numbytes = fwrite(&frame[f]->effect, sizeof(short), 1, h);
+            numbytes = fwrite(&frame[f]->flag, sizeof(short), 1, h);
 
         }
 
@@ -222,43 +205,29 @@ void CursesMoviest::savemovie(char *filename, int32 flags = 0) {
 void CursesMoviest::loadmovie(char *filename) {
     clean();
 
-    uint32 numbytes;
     FILE *h;
     h = LCSOpenFile(filename, "rb", LCSIO_PRE_ART);
 
-    int32 dummy;
-
-
+    long dummy;
 
     if(h != NULL) {
-        fread(&picnum, sizeof(uint32), 1, h);
-        picnum = swap_endian_32(picnum);
-        fread(&dimx, sizeof(uint32), 1, h);
-        dimx = swap_endian_32(dimx);
-        fread(&dimy, sizeof(uint32), 1, h);
-        dimy = swap_endian_32(dimy);
-        fread(picture, sizeof(unsigned char) * 80 * 25 * 4 * picnum, 1, h);
+        fread(&picnum, sizeof(int), 1, h);
+        fread(&dimx, sizeof(int), 1, h);
+        fread(&dimy, sizeof(int), 1, h);
+        fread(picture, sizeof(char) * 80 * 25 * 4 * picnum, 1, h);
 
-        fread(&dummy, sizeof(int32), 1, h);
-        dummy = swap_endian_32(dummy);
+        fread(&dummy, sizeof(long), 1, h);
         frame.resize(dummy);
 
-        for(int32 f = 0; f < dummy; f++) {
+        for(int f = 0; f < dummy; f++) {
             frame[f] = new CursesMovie_framest;
-            fread(&frame[f]->frame, sizeof(int16), 1, h);
-            frame[f]->frame = swap_endian_16(frame[f]->frame);
-            fread(&frame[f]->start, sizeof(int32), 1, h);
-            frame[f]->start = swap_endian_32(frame[f]->start);
-            fread(&frame[f]->stop, sizeof(int32), 1, h);
-            frame[f]->stop = swap_endian_32(frame[f]->stop);
-            fread(&frame[f]->sound, sizeof(int16), 1, h);
-            frame[f]->sound = swap_endian_16(frame[f]->sound);
-            fread(&frame[f]->song, sizeof(int16), 1, h);
-            frame[f]->song = swap_endian_16(frame[f]->song);
-            fread(&frame[f]->effect, sizeof(int16), 1, h);
-            frame[f]->effect = swap_endian_16(frame[f]->effect);
-            fread(&frame[f]->flag, sizeof(uint16), 1, h);
-            frame[f]->flag = swap_endian_16(frame[f]->flag);
+            fread(&frame[f]->frame, sizeof(short), 1, h);
+            fread(&frame[f]->start, sizeof(long), 1, h);
+            fread(&frame[f]->stop, sizeof(long), 1, h);
+            fread(&frame[f]->sound, sizeof(short), 1, h);
+            fread(&frame[f]->song, sizeof(short), 1, h);
+            fread(&frame[f]->effect, sizeof(short), 1, h);
+            fread(&frame[f]->flag, sizeof(int short), 1, h);
         }
 
         songlist.open_diskload(h);
@@ -269,22 +238,22 @@ void CursesMoviest::loadmovie(char *filename) {
 }
 
 void CursesMoviest::clean(void) {
-    for(int32 f = 0; f < frame.size(); f++)
+    for(int f = 0; f < frame.size(); f++)
         delete frame[f];
 
     frame.clear();
 }
 
 void CursesMoviest::convertindices_song(filelistst &master) {
-    int32 s2;
+    int s2;
 
     if(songlist.list.size() == 0)
         return;
 
-    vector<int32> convert;
+    vector<int> convert;
     convert.resize(songlist.list.size());
 
-    for(int32 s = 0; s < songlist.list.size(); s++) {
+    for(int s = 0; s < songlist.list.size(); s++) {
         for(s2 = 0; s2 < master.list.size(); s2++) {
             if(!stricmp(master.list[s2], songlist.list[s])) {
                 convert[s] = s2;
@@ -296,22 +265,22 @@ void CursesMoviest::convertindices_song(filelistst &master) {
             convert[s] = -1;
     }
 
-    for(int32 f = 0; f < frame.size(); f++) {
+    for(int f = 0; f < frame.size(); f++) {
         if(frame[f]->song != -1)
             frame[f]->song = convert[frame[f]->song];
     }
 }
 
 void CursesMoviest::convertindices_sound(filelistst &master) {
-    int32 s2;
+    int s2;
 
     if(soundlist.list.size() == 0)
         return;
 
-    vector<int32> convert;
+    vector<int> convert;
     convert.resize(soundlist.list.size());
 
-    for(int32 s = 0; s < soundlist.list.size(); s++) {
+    for(int s = 0; s < soundlist.list.size(); s++) {
         for(s2 = 0; s2 < master.list.size(); s2++) {
             if(!stricmp(master.list[s2], soundlist.list[s])) {
                 convert[s] = s2;
@@ -323,30 +292,30 @@ void CursesMoviest::convertindices_sound(filelistst &master) {
             convert[s] = -1;
     }
 
-    for(int32 f = 0; f < frame.size(); f++) {
+    for(int f = 0; f < frame.size(); f++) {
         if(frame[f]->sound != -1)
             frame[f]->sound = convert[frame[f]->sound];
     }
 }
 
-void CursesMoviest::playmovie(int32 x, int32 y) {
+void CursesMoviest::playmovie(int x, int y) {
     nodelay(stdscr, TRUE);
 
-    int32 timer = 0;
+    long timer = 0;
 
     char cont, pted;
 
-    int32 finalframe = 0;
+    long finalframe = 0;
 
     do {
-        //uint32 time=GetTickCount();
+        //int time=GetTickCount();
         alarmset(10);
 
         cont = 0;
         pted = 0;
 
         //ASSUMES FRAME ORDERED BY STOP TIMER
-        for(int32 f = 0; f < frame.size(); f++) {
+        for(int f = 0; f < frame.size(); f++) {
             if(frame[f]->stop >= finalframe)
                 finalframe = frame[f]->stop;
 
@@ -363,8 +332,8 @@ void CursesMoviest::playmovie(int32 x, int32 y) {
 
                 //DRAW FRAME
                 if(frame[f]->frame != -1) {
-                    for(int32 fx = 0; fx < movie.dimx && fx + x < 80; fx++) {
-                        for(int32 fy = 0; fy < movie.dimy && fy + y < 25; fy++) {
+                    for(int fx = 0; fx < movie.dimx && fx + x < 80; fx++) {
+                        for(int fy = 0; fy < movie.dimy && fy + y < 25; fy++) {
                             if((movie.picture[frame[f]->frame][fx][fy][0] == ' ' ||
                                     movie.picture[frame[f]->frame][fx][fy][0] == 0) &&
                                     frame[f]->flag & CM_FRAMEFLAG_OVERLAY)
@@ -393,7 +362,7 @@ void CursesMoviest::playmovie(int32 x, int32 y) {
         //while(time+10>GetTickCount);
         alarmwait();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 10 || c == 32 || c == 27)

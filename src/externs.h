@@ -1,109 +1,128 @@
 #ifndef EXTERNS_H_INCLUDED
 #define EXTERNS_H_INCLUDED
 #include "includes.h"
-
+#include "sitemode/sitemap.h"
 
 extern CursesMoviest movie;
 extern unsigned char bigletters[27][5][7][4];
 extern unsigned char newstops[6][80][5][4];
 extern unsigned char newspic[20][78][18][4];
 
-extern uint32 seed;
-extern int16 law[LAWNUM];
+extern vector<configSiteMap *> sitemaps; // stores site map info read in from config file
 
-extern int16 house[435];
-extern int16 senate[100];
-extern int16 court[9];
+extern int oldMapMode;
+extern unsigned int seed;
+extern short law[LAWNUM];
+
+extern short house[435];
+extern short senate[100];
+extern short court[9];
 extern char courtname[9][80];
 
 
-
-extern int16 exec[EXECNUM];
-extern int16 execterm;
+extern signed char exec[EXECNUM];
+extern short execterm;
 extern char execname[EXECNUM][80];
+extern short presparty;
 
+extern int stat_recruits;
+extern int stat_kidnappings;
+extern int stat_dead;
+extern int stat_kills;
+extern int stat_funds;
+extern int stat_spent;
+extern int stat_buys;
+extern int stat_burns;
 
-extern uint32 stat_recruits;
-extern uint32 stat_kidnappings;
-extern uint32 stat_dead;
-extern uint32 stat_kills;
-extern uint32 stat_funds;
-extern uint32 stat_spent;
-extern uint32 stat_buys;
-extern uint32 stat_burns;
+extern int ustat_recruits;
+extern int ustat_kidnappings;
+extern int ustat_dead;
+extern int ustat_kills;
+extern int ustat_funds;
+extern int ustat_spent;
+extern int ustat_buys;
+extern int ustat_burns;
 
-extern uint32 ustat_recruits;
-extern uint32 ustat_kidnappings;
-extern uint32 ustat_dead;
-extern uint32 ustat_kills;
-extern uint32 ustat_funds;
-extern uint32 ustat_spent;
-extern uint32 ustat_buys;
-extern uint32 ustat_burns;
+extern int locx;
+extern int locy;
+extern int locz;
 
-extern int32 locx;
-extern int32 locy;
-extern int32 locz;
+extern short sitetype;
+extern short sitealienate;
+extern short sitealarm;
+extern short sitealarmtimer;
+extern short postalarmtimer;
+extern short siteonfire;
+extern int sitecrime;
+extern short cursite;
 
-extern int16 sitetype;
-extern int16 sitealienate;
-extern int16 sitealarm;
-extern int16 sitealarmtimer;
-extern int16 postalarmtimer;
-extern int32 sitecrime;
-extern int32 cursite;
+extern short interface_pgup;
+extern short interface_pgdn;
 
-extern int16 interface_pgup;
-extern int16 interface_pgdn;
+extern int day;
 
-extern int32 day;
+extern short attitude[VIEWNUM];
 
-extern int16 attitude[VIEWNUM];
+extern short public_interest[VIEWNUM];
+extern short background_liberal_influence[VIEWNUM];
 
-// Topicwork1 is editorials that are waiting to be written
-// Topicwork2 is editorials that have been written
-extern int16 newspaper_topicwork1[VIEWNUM];
-extern int16 newspaper_topicwork2[VIEWNUM];
+extern char policestation_closed;
+extern char amradio_closed;
+extern char cablenews_closed;
 
-extern uint32 funds;
+extern char endgamestate;
+extern char ccs_kills;
+extern int ccs_siege_kills;
+
+extern int funds;
 
 extern char loaded;
 
-extern int32 mode;
+extern int mode;
 
-extern int16 offended_cops;
-extern int16 offended_corps;
-extern int16 offended_cia;
-extern int16 offended_amradio;
-extern int16 offended_cablenews;
-extern int32 police_heat;
-extern uint32 attorneyseed;
-extern int32 selectedsiege;
+extern short offended_cops;
+extern short offended_corps;
+extern short offended_cia;
+extern short offended_amradio;
+extern short offended_cablenews;
+extern short offended_firemen;
+extern int police_heat;
+extern int attorneyseed;
+extern int selectedsiege;
 extern char lcityname[80];
 extern char newscherrybusted;
 
-extern int32 month;
-extern int32 year;
-extern int32 amendnum;
+extern int month;
+extern int year;
+extern int amendnum;
 
-extern int32 moneygained_donate;
-extern int32 moneygained_brownies;
-extern int32 moneygained_goods;
-extern int32 moneygained_ccfraud;
-extern int32 moneygained_hustling;
-extern int32 moneygained_thievery;
-extern int32 moneylost_goods;
-extern int32 moneylost_trouble;
-extern int32 moneylost_rent;
-extern int32 moneylost_manufacture;
-extern int32 moneylost_legal;
-extern int32 moneylost_compound;
-extern int32 moneylost_hostage;
+extern bool termlimits;
 
-extern int16 party_status;
+extern long moneygained_donate;
+extern long moneygained_brownies;
+extern long moneygained_goods;
+extern long moneygained_ccfraud;
+extern long moneygained_hustling;
+extern long moneygained_extortion;
+extern long moneygained_thievery;
+extern long moneygained_embezzlement;
+extern long moneylost_goods;
+extern long moneylost_trouble;
+extern long moneylost_rent;
+extern long moneylost_training;
+extern long moneylost_manufacture;
+extern long moneylost_legal;
+extern long moneylost_food;
+extern long moneylost_dating;
+extern long moneylost_compound;
+extern long moneylost_hostage;
+extern long moneylost_confiscated;
+
+extern short party_status;
 
 
 extern vector<datest *> date;
+extern vector<recruitst *> recruit;
 
 extern vector<locationst *> location;
 
@@ -111,28 +130,28 @@ extern vector<newsstoryst *> newsstory;
 extern newsstoryst *sitestory;
 
 extern vector<itemst *> groundloot;
-extern int32 curcreatureid;
+extern long curcreatureid;
 extern chaseseqst chaseseq;
 
 extern char slogan[80];
 
-extern vector<creaturest *> pool;
+extern vector<Creature *> pool;
 
 extern vector<squadst *> squad;
 extern squadst *activesquad;
-extern int32 cursquadid;
+extern long cursquadid;
 
 extern char disbanding;
-extern int32 disbandtime;
+extern int disbandtime;
 extern char cantseereason;
 
 extern vector<vehiclest *> vehicle;
-extern int32 curcarid;
+extern long curcarid;
 extern char showcarprefs;
 
-extern siteblockst map[MAPX][MAPY][MAPZ];
-extern creaturest encounter[ENCMAX];
+extern siteblockst levelmap[MAPX][MAPY][MAPZ];
+extern Creature encounter[ENCMAX];
 extern highscorest score[SCORENUM];
-extern int32 yourscore;
+extern int yourscore;
 
 #endif // EXTERNS_H_INCLUDED

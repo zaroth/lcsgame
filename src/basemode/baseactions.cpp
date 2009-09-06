@@ -26,18 +26,18 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 
 /* base - burn the flag */
 void burnflag(void) {
-    int32 flagparts = 112;
-    int32 flag[16][7][4];
-    int32 x;
-    int32 y;
+    int flagparts = 112;
+    long flag[16][7][4];
+    int x;
+    int y;
 
-    for(int32 p = 0; p < 7; p++) {
+    for(int p = 0; p < 7; p++) {
         if(p < 3) {
             for(x = 0; x < 6; x++) {
                 flag[x][p][0] = ':';
@@ -108,8 +108,8 @@ void burnflag(void) {
 
         for(x = 0; x < 16; x++) {
             for(y = 0; y < 7; y++) {
-                move(y + 17, x + 32);
-                set_color(flag[x][y][1], flag[x][y][2], flag[x][y][3]);
+                move(y + 10, x + 32);
+                set_color(short(flag[x][y][1]), short(flag[x][y][2]), char(flag[x][y][3]));
                 addch(flag[x][y][0]);
             }
         }
@@ -170,16 +170,16 @@ void burnflag(void) {
 void getslogan(void) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
-    move(23, 0);
+    move(15, 0);
     addstr("What is your new slogan?");
-    move(24, 0);
+    move(16, 0);
     addstr("                                                                                          ");
 
     keypad(stdscr, FALSE);
     raw_output(FALSE);
     echo();
     curs_set(1);
-    move(24, 0);
+    move(16, 0);
     enter_name(slogan, SLOGAN_LEN);
 
     curs_set(0);
@@ -195,9 +195,9 @@ void orderparty(void) {
     if(activesquad == NULL)
         return;
 
-    int32 partysize = 0;
+    int partysize = 0;
 
-    for(int32 p = 0; p < 6; p++) {
+    for(int p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL)
             partysize++;
     }
@@ -205,7 +205,7 @@ void orderparty(void) {
     if(partysize <= 1)
         return;
 
-    int32 spot = 0;
+    int spot = 0;
 
     do {
         printparty();
@@ -220,14 +220,14 @@ void orderparty(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 10)
             return;
 
         if(c >= spot + '1' && c <= partysize + '1' - 1) {
-            creaturest *swap = activesquad->squad[spot];
+            Creature *swap = activesquad->squad[spot];
             activesquad->squad[spot] = activesquad->squad[c - '1'];
             activesquad->squad[c - '1'] = swap;
             spot++;
@@ -239,8 +239,8 @@ void orderparty(void) {
 
 /* base - go forth to stop evil */
 void stopevil(void) {
-    int32 l = 0;
-    int32 p = 0;
+    int l = 0;
+    int p = 0;
 
     if(activesquad == NULL)
         return;
@@ -256,18 +256,24 @@ void stopevil(void) {
         }
     }
 
-    int32 page = 0;
-    int32 loc = -1;
+    int page = 0;
+    int loc = -1;
 
-    vector<int32> temploc;
+    vector<long> temploc;
 
     for(l = 0; l < location.size(); l++) {
-        if(location[l]->parent == loc && location[l]->renting >= 0)
+        if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
             temploc.push_back(l);
     }
 
     for(l = 0; l < location.size(); l++) {
-        if(location[l]->parent == loc && location[l]->renting == -1)
+        //locationst* loc2 = location[l]; //what was this for?
+        if(location[l]->parent == loc && location[l]->renting == -2 && !location[l]->hidden)
+            temploc.push_back(l);
+    }
+
+    for(l = 0; l < location.size(); l++) {
+        if(location[l]->parent == loc && location[l]->renting == -1 && !location[l]->hidden)
             temploc.push_back(l);
     }
 
@@ -286,12 +292,43 @@ void stopevil(void) {
             addlocationname(location[loc]);
         }
 
-        int32 y = 10;
+        /*move(12,50);
+        addstr("Z - Toggle Squad Stance");
+        switch(activesquad->stance)
+        {
+        case SQUADSTANCE_ANONYMOUS:
+           move(13,50);
+           set_color(COLOR_WHITE,COLOR_BLACK,1);
+           addstr("ANONYMOUS ACTION");
+           move(14,50);
+           set_color(COLOR_BLACK,COLOR_BLACK,1);
+           addstr("Unlikely to make the news");
+           break;
+        case SQUADSTANCE_STANDARD:
+           move(13,50);
+           set_color(COLOR_GREEN,COLOR_BLACK,1);
+           addstr("CLAIMED ACTION");
+           move(14,50);
+           set_color(COLOR_BLACK,COLOR_BLACK,1);
+           addstr("Likely to make the news");
+           break;
+        case SQUADSTANCE_BATTLECOLORS:
+           move(13,50);
+           set_color(COLOR_GREEN,COLOR_BLACK,1);
+           addstr("GREEN ARMBANDS");
+           move(14,50);
+           set_color(COLOR_BLACK,COLOR_BLACK,1);
+           addstr("(No Stealth, High Profile)");
+           break;
+        }*/
+
+
+        int y = 10;
 
         for(p = page * 11; p < temploc.size() && p < page * 11 + 11; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
-            addch(y - 10 + (int32)'A');
+            addch(y - 10 + (int)'A');
             addstr(" - ");
 
             addlocationname(location[temploc[p]]);
@@ -299,14 +336,67 @@ void stopevil(void) {
             if(temploc[p] == activesquad->squad[0]->location) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 addstr(" (Current Location)");
+
+                char num[10];
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                move(y, 50);
+                addstr("Heat: ");
+
+                if(location[temploc[p]]->heat > 100)
+                    set_color(COLOR_RED, COLOR_BLACK, 1);
+                else if(location[temploc[p]]->heat > 0)
+                    set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+                else
+                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
+
+                itoa(location[temploc[p]]->heat, num, 10);
+                addstr(num);
+                addstr("%");
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                move(y, 61);
+                addstr("Secrecy: ");
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);
+                location[temploc[p]]->update_heat_protection();
+                itoa(static_cast<int>(location[temploc[p]]->heat_protection * 100), num, 10);
+                addstr(num);
+                addstr("%");
             } else if(location[temploc[p]]->renting >= 0) {
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
                 addstr(" (Safe House)");
+
+                char num[10];
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                move(y, 50);
+                addstr("Heat: ");
+
+                if(location[temploc[p]]->heat > 100)
+                    set_color(COLOR_RED, COLOR_BLACK, 1);
+                else if(location[temploc[p]]->heat > 0)
+                    set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+                else
+                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
+
+                itoa(location[temploc[p]]->heat, num, 10);
+                addstr(num);
+                addstr("%");
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                move(y, 61);
+                addstr("Secrecy: ");
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);
+                location[temploc[p]]->update_heat_protection();
+                itoa(static_cast<int>(location[temploc[p]]->heat_protection * 100), num, 10);
+                addstr(num);
+                addstr("%");
             }
 
-            if(location[temploc[p]]->closed > 0) {
+            if(location[temploc[p]]->renting == -2) {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
-                addstr(" (Too Hot)");
+                addstr(" (Enemy Safe House)");
+            }
+
+            if(location[temploc[p]]->closed) {
+                set_color(COLOR_RED, COLOR_BLACK, 1);
+                addstr(" (Closed Down)");
             }
 
             if(location[temploc[p]]->highsecurity) {
@@ -327,28 +417,18 @@ void stopevil(void) {
             y++;
         }
 
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+
         //PAGE UP
         if(page > 0) {
             move(10, 60);
-
-            if(interface_pgup == '[')
-                addstr("[ - Previous");
-            else if(interface_pgup == '.')
-                addstr("; - Previous");
-            else
-                addstr("PGUP - Previous");
+            addprevpagestr();
         }
 
         //PAGE DOWN
         if((page + 1) * 11 < temploc.size()) {
             move(20, 60);
-
-            if(interface_pgup == '[')
-                addstr("] - Next");
-            else if(interface_pgup == '.')
-                addstr(": - Next");
-            else
-                addstr("PGDN - Next");
+            addnextpagestr();
         }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -361,32 +441,37 @@ void stopevil(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 11 < temploc.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 11 < temploc.size())
             page++;
 
         if(c >= 'a' && c <= 'k') {
-            int32 sq = page * 11 + (int32)(c - 'a');
+            int sq = page * 11 + (int)(c - 'a');
 
             if(sq < temploc.size() && sq >= 0) {
-                int32 oldloc = loc;
+                int oldloc = loc;
                 loc = temploc[sq];
                 temploc.clear();
 
                 for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting >= 0)
+                    if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
                         temploc.push_back(l);
                 }
 
                 for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting == -1)
+                    if(location[l]->parent == loc && location[l]->renting == -2 && !location[l]->hidden)
+                        temploc.push_back(l);
+                }
+
+                for(l = 0; l < location.size(); l++) {
+                    if(location[l]->parent == loc && location[l]->renting == -1 && !location[l]->hidden)
                         temploc.push_back(l);
                 }
 
@@ -400,18 +485,30 @@ void stopevil(void) {
                         loc = oldloc;
 
                         for(l = 0; l < location.size(); l++) {
-                            if(location[l]->parent == loc && location[l]->renting >= 0)
+                            if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
                                 temploc.push_back(l);
                         }
 
                         for(l = 0; l < location.size(); l++) {
-                            if(location[l]->parent == loc && location[l]->renting == -1)
+                            if(location[l]->parent == loc && location[l]->renting == -2 && !location[l]->hidden)
+                                temploc.push_back(l);
+                        }
+
+                        for(l = 0; l < location.size(); l++) {
+                            if(location[l]->parent == loc && location[l]->renting == -1 && !location[l]->hidden)
                                 temploc.push_back(l);
                         }
                     }
                 }
             }
         }
+
+        /*if(c=='z')
+        {
+           activesquad->stance++;
+           if(activesquad->stance>SQUADSTANCE_STANDARD)
+              activesquad->stance=0;
+        }*/
 
         if(c == 10 && loc != -1) {
             loc = location[loc]->parent;
@@ -426,760 +523,19 @@ void stopevil(void) {
                 if(location[l]->parent == loc && location[l]->renting == -1)
                     temploc.push_back(l);
             }
-        } else if(c == 10)
+        } else if(c == 10) {
+            activesquad->activity.type = ACTIVITY_NONE; // Clear squad activity
             break;
+        }
 
     } while(1);
-}
-
-
-
-/* base - liberal agenda */
-char liberalagenda(char won) {
-    erase();
-
-    if(won == 1) {
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-        move(0, 0);
-        addstr("The Triumph of the Liberal Agenda");
-    } else if(won == -1) {
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-        move(0, 0);
-        addstr("The Abject Failure of the Liberal Agenda");
-    } else {
-        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        move(0, 0);
-        addstr("The Status of the Liberal Agenda");
-    }
-
-    if(exec[EXEC_PRESIDENT] == -2)
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-    else if(exec[EXEC_PRESIDENT] == -1)
-        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-    else if(exec[EXEC_PRESIDENT] == 0)
-        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    else if(exec[EXEC_PRESIDENT] == 1)
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
-    else
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-
-    move(1, 0);
-
-    if(won != -1)
-        addstr("President: ");
-    else
-        addstr("King ");
-
-    addstr(execname[EXEC_PRESIDENT]);
-    addstr(", ");
-
-    switch(exec[EXEC_PRESIDENT]) {
-    case -2:
-        addstr("Arch-Conservative");
-        break;
-
-    case -1:
-        addstr("Conservative");
-        break;
-
-    case 0:
-        addstr("moderate");
-        break;
-
-    case 1:
-        addstr("Liberal");
-        break;
-
-    case 2:
-        addstr("Elite Liberal");
-        break;
-    }
-
-    if(won != -1) {
-        if(execterm == 1)
-            addstr(", 1st Term");
-        else
-            addstr(", 2nd Term");
-    }
-
-    if(exec[EXEC_VP] == -2)
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-    else if(exec[EXEC_VP] == -1)
-        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-    else if(exec[EXEC_VP] == 0)
-        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    else if(exec[EXEC_VP] == 1)
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
-    else
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-
-    move(2, 0);
-    addstr("Vice President: ");
-    addstr(execname[EXEC_VP]);
-    addstr(", ");
-
-    switch(exec[EXEC_VP]) {
-    case -2:
-        addstr("Arch-Conservative");
-        break;
-
-    case -1:
-        addstr("Conservative");
-        break;
-
-    case 0:
-        addstr("moderate");
-        break;
-
-    case 1:
-        addstr("Liberal");
-        break;
-
-    case 2:
-        addstr("Elite Liberal");
-        break;
-    }
-
-    if(exec[EXEC_STATE] == -2)
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-    else if(exec[EXEC_STATE] == -1)
-        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-    else if(exec[EXEC_STATE] == 0)
-        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    else if(exec[EXEC_STATE] == 1)
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
-    else
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-
-    move(3, 0);
-    addstr("Secretary of State: ");
-    addstr(execname[EXEC_STATE]);
-    addstr(", ");
-
-    switch(exec[EXEC_STATE]) {
-    case -2:
-        addstr("Arch-Conservative");
-        break;
-
-    case -1:
-        addstr("Conservative");
-        break;
-
-    case 0:
-        addstr("moderate");
-        break;
-
-    case 1:
-        addstr("Liberal");
-        break;
-
-    case 2:
-        addstr("Elite Liberal");
-        break;
-    }
-
-    if(exec[EXEC_ATTORNEY] == -2)
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-    else if(exec[EXEC_ATTORNEY] == -1)
-        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-    else if(exec[EXEC_ATTORNEY] == 0)
-        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    else if(exec[EXEC_ATTORNEY] == 1)
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
-    else
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-
-    move(4, 0);
-    addstr("Attorney General: ");
-    addstr(execname[EXEC_ATTORNEY]);
-    addstr(", ");
-
-    switch(exec[EXEC_ATTORNEY]) {
-    case -2:
-        addstr("Arch-Conservative");
-        break;
-
-    case -1:
-        addstr("Conservative");
-        break;
-
-    case 0:
-        addstr("moderate");
-        break;
-
-    case 1:
-        addstr("Liberal");
-        break;
-
-    case 2:
-        addstr("Elite Liberal");
-        break;
-    }
-
-    int32 y = 22 - LAWNUM;
-
-    for(int32 l = 0; l < LAWNUM; l++) {
-        if(won == -1)
-            set_color(COLOR_RED, COLOR_BLACK, 1);
-        else {
-            if(law[l] == -2)
-                set_color(COLOR_RED, COLOR_BLACK, 1);
-            else if(law[l] == -1)
-                set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-            else if(law[l] == 0)
-                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-            else if(law[l] == 1)
-                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-            else
-                set_color(COLOR_GREEN, COLOR_BLACK, 1);
-        }
-
-        move(y, 0);
-
-        switch(l) {
-        case LAW_TAX:
-            if(won == -1)
-                addstr("There are no taxes, yet most people have no money.");
-            else if(law[l] == -2)
-                addstr("The tax code is a nightmare designed to maintain class structure.");
-            else if(law[l] == -1)
-                addstr("A flat tax is in effect.");
-            else if(law[l] == 0)
-                addstr("Taxes are moderate, and the code has loop-holes.");
-            else if(law[l] == 1)
-                addstr("Taxes are very high and steeply graded.");
-            else
-                addstr("Rich people are virtually unheard of, due to taxation.");
-
-            break;
-
-        case LAW_ABORTION:
-            if(won == -1)
-                addstr("Use of contraception and abortion are capital offenses.");
-            else if(law[l] == -2)
-                addstr("Abortion is illegal in all cases.");
-            else if(law[l] == -1)
-                addstr("Abortion is illegal except in extreme circumstances.");
-            else if(law[l] == 0)
-                addstr("Abortion is illegal in the second and third trimesters.");
-            else if(law[l] == 1)
-                addstr("Abortion is illegal in the third trimester.");
-            else
-                addstr("Abortion is legal.");
-
-            break;
-
-        case LAW_ANIMALRESEARCH:
-            if(won == -1)
-                addstr("All forms of human experimentation on the poor are encouraged.");
-            else if(law[l] == -2)
-                addstr("Animal research is completely unregulated.");
-            else if(law[l] == -1)
-                addstr("Animal research is lightly regulated.");
-            else if(law[l] == 0)
-                addstr("Animal research is moderately regulated.");
-            else if(law[l] == 1)
-                addstr("Animal research is stiffly regulated.");
-            else
-                addstr("Animal research is illegal in all cases.");
-
-            break;
-
-        case LAW_POLICEBEHAVIOR:
-            if(won == -1)
-                addstr("Policing is administered by corporations and has a draft.");
-            else if(law[l] == -2)
-                addstr("Law enforcement is given free reign.");
-            else if(law[l] == -1)
-                addstr("Law enforcement is lightly regulated.");
-            else if(law[l] == 0)
-                addstr("Law enforcement is moderately regulated.");
-            else if(law[l] == 1)
-                addstr("Law enforcement is strictly controlled.");
-            else
-                addstr("All law enforcement positions are subject to election and recall.");
-
-            break;
-
-        case LAW_PRIVACY:
-            if(won == -1)
-                addstr("Files on each citizen are easily accessible to corporations.");
-            else if(law[l] == -2)
-                addstr("Any corporation requesting private information is granted access.");
-            else if(law[l] == -1)
-                addstr("Privacy laws are weak.");
-            else if(law[l] == 0)
-                addstr("Privacy laws are moderate.");
-            else if(law[l] == 1)
-                addstr("Privacy laws are strong.");
-            else
-                addstr("Individual privacy is sacred.");
-
-            break;
-
-        case LAW_DEATHPENALTY:
-            if(won == -1)
-                addstr("Poor criminals receive mandatory death sentences.");
-            else if(law[l] == -2)
-                addstr("People can be put to death for minor offenses.");
-            else if(law[l] == -1)
-                addstr("The death penalty is actively enforced in many states.");
-            else if(law[l] == 0)
-                addstr("The death penalty is in effect but under scrutiny.");
-            else if(law[l] == 1)
-                addstr("The death penalty is not permitted in many circumstances.");
-            else
-                addstr("The death penalty is considered barbaric and never practiced.");
-
-            break;
-
-        case LAW_NUCLEARPOWER:
-            if(won == -1)
-                addstr("Nuclear power plants are ubiquitous.");
-            else if(law[l] == -2)
-                addstr("Nuclear power is proliferating with no controls.");
-            else if(law[l] == -1)
-                addstr("Nuclear power is a preferred energy source.");
-            else if(law[l] == 0)
-                addstr("Nuclear power is often an energy source.");
-            else if(law[l] == 1)
-                addstr("Nuclear power is intensely regulated and seldom used.");
-            else
-                addstr("Nuclear power is illegal.");
-
-            break;
-
-        case LAW_POLLUTION:
-            if(won == -1)
-                addstr("Deformed children are the norm in industrial zones.");
-            else if(law[l] == -2)
-                addstr("Industry may pollute as much as they like.");
-            else if(law[l] == -1)
-                addstr("Industry voluntarily regulates pollution.");
-            else if(law[l] == 0)
-                addstr("Industry is subject to moderate pollution regulations.");
-            else if(law[l] == 1)
-                addstr("Industry is subject to strict pollution regulations.");
-            else
-                addstr("Industry is subject to zero-tolerance pollution regulations.");
-
-            break;
-
-        case LAW_LABOR:
-            if(won == -1)
-                addstr("People are bred in pens to be farmed out to corporations like beasts.");
-            else if(law[l] == -2)
-                addstr("There is no weekend and children are forced to work.");
-            else if(law[l] == -1)
-                addstr("Working conditions are miserable and the minimum wage is low.");
-            else if(law[l] == 0)
-                addstr("Workers still require some benefits.");
-            else if(law[l] == 1)
-                addstr("Workers are fairly compensated and have benefits.");
-            else
-                addstr("There are universal workers' rights and high wages.");
-
-            break;
-
-        case LAW_GAY:
-            if(won == -1)
-                addstr("Homosexuals are executed regularly.");
-            else if(law[l] == -2)
-                addstr("Homosexuals are routinely persecuted with no recourse.");
-            else if(law[l] == -1)
-                addstr("Homosexuals are not tolerated.");
-            else if(law[l] == 0)
-                addstr("Homosexuals are grudgingly tolerated but have few equal rights.");
-            else if(law[l] == 1)
-                addstr("Homosexuals have many rights shared by heterosexuals.");
-            else
-                addstr("Homosexuals have equal rights.");
-
-            break;
-
-        case LAW_CORPORATE:
-            if(won == -1)
-                addstr("Corporations under the King run the country in a feudal system.");
-            else if(law[l] == -2)
-                addstr("Corporations essentially run the country in a feudal system.");
-            else if(law[l] == -1)
-                addstr("Corporate culture is corrupt and there is a great disparity in wages.");
-            else if(law[l] == 0)
-                addstr("Corporations are moderately regulated, although wages are still unfair.");
-            else if(law[l] == 1)
-                addstr("Corporations are stiffly regulated, and executives are fairly compensated.");
-            else
-                addstr("Corporations are subject to intense regulation, and there is a maximum wage law.");
-
-            break;
-
-        case LAW_FREESPEECH:
-            if(won == -1)
-                addstr("Unacceptable speech is a capital crime.");
-            else if(law[l] == -2)
-                addstr("Speech is routinely suppressed.");
-            else if(law[l] == -1)
-                addstr("Some individuals are harassed because of their speech.");
-            else if(law[l] == 0)
-                addstr("Free speech is tolerated.");
-            else if(law[l] == 1)
-                addstr("Free speech is encouraged.");
-            else
-                addstr("Free speech is universally supported.");
-
-            break;
-
-        case LAW_FLAGBURNING:
-            if(won == -1)
-                addstr("Images or words describing flag burning are punished by death.");
-            else if(law[l] == -2)
-                addstr("Burning the flag is a crime on par with murder.");
-            else if(law[l] == -1)
-                addstr("Burning the flag is a felony.");
-            else if(law[l] == 0)
-                addstr("Flag-burning is a misdemeanor.");
-            else if(law[l] == 1)
-                addstr("Flag-burning is legal but stigmatized.");
-            else
-                addstr("Flag-burning is legal.");
-
-            break;
-
-        case LAW_GUNCONTROL:
-            if(won == -1)
-                addstr("Gangs of young children carrying AK-47s roam the streets.");
-            else if(law[l] == -2)
-                addstr("Machine guns can be bought and sold freely.");
-            else if(law[l] == -1)
-                addstr("Military weapons are banned, but similar-looking guns are available.");
-            else if(law[l] == 0)
-                addstr("A comprehensive ban on military-style weapons is in effect.");
-            else if(law[l] == 1)
-                addstr("Most guns cannot be sold to anyone outside of law enforcement.");
-            else
-                addstr("It is illegal to buy, sell, or carry a gun in public.");
-
-            break;
-        }
-
-        y++;
-    }
-
-    int32 housemake[5] = {0, 0, 0, 0, 0};
-
-    for(int32 h = 0; h < 435; h++)
-        housemake[house[h] + 2]++;
-
-    int32 lsum = housemake[3] + housemake[4]
-                 - housemake[0] - housemake[1];
-
-    if(lsum <= -145)
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-    else if(lsum < 0)
-        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-    else if(lsum < 145)
-        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    else if(housemake[4] < 290)
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
-    else
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-
-    char num[20];
-
-    if(won != -1) {
-        move(5, 0);
-        addstr("House: ");
-        itoa(housemake[4], num, 10);
-        addstr(num);
-        addstr("Lib+, ");
-        itoa(housemake[3], num, 10);
-        addstr(num);
-        addstr("Lib, ");
-        itoa(housemake[2], num, 10);
-        addstr(num);
-        addstr("Mod, ");
-        itoa(housemake[1], num, 10);
-        addstr(num);
-        addstr("Cons, ");
-        itoa(housemake[0], num, 10);
-        addstr(num);
-        addstr("Cons+");
-    }
-
-    int32 senatemake[5] = {0, 0, 0, 0, 0};
-
-    for(int32 s = 0; s < 100; s++)
-        senatemake[senate[s] + 2]++;
-
-    lsum = senatemake[3] + senatemake[4]
-           - senatemake[0] - senatemake[1];
-
-    if(lsum <= -33)
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-    else if(lsum < 0)
-        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-    else if(lsum < 33)
-        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    else if(senatemake[4] < 67)
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
-    else
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-
-    if(won != -1) {
-        move(6, 0);
-        addstr("Senate: ");
-        itoa(senatemake[4], num, 10);
-        addstr(num);
-        addstr("Lib+, ");
-        itoa(senatemake[3], num, 10);
-        addstr(num);
-        addstr("Lib, ");
-        itoa(senatemake[2], num, 10);
-        addstr(num);
-        addstr("Mod, ");
-        itoa(senatemake[1], num, 10);
-        addstr(num);
-        addstr("Cons, ");
-        itoa(senatemake[0], num, 10);
-        addstr(num);
-        addstr("Cons+");
-    } else {
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-        move(7, 0);
-        addstr("The Congress consists of CEOs and televangelists.");
-    }
-
-    int32 elibjudge = 0;
-
-    for(int32 c = 0; c < 9; c++) {
-        if(court[c] == 2)
-            elibjudge++;
-    }
-
-    if(won == -1)
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-    else if(won == 1 || elibjudge >= 5)
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-    else
-        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-
-    move(0, 56);
-    addch('S');
-    move(1, 56);
-    addch('U');
-    move(2, 56);
-    addch('P');
-    move(3, 56);
-    addch('R');
-    move(4, 56);
-    addch('E');
-    move(5, 56);
-    addch('M');
-    move(6, 56);
-    addch('E');
-
-    move(0, 58);
-    addch('C');
-    move(1, 58);
-    addch('O');
-    move(2, 58);
-    addch('U');
-    move(3, 58);
-    addch('R');
-    move(4, 58);
-    addch('T');
-
-    if(won != -1) {
-        y = 0;
-
-        for(int32 c = 0; c < 9; c++) {
-            if(court[c] == -2)
-                set_color(COLOR_RED, COLOR_BLACK, 1);
-            else if(court[c] == -1)
-                set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-            else if(court[c] == 0)
-                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-            else if(court[c] == 1)
-                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-            else
-                set_color(COLOR_GREEN, COLOR_BLACK, 1);
-
-            move(y, 60);
-            addstr(courtname[c]);
-
-            y++;
-        }
-    } else {
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-        move(0, 60);
-        addstr("   Replaced");
-        move(1, 60);
-        addstr(" By Corporate");
-        move(2, 60);
-        addstr("Ethics Officers");
-    }
-
-    if(won == 1) {
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-        move(23, 0);
-        addstr("The country has achieved Elite Liberal status.");
-        move(24, 0);
-        addstr("Press 'L' to view the high score list.");
-
-        do {
-            refresh();
-            int32 c = getch();
-            translategetch(c);
-
-            if(c == 'l')
-                break;
-        } while(1);
-    } else if(won == -1) {
-        set_color(COLOR_RED, COLOR_BLACK, 1);
-        move(23, 0);
-        addstr("The country has been Reaganified.");
-        move(24, 0);
-        addstr("Press 'L' to view the high score list.");
-
-        do {
-            refresh();
-            int32 c = getch();
-            translategetch(c);
-
-            if(c == 'l')
-                break;
-        } while(1);
-    } else {
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(23, 0);
-        addstr("Once these are Green, the country will have achieved Elite Liberal status.");
-        move(24, 0);
-        addstr("Press D to disband and wait.  Press any other key to consider the situation.");
-
-        do {
-            refresh();
-            int32 c = getch();
-            translategetch(c);
-
-            if(c == 'd')
-                return confirmdisband();
-
-            break;
-        } while(1);
-    }
-
-    return 0;
-}
-
-
-
-/* base - liberal agenda - disband */
-char confirmdisband(void) {
-    char word[80];
-    int32 pos = 0;
-
-    switch(LCSrandom(5)) {
-    case 0:
-        strcpy(word, "Corporate Accountability");
-        break;
-
-    case 1:
-        strcpy(word, "Free Speech");
-        break;
-
-    case 2:
-        strcpy(word, "Gay Marriage");
-        break;
-
-    case 3:
-        strcpy(word, "Abortion Rights");
-        break;
-
-    case 4:
-        strcpy(word, "Separation Clause");
-        break;
-    }
-
-    do {
-        erase();
-
-        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        move(0, 0);
-        addstr("Are you sure you want to disband?");
-
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(2, 0);
-        addstr("Disbanding ends the game.  The country will be simulated until a resolution");
-        move(3, 0);
-        addstr("is reached.  Any sleepers in place will still be effective, but the rest of");
-        move(4, 0);
-        addstr("your infrastructure will be dismantled.");
-
-        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        move(6, 0);
-        addstr("Type this Liberal phrase to confirm (press a wrong letter to rethink it):");
-
-        for(int32 x = 0; x < strlen(word); x++) {
-            move(8, x);
-
-            if(x == pos)
-                set_color(COLOR_GREEN, COLOR_BLACK, 0);
-            else if(x < pos)
-                set_color(COLOR_GREEN, COLOR_BLACK, 1);
-            else
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-
-            addch(word[x]);
-        }
-
-        int32 c = getch();
-        translategetch(c);
-
-        if((c == word[pos]) || ((c + 'A' - 'a') == word[pos])) {
-            pos++;
-
-            if(word[pos] == ' ')
-                pos++;
-
-            if(pos >= strlen(word)) {
-                //SET UP THE DISBAND
-                for(int32 p = 0; p < pool.size(); p++) {
-                    if(pool[p]->alive &&
-                            !(pool[p]->flag & CREATUREFLAG_SLEEPER)) {
-                        pool[p]->activity.type = ACTIVITY_NONE;
-                        pool[p]->clinic = 0;
-
-                        for(int32 i = 0; i < LAWFLAGNUM; i++)
-                            pool[p]->lawflag[i] = 0;
-
-                        pool[p]->dating = 0;
-                        pool[p]->hiding = 0;
-                    }
-                }
-
-                disbandtime = year;
-
-                return 1;
-            }
-        } else
-            break;
-
-    } while(1);
-
-    return 0;
 }
 
 
 
 /* base - invest in this location */
 void investlocation(void) {
-    int32 loc = selectedsiege;
-    int32 ppress = 0;
-
-    for(int32 i = 0; i < location.size(); i++) {
-        if(location[i]->compound_walls == COMPOUND_PRINTINGPRESS)
-            ppress = 1;
-    }
+    int loc = selectedsiege;
 
     do {
         erase();
@@ -1187,8 +543,7 @@ void investlocation(void) {
         locheader();
         printlocation(loc);
 
-        if(!(location[loc]->compound_walls & COMPOUND_BASIC) &&
-                !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS)) {
+        if(!(location[loc]->compound_walls & COMPOUND_BASIC)) {
             if(funds >= 2000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -1198,8 +553,7 @@ void investlocation(void) {
             addstr("W - Fortify the Compound for a Siege ($2000)");
         }
 
-        if(!(location[loc]->compound_walls & COMPOUND_CAMERAS) &&
-                !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS)) {
+        if(!(location[loc]->compound_walls & COMPOUND_CAMERAS)) {
             if(funds >= 2000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -1209,8 +563,7 @@ void investlocation(void) {
             addstr("C - Place Security Cameras around the Compound ($2000)");
         }
 
-        if(!(location[loc]->compound_walls & COMPOUND_TRAPS) &&
-                !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS)) {
+        if(!(location[loc]->compound_walls & COMPOUND_TRAPS)) {
             if(funds >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -1220,8 +573,7 @@ void investlocation(void) {
             addstr("B - Place Booby Traps throughout the Compound ($3000)");
         }
 
-        if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS) &&
-                !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS)) {
+        if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS)) {
             if(funds >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -1231,8 +583,7 @@ void investlocation(void) {
             addstr("T - Ring the Compound with Tank Traps ($3000)");
         }
 
-        if(!(location[loc]->compound_walls & COMPOUND_GENERATOR) &&
-                !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS)) {
+        if(!(location[loc]->compound_walls & COMPOUND_GENERATOR)) {
             if(funds >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -1242,22 +593,17 @@ void investlocation(void) {
             addstr("G - Buy a Generator for Electricity ($3000)");
         }
 
-        if(!(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) &&
-                !ppress) {
-            if(funds >= 10000)
+        if(!(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS)) {
+            if(funds >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
             move(13, 1);
-            addstr("P - Establish the Liberal Guardian Newspaper ($10000)");
-
-            if(location[loc]->compound_walls)
-                addstr(" (dismantles compound)");
+            addstr("P - Buy a Printing Press ($3000)");
         }
 
-        if(location[loc]->front_business == -1 &&
-                !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS)) {
+        if(location[loc]->front_business == -1) {
             if(funds >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -1273,22 +619,19 @@ void investlocation(void) {
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
         move(15, 1);
-
-        if(!(location[loc]->compound_walls == COMPOUND_PRINTINGPRESS))
-            addstr("R - Buy 20 more daily rations ($150)");
+        addstr("R - Buy 20 more daily rations ($150)");
 
         move(16, 1);
         addstr("Enter - Done");
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 10)
             break;
 
         if(c == 'w') {
-            if(!(location[loc]->compound_walls & COMPOUND_BASIC) &&
-                    !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && funds >= 2000) {
+            if(!(location[loc]->compound_walls & COMPOUND_BASIC) && funds >= 2000) {
                 funds -= 2000;
                 stat_spent += 2000;
                 moneylost_compound += 2000;
@@ -1297,8 +640,7 @@ void investlocation(void) {
         }
 
         if(c == 'c') {
-            if(!(location[loc]->compound_walls & COMPOUND_CAMERAS) &&
-                    !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && funds >= 2000) {
+            if(!(location[loc]->compound_walls & COMPOUND_CAMERAS) && funds >= 2000) {
                 funds -= 2000;
                 stat_spent += 2000;
                 moneylost_compound += 2000;
@@ -1307,8 +649,7 @@ void investlocation(void) {
         }
 
         if(c == 'b') {
-            if(!(location[loc]->compound_walls & COMPOUND_TRAPS) &&
-                    !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && funds >= 3000) {
+            if(!(location[loc]->compound_walls & COMPOUND_TRAPS) && funds >= 3000) {
                 funds -= 3000;
                 stat_spent += 3000;
                 moneylost_compound += 3000;
@@ -1317,8 +658,7 @@ void investlocation(void) {
         }
 
         if(c == 't') {
-            if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS) &&
-                    !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && funds >= 3000) {
+            if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS) && funds >= 3000) {
                 funds -= 3000;
                 stat_spent += 3000;
                 moneylost_compound += 3000;
@@ -1327,8 +667,7 @@ void investlocation(void) {
         }
 
         if(c == 'g') {
-            if(!(location[loc]->compound_walls & COMPOUND_GENERATOR) &&
-                    !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && funds >= 3000) {
+            if(!(location[loc]->compound_walls & COMPOUND_GENERATOR) && funds >= 3000) {
                 funds -= 3000;
                 stat_spent += 3000;
                 moneylost_compound += 3000;
@@ -1337,14 +676,11 @@ void investlocation(void) {
         }
 
         if(c == 'p') {
-            if(!ppress && funds >= 10000) {
-                strcpy(location[loc]->name, "Liberal Guardian Headquarters");
-                strcpy(location[loc]->shortname, "Guardian");
-                funds -= 10000;
-                stat_spent += 10000;
-                moneylost_compound += 10000;
-                location[loc]->compound_walls = COMPOUND_PRINTINGPRESS;
-                location[loc]->front_business = -1;
+            if(!(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && funds >= 3000) {
+                funds -= 3000;
+                stat_spent += 3000;
+                moneylost_compound += 3000;
+                location[loc]->compound_walls |= COMPOUND_PRINTINGPRESS;
                 break;
             }
         }
@@ -1359,8 +695,7 @@ void investlocation(void) {
         }
 
         if(c == 'f') {
-            if(location[loc]->front_business == -1 &&
-                    !(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && funds >= 3000) {
+            if(location[loc]->front_business == -1 && funds >= 3000) {
                 funds -= 3000;
                 stat_spent += 3000;
                 moneylost_compound += 3000;
@@ -1409,12 +744,12 @@ void investlocation(void) {
 
 /* base - assign a vehicle to this squad */
 void setvehicles(void) {
-    int32 p, l;
+    int p, l;
 
     if(activesquad == NULL)
         return;
 
-    int32 page = 0;
+    int page = 0;
 
     do {
         erase();
@@ -1425,7 +760,7 @@ void setvehicles(void) {
 
         printparty();
 
-        int32 x = 1, y = 10;
+        int x = 1, y = 10;
         char str[200], str2[200];
 
         for(l = page * 18; l < vehicle.size() && l < page * 18 + 18; l++) {
@@ -1470,34 +805,22 @@ void setvehicles(void) {
         //PAGE UP
         if(page > 0) {
             move(17, 1);
-
-            if(interface_pgup == '[')
-                addstr("[ - Previous");
-
-            else if(interface_pgup == '.')
-                addstr("; - Previous");
-            else
-                addstr("PGUP - Previous");
+            addprevpagestr();
         }
 
         //PAGE DOWN
         if((page + 1) * 18 < vehicle.size()) {
             move(17, 53);
-
-            if(interface_pgup == '[')
-                addstr("] - Next");
-
-            else if(interface_pgup == '.')
-                addstr(": - Next");
-            else
-                addstr("PGDN - Next");
+            addnextpagestr();
         }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(19, 1);
+        move(18, 1);
         addstr("Press a letter to specify passengers for that Liberal vehicle");
-        move(20, 1);
+        move(29, 1);
         addstr("Capitalize the letter to designate a driver.");
+        move(20, 1);
+        addstr("Press a number to remove that squad member from a vehicle.");
         move(21, 1);
         addstr("Note:  Vehicles in yellow have already been selected by another squad");
         move(22, 1);
@@ -1509,11 +832,11 @@ void setvehicles(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch_cap(c);
 
         if(c >= 'A' && c <= 'R') {
-            int32 slot = c - 'A' + page * 18;
+            int slot = c - 'A' + page * 18;
 
             if(slot >= 0 && slot < vehicle.size()) {
                 move(8, 20);
@@ -1522,7 +845,7 @@ void setvehicles(void) {
 
                 refresh();
 
-                int32 c = getch();
+                int c = getch();
                 translategetch(c);
 
                 if(c >= '1' && c <= '6') {
@@ -1539,7 +862,7 @@ void setvehicles(void) {
         }
 
         if(c >= 'a' && c <= 'r') {
-            int32 slot = c - 'a' + page * 18;
+            int slot = c - 'a' + page * 18;
 
             if(slot >= 0 && slot < vehicle.size()) {
                 move(8, 20);
@@ -1548,7 +871,7 @@ void setvehicles(void) {
 
                 refresh();
 
-                int32 c = getch();
+                int c = getch();
                 translategetch(c);
 
                 if(c >= '1' && c <= '6') {
@@ -1560,15 +883,32 @@ void setvehicles(void) {
             }
         }
 
+        //SAV - adding way to remove people from vehicles.
+
+        if(c >= '1' && c <= '6') {
+            // 1. Is there someone there?
+            if(activesquad->squad[c - '1'] != NULL) {
+                // 2. Are they in a vehicle? Someday we'll want to enforce car capacity
+                int vin = activesquad->squad[c - '1']->pref_carid;
+
+                if ( vin > 0) {
+                    activesquad->squad[c - '1']->pref_carid = 0;
+                    activesquad->squad[c - '1']->pref_is_driver = 0;
+                }
+            }
+        }
+
+        //SAV - End add
+
         if(c == 'x')
             return;
 
         //PAGE UP
-        if(c == interface_pgup && page > 0)
+        if((c == interface_pgup || c == KEY_UP || c == KEY_LEFT) && page > 0)
             page--;
 
         //PAGE DOWN
-        if(c == interface_pgdn && (page + 1) * 18 < vehicle.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < vehicle.size())
             page++;
 
     } while(1);

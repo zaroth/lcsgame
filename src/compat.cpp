@@ -73,7 +73,6 @@
 /* Headers for Portability */
 #include <string.h>
 #include <stdlib.h>
-#include "compat.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -160,20 +159,20 @@ void alarmHandler(int signal) {
     setitimer(ITIMER_REAL, &timer_off, NULL);
 }
 
-void setTimeval(struct  timeval *value, int sec, int usec) {
+void setTimeval(struct  timeval *value, long sec, long usec) {
     value->tv_sec = sec;
     value->tv_usec = usec;
 }
 
 void msToItimerval(int ms, struct  itimerval *value) {
-    int sec = 0;
-    int usec = 0;
+    long sec = 0;
+    long usec = 0;
 
     if (ms > 999) {
-        sec = (int)(ms / 1000);
-        usec = (int)((ms % 1000) * 1000);
+        sec = (long)(ms / 1000);
+        usec = (long)((ms % 1000) * 1000);
     } else
-        usec = (int)(ms * 1000);
+        usec = (long)(ms * 1000);
 
     setTimeval(&value->it_interval, sec, usec);
     setTimeval(&value->it_value, sec, usec);
@@ -189,7 +188,7 @@ void initalarm() {
 #endif
 
 #ifdef WIN32
-unsigned int ptime = GetTickCount();
+int ptime = GetTickCount();
 #endif
 
 void alarmset(int t) {

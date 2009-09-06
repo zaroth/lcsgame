@@ -26,10 +26,483 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
+enum bouncer_reject_reason {
+    REJECTED_CCS,
+    REJECTED_NUDE,
+    REJECTED_WEAPONS,
+    REJECTED_UNDERAGE,
+    REJECTED_FEMALEISH,
+    REJECTED_FEMALE,
+    REJECTED_BLOODYCLOTHES,
+    REJECTED_DAMAGEDCLOTHES,
+    REJECTED_CROSSDRESSING,
+    REJECTED_GUESTLIST,
+    REJECTED_DRESSCODE,
+    REJECTED_SECONDRATECLOTHES,
+    REJECTED_SMELLFUNNY,
+    NOT_REJECTED
+};
 
+void special_bouncer_greet_squad() {
+    // add a bouncer if there isn't one in the first slot
+    if(!sitealarm && location[cursite]->renting != RENTING_PERMANENT) {
+        if(location[cursite]->renting == RENTING_CCS) {
+            makecreature(encounter[0], CREATURE_CCS_VIGILANTE);
+            makecreature(encounter[1], CREATURE_CCS_VIGILANTE);
+        } else if(!encounter[0].exists || encounter[0].type != CREATURE_BOUNCER) {
+            makecreature(encounter[0], CREATURE_BOUNCER);
+            makecreature(encounter[1], CREATURE_BOUNCER);
+        }
+    }
+}
+
+void special_bouncer_assess_squad() {
+    bool autoadmit = 0;
+    char sleepername[80];
+
+    for(int e = 0; e < ENCMAX; e++)
+        encounter[e].exists = 0;
+
+    special_bouncer_greet_squad();
+
+    for(int p = 0; p < pool.size(); p++) {
+        if(pool[p]->base == cursite && pool[p]->type == CREATURE_BOUNCER && !LCSrandom(3)) {
+            autoadmit = 1;
+            strcpy(sleepername, pool[p]->name);
+            strcpy(encounter[0].name, sleepername);
+            encounter[0].align = 1;
+            break;
+        }
+    }
+
+    //clearmessagearea();
+    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+    move(16, 1);
+
+    if(autoadmit) {
+        addstr("Sleeper ");
+        addstr(sleepername);
+        addstr(" smirks and lets the squad in.");
+
+        levelmap[locx][locy][locz].special = -1;
+    } else {
+        if(location[cursite]->renting == RENTING_CCS)
+            addstr("The Conservative scum block the door.");
+        else
+            addstr("The bouncer assesses your squad.");
+
+        levelmap[locx][locy][locz].special = SPECIAL_CLUB_BOUNCER_SECONDVISIT;
+    }
+
+    printencounter();
+    refresh();
+    getch();
+    char rejected = NOT_REJECTED;
+
+    // Size up the squad for entry
+    if(!autoadmit) {
+        for(int s = 0; s < 6; s++) {
+            if(activesquad->squad[s]) {
+                // Wrong clothes? Gone
+                if(activesquad->squad[s]->armor.type == ARMOR_NONE)
+                    if(rejected > REJECTED_NUDE)
+                        rejected = REJECTED_NUDE;
+
+                if(!hasdisguise(*activesquad->squad[s], sitetype))
+                    if(rejected > REJECTED_DRESSCODE)
+                        rejected = REJECTED_DRESSCODE;
+
+                // Busted, cheap, bloody clothes? Gone
+                if(activesquad->squad[s]->armor.flag & ARMORFLAG_BLOODY)
+                    if(rejected > REJECTED_BLOODYCLOTHES)
+                        rejected = REJECTED_BLOODYCLOTHES;
+
+                if(activesquad->squad[s]->armor.flag & ARMORFLAG_DAMAGED)
+                    if(rejected > REJECTED_DAMAGEDCLOTHES)
+                        rejected = REJECTED_DAMAGEDCLOTHES;
+
+                if(activesquad->squad[s]->armor.quality != '1')
+                    if(rejected > REJECTED_SECONDRATECLOTHES)
+                        rejected = REJECTED_SECONDRATECLOTHES;
+
+                // Suspicious weapons? Gone
+                if(weaponcheck(*activesquad->squad[s], sitetype) > 0)
+                    if(rejected > REJECTED_WEAPONS)
+                        rejected = REJECTED_WEAPONS;
+
+                // Fail a tough disguise check? Gone
+                if(disguisesite(sitetype) && disguiseskill() + LCSrandom(20) < 40)
+                    if(rejected > REJECTED_SMELLFUNNY)
+                        rejected = REJECTED_SMELLFUNNY;
+
+                // Underage? Gone
+                if(activesquad->squad[s]->age < 18)
+                    if(rejected > REJECTED_UNDERAGE)
+                        rejected = REJECTED_UNDERAGE;
+
+                // Not a gentleman by their definition?
+                if(sitetype == SITE_BUSINESS_CIGARBAR &&
+                        (activesquad->squad[s]->gender_conservative != GENDER_MALE ||
+                         activesquad->squad[s]->gender_liberal == GENDER_FEMALE) &&
+                        law[LAW_WOMEN] < 1) {
+                    // Are you passing as a man? Are you skilled enough to pull it off?
+                    if(activesquad->squad[s]->gender_liberal != GENDER_NEUTRAL ||
+                            activesquad->squad[s]->gender_liberal != GENDER_MALE) {
+                        // Not a man by your own definition either
+                        if(rejected > REJECTED_FEMALE)
+                            rejected = REJECTED_FEMALE;
+                    } else if(disguisesite(sitetype) && disguiseskill() + LCSrandom(20) < 40 && law[LAW_GAY] != 2) {
+                        // Not skilled enough to pull it off
+                        if(rejected > REJECTED_FEMALEISH)
+                            rejected = REJECTED_FEMALEISH;
+                    }
+                }
+
+                // High security in gentleman's club? Gone
+                if(sitetype == SITE_BUSINESS_CIGARBAR && location[cursite]->highsecurity)
+                    if(rejected > REJECTED_GUESTLIST)
+                        rejected = REJECTED_GUESTLIST;
+
+                if(location[cursite]->renting == RENTING_CCS)
+                    rejected = REJECTED_CCS;
+            }
+        }
+
+        move(17, 1);
+
+        switch(rejected) {
+        case REJECTED_CCS:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(11)) {
+            case 0:
+                addstr("\"Can I see... heh heh... some ID?\"");
+                break;
+
+            case 1:
+                addstr("\"Woah... you think you're coming in here?\"");
+                break;
+
+            case 2:
+                addstr("\"Check out this fool. Heh.\"");
+                break;
+
+            case 3:
+                addstr("\"Want some trouble, dumpster breath?\"");
+                break;
+
+            case 4:
+                addstr("\"You're gonna stir up the hornet's nest, fool.\"");
+                break;
+
+            case 5:
+                addstr("\"Come on, take a swing at me. Just try it.\"");
+                break;
+
+            case 6:
+                addstr("\"You really don't want to fuck with me.\"");
+                break;
+
+            case 7:
+                addstr("\"Hey girly, have you written your will?\"");
+                break;
+
+            case 8:
+                addstr("\"Oh, you're trouble. I *like* trouble.\"");
+                break;
+
+            case 9:
+                addstr("\"I'll bury you in those planters over there.\"");
+                break;
+
+            case 10:
+                addstr("\"Looking to check on the color of your blood?\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_NUDE:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(3)) {
+            case 0:
+                addstr("\"No shirt, no underpants, no service.\"");
+                break;
+
+            case 1:
+                addstr("\"Put some clothes on! That's disgusting.\"");
+                break;
+
+            case 2:
+                addstr("\"No! No, you can't come in naked! God!!\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_UNDERAGE:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(5)) {
+            case 0:
+                addstr("\"Hahaha, come back in a few years.\"");
+                break;
+
+            case 1:
+                addstr("\"Find some kiddy club.\"");
+                break;
+
+            case 2:
+                addstr("\"You don't look 18 to me.\"");
+                break;
+
+            case 3:
+                addstr("\"Go back to your treehouse.\"");
+                break;
+
+            case 4:
+                addstr("\"Where's your mother?\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_FEMALE:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(4)) {
+            case 0:
+                addstr("\"Move along ma'am, this club's for men.\"");
+                break;
+
+            case 1:
+                addstr("\"This 'ain't no sewing circle, ma'am.\"");
+                break;
+
+            case 2:
+                addstr("\"Sorry ma'am, this place is only for the men.\"");
+                break;
+
+            case 3:
+                addstr("\"Where's your husband?\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_FEMALEISH:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(3)) {
+            case 0:
+                addstr("\"You /really/ don't look like a man to me...\"");
+                break;
+
+            case 1:
+                addstr("\"Y'know... the \'other\' guys won't like you much.\"");
+                break;
+
+            case 2:
+                addstr("\"Uhh... can't let you in, ma'am. Sir. Whatever.\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_DRESSCODE:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(3)) {
+            case 0:
+                addstr("\"Check the dress code.\"");
+                break;
+
+            case 1:
+                addstr("\"We have a dress code here.\"");
+                break;
+
+            case 2:
+                addstr("\"I can't let you in looking like that.\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_SMELLFUNNY:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(6)) {
+            case 0:
+                addstr("\"God, you smell.\"");
+                break;
+
+            case 1:
+                addstr("\"Not letting you in. Because I said so.\"");
+                break;
+
+            case 2:
+                addstr("\"There's just something off about you.\"");
+                break;
+
+            case 3:
+                addstr("\"Take a shower.\"");
+                break;
+
+            case 4:
+                addstr("\"You'd just harass the others, wouldn't you?\"");
+                break;
+
+            case 5:
+                if(law[LAW_FREESPEECH] == -2)
+                    addstr("\"Get the [heck] out of here.\"");
+                else if(law[LAW_FREESPEECH] == 2)
+                    addstr("\"Get the fuck out of here.\"");
+                else
+                    addstr("\"Get the hell out of here.\"");
+
+                break;
+            }
+
+            break;
+
+        case REJECTED_BLOODYCLOTHES:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(5)) {
+            case 0:
+                addstr("\"Good God! What is wrong with your clothes?\"");
+                break;
+
+            case 1:
+                addstr("\"Absolutely not. Clean up a bit.\"");
+                break;
+
+            case 2:
+                addstr("\"This isn't a goth club, bloody clothes don't cut it here.\"");
+                break;
+
+            case 3:
+                addstr("\"Uh, maybe you should wash... replace... those clothes.\"");
+                break;
+
+            case 4:
+                addstr("\"Did you spill something on your clothes?\"");
+                break;
+
+            case 5:
+                addstr("\"Come back when you get the red wine out of your clothes.\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_DAMAGEDCLOTHES:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(2)) {
+            case 0:
+                addstr("\"Good God! What is wrong with your clothes?\"");
+                break;
+
+            case 1:
+                addstr("\"This isn't a goth club, ripped clothes don't cut it here.\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_SECONDRATECLOTHES:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(2)) {
+            case 0:
+                addstr("\"That looks like you sewed it yourself.\"");
+                break;
+
+            case 1:
+                addstr("\"If badly cut clothing is a hot new trend, I missed it.\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_WEAPONS:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+            switch(LCSrandom(5)) {
+            case 0:
+                addstr("\"No weapons allowed.\"");
+                break;
+
+            case 1:
+                addstr("\"I can't let you in carrying that.\"");
+                break;
+
+            case 2:
+                addstr("\"I can't let you take that in.\"");
+                break;
+
+            case 3:
+                addstr("\"Come to me armed, and I'll tell you to take a hike.\"");
+                break;
+
+            case 4:
+                addstr("\"Real men fight with fists. And no, you can't come in.\"");
+                break;
+            }
+
+            break;
+
+        case REJECTED_GUESTLIST:
+            set_color(COLOR_RED, COLOR_BLACK, 1);
+            addstr("\"This club is by invitation only.\"");
+            break;
+
+        case NOT_REJECTED:
+            set_color(COLOR_GREEN, COLOR_BLACK, 1);
+
+            switch(LCSrandom(4)) {
+            case 0:
+                addstr("\"Keep it civil and don't drink too much.\"");
+                break;
+
+            case 1:
+                addstr("\"Let me get the door for you.\"");
+                break;
+
+            case 2:
+                addstr("\"Ehh, alright, go on in.\"");
+                break;
+
+            case 3:
+                addstr("\"Come on in.\"");
+                break;
+            }
+
+            break;
+        }
+
+        refresh();
+        getch();
+    } else
+        encounter[0].exists = 0;
+
+    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+
+    if(rejected < NOT_REJECTED) {
+        levelmap[locx][locy + 1][locz].flag |= SITEBLOCK_LOCKED;
+        levelmap[locx][locy + 1][locz].flag |= SITEBLOCK_CLOCK;
+    } else
+        levelmap[locx][locy + 1][locz].flag &= ~SITEBLOCK_DOOR;
+
+    encounter[0].cantbluff = 1;
+
+
+}
 
 void special_lab_cosmetics_cagedanimals(void) {
     do {
@@ -43,14 +516,14 @@ void special_lab_cosmetics_cagedanimals(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
             char actual;
 
             if(unlock(UNLOCK_CAGE, actual)) {
-                int32 time = 20 + LCSrandom(10);
+                int time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -59,6 +532,7 @@ void special_lab_cosmetics_cagedanimals(void) {
                     sitealarmtimer = time;
 
                 sitecrime++;
+                juiceparty(3);
                 sitestory->crime.push_back(CRIME_FREE_RABBITS);
                 criminalizeparty(LAWFLAG_VANDALISM);
             }
@@ -66,7 +540,7 @@ void special_lab_cosmetics_cagedanimals(void) {
             if(actual) {
                 alienationcheck(0);
                 noticecheck(-1);
-                map[locx][locy][locz].special = -1;
+                levelmap[locx][locy][locz].special = -1;
             }
 
             return;
@@ -78,7 +552,7 @@ void special_lab_cosmetics_cagedanimals(void) {
 
 
 
-void special_readsign(int32 sign) {
+void special_readsign(int sign) {
     clearmessagearea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(16, 1);
@@ -95,32 +569,99 @@ void special_nuclear_onoff(void) {
         clearmessagearea();
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        move(16, 1);
-        addstr("You see a big red button that says OFF.");
-        move(17, 1);
-        addstr("Press it? (Yes or No)");
+
+        if(law[LAW_NUCLEARPOWER] = 2) {
+            move(16, 1);
+            addstr("You see the nuclear waste center control room.");
+            move(17, 1);
+            addstr("Attempt to release nuclear waste? (Yes or No)");
+        } else {
+            move(16, 1);
+            addstr("You see the nuclear power plant control room.");
+            move(17, 1);
+            addstr("Attempt to shut down the reactor? (Yes or No)");
+        }
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
             clearmessagearea();
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            move(16, 1);
-            addstr("The lights dim...  power must be out state-wide.");
+            levelmap[locx][locy][locz].special = -1;
 
-            change_public_opinion(VIEW_NUCLEARPOWER, 5, 0);
+            char max = 15;
+            Creature *maxs = 0;
 
-            refresh();
-            getch();
+            for(int p = 0; p < 6; p++) {
+                if(activesquad->squad[p] != NULL && activesquad->squad[p]->alive) {
+                    if(activesquad->squad[p]->skillval(SKILL_SCIENCE) * 4 +
+                            activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE) > max) {
+                        maxs = activesquad->squad[p];
+                        max = activesquad->squad[p]->skillval(SKILL_SCIENCE) * 4 +
+                              activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE);
+                    }
+                }
+            }
+
+            if(maxs) {
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(16, 1);
+                addstr(maxs->name);
+                addstr(" presses the big red button!");
+                refresh();
+                getch();
+                move(17, 1);
+                addstr(".");
+                refresh();
+                getch();
+                addstr(".");
+                refresh();
+                getch();
+                addstr(".");
+                refresh();
+                getch();
+
+                if(law[LAW_NUCLEARPOWER] = 2) {
+                    move(17, 1);
+                    addstr("The nuclear waste gets released into the state's water supply!");
+                    change_public_opinion(VIEW_NUCLEARPOWER, 15, 0, 95);
+                    refresh();
+                    getch();
+
+                    juiceparty(20); // Instant juice!
+
+                    sitestory->crime.push_back(CRIME_SHUTDOWNREACTOR);
+
+                } else {
+                    move(17, 1);
+                    addstr("The lights dim...  power must be out state-wide.");
+                    change_public_opinion(VIEW_NUCLEARPOWER, 15, 0, 95);
+                    refresh();
+                    getch();
+
+                    juiceparty(20); // Instant juice!
+
+                    sitestory->crime.push_back(CRIME_SHUTDOWNREACTOR);
+                }
+            } else {
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(16, 1);
+                addstr("After some failed attempts, and a very loud alarm,");
+                move(17, 1);
+                addstr("the Squad resigns to just leaving a threatening note.");
+
+                refresh();
+                getch();
+
+                juiceparty(5);
+            }
 
             sitealarm = 1;
             alienationcheck(1);
-            map[locx][locy][locz].special = -1;
+            levelmap[locx][locy][locz].special = -1;
             sitecrime += 5;
-            sitestory->crime.push_back(CRIME_SHUTDOWNREACTOR);
             criminalizeparty(LAWFLAG_TERRORISM);
 
             return;
@@ -138,20 +679,20 @@ void special_lab_genetic_cagedanimals(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see horrible misshapen creatures in a locked cage.");
+        addstr("You see horrible misshapen creatures in a sealed cage.");
         move(17, 1);
         addstr("Free them? (Yes or No)");
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
             char actual;
 
-            if(unlock(UNLOCK_CAGE, actual)) {
-                int32 time = 20 + LCSrandom(10);
+            if(unlock(UNLOCK_CAGE_HARD, actual)) {
+                int time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -160,6 +701,7 @@ void special_lab_genetic_cagedanimals(void) {
                     sitealarmtimer = time;
 
                 sitecrime++;
+                juiceparty(4);
                 sitestory->crime.push_back(CRIME_FREE_BEASTS);
                 criminalizeparty(LAWFLAG_VANDALISM);
 
@@ -170,9 +712,9 @@ void special_lab_genetic_cagedanimals(void) {
                     move(16, 1);
                     addstr("Uh, maybe that idea was Conservative in retrospect...");
 
-                    int32 numleft = LCSrandom(6) + 1;
+                    int numleft = LCSrandom(6) + 1;
 
-                    for(int32 e = 0; e < ENCMAX; e++) {
+                    for(int e = 0; e < ENCMAX; e++) {
                         if(!encounter[e].exists) {
                             makecreature(encounter[e], CREATURE_GENETIC);
                             numleft--;
@@ -203,7 +745,7 @@ void special_lab_genetic_cagedanimals(void) {
             }
 
             if(actual)
-                map[locx][locy][locz].special = -1;
+                levelmap[locx][locy][locz].special = -1;
 
             return;
         } else if(c == 'n')
@@ -226,16 +768,16 @@ void special_policestation_lockup(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
             char actual;
 
-            if(unlock(UNLOCK_DOOR, actual)) {
-                int32 numleft = LCSrandom(8) + 2;
+            if(unlock(UNLOCK_CELL, actual)) {
+                int numleft = LCSrandom(8) + 2;
 
-                for(int32 e = 0; e < ENCMAX; e++) {
+                for(int e = 0; e < ENCMAX; e++) {
                     if(!encounter[e].exists) {
                         makecreature(encounter[e], CREATURE_PRISONER);
                         numleft--;
@@ -245,7 +787,10 @@ void special_policestation_lockup(void) {
                         break;
                 }
 
-                int32 time = 20 + LCSrandom(10);
+                juiceparty(10);
+                sitecrime += 20;
+
+                int time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -267,8 +812,8 @@ void special_policestation_lockup(void) {
             if(actual) {
                 alienationcheck(1);
                 noticecheck(-1);
-                map[locx][locy][locz].special = -1;
-                sitecrime += 3;
+                levelmap[locx][locy][locz].special = -1;
+                sitecrime += 2;
                 sitestory->crime.push_back(CRIME_POLICE_LOCKUP);
                 criminalizeparty(LAWFLAG_HELPESCAPE);
             }
@@ -294,16 +839,16 @@ void special_courthouse_lockup(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
             char actual;
 
-            if(unlock(UNLOCK_DOOR, actual)) {
-                int32 numleft = LCSrandom(8) + 2;
+            if(unlock(UNLOCK_CELL, actual)) {
+                int numleft = LCSrandom(8) + 2;
 
-                for(int32 e = 0; e < ENCMAX; e++) {
+                for(int e = 0; e < ENCMAX; e++) {
                     if(!encounter[e].exists) {
                         makecreature(encounter[e], CREATURE_PRISONER);
                         numleft--;
@@ -313,7 +858,10 @@ void special_courthouse_lockup(void) {
                         break;
                 }
 
-                int32 time = 20 + LCSrandom(10);
+                juiceparty(10);
+                sitecrime += 20;
+
+                int time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -335,7 +883,7 @@ void special_courthouse_lockup(void) {
             if(actual) {
                 alienationcheck(1);
                 noticecheck(-1);
-                map[locx][locy][locz].special = -1;
+                levelmap[locx][locy][locz].special = -1;
                 sitecrime += 3;
                 sitestory->crime.push_back(CRIME_COURTHOUSE_LOCKUP);
                 criminalizeparty(LAWFLAG_HELPESCAPE);
@@ -351,7 +899,7 @@ void special_courthouse_lockup(void) {
 
 
 void special_courthouse_jury(void) {
-    int32 p;
+    int p;
 
     if(sitealarm || sitealienate) {
         clearmessagearea();
@@ -378,55 +926,57 @@ void special_courthouse_jury(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            map[locx][locy][locz].special = -1;
+            levelmap[locx][locy][locz].special = -1;
 
             char succeed = 0;
 
-            int32 maxattack = 0;
+            int maxattack = 0;
 
             for(p = 0; p < 6; p++) {
                 if(activesquad->squad[p] != NULL) {
                     if(activesquad->squad[p]->alive) {
                         if((activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
                                 activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
-                                activesquad->squad[p]->skill[SKILL_PERSUASION] +
-                                activesquad->squad[p]->skill[SKILL_LAW] * 2) > maxattack) {
+                                activesquad->squad[p]->skillval(SKILL_PERSUASION) +
+                                activesquad->squad[p]->skillval(SKILL_LAW) * 2) > maxattack) {
                             maxattack = activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
                                         activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
-                                        activesquad->squad[p]->skill[SKILL_PERSUASION] +
-                                        activesquad->squad[p]->skill[SKILL_LAW] * 2;
+                                        activesquad->squad[p]->skillval(SKILL_PERSUASION) +
+                                        activesquad->squad[p]->skillval(SKILL_LAW) * 2;
                         }
                     }
                 }
             }
 
-            vector<int32> goodp;
+            vector<int> goodp;
 
             for(p = 0; p < 6; p++) {
                 if(activesquad->squad[p] != NULL) {
                     if(activesquad->squad[p]->alive) {
                         if((activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
                                 activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
-                                activesquad->squad[p]->skill[SKILL_PERSUASION] +
-                                activesquad->squad[p]->skill[SKILL_LAW] * 2) == maxattack)
+                                activesquad->squad[p]->skillval(SKILL_PERSUASION) +
+                                activesquad->squad[p]->skillval(SKILL_LAW) * 2) == maxattack)
                             goodp.push_back(p);
                     }
                 }
             }
 
             if(goodp.size() > 0) {
-                int32 p = goodp[LCSrandom(goodp.size())];
+                int p = goodp[LCSrandom(goodp.size())];
 
-                int16 aroll = LCSrandom(21) + activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
-                              activesquad->squad[p]->attval(ATTRIBUTE_HEART) + LCSrandom(activesquad->squad[p]->skill[SKILL_PERSUASION] + 1) +
-                              LCSrandom(activesquad->squad[p]->skill[SKILL_LAW] + 1) * 2;
-                int16 troll = LCSrandom(21) + 20;
-                activesquad->squad[p]->skill_ip[SKILL_PERSUASION] += troll;
-                activesquad->squad[p]->skill_ip[SKILL_LAW] += troll;
+                short aroll = LCSrandom(21) +
+                              activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
+                              activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
+                              activesquad->squad[p]->skillval(SKILL_PERSUASION) +
+                              activesquad->squad[p]->skillval(SKILL_LAW) * 2;
+                short troll = LCSrandom(21) + 20;
+                activesquad->squad[p]->train(SKILL_PERSUASION, troll);
+                activesquad->squad[p]->train(SKILL_LAW, troll);
 
                 if(aroll > troll)
                     succeed = 1;
@@ -439,9 +989,9 @@ void special_courthouse_jury(void) {
                     addstr(activesquad->squad[p]->name);
                     addstr(" works the room like Twelve Angry Men, and the jury");
                     move(17, 1);
-                    addstr("concludes that the ");
+                    addstr("concludes that the ");//XXX: This is very awkward grammar.
 
-                    switch(LCSrandom(10)) {
+                    switch(LCSrandom(16)) {
                     case 0:
                         addstr("murder");
                         break;
@@ -481,6 +1031,30 @@ void special_courthouse_jury(void) {
                     case 9:
                         addstr("sodomy");
                         break;
+
+                    case 10:
+                        addstr("obstruction of justice");
+                        break;
+
+                    case 11:
+                        addstr("breaking and entering");
+                        break;
+
+                    case 12:
+                        addstr("public indecency");
+                        break;
+
+                    case 13:
+                        addstr("arson");
+                        break;
+
+                    case 14:
+                        addstr("resisting arrest");
+                        break;
+
+                    case 15:
+                        addstr("tax evasion");
+                        break;
                     }
 
                     addstr(" wasn't really wrong here.");
@@ -505,9 +1079,9 @@ void special_courthouse_jury(void) {
                     refresh();
                     getch();
 
-                    int32 numleft = 12;
+                    int numleft = 12;
 
-                    for(int32 e = 0; e < ENCMAX; e++) {
+                    for(int e = 0; e < ENCMAX; e++) {
                         if(!encounter[e].exists) {
                             makecreature(encounter[e], CREATURE_JUROR);
                             numleft--;
@@ -555,13 +1129,13 @@ void special_prison_control(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            int32 numleft = LCSrandom(8) + 2;
+            int numleft = LCSrandom(8) + 2;
 
-            for(int32 e = 0; e < ENCMAX; e++) {
+            for(int e = 0; e < ENCMAX; e++) {
                 if(!encounter[e].exists) {
                     makecreature(encounter[e], CREATURE_PRISONER);
                     numleft--;
@@ -571,7 +1145,7 @@ void special_prison_control(void) {
                     break;
             }
 
-            int32 time = 20 + LCSrandom(10);
+            int time = 20 + LCSrandom(10);
 
             if(time < 1)
                 time = 1;
@@ -591,8 +1165,9 @@ void special_prison_control(void) {
 
             alienationcheck(1);
             noticecheck(-1);
-            map[locx][locy][locz].special = -1;
-            sitecrime += 3;
+            levelmap[locx][locy][locz].special = -1;
+            sitecrime += 30;
+            juiceparty(10);
             sitestory->crime.push_back(CRIME_PRISON_RELEASE);
             criminalizeparty(LAWFLAG_HELPESCAPE);
 
@@ -631,7 +1206,7 @@ void special_intel_supercomputer(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -644,6 +1219,8 @@ void special_intel_supercomputer(void) {
                 move(16, 1);
                 addstr("The Squad obtains sensitive information.");
 
+                juiceparty(10);
+
                 itemst *it = new itemst;
                 it->type = ITEM_LOOT;
                 it->loottype = LOOT_INTHQDISK;
@@ -654,7 +1231,7 @@ void special_intel_supercomputer(void) {
             }
 
             if(actual) {
-                int32 time = 20 + LCSrandom(10);
+                int time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -664,7 +1241,7 @@ void special_intel_supercomputer(void) {
 
                 alienationcheck(1);
                 noticecheck(-1);
-                map[locx][locy][locz].special = -1;
+                levelmap[locx][locy][locz].special = -1;
                 sitecrime += 3;
                 sitestory->crime.push_back(CRIME_HACK_INTEL);
 
@@ -679,6 +1256,64 @@ void special_intel_supercomputer(void) {
 }
 
 
+void special_graffiti(void) {
+    clearmessagearea();
+
+    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+    move(16, 1);
+    addstr("The squad sprays Liberal Graffiti!");
+
+    if(!sitestory->claimed)
+        sitestory->claimed = 1;
+
+    refresh();
+    getch();
+
+    int time = 20 + LCSrandom(10);
+
+    if(time < 1)
+        time = 1;
+
+    if(sitealarmtimer > time || sitealarmtimer == -1)
+        sitealarmtimer = time;
+
+    alienationcheck(0);
+    noticecheck(-1);
+    levelmap[locx][locy][locz].flag |= SITEBLOCK_GRAFFITI;
+    levelmap[locx][locy][locz].flag &= ~(SITEBLOCK_GRAFFITI_CCS | SITEBLOCK_GRAFFITI_OTHER);
+
+    if(!location[cursite]->highsecurity) {
+        // Erase any previous semi-permanent graffiti here
+        for(int i = 0; i < location[cursite]->changes.size(); i++) {
+            if((location[cursite]->changes[i].x == locx) &&
+                    (location[cursite]->changes[i].y == locy) &&
+                    (location[cursite]->changes[i].z == locz) &&
+                    ((location[cursite]->changes[i].flag == SITEBLOCK_GRAFFITI) ||
+                     (location[cursite]->changes[i].flag == SITEBLOCK_GRAFFITI_CCS) ||
+                     (location[cursite]->changes[i].flag == SITEBLOCK_GRAFFITI_OTHER))) {
+                location[cursite]->changes.erase(location[cursite]->changes.begin() + i);
+                break;
+            }
+        }
+
+        // Add new semi-permanent graffiti
+        struct sitechangest change(locx, locy, locz, SITEBLOCK_GRAFFITI);
+        location[cursite]->changes.push_back(change);
+    }
+
+    sitecrime++;
+
+    for(int i = 0; i < 6; i++) {
+        if(activesquad->squad[i])
+            addjuice(*(activesquad->squad[i]), 1, 50);
+    }
+
+    criminalizeparty(LAWFLAG_VANDALISM);
+    sitestory->crime.push_back(CRIME_TAGGING);
+
+    return;
+}
+
 
 void special_sweatshop_equipment(void) {
     do {
@@ -692,11 +1327,11 @@ void special_sweatshop_equipment(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            int32 time = 20 + LCSrandom(10);
+            int time = 20 + LCSrandom(10);
 
             if(time < 1)
                 time = 1;
@@ -706,8 +1341,9 @@ void special_sweatshop_equipment(void) {
 
             alienationcheck(0);
             noticecheck(-1);
-            map[locx][locy][locz].special = -1;
+            levelmap[locx][locy][locz].special = -1;
             sitecrime++;
+            juiceparty(2);
             sitestory->crime.push_back(CRIME_BREAK_SWEATSHOP);
 
             criminalizeparty(LAWFLAG_VANDALISM);
@@ -733,11 +1369,11 @@ void special_polluter_equipment(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            int32 time = 20 + LCSrandom(10);
+            int time = 20 + LCSrandom(10);
 
             if(time < 1)
                 time = 1;
@@ -745,12 +1381,13 @@ void special_polluter_equipment(void) {
             if(sitealarmtimer > time || sitealarmtimer == -1)
                 sitealarmtimer = time;
 
-            change_public_opinion(VIEW_POLLUTION, 2, 0);
+            change_public_opinion(VIEW_POLLUTION, 2, 1, 70);
 
             alienationcheck(1);
             noticecheck(-1);
-            map[locx][locy][locz].special = -1;
+            levelmap[locx][locy][locz].special = -1;
             sitecrime += 2;
+            juiceparty(2);
             sitestory->crime.push_back(CRIME_BREAK_FACTORY);
 
             criminalizeparty(LAWFLAG_VANDALISM);
@@ -776,7 +1413,7 @@ void special_house_photos(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -794,7 +1431,10 @@ void special_house_photos(void) {
                 it->loottype = LOOT_CEOPHOTOS;
                 activesquad->loot.push_back(it);
 
-                int32 time = 20 + LCSrandom(10);
+                juiceparty(10);
+                sitecrime += 20;
+
+                int time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -809,7 +1449,7 @@ void special_house_photos(void) {
             if(actual) {
                 alienationcheck(1);
                 noticecheck(-1);
-                map[locx][locy][locz].special = -1;
+                levelmap[locx][locy][locz].special = -1;
                 sitecrime += 3;
                 sitestory->crime.push_back(CRIME_HOUSE_PHOTOS);
 
@@ -837,7 +1477,7 @@ void special_corporate_files(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
@@ -855,7 +1495,10 @@ void special_corporate_files(void) {
                 it->loottype = LOOT_CORPFILES;
                 activesquad->loot.push_back(it);
 
-                int32 time = 20 + LCSrandom(10);
+                juiceparty(10);
+                sitecrime += 20;
+
+                int time = 20 + LCSrandom(10);
 
                 if(time < 1)
                     time = 1;
@@ -870,7 +1513,7 @@ void special_corporate_files(void) {
             if(actual) {
                 alienationcheck(1);
                 noticecheck(-1);
-                map[locx][locy][locz].special = -1;
+                levelmap[locx][locy][locz].special = -1;
                 sitecrime += 3;
                 sitestory->crime.push_back(CRIME_CORP_FILES);
 
@@ -906,12 +1549,14 @@ void special_radio_broadcaststudio(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            if(radio_broadcast())
-                map[locx][locy][locz].special = -1;
+            if(radio_broadcast()) {
+                sitestory->claimed = 2;
+                levelmap[locx][locy][locz].special = -1;
+            }
 
             return;
         } else if(c == 'n')
@@ -942,12 +1587,14 @@ void special_news_broadcaststudio(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 'y') {
-            if(news_broadcast())
-                map[locx][locy][locz].special = -1;
+            if(news_broadcast()) {
+                sitestory->claimed = 2;
+                levelmap[locx][locy][locz].special = -1;
+            }
 
             return;
         } else if(c == 'n')

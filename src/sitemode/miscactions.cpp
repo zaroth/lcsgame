@@ -26,62 +26,72 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 /* unlock attempt */
-char unlock(int16 type, char &actual) {
-    int32 p;
-    int32 difficulty = 0;
+char unlock(short type, char &actual) {
+    int p;
+    int difficulty = 0;
 
     switch(type) {
     case UNLOCK_DOOR:
-        difficulty = 10;
+        if(securityable(location[cursite]->type))
+            difficulty = 6;
+        else
+            difficulty = 4;
+
         break;
 
     case UNLOCK_CAGE:
-        difficulty = 10;
+        difficulty = 2;
+        break;
+
+    case UNLOCK_CAGE_HARD:
+        difficulty = 5;
+        break;
+
+    case UNLOCK_CELL:
+        difficulty = 7;
         break;
 
     case UNLOCK_SAFE:
-        difficulty = 20;
+        difficulty = 10;
         break;
     }
 
-    int32 maxattack = 0;
+    int maxattack = 0;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
             if(activesquad->squad[p]->alive) {
-                if((activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE) +
-                        activesquad->squad[p]->skill[SKILL_SECURITY]) > maxattack) {
-                    maxattack = activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE) +
-                                activesquad->squad[p]->skill[SKILL_SECURITY];
-                }
+                if(activesquad->squad[p]->skillval(SKILL_SECURITY) > maxattack)
+                    maxattack = activesquad->squad[p]->skillval(SKILL_SECURITY);
             }
         }
     }
 
-    vector<int32> goodp;
+    vector<int> goodp;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
             if(activesquad->squad[p]->alive) {
-                if((activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE) +
-                        activesquad->squad[p]->skill[SKILL_SECURITY]) == maxattack)
+                if(activesquad->squad[p]->skillval(SKILL_SECURITY) == maxattack)
                     goodp.push_back(p);
             }
         }
     }
 
     if(goodp.size() > 0) {
-        int32 p = goodp[LCSrandom(goodp.size())];
+        int p = goodp[LCSrandom(goodp.size())];
 
-        int32 aroll = LCSrandom(11) + maxattack;
-        activesquad->squad[p]->skill_ip[SKILL_SECURITY] += difficulty;
+        int aroll = LCSrandom(6) + maxattack;
+
+        if(maxattack <= difficulty)
+            activesquad->squad[p]->train(SKILL_SECURITY, 1 + difficulty * 2 - maxattack);
 
         if(aroll > difficulty) {
-            clearmessagearea();
+            clearmessagearea(false);
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
             addstr(activesquad->squad[p]->name);
@@ -92,6 +102,7 @@ char unlock(int16 type, char &actual) {
                 addstr("unlocks the door");
                 break;
 
+            case UNLOCK_CAGE_HARD:
             case UNLOCK_CAGE:
                 addstr("unlocks the cage");
                 break;
@@ -99,16 +110,33 @@ char unlock(int16 type, char &actual) {
             case UNLOCK_SAFE:
                 addstr("cracks the safe");
                 break;
+
+            case UNLOCK_CELL:
+                addstr("unlocks the cell");
+                break;
             }
 
             addstr("!");
             refresh();
+
+            for(int j = 0; j < 6; j++) { //If people witness a successful unlock, they learn a little bit.
+                if (j == p)
+                    continue;
+
+                if(activesquad->squad[j] != NULL &&
+                        activesquad->squad[j]->alive &&
+                        activesquad->squad[j]->skill[SKILL_SECURITY] < difficulty) {
+                    if(activesquad->squad[j]->alive)
+                        activesquad->squad[j]->train(SKILL_SECURITY, difficulty - activesquad->squad[j]->skill[SKILL_SECURITY]);
+                }
+            }
+
             getch();
 
             actual = 1;
             return 1;
         } else {
-            clearmessagearea();
+            clearmessagearea(false);
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
             addstr(activesquad->squad[p]->name);
@@ -135,15 +163,25 @@ char unlock(int16 type, char &actual) {
 
 
 /* bash attempt */
-char bash(int16 type, char &actual) {
-    int32 difficulty = 0;
+char bash(short type, char &actual) {
+    int difficulty = 0;
     char crowable = 0;
-    int32 p = 0;
+    int p = 0;
 
     switch(type) {
     case BASH_DOOR:
-        difficulty = 10;
-        crowable = 1;
+        if(!securityable(location[cursite]->type)) {
+            difficulty = 10; // Run down dump
+            crowable = 1;
+        } else if(location[cursite]->type != SITE_GOVERNMENT_PRISON &&
+                  location[cursite]->type != SITE_GOVERNMENT_INTELLIGENCEHQ) {
+            difficulty = 15; // Respectable place
+            crowable = 1;
+        } else {
+            difficulty = 20; // High security
+            crowable = 0;
+        }
+
         break;
     }
 
@@ -152,39 +190,39 @@ char bash(int16 type, char &actual) {
             crowable = 0;
     }
 
-    int32 maxattack = 0;
+    int maxattack = 0;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
             if(activesquad->squad[p]->alive) {
-                if(activesquad->squad[p]->attval(ATTRIBUTE_STRENGTH) +
-                        bashstrengthmod(activesquad->squad[p]->weapon.type) > maxattack) {
-                    maxattack = activesquad->squad[p]->attval(ATTRIBUTE_STRENGTH) +
-                                bashstrengthmod(activesquad->squad[p]->weapon.type);
+                if(activesquad->squad[p]->attval(ATTRIBUTE_STRENGTH) *
+                        (bashstrengthmod(activesquad->squad[p]->weapon.type) + 1) > maxattack) {
+                    maxattack = activesquad->squad[p]->attval(ATTRIBUTE_STRENGTH) *
+                                (bashstrengthmod(activesquad->squad[p]->weapon.type) + 1);
                 }
             }
         }
     }
 
-    vector<int32> goodp;
+    vector<int> goodp;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
             if(activesquad->squad[p]->alive) {
-                if(activesquad->squad[p]->attval(ATTRIBUTE_STRENGTH) +
-                        bashstrengthmod(activesquad->squad[p]->weapon.type) == maxattack)
+                if(activesquad->squad[p]->attval(ATTRIBUTE_STRENGTH) *
+                        (bashstrengthmod(activesquad->squad[p]->weapon.type) + 1) == maxattack)
                     goodp.push_back(p);
             }
         }
     }
 
     if(goodp.size() > 0) {
-        int32 p = goodp[LCSrandom(goodp.size())];
+        int p = goodp[LCSrandom(goodp.size())];
 
-        int32 aroll = LCSrandom(11) + maxattack;
+        int aroll = LCSrandom(6) + maxattack;
 
         if(aroll > difficulty || crowable) {
-            clearmessagearea();
+            clearmessagearea(false);
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
             addstr(activesquad->squad[p]->name);
@@ -205,23 +243,47 @@ char bash(int16 type, char &actual) {
             refresh();
             getch();
 
+            if(sitealarmtimer < 0 || sitealarmtimer > 5)
+                sitealarmtimer = 5;
+            else
+                sitealarmtimer = 0;
+
+            //Bashing doors in secure areas sets off alarms
+            if((location[cursite]->type == SITE_GOVERNMENT_PRISON ||
+                    location[cursite]->type == SITE_GOVERNMENT_INTELLIGENCEHQ) &&
+                    sitealarm == 0) {
+                sitealarm = 1;
+                move(17, 1);
+                set_color(COLOR_RED, COLOR_BLACK, 1);
+                addstr("Alarms go off!");
+                refresh();
+                getch();
+            }
+
             actual = 1;
             return 1;
         } else {
-            clearmessagearea();
+            clearmessagearea(false);
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
             addstr(activesquad->squad[p]->name);
 
             switch(type) {
             case BASH_DOOR:
-                addstr(" bounces off of the door");
+                addstr(" bashes the door");
                 break;
             }
 
-            addstr(".");
+            addstr("!");
             refresh();
             getch();
+
+            if(sitealarmtimer < 0)
+                sitealarmtimer = 25;
+            else if(sitealarmtimer > 10)
+                sitealarmtimer -= 10;
+            else
+                sitealarmtimer = 0;
 
             actual = 1;
             return 0;
@@ -242,37 +304,36 @@ char bash(int16 type, char &actual) {
 
 
 /* returns the bash bonus provided by the specified weapon */
-int32 bashstrengthmod(int32 t) {
+long bashstrengthmod(int t) {
     switch(t) {
+    case WEAPON_AXE:
+        return 4;
+
     case WEAPON_BASEBALLBAT:
     case WEAPON_SWORD:
-    case WEAPON_AXE:
+    case WEAPON_DAISHO:
     case WEAPON_MAUL:
-        return 5;
+    case WEAPON_HAMMER:
+        return 3;
 
-    case WEAPON_CROWBAR:
+    case WEAPON_CROWBAR: // (crowbar auto-bashes some things)
     case WEAPON_SHOTGUN_PUMP:
     case WEAPON_STAFF:
     case WEAPON_NIGHTSTICK:
-    case WEAPON_REVOLVER_22:
-    case WEAPON_REVOLVER_44:
-    case WEAPON_SEMIPISTOL_9MM:
-    case WEAPON_SEMIPISTOL_45:
-    case WEAPON_SMG_MP5:
     case WEAPON_SEMIRIFLE_AR15:
     case WEAPON_CARBINE_M4:
     case WEAPON_AUTORIFLE_M16:
     case WEAPON_AUTORIFLE_AK47:
     case WEAPON_PITCHFORK:
-        return 3;
+    case WEAPON_FLAMETHROWER:
+        return 2;
 
-    case WEAPON_KNIFE:
-    case WEAPON_SHANK:
-    case WEAPON_GAVEL:
-    case WEAPON_CHAIN:
-    case WEAPON_HAMMER:
+    case WEAPON_SMG_MP5:
+    case WEAPON_REVOLVER_38:
+    case WEAPON_REVOLVER_44:
+    case WEAPON_SEMIPISTOL_9MM:
+    case WEAPON_SEMIPISTOL_45:
     case WEAPON_CROSS:
-    case WEAPON_TORCH:
         return 1;
 
     default:
@@ -283,9 +344,9 @@ int32 bashstrengthmod(int32 t) {
 
 
 /* computer hack attempt */
-char hack(int16 type, char &actual) {
-    int32 difficulty = 0;
-    int32 p;
+char hack(short type, char &actual) {
+    int difficulty = 0;
+    int p;
 
     switch(type) {
     case HACK_SUPERCOMPUTER:
@@ -293,21 +354,21 @@ char hack(int16 type, char &actual) {
         break;
     }
 
-    int32 maxattack = 0;
+    int maxattack = 0;
     char blind = 0;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
             if(activesquad->squad[p]->alive) {
                 if((activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE) +
-                        activesquad->squad[p]->skill[SKILL_COMPUTERS]) > maxattack) {
-                    if(activesquad->squad[p]->skill[SKILL_COMPUTERS] > 0) {
+                        activesquad->squad[p]->skillval(SKILL_COMPUTERS)) > maxattack) {
+                    if(activesquad->squad[p]->skillval(SKILL_COMPUTERS) > 0) {
                         if(!activesquad->squad[p]->special[SPECIALWOUND_RIGHTEYE] &&
                                 !activesquad->squad[p]->special[SPECIALWOUND_LEFTEYE])
                             blind = 1;
                         else {
                             maxattack = activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE) +
-                                        activesquad->squad[p]->skill[SKILL_COMPUTERS];
+                                        activesquad->squad[p]->skillval(SKILL_COMPUTERS);
                         }
                     }
                 }
@@ -315,14 +376,14 @@ char hack(int16 type, char &actual) {
         }
     }
 
-    vector<int32> goodp;
+    vector<int> goodp;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
             if(activesquad->squad[p]->alive) {
                 if((activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE) +
-                        activesquad->squad[p]->skill[SKILL_COMPUTERS]) == maxattack) {
-                    if(activesquad->squad[p]->skill[SKILL_COMPUTERS] > 0) {
+                        activesquad->squad[p]->skillval(SKILL_COMPUTERS)) == maxattack) {
+                    if(activesquad->squad[p]->skillval(SKILL_COMPUTERS) > 0) {
                         if(activesquad->squad[p]->special[SPECIALWOUND_RIGHTEYE] ||
                                 activesquad->squad[p]->special[SPECIALWOUND_LEFTEYE])
                             goodp.push_back(p);
@@ -333,10 +394,10 @@ char hack(int16 type, char &actual) {
     }
 
     if(goodp.size() > 0) {
-        int32 p = goodp[LCSrandom(goodp.size())];
+        int p = goodp[LCSrandom(goodp.size())];
 
-        int32 aroll = LCSrandom(11) + maxattack;
-        activesquad->squad[p]->skill_ip[SKILL_COMPUTERS] += difficulty;
+        int aroll = LCSrandom(11) + maxattack;
+        activesquad->squad[p]->train(SKILL_COMPUTERS, difficulty);
 
         if(aroll > difficulty) {
             clearmessagearea();
@@ -364,7 +425,7 @@ char hack(int16 type, char &actual) {
             addstr(activesquad->squad[p]->name);
 
             switch(type) {
-            case BASH_DOOR:
+            case HACK_SUPERCOMPUTER:
                 addstr(" fails to hack the computer.");
                 break;
             }
@@ -403,9 +464,9 @@ char hack(int16 type, char &actual) {
 char radio_broadcast(void) {
     sitealarm = 1;
 
-    int32 enemy = 0;
+    int enemy = 0;
 
-    for(int32 e = 0; e < ENCMAX; e++) {
+    for(int e = 0; e < ENCMAX; e++) {
         if(encounter[e].exists && encounter[e].alive) {
             if(encounter[e].align == -1)
                 enemy++;
@@ -432,11 +493,27 @@ char radio_broadcast(void) {
     move(16, 1);
     addstr("The Squad takes control of the microphone and");
     move(17, 1);
-    int32 viewhit = LCSrandom(VIEWNUM);
+    int viewhit = LCSrandom(VIEWNUM);
 
     switch(viewhit) {
-    case VIEW_ABORTION:
+    case VIEW_WOMEN:
         addstr("discusses abortion.");
+        break;
+
+    case VIEW_CIVILRIGHTS:
+        addstr("debates affirmative action.");
+        break;
+
+    case VIEW_DRUGS:
+        addstr("has a frank talk about drugs.");
+        break;
+
+    case VIEW_IMMIGRATION:
+        addstr("examines the issue of immigration.");
+        break;
+
+    case VIEW_MILITARY:
+        addstr("talks about militarism in modern culture.");
         break;
 
     case VIEW_GAY:
@@ -515,10 +592,10 @@ char radio_broadcast(void) {
     refresh();
     getch();
 
-    int32 segmentpower = 0;
-    int32 usegmentpower;
-    int32 partysize = 0;
-    int32 p = 0;
+    int segmentpower = 0;
+    int usegmentpower;
+    int partysize = 0;
+    int p = 0;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
@@ -528,13 +605,21 @@ char radio_broadcast(void) {
             segmentpower += LCSrandom(activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE));
             segmentpower += activesquad->squad[p]->attval(ATTRIBUTE_HEART);
             segmentpower += LCSrandom(activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA));
-            segmentpower += activesquad->squad[p]->skill[SKILL_PERSUASION];
-            activesquad->squad[p]->skill_ip[SKILL_PERSUASION] += 50;
+            segmentpower += activesquad->squad[p]->skillval(SKILL_MUSIC);
+            segmentpower += activesquad->squad[p]->skillval(SKILL_RELIGION);
+            segmentpower += activesquad->squad[p]->skillval(SKILL_SCIENCE);
+            segmentpower += activesquad->squad[p]->skillval(SKILL_BUSINESS);
+            segmentpower += activesquad->squad[p]->skillval(SKILL_PERSUASION);
+            activesquad->squad[p]->train(SKILL_PERSUASION, 50);
             partysize++;
         }
     }
 
-    int32 segmentbonus = segmentpower / 4;
+    // LCS colors enhance the broadcast significantly
+    if(activesquad->stance == SQUADSTANCE_BATTLECOLORS)
+        segmentpower = (segmentpower * 3) / 2;
+
+    int segmentbonus = segmentpower / 4;
 
     if(partysize > 1)
         segmentpower /= partysize;
@@ -546,19 +631,19 @@ char radio_broadcast(void) {
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(16, 1);
 
-    if(segmentpower < 5)
+    if(segmentpower < 15)
         addstr("The Squad sounds wholly insane.");
-    else if(segmentpower < 10)
+    else if(segmentpower < 25)
         addstr("The show really sucks.");
-    else if(segmentpower < 15)
+    else if(segmentpower < 35)
         addstr("It is a very boring hour.");
-    else if(segmentpower < 20)
+    else if(segmentpower < 45)
         addstr("It is mediocre radio.");
-    else if(segmentpower < 30)
+    else if(segmentpower < 60)
         addstr("The show was all right.");
-    else if(segmentpower < 40)
+    else if(segmentpower < 75)
         addstr("The Squad put on a good show.");
-    else if(segmentpower < 50)
+    else if(segmentpower < 90)
         addstr("It was thought-provoking, even humorous.");
     else
         addstr("It was the best hour of AM radio EVER.");
@@ -567,13 +652,13 @@ char radio_broadcast(void) {
     getch();
 
     //CHECK PUBLIC OPINION
-    change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10, 0);
-    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, (segmentpower - 10) / 2, 0);
+    change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, (segmentpower - 50) / 2);
 
     if(viewhit != VIEW_LIBERALCRIMESQUAD)
-        change_public_opinion(viewhit, (segmentpower - 10) / 2, 1, 80);
+        change_public_opinion(viewhit, (segmentpower - 50) / 2, 1, 80);
     else
-        change_public_opinion(viewhit, segmentpower / 2, 1);
+        change_public_opinion(viewhit, segmentpower / 2);
 
     //PRISONER PARTS
     for(p = 0; p < 6; p++) {
@@ -591,8 +676,24 @@ char radio_broadcast(void) {
                     move(17, 1);
 
                     switch(viewhit) {
-                    case VIEW_ABORTION:
-                        addstr("discuss abortion.");
+                    case VIEW_WOMEN:
+                        addstr("discusses abortion.");
+                        break;
+
+                    case VIEW_CIVILRIGHTS:
+                        addstr("debates affirmative action.");
+                        break;
+
+                    case VIEW_DRUGS:
+                        addstr("has a frank talk about drugs.");
+                        break;
+
+                    case VIEW_IMMIGRATION:
+                        addstr("examines the issue of immigration.");
+                        break;
+
+                    case VIEW_MILITARY:
+                        addstr("talks about militarism in modern culture.");
                         break;
 
                     case VIEW_GAY:
@@ -672,12 +773,12 @@ char radio_broadcast(void) {
                     usegmentpower += LCSrandom(activesquad->squad[p]->prisoner->attval(ATTRIBUTE_INTELLIGENCE));
                     usegmentpower += activesquad->squad[p]->prisoner->attval(ATTRIBUTE_HEART);
                     usegmentpower += LCSrandom(activesquad->squad[p]->prisoner->attval(ATTRIBUTE_CHARISMA));
-                    usegmentpower += activesquad->squad[p]->prisoner->skill[SKILL_PERSUASION];
+                    usegmentpower += activesquad->squad[p]->prisoner->skillval(SKILL_PERSUASION);
 
                     if(viewhit != VIEW_LIBERALCRIMESQUAD)
                         change_public_opinion(viewhit, (usegmentpower - 10) / 2, 1, 80);
                     else
-                        change_public_opinion(viewhit, usegmentpower / 2, 1);
+                        change_public_opinion(viewhit, usegmentpower / 2);
 
                     segmentpower += usegmentpower;
 
@@ -726,9 +827,9 @@ char radio_broadcast(void) {
         refresh();
         getch();
 
-        int32 numleft = LCSrandom(8) + 2;
+        int numleft = LCSrandom(8) + 2;
 
-        for(int32 e = 0; e < ENCMAX; e++) {
+        for(int e = 0; e < ENCMAX; e++) {
             if(!encounter[e].exists) {
                 makecreature(encounter[e], CREATURE_SECURITYGUARD);
                 numleft--;
@@ -758,11 +859,11 @@ char radio_broadcast(void) {
 /* run a tv broadcast */
 char news_broadcast(void) {
     sitealarm = 1;
-    int32 p;
+    int p;
 
-    int32 enemy = 0;
+    int enemy = 0;
 
-    for(int32 e = 0; e < ENCMAX; e++) {
+    for(int e = 0; e < ENCMAX; e++) {
         if(encounter[e].exists && encounter[e].alive) {
             if(encounter[e].align == -1)
                 enemy++;
@@ -789,11 +890,27 @@ char news_broadcast(void) {
     move(16, 1);
     addstr("The Squad steps in front of the cameras and");
     move(17, 1);
-    int32 viewhit = LCSrandom(VIEWNUM);
+    int viewhit = LCSrandom(VIEWNUM);
 
     switch(viewhit) {
-    case VIEW_ABORTION:
+    case VIEW_WOMEN:
         addstr("discusses abortion.");
+        break;
+
+    case VIEW_CIVILRIGHTS:
+        addstr("debates affirmative action.");
+        break;
+
+    case VIEW_DRUGS:
+        addstr("has a frank talk about drugs.");
+        break;
+
+    case VIEW_IMMIGRATION:
+        addstr("examines the issue of immigration.");
+        break;
+
+    case VIEW_MILITARY:
+        addstr("talks about militarism in modern culture.");
         break;
 
     case VIEW_GAY:
@@ -872,9 +989,9 @@ char news_broadcast(void) {
     refresh();
     getch();
 
-    int32 segmentpower = 0;
-    int32 usegmentpower;
-    int32 partysize = 0;
+    int segmentpower = 0;
+    int usegmentpower;
+    int partysize = 0;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
@@ -884,13 +1001,21 @@ char news_broadcast(void) {
             segmentpower += LCSrandom(activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE));
             segmentpower += activesquad->squad[p]->attval(ATTRIBUTE_HEART);
             segmentpower += LCSrandom(activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA));
-            segmentpower += activesquad->squad[p]->skill[SKILL_PERSUASION];
-            activesquad->squad[p]->skill_ip[SKILL_PERSUASION] += 50;
+            segmentpower += activesquad->squad[p]->skillval(SKILL_MUSIC);
+            segmentpower += activesquad->squad[p]->skillval(SKILL_RELIGION);
+            segmentpower += activesquad->squad[p]->skillval(SKILL_SCIENCE);
+            segmentpower += activesquad->squad[p]->skillval(SKILL_BUSINESS);
+            segmentpower += activesquad->squad[p]->skillval(SKILL_PERSUASION);
+            activesquad->squad[p]->train(SKILL_PERSUASION, 50);
             partysize++;
         }
     }
 
-    int32 segmentbonus = segmentpower / 4;
+    // LCS colors enhance the broadcast significantly
+    if(activesquad->stance == SQUADSTANCE_BATTLECOLORS)
+        segmentpower = (segmentpower * 3) / 2;
+
+    int segmentbonus = segmentpower / 4;
 
     if(partysize > 1)
         segmentpower /= partysize;
@@ -902,19 +1027,19 @@ char news_broadcast(void) {
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(16, 1);
 
-    if(segmentpower < 5)
+    if(segmentpower < 15)
         addstr("The Squad looks completely insane.");
-    else if(segmentpower < 7)
-        addstr("The show really sucks.");
-    else if(segmentpower < 10)
-        addstr("It is a very boring hour.");
-    else if(segmentpower < 15)
-        addstr("It is mediocre TV.");
-    else if(segmentpower < 20)
-        addstr("The show was all right.");
     else if(segmentpower < 25)
+        addstr("The show really sucks.");
+    else if(segmentpower < 35)
+        addstr("It is a very boring hour.");
+    else if(segmentpower < 45)
+        addstr("It is mediocre TV.");
+    else if(segmentpower < 60)
+        addstr("The show was all right.");
+    else if(segmentpower < 75)
         addstr("The Squad put on a good show.");
-    else if(segmentpower < 30)
+    else if(segmentpower < 90)
         addstr("It was thought-provoking, even humorous.");
     else
         addstr("It was the best hour of Cable TV EVER.");
@@ -923,13 +1048,13 @@ char news_broadcast(void) {
     getch();
 
     //CHECK PUBLIC OPINION
-    change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10, 0);
-    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, (segmentpower - 50) / 10, 0);
+    change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
+    change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, (segmentpower - 50) / 10);
 
     if(viewhit != VIEW_LIBERALCRIMESQUAD)
-        change_public_opinion(viewhit, (segmentpower - 50) / 10, 1, 80);
+        change_public_opinion(viewhit, (segmentpower - 50) / 5, 1, 80);
     else
-        change_public_opinion(viewhit, segmentpower / 10, 1);
+        change_public_opinion(viewhit, segmentpower / 10);
 
     //PRISONER PARTS
     for(p = 0; p < 6; p++) {
@@ -947,8 +1072,24 @@ char news_broadcast(void) {
                     move(17, 1);
 
                     switch(viewhit) {
-                    case VIEW_ABORTION:
-                        addstr("discuss abortion.");
+                    case VIEW_WOMEN:
+                        addstr("discusses abortion.");
+                        break;
+
+                    case VIEW_CIVILRIGHTS:
+                        addstr("debates affirmative action.");
+                        break;
+
+                    case VIEW_DRUGS:
+                        addstr("has a frank talk about drugs.");
+                        break;
+
+                    case VIEW_IMMIGRATION:
+                        addstr("examines the issue of immigration.");
+                        break;
+
+                    case VIEW_MILITARY:
+                        addstr("talks about militarism in modern culture.");
                         break;
 
                     case VIEW_GAY:
@@ -1028,10 +1169,10 @@ char news_broadcast(void) {
                     usegmentpower += LCSrandom(activesquad->squad[p]->prisoner->attval(ATTRIBUTE_INTELLIGENCE));
                     usegmentpower += activesquad->squad[p]->prisoner->attval(ATTRIBUTE_HEART);
                     usegmentpower += LCSrandom(activesquad->squad[p]->prisoner->attval(ATTRIBUTE_CHARISMA));
-                    usegmentpower += activesquad->squad[p]->prisoner->skill[SKILL_PERSUASION];
+                    usegmentpower += activesquad->squad[p]->prisoner->skillval(SKILL_PERSUASION);
 
                     if(viewhit != VIEW_LIBERALCRIMESQUAD)
-                        change_public_opinion(viewhit, (usegmentpower - 10) / 2, 1);
+                        change_public_opinion(viewhit, (usegmentpower - 10) / 2);
                     else
                         change_public_opinion(viewhit, usegmentpower / 2, 1);
 
@@ -1082,9 +1223,9 @@ char news_broadcast(void) {
         refresh();
         getch();
 
-        int32 numleft = LCSrandom(8) + 2;
+        int numleft = LCSrandom(8) + 2;
 
-        for(int32 e = 0; e < ENCMAX; e++) {
+        for(int e = 0; e < ENCMAX; e++) {
             if(!encounter[e].exists) {
                 makecreature(encounter[e], CREATURE_SECURITYGUARD);
                 numleft--;
@@ -1113,15 +1254,15 @@ char news_broadcast(void) {
 
 /* rescues people held at the activeparty's current location */
 void partyrescue(void) {
-    int32 freeslots = 0;
-    int32 p, pl;
+    int freeslots = 0;
+    int p, pl;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] == NULL)
             freeslots++;
     }
 
-    int32 hostslots = 0;
+    int hostslots = 0;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
@@ -1134,11 +1275,11 @@ void partyrescue(void) {
         if(pool[pl]->location == cursite &&
                 !(pool[pl]->flag & CREATUREFLAG_SLEEPER)) {
             if(LCSrandom(2) && freeslots) {
-                for(int32 p = 0; p < 6; p++) {
+                for(int p = 0; p < 6; p++) {
                     if(activesquad->squad[p] == NULL) {
                         activesquad->squad[p] = pool[pl];
                         activesquad->squad[p]->squadid = activesquad->id;
-                        activesquad->squad[p]->lawflag[LAWFLAG_ESCAPED]++;
+                        criminalize(*activesquad->squad[p], LAWFLAG_ESCAPED);
                         activesquad->squad[p]->flag |= CREATUREFLAG_JUSTESCAPED;
                         break;
                     }
@@ -1169,12 +1310,12 @@ void partyrescue(void) {
         if(pool[pl]->location == cursite &&
                 !(pool[pl]->flag & CREATUREFLAG_SLEEPER)) {
             if(hostslots) {
-                for(int32 p = 0; p < 6; p++) {
+                for(int p = 0; p < 6; p++) {
                     if(activesquad->squad[p] != NULL) {
                         if(activesquad->squad[p]->alive && activesquad->squad[p]->prisoner == NULL) {
                             activesquad->squad[p]->prisoner = pool[pl];
                             pool[pl]->squadid = activesquad->id;
-                            pool[pl]->lawflag[LAWFLAG_ESCAPED]++;
+                            criminalize(*pool[pl], LAWFLAG_ESCAPED);
                             pool[pl]->flag |= CREATUREFLAG_JUSTESCAPED;
 
                             clearmessagearea();
@@ -1231,7 +1372,7 @@ void partyrescue(void) {
         }
     }
 
-    int32 stillpcount = 0;
+    int stillpcount = 0;
     char stillpname[200];
 
     for(pl = 0; pl < pool.size(); pl++) {
@@ -1272,8 +1413,8 @@ void partyrescue(void) {
 
 
 /* everybody reload! */
-void reloadparty(void) {
-    for(int32 p = 0; p < 6; p++) {
+void reloadparty(bool wasteful) {
+    for(int p = 0; p < 6; p++) {
         if(activesquad->squad[p] == NULL)
             continue;
 
@@ -1281,7 +1422,7 @@ void reloadparty(void) {
             continue;
 
         if(ammotype(activesquad->squad[p]->weapon.type) != -1) {
-            int32 ammomax = 2;
+            int ammomax = 2;
 
             switch(ammotype(activesquad->squad[p]->weapon.type)) {
             case CLIP_9:
@@ -1300,7 +1441,7 @@ void reloadparty(void) {
                 ammomax = 15;
                 break;
 
-            case CLIP_22:
+            case CLIP_38:
                 ammomax = 6;
                 break;
 
@@ -1311,13 +1452,26 @@ void reloadparty(void) {
             case CLIP_BUCKSHOT:
                 ammomax = 6;
                 break;
+
+            case CLIP_MOLOTOV:
+                ammomax = 1;
+                break;
+
+            case CLIP_GASOLINE:
+                ammomax = 2;
+                break;
             }
 
-            if(activesquad->squad[p]->weapon.ammo < ammomax && activesquad->squad[p]->clip[ammotype(activesquad->squad[p]->weapon.type)] > 0) {
-                activesquad->squad[p]->weapon.ammo = ammomax;
-
-                activesquad->squad[p]->clip[ammotype(activesquad->squad[p]->weapon.type)]--;
-
+            if(wasteful) {
+                if(activesquad->squad[p]->weapon.ammo < ammomax && activesquad->squad[p]->clip[ammotype(activesquad->squad[p]->weapon.type)] > 0) {
+                    activesquad->squad[p]->weapon.ammo = ammomax;
+                    activesquad->squad[p]->clip[ammotype(activesquad->squad[p]->weapon.type)]--;
+                }
+            } else {
+                if(activesquad->squad[p]->weapon.ammo == 0 && activesquad->squad[p]->clip[ammotype(activesquad->squad[p]->weapon.type)] > 0) {
+                    activesquad->squad[p]->weapon.ammo = ammomax;
+                    activesquad->squad[p]->clip[ammotype(activesquad->squad[p]->weapon.type)]--;
+                }
             }
         }
     }

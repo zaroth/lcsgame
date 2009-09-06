@@ -70,161 +70,186 @@
 //somebody claims saving works only 3/4 of the time (no confirmation)
 //somebody claims squads don't move (sounds like older version bug, they haven't told me version)
 
-#include <includes.h>
-
+#include "includes.h"
+#include "configfile.h"
+#include "sitemode/sitemap.h"
+#include <iostream>
 
 CursesMoviest movie;
 unsigned char bigletters[27][5][7][4];
 unsigned char newstops[6][80][5][4];
 unsigned char newspic[20][78][18][4];
 
+vector<configSiteMap *> sitemaps; // stores site map info read in from config file
 
+unsigned int seed;
 
-uint32 seed;
-
-int32 curcreatureid = 0;
+long curcreatureid = 0;
 vector<itemst *> groundloot;
 vector<locationst *> location;
 
 
 vector<vehiclest *> vehicle;
-int32 curcarid = 0;
+long curcarid = 0;
 char showcarprefs = 1;
 
+int oldMapMode = 0; // -1 if we're using the old map generation functions.
 
-siteblockst map[MAPX][MAPY][MAPZ];
+siteblockst levelmap[MAPX][MAPY][MAPZ];
 
 chaseseqst chaseseq;
 
 char slogan[SLOGAN_LEN + 1];
 
-vector<creaturest *> pool;
+vector<Creature *> pool;
 
 vector<squadst *> squad;
 squadst *activesquad = NULL;
-int32 cursquadid = 0;
+long cursquadid = 0;
 
 char disbanding = 0;
-int32 disbandtime = 0;
+int disbandtime = 0;
 char cantseereason;
 
 
-creaturest encounter[ENCMAX];
+Creature encounter[ENCMAX];
 
 
 char loaded = 0;
 
-int32 mode = GAMEMODE_TITLE;
+int mode = GAMEMODE_TITLE;
 
-int16 offended_cops = 0;
-int16 offended_corps = 0;
-int16 offended_cia = 0;
-int16 offended_amradio = 0;
-int16 offended_cablenews = 0;
-int32 police_heat = 0;
-uint32 attorneyseed;
-int32 selectedsiege = -1;
+short offended_cops = 0;
+short offended_corps = 0;
+short offended_cia = 0;
+short offended_amradio = 0;
+short offended_cablenews = 0;
+short offended_firemen = 0;
+int police_heat = 0;
+int attorneyseed;
+int selectedsiege = -1;
 char lcityname[80];
 char newscherrybusted = 0;
 
-int32 month = 1;
-int32 year = 2005;
-int32 amendnum = 28;
+int month = 1;
+
+#ifdef THEFUTURE
+int year = 2100;
+#else
+int year = 2009;
+#endif
+int amendnum = 28;
+
+bool termlimits = false;
 
 
-int16 attitude[VIEWNUM];
+short attitude[VIEWNUM];
 
-// Topicwork1 is editorials that are waiting to be written
-// Topicwork2 is editorials that have been written
-int16 newspaper_topicwork1[VIEWNUM];
-int16 newspaper_topicwork2[VIEWNUM];
+short public_interest[VIEWNUM];
+short background_liberal_influence[VIEWNUM];
 
 
-int16 law[LAWNUM];
+short law[LAWNUM];
 
-int16 house[435];
-int16 senate[100];
-int16 court[9];
+short house[435];
+short senate[100];
+short court[9];
 char courtname[9][80];
 
 
-int16 exec[EXECNUM];
-int16 execterm = 1;
+signed char exec[EXECNUM];
+short execterm = 1;
 char execname[EXECNUM][80];
+short presparty = 1;
+
+char amradio_closed = 0;
+char cablenews_closed = 0;
+char policestation_closed = 0;
 
 
-uint32 stat_recruits = 0;
-uint32 stat_kidnappings = 0;
-uint32 stat_dead = 0;
-uint32 stat_kills = 0;
-uint32 stat_funds = 0;
-uint32 stat_spent = 0;
-uint32 stat_buys = 0;
-uint32 stat_burns = 0;
+int stat_recruits = 0;
+int stat_kidnappings = 0;
+int stat_dead = 0;
+int stat_kills = 0;
+int stat_funds = 0;
+int stat_spent = 0;
+int stat_buys = 0;
+int stat_burns = 0;
 
-uint32 ustat_recruits = 0;
-uint32 ustat_kidnappings = 0;
-uint32 ustat_dead = 0;
-uint32 ustat_kills = 0;
-uint32 ustat_funds = 0;
-uint32 ustat_spent = 0;
-uint32 ustat_buys = 0;
-uint32 ustat_burns = 0;
+int ustat_recruits = 0;
+int ustat_kidnappings = 0;
+int ustat_dead = 0;
+int ustat_kills = 0;
+int ustat_funds = 0;
+int ustat_spent = 0;
+int ustat_buys = 0;
+int ustat_burns = 0;
 
-int32 locx, locy, locz;
+int locx;
+int locy;
+int locz;
 
-int16 sitetype;
-int16 sitealienate;
-int16 sitealarm;
-int16 sitealarmtimer;
-int16 postalarmtimer;
-int32 sitecrime;
-int32 cursite;
+short sitetype;
+short sitealienate;
+short sitealarm;
+short sitealarmtimer;
+short postalarmtimer;
+short siteonfire;
+int sitecrime;
+short cursite;
 
-int16 interface_pgup = '[';
-int16 interface_pgdn = ']';
+short interface_pgup = '[';
+short interface_pgdn = ']';
 
-int32 day = 1;
+int day = 1;
 
 #ifdef HIGHFUNDS
-uint32 funds = 100000;
+int funds = 100000;
 #else
-uint32 funds = 7;
+int funds = 7;
 #endif
 
-int32 moneygained_donate = 0;
-int32 moneygained_brownies = 0;
-int32 moneygained_goods = 0;
-int32 moneygained_ccfraud = 0;
-int32 moneygained_hustling = 0;
-int32 moneygained_thievery = 0;
-int32 moneylost_goods = 0;
-int32 moneylost_trouble = 0;
-int32 moneylost_rent = 0;
-int32 moneylost_manufacture = 0;
-int32 moneylost_legal = 0;
-int32 moneylost_compound = 0;
-int32 moneylost_hostage = 0;
+long moneygained_donate = 0;
+long moneygained_brownies = 0;
+long moneygained_goods = 0;
+long moneygained_ccfraud = 0;
+long moneygained_hustling = 0;
+long moneygained_extortion = 0;
+long moneygained_thievery = 0;
+long moneygained_embezzlement = 0;
+long moneylost_goods = 0;
+long moneylost_trouble = 0;
+long moneylost_rent = 0;
+long moneylost_training = 0;
+long moneylost_manufacture = 0;
+long moneylost_legal = 0;
+long moneylost_food = 0;
+long moneylost_dating = 0;
+long moneylost_compound = 0;
+long moneylost_hostage = 0;
+long moneylost_confiscated = 0;
 
-int16 party_status = -1;
+short party_status = -1;
+
+char endgamestate = ENDGAME_NONE;
+char ccs_kills = 0;
+int ccs_siege_kills = 0;
 
 vector<datest *> date;
-
-
+vector<recruitst *> recruit;
 
 vector<newsstoryst *> newsstory;
 newsstoryst *sitestory = NULL;
 
-
 #define SCORENUM 5
 highscorest score[SCORENUM];
-int32 yourscore = -1;
-
-
-
+int yourscore = -1;
 
 int main(int argc, char *argv[]) {
     //start curses
+    #ifdef CH_USE_UNICODE
+    setup_unicode();
+    #endif
     initscr();
 
     noecho();
@@ -235,8 +260,8 @@ int main(int argc, char *argv[]) {
     seed = getSeed();
 
     //initialize the array of color pairs
-    for(int32 i = 0; i < 8; i++) {
-        for(int32 j = 0; j < 8; j++) {
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 8; j++) {
             if(i == 0 && j == 0) {
                 init_pair(7 * 8, 0, 0);
                 continue;
@@ -257,25 +282,58 @@ int main(int argc, char *argv[]) {
 
     raw_output(TRUE);
 
+    //addstr("Loading Graphics... ");
+    //refresh();
+    //getch();
+
     loadgraphics();
 
+    //addstr("Loading Init File Options... ");
+    //refresh();
+    //getch();
+
     loadinitfile();
+
+    //addstr("Loading sitemaps.txt... ");
+    //refresh();
+    //getch();
+
+    oldMapMode = readConfigFile("sitemaps.txt"); // load site map data
+
+    if (oldMapMode == -1) {
+        addstr("Failed to load sitemaps.txt! Reverting to old map mode.");
+        refresh();
+        getch();
+    }
+
+    //move(1,0);
+    //addstr("Setting initial game data... ");
+    //refresh();
+    //getch();
 
     strcpy(slogan, "We need a slogan!");
 
     for(int v = 0; v < VIEWNUM; v++) {
-        attitude[v] = 45;
-        newspaper_topicwork1[v] = 0;
-        newspaper_topicwork2[v] = 0;
+        attitude[v] = 30 + LCSrandom(25);
+        public_interest[v] = 0;
+        background_liberal_influence[v] = 0;
     }
 
     attitude[VIEW_LIBERALCRIMESQUAD] = 0;
-    attitude[VIEW_LIBERALCRIMESQUADPOS] = 20;
+    attitude[VIEW_LIBERALCRIMESQUADPOS] = 5;
+    attitude[VIEW_POLITICALVIOLENCE] = 5;
 
-    law[LAW_ABORTION] = 2;
-    law[LAW_ANIMALRESEARCH] = -2;
-    law[LAW_POLICEBEHAVIOR] = 0;
-    law[LAW_PRIVACY] = 0;
+    #ifdef REVOLUTIONNOW
+
+    for(int v = 0; v < VIEWNUM; v++)
+        attitude[v] = 100;
+
+    #endif
+
+    law[LAW_ABORTION] = 1;
+    law[LAW_ANIMALRESEARCH] = -1;
+    law[LAW_POLICEBEHAVIOR] = -1;
+    law[LAW_PRIVACY] = -1;
     law[LAW_DEATHPENALTY] = -1;
     law[LAW_NUCLEARPOWER] = -1;
     law[LAW_POLLUTION] = -1;
@@ -284,8 +342,16 @@ int main(int argc, char *argv[]) {
     law[LAW_CORPORATE] = 0;
     law[LAW_FREESPEECH] = 0;
     law[LAW_FLAGBURNING] = 1;
+    law[LAW_GUNCONTROL] = -1;
     law[LAW_TAX] = 0;
     law[LAW_GUNCONTROL] = -1;
+    law[LAW_WOMEN] = 1;
+    law[LAW_CIVILRIGHTS] = 1;
+    law[LAW_DRUGS] = -1;
+    law[LAW_IMMIGRATION] = 0;
+    law[LAW_ELECTIONS] = 0;
+    law[LAW_MILITARY] = -1;
+    law[LAW_TORTURE] = -1;
 
     #ifdef SHITLAWS
 
@@ -294,25 +360,32 @@ int main(int argc, char *argv[]) {
 
     #endif
 
+    #ifdef PERFECTLAWS
+
+    for(int l = 0; l < LAWNUM; l++)
+        law[l] = 2;
+
+    #endif
+
     for(int s = 0; s < 100; s++) {
-        if(s < 20)
+        if(s < 25)
             senate[s] = -2;
-        else if(s < 45)
+        else if(s < 60)
             senate[s] = -1;
-        else if(s < 70)
+        else if(s < 80)
             senate[s] = 0;
-        else if(s < 90)
+        else if(s < 95)
             senate[s] = 1;
         else
             senate[s] = 2;
     }
 
     for(int h = 0; h < 435; h++) {
-        if(h < 30)
+        if(h < 50)
             house[h] = -2;
-        else if(h < 200)
+        else if(h < 250)
             house[h] = -1;
-        else if(h < 300)
+        else if(h < 350)
             house[h] = 0;
         else if(h < 400)
             house[h] = 1;
@@ -321,29 +394,39 @@ int main(int argc, char *argv[]) {
     }
 
     for(int c = 0; c < 9; c++) {
-        if(c < 2)
+        if(c < 3)
             court[c] = -2;
         else if(c < 5)
             court[c] = -1;
-        else if(c < 7)
+        else if(c < 5)
             court[c] = 0;
         else if(c < 8)
             court[c] = 1;
         else
             court[c] = 2;
 
-        name(courtname[c]);
+        generate_name(courtname[c]);
     }
 
     for(int e = 0; e < EXECNUM; e++) {
-        exec[e] = -1;
-        name(execname[e]);
+        exec[e] = -2;
+        generate_name(execname[e], GENDER_WHITEMALEPATRIARCH);
     }
 
     attorneyseed = getSeed();
     cityname(lcityname);
 
+    //addstr("Attempting to load saved game... ");
+    //refresh();
+    //getch();
+
     loaded = load();
+
+    //addstr("Setup complete!");
+    //refresh();
+    //getch();
+
+    clear();
 
     mode_title();
 
@@ -353,56 +436,65 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-
-
 //picks a random number from 0 to max-1
-int32 LCSrandom(uint32 max) {
+int LCSrandom(int max) {
     r_num();
 
-    double rand_y;
-    double rand_i;
+    long double rand_y;
+    long double rand_i;
 
     rand_i = 2147483648UL;
 
-    rand_y = max * ((double)seed / rand_i);
+    rand_y = max * ((long double)seed / rand_i);
 
-    return((int32)rand_y);
+    return((int)rand_y);
 }
 
 //sets seed to a random number from 0 to 2 billion
-uint32 r_num(void) {
+int r_num(void) {
     seed = (seed * 907725L + 99979777UL) % 2147483648UL;
     return seed;
 }
 
-int32 creaturest::attval(int16 a, char usejuice) {
-    int32 ret = att[a];
+int Creature::attval(short a, char usejuice) {
+    int ret = att[a];
 
-    if(a != ATTRIBUTE_WISDOM && usejuice) {
+    if(a == ATTRIBUTE_WISDOM && align != ALIGN_CONSERVATIVE)
+        usejuice = false;
+
+    if(a == ATTRIBUTE_HEART  && align != ALIGN_LIBERAL)
+        usejuice = false;
+
+    if(usejuice) {
         if(juice <= -50)
             ret = 1;
         else if(juice <= -10)
-            ret -= 2;
+            ret = static_cast<int>(ret * 0.6);
         else if(juice < 0)
-            ret--;
+            ret = static_cast<int>(ret * 0.8);
         else if(juice >= 10) {
             if(juice < 50)
-                ret++;
+                ret = static_cast<int>(ret += 1);
             else if(juice < 100)
-                ret += 2;
+                ret = static_cast<int>(ret * 1.1 + 2);
             else if(juice < 200)
-                ret += 4;
+                ret = static_cast<int>(ret * 1.2 + 3);
             else if(juice < 500)
-                ret += 8;
+                ret = static_cast<int>(ret * 1.3 + 4);
+            else if(juice < 1000)
+                ret = static_cast<int>(ret * 1.4 + 5);
             else
-                ret += 15;
+                ret = static_cast<int>(ret * 1.5 + 6);
         }
 
         if(ret < 1)
             ret = 1;
+
+        if(ret > 20)
+            ret = 20;
     }
 
-    int32 disfigs = 0;
+    long disfigs = 0;
 
     if(special[SPECIALWOUND_TEETH] < TOOTHNUM)
         disfigs++;
@@ -425,7 +517,7 @@ int32 creaturest::attval(int16 a, char usejuice) {
     if(special[SPECIALWOUND_NOSE] == 0)
         disfigs += 3;
 
-    int32 legok = 2;
+    int legok = 2;
 
     if((wound[BODYPART_LEG_RIGHT] & WOUND_NASTYOFF) ||
             (wound[BODYPART_LEG_RIGHT] & WOUND_CLEANOFF))
@@ -443,6 +535,17 @@ int32 creaturest::attval(int16 a, char usejuice) {
         else if(special[SPECIALWOUND_LOWERSPINE] != 1)
             ret >>= 2;
 
+        if(age < 11)
+            ret >>= 1;
+        else if(age < 16)
+            ret -= 1;
+        else if(age > 35)
+            ret -= 1;
+        else if(age > 52)
+            ret -= 3;
+        else if(age > 70)
+            ret -= 6;
+
         break;
 
     case ATTRIBUTE_AGILITY:
@@ -456,6 +559,17 @@ int32 creaturest::attval(int16 a, char usejuice) {
         else if(legok == 1)
             ret >>= 1;
 
+        if(age < 11)
+            ret -= 2;
+        else if(age < 16)
+            ret -= 1;
+        else if(age > 35)
+            ret -= 1;
+        else if(age > 52)
+            ret -= 3;
+        else if(age > 70)
+            ret -= 6;
+
         break;
 
     case ATTRIBUTE_HEALTH:
@@ -465,10 +579,65 @@ int32 creaturest::attval(int16 a, char usejuice) {
         else if(special[SPECIALWOUND_LOWERSPINE] != 1)
             ret >>= 2;
 
+        if(age < 11)
+            ret -= 2;
+        else if(age < 16)
+            ret -= 1;
+
         break;
 
     case ATTRIBUTE_CHARISMA:
         ret -= disfigs;
+
+        if(age < 11)
+            ret += 2;  // yayay kids
+        else if(age < 16)
+            ret -= 1;  // barf teenagers
+        else if(age > 35)
+            ret += 1;
+        else if(age > 52)
+            ret += 2;
+        else if(age > 70)
+            ret += 3;
+
+        break;
+
+    case ATTRIBUTE_INTELLIGENCE:
+        if(age < 11)
+            ret -= 3;
+        else if(age < 16)
+            ret -= 1;
+        else if(age > 35)
+            ret += 1;
+        else if(age > 52)
+            ret += 2;
+        else if(age > 70)
+            ret += 3;
+
+        break;
+
+    case ATTRIBUTE_WISDOM:
+        if(age < 11)
+            ret -= 2;
+        else if(age < 16)
+            ret -= 1;
+        else if(age > 52)
+            ret += 1;
+        else if(age > 70)
+            ret += 2;
+
+        break;
+
+    case ATTRIBUTE_HEART:
+        if(age < 11)
+            ret += 2;
+        else if(age < 16)
+            ret += 1;
+        else if(age > 52)
+            ret -= 1;
+        else if(age > 70)
+            ret -= 2;
+
         break;
     }
 
@@ -492,10 +661,11 @@ int32 creaturest::attval(int16 a, char usejuice) {
     return ret;
 }
 
-void vehiclest::init(int32 t) {
+void vehiclest::init(int t) {
     id = curcarid;
     curcarid++;
 
+    heat = 0;
     location = -1;
     type = t;
 
@@ -506,6 +676,10 @@ void vehiclest::init(int32 t) {
 
     case VEHICLE_VAN:
         myear = 1969 + LCSrandom(6);
+        break;
+
+    case VEHICLE_AGENTCAR:
+        myear = year + 1 - LCSrandom(11);
         break;
 
     case VEHICLE_STATIONWAGON:
@@ -583,19 +757,23 @@ void vehiclest::init(int32 t) {
     }
 }
 
-void vehiclest::makeSwapped(vehiclest *vst) {
-    vst->type = swap_endian_16(type);
-    vst->color = swap_endian_16(color);
-    vst->location = swap_endian_32(location);
-    vst->myear = swap_endian_32(myear);
-    vst->id = swap_endian_32(id);
-}
-
-void creaturest::creatureinit(void) {
+void Creature::creatureinit(void) {
     hireid = -1;
     worklocation = 0;
     juice = 0;
     flag = 0;
+    age = 18 + LCSrandom(40);
+    gender_liberal = gender_conservative = LCSrandom(2) + 1;
+    birthday_month = LCSrandom(12) + 1;
+
+    if(birthday_month == 4 || birthday_month == 6 ||
+            birthday_month == 9 || birthday_month == 11)
+        birthday_day = LCSrandom(30) + 1;
+    else if(birthday_month == 2)
+        birthday_day = LCSrandom(28) + 1;
+    else
+        birthday_day = LCSrandom(31) + 1;
+
     carid = -1;
     is_driver = 0;
     pref_carid = -1;
@@ -610,9 +788,11 @@ void creaturest::creatureinit(void) {
     base = 0;
     activity.type = ACTIVITY_NONE;
 
-    for(int32 i = 0; i < LAWFLAGNUM; i++)
+    for(int i = 0; i < LAWFLAGNUM; i++)
         lawflag[i] = 0;
 
+    heat = 0;
+    confessions = 0;
     clinic = 0;
     dating = 0;
     hiding = 0;
@@ -623,8 +803,9 @@ void creaturest::creatureinit(void) {
     prisoner = NULL;
     alive = 1;
     blood = 100;
+    stunned = 0;
 
-    for(int32 w = 0; w < BODYPARTNUM; w++)
+    for(int w = 0; w < BODYPARTNUM; w++)
         wound[w] = 0;
 
     weapon.type = WEAPON_NONE;
@@ -633,13 +814,13 @@ void creaturest::creatureinit(void) {
     armor.quality = '1';
     armor.flag = 0;
 
-    for(int32 a = 0; a < ATTNUM; a++)
+    for(int a = 0; a < ATTNUM; a++)
         att[a] = 1;
 
-    int32 attnum = 32;
+    int attnum = 32;
 
     while(attnum > 0) {
-        int32 a = LCSrandom(ATTNUM);
+        int a = LCSrandom(ATTNUM);
 
         if(att[a] < 10) {
             att[a]++;
@@ -647,12 +828,12 @@ void creaturest::creatureinit(void) {
         }
     }
 
-    for(int32 s = 0; s < SKILLNUM; s++) {
+    for(int s = 0; s < SKILLNUM; s++) {
         skill[s] = 0;
         skill_ip[s] = 0;
     }
 
-    for(int32 c = 0; c < CLIPNUM; c++)
+    for(int c = 0; c < CLIPNUM; c++)
         clip[c] = 0;
 
     special[SPECIALWOUND_TEETH] = TOOTHNUM;
@@ -681,17 +862,114 @@ void locationst::init(void) {
     haveflag = 0;
     newrental = 0;
     heat = 0;
+    heat_protection = 0.0;
     closed = 0;
+    interrogated = 0;
     highsecurity = 0;
     mapseed = seed;
     r_num();
+    changes.clear();
     compound_walls = 0;
     compound_stores = 0;
     front_business = -1;
 }
 
+void locationst::update_heat_protection(void) {
+    int l;
+
+    for(l = 0; l < location.size(); l++) {
+        if(location[l] == this)
+            break;
+    }
+
+    if(l == location.size()) {
+        heat_protection = 0.0;
+        return;
+    }
+
+    int numpres = 0;
+    int heatprotection = 0;
+
+    for(int p = 0; p < pool.size(); p++) {
+        if(pool[p]->location != l)
+            continue;  // People not at this base don't count
+
+        if(!pool[p]->alive)
+            continue;  // Dead people don't count
+
+        numpres++;
+    }
+
+    // Determine how effective your current safehouse
+    // is at keeping the police confused
+    switch(location[l]->type) {
+    case SITE_INDUSTRY_WAREHOUSE:
+        if(location[l]->front_business != -1)
+            heatprotection += 12;  // Business front -- high protection
+        else
+            heatprotection += 0;  // Abandoned warehouse -- no protection
+
+        break;
+
+    case SITE_RESIDENTIAL_SHELTER:
+        heatprotection += 0; // Homeless shelter -- no protection
+        break;
+
+    case SITE_RESIDENTIAL_TENEMENT:
+        heatprotection += 4; // Lower class housing -- low protection
+        break;
+
+    case SITE_RESIDENTIAL_APARTMENT:
+        heatprotection += 8; // Middle class housing -- medium protection
+        break;
+
+    case SITE_RESIDENTIAL_BOMBSHELTER:
+    case SITE_OUTDOOR_BUNKER:
+    case SITE_BUSINESS_BARANDGRILL:
+    case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
+        heatprotection += 12; // Upper class housing -- high protection
+        break;
+    }
+
+    if(law[LAW_FLAGBURNING] == -2 && location[l]->haveflag)
+        heatprotection += 6; // More protection if the flag is sacred
+    else if(law[LAW_FLAGBURNING] != -2 && location[l]->haveflag)
+        heatprotection += 2; // Some if the flag isn't
+    else if(law[LAW_FLAGBURNING] == 2 && !(location[l]->haveflag))
+        heatprotection -= 2; // Lose some if it is and you have no flag
+    else
+        heatprotection += 0; // None if it isn't and you have no flag
+
+    //Protection varies with how many people in the safehouse
+    if(numpres > 60)
+        heatprotection -= 20;
+
+    if(numpres > 40)
+        heatprotection -= 12;
+
+    if(numpres > 20)
+        heatprotection -= 6;
+
+    if(numpres < 10)
+        heatprotection += 1;
+
+    if(numpres < 4)
+        heatprotection += 2;
+
+    if(numpres < 2)
+        heatprotection += 3;
+
+    if(heatprotection < 0)
+        heatprotection = 0;
+
+    heat_protection = heatprotection * 0.05;
+
+    if(heat_protection >= 1.0)
+        heat_protection = 0.95;
+}
+
 void chaseseqst::clean(void) {
-    for(int32 v = 0; v < enemycar.size(); v++)
+    for(int v = 0; v < enemycar.size(); v++)
         delete enemycar[v];
 
     enemycar.clear();
@@ -701,13 +979,11 @@ void chaseseqst::clean(void) {
 
 
 /* Free memory and exit the game */
-void end_game(int32 err) {
+void end_game(int err) {
     for(vector<locationst *>::iterator it = location.begin(); it != location.end(); ++it)
         delete (*it);
 
-    int32 i = 0;
-
-    for(i = 0; i < squad.size(); ++i)
+    for(int i = 0; i < squad.size(); ++i)
         delete squad[i];
 
     endwin();

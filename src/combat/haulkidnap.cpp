@@ -26,21 +26,21 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 
 
 /* prompt after you've said you want to kidnap someone */
 void kidnapattempt(void) {
-    int16 kidnapper = -1;
+    short kidnapper = -1;
 
     party_status = -1;
 
-    int32 available = 0;
+    int available = 0;
     char availslot[6] = {0, 0, 0, 0, 0, 0};
 
-    for(int32 p = 0; p < 6; p++) {
+    for(int p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
             if(activesquad->squad[p]->alive && activesquad->squad[p]->prisoner == NULL) {
                 available++;
@@ -71,7 +71,7 @@ void kidnapattempt(void) {
 
         refresh();
 
-        int32 c = getch();
+        int c = getch();
         translategetch(c);
 
         if(c == 10)
@@ -87,14 +87,14 @@ void kidnapattempt(void) {
     } while(1);
 
     if(kidnapper >= 0) {
-        vector<int32> target;
+        vector<int> target;
 
-        for(int32 e = 0; e < ENCMAX; e++) {
-            if(encounter[e].exists && encounter[e].alive && encounter[e].align == -1 && !encounter[e].animalgloss) {
-                if(encounter[e].weapon.type != WEAPON_NONE &&
-                        encounter[e].weapon.type != WEAPON_SYRINGE &&
+        for(int e = 0; e < ENCMAX; e++) {
+            if(encounter[e].exists && encounter[e].alive && encounter[e].align == -1 &&
+                    (encounter[e].animalgloss == ANIMALGLOSS_NONE || law[LAW_ANIMALRESEARCH] == 2)) {
+                if((encounter[e].weapon.type != WEAPON_NONE &&
                         encounter[e].weapon.type != WEAPON_GAVEL &&
-                        encounter[e].blood > 20)
+                        encounter[e].blood > 20) || encounter[e].animalgloss == ANIMALGLOSS_TANK)
                     continue;
 
                 target.push_back(e);
@@ -102,7 +102,7 @@ void kidnapattempt(void) {
         }
 
         if(target.size() > 0) {
-            int32 t = target[0];
+            int t = target[0];
 
             if(target.size() > 1) {
                 do {
@@ -114,9 +114,9 @@ void kidnapattempt(void) {
                     move(9, 1);
                     addstr("Kidnap whom?");
 
-                    int32 x = 1, y = 11;
+                    int x = 1, y = 11;
 
-                    for(int32 t2 = 0; t2 < target.size(); t2++) {
+                    for(int t2 = 0; t2 < target.size(); t2++) {
                         move(y, x);
                         addch(t2 + 'A');
                         addstr(" - ");
@@ -131,7 +131,7 @@ void kidnapattempt(void) {
                     }
 
                     refresh();
-                    int32 c = getch();
+                    int c = getch();
                     translategetch(c);
 
                     if(c >= 'a' && c <= 'z') {
@@ -158,7 +158,7 @@ void kidnapattempt(void) {
                 if(kidnap(*activesquad->squad[kidnapper], encounter[t], amateur)) {
                     delenc(t, 0);
 
-                    int32 time = 20 + LCSrandom(10);
+                    int time = 20 + LCSrandom(10);
 
                     if(time < 1)
                         time = 1;
@@ -171,7 +171,7 @@ void kidnapattempt(void) {
                 if(amateur) {
                     char present = 0;
 
-                    for(int32 e = 0; e < ENCMAX; e++) {
+                    for(int e = 0; e < ENCMAX; e++) {
                         if(encounter[e].exists && encounter[e].alive) {
                             present = 1;
                             break;
@@ -229,16 +229,18 @@ void kidnapattempt(void) {
 
 
 /* roll on the kidnap attempt and show the results */
-char kidnap(creaturest &a, creaturest &t, char &amateur) {
-    if(a.weapon.type == WEAPON_NONE) {
+char kidnap(Creature &a, Creature &t, char &amateur) {
+    if(a.weapon.type == WEAPON_NONE ||
+            a.weapon.type == WEAPON_SPRAYCAN ||
+            a.weapon.type == WEAPON_GUITAR) {
         amateur = 1;
 
         //BASIC ROLL
-        int32 aroll = LCSrandom(15) + 1 + LCSrandom(a.attval(ATTRIBUTE_AGILITY));
-        int32 droll = LCSrandom(20) + 1 + LCSrandom(t.attval(ATTRIBUTE_AGILITY));
+        int aroll = LCSrandom(15) + 1 + LCSrandom(a.attval(ATTRIBUTE_AGILITY));
+        int droll = LCSrandom(20) + 1 + LCSrandom(t.attval(ATTRIBUTE_AGILITY));
 
-        aroll += LCSrandom(a.skill[SKILL_HANDTOHAND] + 1);
-        a.skill_ip[SKILL_HANDTOHAND] += droll;
+        aroll += LCSrandom(a.skillval(SKILL_HANDTOHAND) + 1);
+        a.train(SKILL_HANDTOHAND, droll);
 
         clearmessagearea();
 
@@ -251,7 +253,7 @@ char kidnap(creaturest &a, creaturest &t, char &amateur) {
             addstr(t.name);
             addstr("!");
 
-            a.prisoner = new creaturest;
+            a.prisoner = new Creature;
             *a.prisoner = t;
 
             refresh();
@@ -292,7 +294,7 @@ char kidnap(creaturest &a, creaturest &t, char &amateur) {
         addstr(t.name);
         addstr(" the ");
         char str[30];
-        getweaponfull(str, a.weapon.type);
+        getweaponfull(str, a.weapon.type, 2);
         addstr(str);
         move(17, 1);
         addstr("and says, ");
@@ -303,7 +305,7 @@ char kidnap(creaturest &a, creaturest &t, char &amateur) {
         else
             addstr("\"Bitch, be cool.\"");
 
-        a.prisoner = new creaturest;
+        a.prisoner = new Creature;
         *a.prisoner = t;
 
         refresh();
@@ -316,7 +318,7 @@ char kidnap(creaturest &a, creaturest &t, char &amateur) {
 
 
 /* hostage freed due to host unable to haul */
-void freehostage(creaturest &cr, char situation) {
+void freehostage(Creature &cr, char situation) {
     if(cr.prisoner == NULL)
         return;
 
@@ -353,11 +355,11 @@ void freehostage(creaturest &cr, char situation) {
         }
 
         if(cr.prisoner->squadid == -1) {
-            for(int32 e = 0; e < ENCMAX; e++) {
+            for(int e = 0; e < ENCMAX; e++) {
                 if(encounter[e].exists == 0) {
                     encounter[e] = *cr.prisoner;
                     encounter[e].exists = 1;
-                    encounter[e].align = -1;
+                    conservatise(encounter[e]);
                     break;
                 }
             }
@@ -368,11 +370,14 @@ void freehostage(creaturest &cr, char situation) {
     } else {
         if(cr.prisoner->squadid != -1) {
             //MUST DELETE PARTY MEMBER FROM POOL COMPLETELY
-            for(int32 pl = 0; pl < pool.size(); pl++) {
+            //(That may not be the case any longer -jds)
+            for(int pl = 0; pl < pool.size(); pl++) {
                 if(pool[pl] == cr.prisoner) {
                     removesquadinfo(*pool[pl]);
-                    delete pool[pl];
-                    pool.erase(pool.begin() + pl);
+                    pool[pl]->alive = 0;
+                    pool[pl]->location = -1;
+                    //delete pool[pl];
+                    //pool.erase(pool.begin() + pl);
                     break;
                 }
             }
@@ -399,9 +404,9 @@ void freehostage(creaturest &cr, char situation) {
 
 /* haul dead/paralyzed */
 void squadgrab_immobile(char dead) {
-    int32 p;
+    int p;
     //DRAGGING PEOPLE OUT IF POSSIBLE
-    int32 hostslots = 0;
+    int hostslots = 0;
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
@@ -448,10 +453,13 @@ void squadgrab_immobile(char dead) {
                         makeloot(*activesquad->squad[p], groundloot);
 
                         //MUST DELETE PARTY MEMBER FROM POOL COMPLETELY
-                        for(int32 pl = 0; pl < pool.size(); pl++) {
+                        //(that may not be the case any longer -jds)
+                        for(int pl = 0; pl < pool.size(); pl++) {
                             if(pool[pl] == activesquad->squad[p]) {
-                                delete pool[pl];
-                                pool.erase(pool.begin() + pl);
+                                pool[pl]->alive = 0;
+                                pool[pl]->location = -1;
+                                //delete pool[pl];
+                                //pool.erase(pool.begin() + pl);
                                 break;
                             }
                         }
@@ -465,7 +473,7 @@ void squadgrab_immobile(char dead) {
                         capturecreature(*activesquad->squad[p]);
                     }
                 } else {
-                    for(int32 p2 = 0; p2 < 6; p2++) {
+                    for(int p2 = 0; p2 < 6; p2++) {
                         if(p2 == p)
                             continue;
 
@@ -494,7 +502,7 @@ void squadgrab_immobile(char dead) {
                 //SHUFFLE SQUAD
                 char flipstart = 0;
 
-                for(int32 pt = 0; pt < 6; pt++) {
+                for(int pt = 0; pt < 6; pt++) {
                     if(pt == p - 1)
                         continue;
 
@@ -519,14 +527,27 @@ void squadgrab_immobile(char dead) {
 
 
 /* names the new hostage and stashes them in your base */
-void kidnaptransfer(creaturest &cr) {
-    creaturest *newcr = new creaturest;
+void kidnaptransfer(Creature &cr) {
+    Creature *newcr = new Creature;
     *newcr = cr;
-    namecreature(*newcr);
+    newcr->namecreature();
 
     newcr->location = activesquad->squad[0]->location;
     newcr->base = activesquad->squad[0]->base;
     newcr->flag |= CREATUREFLAG_MISSING;
+
+    //disarm them and stash their weapon back at the base
+    if(newcr->weapon.type != WEAPON_NONE) {
+        itemst *newweapon = new itemst;
+        newweapon->type = ITEM_WEAPON;
+        newweapon->weapon = newcr->weapon;
+        location[newcr->location]->loot.push_back(newweapon);
+        newcr->weapon.ammo = 0;
+        newcr->weapon.type = WEAPON_NONE;
+    }
+
+    //Create interrogation data
+    newcr->activity.arg = reinterpret_cast<long>(new interrogation);
 
     erase();
 
@@ -548,8 +569,6 @@ void kidnaptransfer(creaturest &cr) {
 
     move(4, 0);
     enter_name(newcr->name, CREATURE_NAMELEN, newcr->propername);
-
-
 
     pool.push_back(newcr);
     stat_kidnappings++;

@@ -26,15 +26,14 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+//#include <includes.h>
 #include <externs.h>
 
 
-
 /* bluff, date, issues */
-char talk(creaturest &a, int32 t) {
+char talk(Creature &a, int t) {
     //BLUFFING
-    if((sitealarm || location[cursite]->siege.siege) && encounter[t].align == -1) {
+    if((sitealarm || location[cursite]->siege.siege) && encounter[t].enemy()) {
         clearcommandarea();
         clearmessagearea();
         clearmaparea();
@@ -46,24 +45,621 @@ char talk(creaturest &a, int32 t) {
         addstr(encounter[t].name);
         addstr(":");
 
-        int32 c = 0;
+        int c = 0;
+        int hostages = 0;
+        int weaponhostage = 0;
+        bool cop = 0;
 
-        if(encounter[t].type == CREATURE_COP ||
-                encounter[t].type == CREATURE_GANGUNIT ||
-                encounter[t].type == CREATURE_SWAT) {
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            move(11, 1);
-            addstr("A - Bluff");
-            move(12, 1);
-            addstr("B - Give up");
+        for(int i = 0; i < 6; i++) {
+            if(activesquad->squad[i] &&
+                    activesquad->squad[i]->prisoner &&
+                    activesquad->squad[i]->prisoner->alive) {
+                hostages++;
 
-            while(c != 'a' && c != 'b') {
-                c = getch();
-                translategetch(c);
+                if(activesquad->squad[i]->weapon.type != WEAPON_NONE &&
+                        activesquad->squad[i]->weapon.type != WEAPON_GUITAR)
+                    weaponhostage++;
             }
         }
 
-        if(c != 'b') {
+        if(encounter[t].type == CREATURE_COP ||
+                encounter[t].type == CREATURE_GANGUNIT ||
+                encounter[t].type == CREATURE_SWAT)
+            cop = 1;
+
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        move(11, 1);
+        addstr("A - Shout the Liberal Slogan!");
+
+        if(!hostages)
+            set_color(COLOR_BLACK, COLOR_BLACK, 1);
+
+        move(12, 1);
+        addstr("B - Threaten hostages");
+
+        if(encounter[t].cantbluff != 2)
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        else
+            set_color(COLOR_BLACK, COLOR_BLACK, 1);
+
+        move(13, 1);
+        addstr("C - Bluff");
+
+        if(cop)
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        else
+            set_color(COLOR_BLACK, COLOR_BLACK, 1);
+
+        move(14, 1);
+        addstr("D - Give up");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        refresh();
+
+        while(1) {
+            c = getch();
+            translategetch(c);
+
+            if(c == 'a')
+                break;
+
+            if(c == 'b' && hostages)
+                break;
+
+            if(c == 'c' && encounter[t].cantbluff != 2)
+                break;
+
+            if(c == 'd' && cop)
+                break;
+        }
+
+        if(c == 'a') {
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            move(16, 1);
+            addstr(a.name);
+            addstr(":");
+            move(17, 1);
+            set_color(COLOR_GREEN, COLOR_BLACK, 1);
+
+            // Formatting the slogan so that it always has quotes around it and punctuation
+            if(slogan[0] != '"')
+                addch('"');
+
+            addstr(slogan);
+            int last = strlen(slogan);
+
+            if(last && slogan[last - 1] != '"' && slogan[last - 1] != '!' && slogan[last - 1] != '.' && slogan[last - 1] != '?')
+                addch('!');
+
+            if(last && slogan[last - 1] != '"')
+                addstr("\"");
+
+            if(!sitestory->claimed)
+                sitestory->claimed = 1;
+
+            refresh();
+            getch();
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+
+            int intimidation_factor = a.juice * attitude[VIEW_LIBERALCRIMESQUAD] * a.blood / 10000;
+
+            // Battle colors on site actions causes shouts to be x1.5 effective
+            if(activesquad->stance == SQUADSTANCE_BATTLECOLORS &&
+                    !location[cursite]->siege.siege)
+                intimidation_factor = (intimidation_factor * 3) / 2;
+
+            for(int e = 0; e < ENCMAX; e++) {
+                if(encounter[e].exists && encounter[e].alive && encounter[e].enemy()) {
+                    int defender_morale = encounter[e].juice + (int)encounter[e].attval(ATTRIBUTE_WISDOM) * 5;
+
+                    if((intimidation_factor > defender_morale) && LCSrandom(2)) {
+                        if(encounter[e].type == CREATURE_COP ||
+                                encounter[e].type == CREATURE_GANGUNIT ||
+                                encounter[e].type == CREATURE_SWAT ||
+                                encounter[e].type == CREATURE_DEATHSQUAD ||
+                                encounter[e].type == CREATURE_SOLDIER ||
+                                encounter[e].type == CREATURE_HARDENED_VETERAN ||
+                                encounter[e].type == CREATURE_CCS_ARCHCONSERVATIVE ||
+                                encounter[e].type == CREATURE_AGENT) {
+                            if((activesquad->stance == SQUADSTANCE_BATTLECOLORS &&
+                                    !location[cursite]->siege.siege) || LCSrandom(3))
+                                continue;
+                        }
+
+                        clearmessagearea();
+                        move(16, 1);
+                        addstr(encounter[e].name);
+
+                        switch(LCSrandom(6)) {
+                        case 0:
+                            addstr(" chickens out!");
+                            break;
+
+                        case 1:
+                            addstr(" backs off!");
+                            break;
+
+                        case 2:
+                            addstr(" doesn't want to die!");
+                            break;
+
+                        case 3:
+                            addstr(" is out of there!");
+                            break;
+
+                        case 4:
+                            addstr(" has a family!");
+                            break;
+
+                        case 5:
+                            addstr(" is too young to die!");
+                            break;
+                        }
+
+                        delenc(e, 0);
+                        addjuice(a, 1); // Instant juice!
+                        refresh();
+                        getch();
+                    }
+                }
+            }
+        } else if(c == 'b') {
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            move(16, 1);
+            addstr(a.name);
+            addstr(":");
+            set_color(COLOR_GREEN, COLOR_BLACK, 1);
+            move(17, 1);
+
+            switch(LCSrandom(6)) {
+            case 0:
+                addstr("\"Back off or the hostage dies!\"");
+                break;
+
+            case 1:
+                addstr("\"Don't push the LCS!\"");
+
+                if(!sitestory->claimed)
+                    sitestory->claimed = 1;
+
+                break;
+
+            case 2:
+                addstr("\"Hostage says you better leave!\"");
+                break;
+
+            case 3:
+                addstr("\"I'll do it! I'll kill this one!\"");
+                break;
+
+            case 4:
+                addstr("\"You gonna tell the family you pushed me?!\"");
+                break;
+
+            case 5:
+                if(law[LAW_FREESPEECH] == -2)
+                    addstr("\"Don't [mess] with me!\"");
+                else if(law[LAW_FREESPEECH] == 2)
+                    addstr("\"Don't fuck with me!\"");
+                else
+                    addstr("\"Don't f*ck with me!\"");
+
+                break;
+            }
+
+            sitecrime += 5;
+            criminalizeparty(LAWFLAG_KIDNAPPING);
+
+            addjuice(a, -2); // DE-juice for this shit
+
+
+            refresh();
+            getch();
+
+            bool noretreat = false;
+
+            if(weaponhostage) {
+                int e;
+
+                for(e = 0; e < ENCMAX; e++) {
+                    if(encounter[e].exists && encounter[e].alive &&
+                            encounter[e].enemy() && encounter[e].blood > 70) {
+                        if((encounter[e].type == CREATURE_DEATHSQUAD ||
+                                encounter[e].type == CREATURE_SOLDIER ||
+                                encounter[e].type == CREATURE_HARDENED_VETERAN ||
+                                encounter[e].type == CREATURE_CCS_ARCHCONSERVATIVE ||
+                                encounter[e].type == CREATURE_AGENT ||
+                                encounter[e].type == CREATURE_MERC ||
+                                encounter[e].type == CREATURE_COP ||
+                                encounter[e].type == CREATURE_GANGUNIT ||
+                                encounter[e].type == CREATURE_SWAT) &&
+                                LCSrandom(5)) {
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            clearmessagearea();
+                            move(16, 1);
+                            addstr(encounter[e].name);
+                            addstr(":");
+                            move(17, 1);
+
+                            if(encounter[e].align != ALIGN_CONSERVATIVE) {
+                                set_color(COLOR_GREEN, COLOR_BLACK, 1);
+
+                                switch(LCSrandom(5)) {
+                                case 0:
+                                    addstr("\"Let them go. Think about what you're doing.\"");
+                                    break;
+
+                                case 1:
+                                    addstr("\"Calm down, and let's talk about this.\"");
+                                    break;
+
+                                case 2:
+                                    addstr("\"Wait! We can work this out.\"");
+                                    break;
+
+                                case 3:
+                                    addstr("\"This isn't right, think about it.\"");
+                                    break;
+
+                                case 4:
+                                    addstr("\"Slow down. We can work this out.\"");
+                                    break;
+                                }
+                            } else {
+                                set_color(COLOR_RED, COLOR_BLACK, 1);
+
+                                if(((encounter[e].type == CREATURE_DEATHSQUAD ||
+                                        encounter[e].type == CREATURE_AGENT ||
+                                        encounter[e].type == CREATURE_MERC ||
+                                        encounter[e].type == CREATURE_GANGUNIT))
+                                        && encounter[e].align == ALIGN_CONSERVATIVE) {
+                                    switch(LCSrandom(5)) {
+                                    case 0:
+                                        addstr("\"Hahahaha...\"");
+                                        break;
+
+                                    case 1:
+                                        addstr("\"You think you can scare me?\"");
+                                        break;
+
+                                    case 2:
+                                        addstr("\"You're not getting out of here alive.\"");
+                                        break;
+
+                                    case 3:
+                                        addstr("\"What's wrong?  Need your diaper changed?\"");
+                                        break;
+
+                                    case 4:
+                                        addstr("\"Three... two...\"");
+                                        break;
+                                    }
+                                } else {
+                                    switch(LCSrandom(5)) {
+                                    case 0:
+                                        if(hostages > 1)
+                                            addstr("\"Release your hostages, and nobody gets hurt.\"");
+                                        else
+                                            addstr("\"Let the hostage go, and nobody gets hurt.\"");
+
+                                        break;
+
+                                    case 1:
+                                        addstr("\"You got about five seconds to back down.\"");
+                                        break;
+
+                                    case 2:
+                                        addstr("\"You want to do this the hard way?\"");
+                                        break;
+
+                                    case 3:
+                                        addstr("\"Big mistake.\"");
+                                        break;
+
+                                    case 4:
+                                        addstr("\"Release them, and I'll let you go.\"");
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                            refresh();
+                            getch();
+
+                            noretreat = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(noretreat == false) {
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    clearmessagearea();
+                    move(16, 1);
+                    addstr("The ploy works! The Conservatives back off.");
+
+                    for(int i = ENCMAX; i >= 0; i--) {
+                        if(encounter[i].exists &&
+                                encounter[i].alive &&
+                                encounter[i].align <= -1)
+                            delenc(i, 0);
+                    }
+
+                    refresh();
+                    getch();
+                } else {
+                    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                    clearcommandarea();
+                    clearmessagearea();
+                    clearmaparea();
+                    move(9, 1);
+                    addstr("How should ");
+                    addstr(a.name);
+                    addstr(" respond?");
+                    move(11, 1);
+
+                    if(hostages > 1)
+                        addstr("A - Execute a hostage");
+                    else
+                        addstr("A - Execute the hostage");
+
+                    move(12, 1);
+
+                    if(hostages > 1)
+                        addstr("B - Offer to trade the hostages for freedom");
+                    else
+                        addstr("B - Offer to trade the hostage for freedom");
+
+                    move(13, 1);
+                    addstr("C - No reply");
+
+                    while(1) {
+                        c = getch();
+                        translategetch(c);
+
+                        if(c == 'a' || c == 'b' || c == 'b')
+                            break;
+                    }
+
+                    if(c == 'a') {
+                        Creature *executer = 0;
+
+                        if(a.prisoner)
+                            executer = &a;
+                        else for(int i = 0; i < 6; i++) {
+                                if(activesquad->squad[i]->prisoner != NULL) {
+                                    executer = activesquad->squad[i];
+                                    break;
+                                }
+                            }
+
+                        move(16, 1);
+                        set_color(COLOR_RED, COLOR_BLACK, 1);
+
+                        if(executer->weapon.ranged() && executer->weapon.ammo) {
+                            addstr("BLAM!");
+                            executer->weapon.ammo--;
+                        } else
+                            addstr("CRUNCH!");
+
+                        refresh();
+                        getch();
+                        move(17, 1);
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        addstr(executer->name);
+                        addstr(" drops ");
+                        addstr(executer->prisoner->name);
+                        addstr("'s body.");
+
+                        addjuice(*executer, -5); // DE-juice for this shit
+                        sitecrime += 10;
+                        sitestory->crime.push_back(CRIME_KILLEDSOMEBODY);
+                        criminalize(*executer, LAWFLAG_MURDER);
+
+                        if(executer->prisoner->type == CREATURE_CORPORATE_CEO ||
+                                executer->type == CREATURE_RADIOPERSONALITY ||
+                                executer->prisoner->type == CREATURE_NEWSANCHOR ||
+                                executer->prisoner->type == CREATURE_SCIENTIST_EMINENT ||
+                                executer->prisoner->type == CREATURE_JUDGE_CONSERVATIVE)
+                            sitecrime += 30;
+
+                        makeloot(*executer->prisoner, groundloot);
+
+                        refresh();
+                        getch();
+
+                        delete executer->prisoner;
+                        executer->prisoner = NULL;
+
+                        if(hostages > 1 && LCSrandom(2)) {
+                            clearmessagearea();
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(16, 1);
+                            addstr(encounter[e].name);
+                            addstr(":");
+                            set_color(COLOR_RED, COLOR_BLACK, 1);
+                            move(17, 1);
+
+                            if(law[LAW_FREESPEECH] > ALIGN_ARCHCONSERVATIVE)
+                                addstr("\"Fuck! \"");
+                            else
+                                addstr("\"[No!] \"");
+
+                            switch(LCSrandom(5)) {
+                            case 0:
+                                addstr("Okay, okay, you win!\"");
+                                break;
+
+                            case 1:
+                                addstr("Don't shoot!\"");
+                                break;
+
+                            case 2:
+                                addstr("Do you even care?!\"");
+                                break;
+
+                            case 3:
+                                addstr("Heartless!\"");
+                                break;
+
+                            case 4:
+                                addstr("It's not worth it!\"");
+                                break;
+                            }
+
+                            for(int i = ENCMAX; i >= 0; i--) {
+                                if(encounter[i].exists && encounter[i].enemy() && encounter[i].alive)
+                                    delenc(i, 0);
+                            }
+
+                            refresh();
+                            getch();
+                        }
+                    } else if(c == 'b') {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(16, 1);
+                        addstr(a.name);
+                        addstr(":");
+                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                        move(17, 1);
+
+                        switch(LCSrandom(5)) {
+                        case 0:
+                            if(hostages > 1)
+                                addstr("\"Back off and we'll let the hostages go.\"");
+                            else
+                                addstr("\"Back off and the hostage goes free.\"");
+
+                            break;
+
+                        case 1:
+                            addstr("\"Freedom for freedom, understand?\"");
+                            break;
+
+                        case 2:
+                            addstr("\"Let me go in peace, okay?\"");
+                            break;
+
+                        case 3:
+                            addstr("\"Let's make a trade, then.\"");
+                            break;
+
+                        case 4:
+                            addstr("\"I just want out of here, yeah?\"");
+                            break;
+                        }
+
+                        refresh();
+                        getch();
+
+                        if(((encounter[e].type == CREATURE_DEATHSQUAD ||
+                                encounter[e].type == CREATURE_AGENT ||
+                                encounter[e].type == CREATURE_MERC ||
+                                encounter[e].type == CREATURE_GANGUNIT) &&
+                                LCSrandom(2)) && encounter[e].align == ALIGN_CONSERVATIVE) {
+                            clearmessagearea();
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(16, 1);
+                            addstr(encounter[e].name);
+                            addstr(":");
+                            set_color(COLOR_RED, COLOR_BLACK, 1);
+                            move(17, 1);
+
+                            switch(LCSrandom(5)) {
+                            case 0:
+                                addstr("\"Do I look like a loving person?\"");
+                                break;
+
+                            case 1:
+                                addstr("\"You don't take a hint, do you?\"");
+                                break;
+
+                            case 2:
+                                addstr("\"I'm doing the world a favor.\"");
+                                break;
+
+                            case 3:
+                                addstr("\"That's so pathetic...\"");
+                                break;
+
+                            case 4:
+                                addstr("\"It's a deal.\"");
+                                break;
+                            }
+
+                            refresh();
+                            getch();
+                        } else {
+                            clearmessagearea();
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(16, 1);
+                            addstr(encounter[e].name);
+                            addstr(":");
+                            set_color(COLOR_RED, COLOR_BLACK, 1);
+                            move(17, 1);
+
+                            switch(LCSrandom(4)) {
+                            case 0:
+                                addstr("\"Right. Let's do it.\"");
+                                break;
+
+                            case 1:
+                                addstr("\"No further conditions.\"");
+                                break;
+
+                            case 2:
+                                addstr("\"Let them go, and we're done.\"");
+                                break;
+
+                            case 3:
+                                addstr("\"No tricks, okay?\"");
+                                break;
+                            }
+
+                            refresh();
+                            getch();
+
+                            for(int i = ENCMAX; i >= 0; i--) {
+                                if(encounter[i].exists &&
+                                        encounter[i].enemy() &&
+                                        encounter[i].alive)
+                                    delenc(i, 0);
+                            }
+
+                            clearmessagearea();
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(16, 1);
+                            juiceparty(5); // Instant juice for successful hostage negotiation
+
+                            if(hostages > 1)
+                                addstr("The squad releases all hostages in the trade.");
+                            else
+                                addstr("The squad releases the hostage in the trade.");
+
+                            for(int i = 0; i < 6; i++) {
+                                if(activesquad->squad[i] &&
+                                        activesquad->squad[i]->prisoner &&
+                                        activesquad->squad[i]->prisoner->enemy()) {
+                                    delete activesquad->squad[i]->prisoner;
+                                    activesquad->squad[i]->prisoner = NULL;
+                                }
+                            }
+
+                            refresh();
+                            getch();
+                        }
+                    }
+                }
+            } else {
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                clearmessagearea();
+                move(16, 1);
+                addstr(encounter[t].name);
+                addstr(" isn't interested in your pathetic threats.");
+                refresh();
+                getch();
+            }
+        } else if(c == 'c') {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
 
@@ -80,6 +676,10 @@ char talk(creaturest &a, int32 t) {
                     addstr("pretends to be a Secret Agent.");
                     break;
 
+                case SIEGE_CCS:
+
+                //addstr("talks about killing them Lib'rel scum!");
+                //break;
                 case SIEGE_HICKS:
                     switch(LCSrandom(2)) {
                     case 0:
@@ -100,9 +700,26 @@ char talk(creaturest &a, int32 t) {
                 case SIEGE_CORPORATE:
                     addstr("pretends to be a mercenary.");
                     break;
+
+                case SIEGE_FIREMEN:
+                    addstr("lights a match and throws it on the ground.");
+
+                    if((!(levelmap[locx][locy][locz].flag & SITEBLOCK_FIRE_END) ||
+                            !(levelmap[locx][locy][locz].flag & SITEBLOCK_FIRE_PEAK) ||
+                            !(levelmap[locx][locy][locz].flag & SITEBLOCK_FIRE_START) ||
+                            !(levelmap[locx][locy][locz].flag & SITEBLOCK_DEBRIS)) && !LCSrandom(10)) {
+                        levelmap[locx][locy][locz].flag |= SITEBLOCK_FIRE_START;
+                        move(17, 1);
+                        addstr("The carpet smolders, then bursts into flame.");
+                        move(18, 1);
+                        addstr("Perhaps that was a bad idea...");
+                    }
+
+                    break;
                 }
             } else {
-                addstr("talks like a Conservative");
+                addstr(a.name);
+                addstr(" talks like a Conservative");
                 move(17, 1);
                 addstr("and pretends to belong here.");
             }
@@ -110,37 +727,40 @@ char talk(creaturest &a, int32 t) {
             refresh();
             getch();
 
-            vector<int32> noticer;
+            vector<int> noticer;
 
-            for(int32 e = 0; e < ENCMAX; e++) {
+            for(int e = 0; e < ENCMAX; e++) {
                 if(encounter[e].exists && encounter[e].alive &&
-                        encounter[e].align == -1)
+                        encounter[e].enemy())
                     noticer.push_back(e);
             }
 
             if(noticer.size() > 0) {
-                int32 disguise = disguiseskill();
-                int32 weapon = 0;
+                int disguise = disguiseskill();
+                int weapon = 0;
 
-                for(int32 i = 0; i > 0; i--) {
+                for(int i = 0; i < 6; i++) {
                     if(activesquad->squad[i] == NULL)
                         break;
 
-                    weapon += weaponcheck(*activesquad->squad[i], cursite);
+                    int weapontemp = weaponcheck(*activesquad->squad[i], cursite);
+
+                    if(weapontemp > 0)
+                        weapon += weapontemp;
                 }
 
                 char noticed = 0, bluff = 0;
-                int32 n, an;
+                int n, an;
 
                 do {
                     an = LCSrandom(noticer.size());
                     n = noticer[an];
                     noticer.erase(noticer.begin() + an);
 
-                    int32 chance = encounter[n].attval(ATTRIBUTE_WISDOM) * 3 +
-                                   encounter[n].attval(ATTRIBUTE_INTELLIGENCE);
+                    int chance = encounter[n].attval(ATTRIBUTE_WISDOM) * 3 +
+                                 encounter[n].attval(ATTRIBUTE_INTELLIGENCE);
 
-                    if(chance + 10 * weapon + sitecrime > (int32)LCSrandom(21) + disguise) {
+                    if(chance + 10 * weapon + sitecrime > (int)LCSrandom(21) + disguise) {
                         noticed = 1;
                         break;
                     }
@@ -149,14 +769,14 @@ char talk(creaturest &a, int32 t) {
 
                 //NOW MUST BLUFF
                 if(!noticed) {
-                    int16 aroll = LCSrandom(21) + a.attval(ATTRIBUTE_CHARISMA) +
-                                  a.attval(ATTRIBUTE_WISDOM) * 3 + LCSrandom(a.skill[SKILL_PERSUASION] * 2 + 1);
+                    int aroll = LCSrandom(21) + a.attval(ATTRIBUTE_CHARISMA) * 2 +
+                                a.skillval(SKILL_DISGUISE) * 2;
 
-                    int32 maxtroll = 0, troll;
+                    int maxtroll = 0, troll;
 
-                    for(int32 e = 0; e < ENCMAX; e++) {
+                    for(int e = 0; e < ENCMAX; e++) {
                         if(encounter[e].exists && encounter[e].alive &&
-                                encounter[e].align == -1) {
+                                encounter[e].enemy()) {
                             troll = encounter[e].attval(ATTRIBUTE_WISDOM) * 3 +
                                     encounter[e].attval(ATTRIBUTE_INTELLIGENCE);
 
@@ -168,7 +788,7 @@ char talk(creaturest &a, int32 t) {
                     }
 
                     maxtroll += LCSrandom(21);
-                    a.skill_ip[SKILL_PERSUASION] += (maxtroll >> 2) + 1;
+                    a.train(SKILL_DISGUISE, (maxtroll >> 2) + 1);
 
                     if(maxtroll > aroll) {
                         clearmessagearea();
@@ -182,7 +802,11 @@ char talk(creaturest &a, int32 t) {
                             addstr(" weren't born yesterday.");
                         } else {
                             addstr(encounter[n].name);
-                            addstr(" is not fooled by that crap.");
+
+                            if(law[LAW_FREESPEECH] == ALIGN_ARCHCONSERVATIVE)
+                                addstr(" is not fooled by that [act].");
+                            else
+                                addstr(" is not fooled by that crap.");
                         }
 
                         refresh();
@@ -207,7 +831,11 @@ char talk(creaturest &a, int32 t) {
                         addstr(encounter[n].name);
                         addstr(" looks at the Squad with Intolerance");
                         move(17, 1);
-                        addstr("and lets forth a piercing Conservative alarm cry!");
+
+                        if(a.align == ALIGN_CONSERVATIVE)
+                            addstr("and lets forth a piercing Conservative alarm cry!");
+                        else
+                            addstr("and shouts for help!");
 
                         sitealarm = 1;
                     } else {
@@ -222,9 +850,9 @@ char talk(creaturest &a, int32 t) {
                 }
 
                 if(bluff) {
-                    for(int32 e = ENCMAX - 1; e >= 0; e--) {
+                    for(int e = ENCMAX - 1; e >= 0; e--) {
                         if(encounter[e].exists && encounter[e].alive &&
-                                encounter[e].align == -1)
+                                encounter[e].enemy())
                             delenc(e, 0);
                     }
                 }
@@ -235,28 +863,30 @@ char talk(creaturest &a, int32 t) {
             addstr("The police arrest the Squad.");
             getch();
 
-            for(int32 i = 0; i < 6; ++i) {
+            for(int i = 0; i < 6; ++i) {
                 if(activesquad->squad[i])
                     capturecreature(*activesquad->squad[i]);
 
                 activesquad->squad[i] = NULL;
             }
+
+            location[cursite]->siege.siege = 0;
         }
 
         return 1;
     }
 
     //TALKING
-    int16 talkmode = TALKMODE_START;
+    short talkmode = TALKMODE_START;
 
-    creaturest *tk = &encounter[t];
+    Creature *tk = &encounter[t];
 
     do {
         clearcommandarea();
         clearmessagearea();
         clearmaparea();
 
-        int32 c = 'a';
+        int c = 'a';
 
         if(talkmode != TALKMODE_ISSUES) {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -264,6 +894,7 @@ char talk(creaturest &a, int32 t) {
             addstr(a.name);
             addstr(" talks to ");
             addstr(tk->name);
+            add_age(*tk);
             addstr(":");
 
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -278,7 +909,7 @@ char talk(creaturest &a, int32 t) {
 
             case TALKMODE_START:
                 move(11, 1);
-                addstr("A - Strike up a conversation about the issues");
+                addstr("A - Strike up a conversation about politics");
 
                 if(a.armor.type == ARMOR_NONE)
                     addstr(" while naked");
@@ -286,7 +917,7 @@ char talk(creaturest &a, int32 t) {
                 addstr(".");
                 move(12, 1);
 
-                if(!kid(*tk) && !kid(a))
+                if(tk->can_date(a))
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -317,6 +948,17 @@ char talk(creaturest &a, int32 t) {
                     addstr(".");
                 }
 
+                if((encounter[t].type == CREATURE_GANGMEMBER || encounter[t].type == CREATURE_MERC) &&
+                        sitealarm == 0) {
+                    move(14, 1);
+                    addstr("D - Buy weapons");
+
+                    if(a.armor.type == ARMOR_NONE)
+                        addstr(" while naked");
+
+                    addstr(".");
+                }
+
                 break;
             }
 
@@ -327,79 +969,76 @@ char talk(creaturest &a, int32 t) {
         if(c >= 'a' && c <= 'g') {
             switch(talkmode) {
             case TALKMODE_ISSUES: {
-                clearcommandarea();
+                /*clearcommandarea();
                 clearmessagearea();
                 clearmaparea();
 
-                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                move(9, 1);
+                set_color(COLOR_WHITE,COLOR_BLACK,1);
+                move(9,1);
                 addstr("What issue will ");
                 addstr(a.name);
                 addstr(" discuss");
-
-                if(a.armor.type == ARMOR_NONE)
-                    addstr(" while naked");
-
+                if(a.armor.type==ARMOR_NONE)addstr(" while naked");
                 addstr("?");
 
-                int32 lw = -1;
+                int lw=-1;
                 char str[50];
-                int32 x = 1, y = 11;
+                int x=1,y=11;
+                for(int l2=0;l2<LAWNUM;l2++)
+                {
+                   if(law[l2]<2)set_color(COLOR_WHITE,COLOR_BLACK,1);
+                   else set_color(COLOR_BLACK,COLOR_BLACK,1);
+                   move(y,x);
+                   addch(l2+'A');
+                   addstr(" - ");
+                   getlaw(str,l2);
+                   addstr(str);
 
-                for(int32 l2 = 0; l2 < LAWNUM; l2++) {
-                    if(law[l2] < 2)
-                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                    else
-                        set_color(COLOR_BLACK, COLOR_BLACK, 1);
-
-                    move(y, x);
-                    addch(l2 + 'A');
-                    addstr(" - ");
-                    getlaw(str, l2);
-                    addstr(str);
-
-                    y++;
-
-                    if(y == 17) {
-                        y = 11;
-                        x += 30;
-                    }
+                   y++;
+                   if(y==17)
+                   {
+                      y=11;
+                      x+=30;
+                   }
                 }
 
-                do {
-                    refresh();
-                    int32 c = getch();
-                    translategetch(c);
+                do
+                {
+                   refresh();
+                   int c=getch();
+                   translategetch(c);
+                   if(c>='a'&&c<='z')
+                   {
+                      lw=c-'a';
+                      if(lw<LAWNUM)
+                      {
+                         if(law[lw]<2)break;
+                      }
+                   }
+                   if(c==10||c==27||c==32){lw=-1;break;}
+                }while(1);*/
 
-                    if(c >= 'a' && c <= 'z') {
-                        lw = c - 'a';
-
-                        if(lw < LAWNUM) {
-                            if(law[lw] < 2)
-                                break;
-                        }
-                    }
-
-                    if(c == 10 || c == 27 || c == 32) {
-                        lw = -1;
-                        break;
-                    }
-                } while(1);
+                int lw = LCSrandom(LAWNUM); // pick a random law to talk about
 
                 if(lw != -1) {
-                    int16 aroll = LCSrandom(21) + a.attval(ATTRIBUTE_CHARISMA) +
-                                  a.attval(ATTRIBUTE_HEART) + LCSrandom(a.skill[SKILL_PERSUASION] * 2 + 1);
+                    int aroll = LCSrandom(21) +
+                                a.attval(ATTRIBUTE_CHARISMA) +
+                                a.attval(ATTRIBUTE_HEART) +
+                                a.skillval(SKILL_PERSUASION) * 2;
                     char badthing = 0;
 
-                    if(aroll < 15)
+                    if(aroll < 30 - a.attval(ATTRIBUTE_INTELLIGENCE))
                         badthing = 1;
+                    else if(law[lw] == ALIGN_ELITELIBERAL && newscherrybusted)
+                        badthing = 2;
 
                     if(a.armor.type == ARMOR_NONE)
                         aroll -= 30;
 
-                    int16 troll = LCSrandom(21) + tk->attval(ATTRIBUTE_CHARISMA) +
-                                  tk->attval(ATTRIBUTE_WISDOM);
-                    a.skill_ip[SKILL_PERSUASION] += LCSrandom(2) + 1;
+                    int troll = LCSrandom(21) +
+                                tk->attval(ATTRIBUTE_CHARISMA) +
+                                tk->attval(ATTRIBUTE_WISDOM);
+                    a.train(SKILL_PERSUASION, LCSrandom(2) + 1);
 
                     clearcommandarea();
                     clearmessagearea();
@@ -409,66 +1048,233 @@ char talk(creaturest &a, int32 t) {
                     addstr(a.name);
                     addstr(" says,");
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                    int32 y = 10;
+                    int y = 10;
                     move(y, 1);
                     y++;
 
-                    if(badthing) {
+                    if(badthing == 1) {
                         switch(lw) {
                         case LAW_ABORTION:
                             addstr("\"Conservatives make women turn to coat hangers.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            troll += tk->skillval(SKILL_RELIGION);
                             break;
 
                         case LAW_ANIMALRESEARCH:
                             addstr("\"Richard Gere put a gerbil in his butt!\"");
+                            troll += tk->skillval(SKILL_SCIENCE);
                             break;
 
                         case LAW_POLICEBEHAVIOR:
                             addstr("\"The cops suck!\"");
+                            troll += tk->skillval(SKILL_LAW);
                             break;
 
                         case LAW_PRIVACY:
                             addstr("\"The government, like, knows things about you.\"");
+                            troll += tk->skillval(SKILL_LAW);
                             break;
 
                         case LAW_DEATHPENALTY:
                             addstr("\"They executed this one dude, and like, his head caught on fire.\"");
+                            troll += tk->skillval(SKILL_LAW);
                             break;
 
                         case LAW_NUCLEARPOWER:
                             addstr("\"Have you seen Godzilla?  Nuclear power is bad, yo.\"");
+                            troll += tk->skillval(SKILL_SCIENCE);
                             break;
 
                         case LAW_POLLUTION:
                             addstr("\"You wanna look like the Toxic Avenger?  Oppose pollution!\"");
+                            troll += tk->skillval(SKILL_SCIENCE);
                             break;
 
                         case LAW_LABOR:
                             addstr("\"Bad people wanna make babies work and stuff.\"");
+                            troll += tk->skillval(SKILL_BUSINESS);
                             break;
 
                         case LAW_GAY:
                             addstr("\"Lots of people don't like homosexuals.\"");
+                            troll += tk->skillval(SKILL_RELIGION);
                             break;
 
                         case LAW_CORPORATE:
                             addstr("\"The corporations are putting you down, dude.\"");
+                            troll += tk->skillval(SKILL_BUSINESS);
                             break;
 
                         case LAW_FREESPEECH:
                             addstr("\"Better watch what you say.  They've got ears everywhere.\"");
+                            troll += tk->skillval(SKILL_LAW);
                             break;
 
                         case LAW_FLAGBURNING:
                             addstr("\"The flag is stupid.\"");
+                            troll += tk->skillval(SKILL_LAW);
                             break;
 
                         case LAW_TAX:
                             addstr("\"Rich people, like, have money, man.\"");
+                            troll += tk->skillval(SKILL_BUSINESS);
                             break;
 
                         case LAW_GUNCONTROL:
-                            addstr("\"People get shot, yo.\"");
+                            addstr("\"People like, think they need lots of guns.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_WOMEN:
+                            addstr("\"Conservatives still hold the door for women!\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            break;
+
+                        case LAW_CIVILRIGHTS:
+                            addstr("\"Conservatives are all racist and stuff.\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            break;
+
+                        case LAW_DRUGS:
+                            addstr("\"Drugs, man, the government won't let you do drugs.\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            troll += tk->skillval(SKILL_FIRSTAID);
+                            break;
+
+                        case LAW_IMMIGRATION:
+                            addstr("\"They're all trying to keep people out of the country.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            troll += tk->skillval(SKILL_BUSINESS);
+                            break;
+
+                        case LAW_ELECTIONS:
+                            addstr("\"The politicians are just tools of the corporations!\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_MILITARY:
+                            addstr("\"Patriots are idiots! Give peace a chance!\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_TORTURE:
+                            addstr("\"Torture is bad!\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+                        }
+                    } else if(badthing == 2) {
+                        aroll /= 2;
+
+                        switch(lw) {
+                        case LAW_ABORTION:
+                            addstr("\"Conservatives don't like abortion.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            troll += tk->skillval(SKILL_RELIGION);
+                            break;
+
+                        case LAW_ANIMALRESEARCH:
+                            addstr("\"Animals are denied the right to vote.\"");
+                            troll += tk->skillval(SKILL_SCIENCE);
+                            break;
+
+                        case LAW_POLICEBEHAVIOR:
+                            addstr("\"The police are still out there.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_PRIVACY:
+                            addstr("\"The government runs intelligence agencies.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_DEATHPENALTY:
+                            addstr("\"You can go to prison for life for serious crimes.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_NUCLEARPOWER:
+                            addstr("\"Some people support legalizing nuclear power.\"");
+                            troll += tk->skillval(SKILL_SCIENCE);
+                            break;
+
+                        case LAW_POLLUTION:
+                            addstr("\"We're still polluting a little bit.\"");
+                            troll += tk->skillval(SKILL_SCIENCE);
+                            break;
+
+                        case LAW_LABOR:
+                            addstr("\"Corporate bosses don't always give in to unions.\"");
+                            troll += tk->skillval(SKILL_BUSINESS);
+                            break;
+
+                        case LAW_GAY:
+                            addstr("\"Not everybody likes gay people.\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            break;
+
+                        case LAW_CORPORATE:
+                            addstr("\"There are corporations.\"");
+                            troll += tk->skillval(SKILL_BUSINESS);
+                            break;
+
+                        case LAW_FREESPEECH:
+                            addstr("\"People get mad if you swear a lot in public.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_FLAGBURNING:
+                            addstr("\"The flag code says you shouldn't make it into clothing.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_TAX:
+                            addstr("\"There's still inequality in this country.\"");
+                            troll += tk->skillval(SKILL_BUSINESS);
+                            break;
+
+                        case LAW_GUNCONTROL:
+                            addstr("\"We need to repeal the second amendment.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_WOMEN:
+                            addstr("\"Some people are sexist.\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            break;
+
+                        case LAW_CIVILRIGHTS:
+                            addstr("\"I knew some people that were pretty racist.\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            break;
+
+                        case LAW_DRUGS:
+                            addstr("\"Drugs are expensive.\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            troll += tk->skillval(SKILL_FIRSTAID);
+                            break;
+
+                        case LAW_IMMIGRATION:
+                            addstr("\"All the immigrants, not everybody likes them.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            troll += tk->skillval(SKILL_BUSINESS);
+                            break;
+
+                        case LAW_ELECTIONS:
+                            addstr("\"Some of these politicians rub me the wrong way.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_MILITARY:
+                            addstr("\"We still have a military.\"");
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_TORTURE:
+                            addstr("\"Some conservatives supports torture.\"");
+                            troll += tk->skillval(SKILL_RELIGION);
+                            troll += tk->skillval(SKILL_LAW);
+                            break;
                         }
                     } else {
                         switch(lw) {
@@ -477,6 +1283,8 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("to control their own destinies.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
+                            troll += tk->skillval(SKILL_RELIGION) - a.skillval(SKILL_RELIGION);
                             break;
 
                         case LAW_ANIMALRESEARCH:
@@ -484,10 +1292,13 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("country.\"");
+                            troll += tk->skillval(SKILL_SCIENCE) - a.skillval(SKILL_SCIENCE);
+                            troll += tk->skillval(SKILL_RELIGION) - a.skillval(SKILL_RELIGION);
                             break;
 
                         case LAW_POLICEBEHAVIOR:
                             addstr("\"The police regularly torture minority suspects during interrogations.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
                             break;
 
                         case LAW_PRIVACY:
@@ -495,10 +1306,13 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("speak out against a system that is trying to farm them like beasts.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
                             break;
 
                         case LAW_DEATHPENALTY:
                             addstr("\"Over thirty innocent people have been executed over the past decade.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
+                            troll -= tk->skillval(SKILL_RELIGION) + a.skillval(SKILL_RELIGION);
                             break;
 
                         case LAW_NUCLEARPOWER:
@@ -506,6 +1320,7 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("a serious threat to many families, even in this neighborhood.\"");
+                            troll += tk->skillval(SKILL_SCIENCE) - a.skillval(SKILL_SCIENCE);
                             break;
 
                         case LAW_POLLUTION:
@@ -513,6 +1328,8 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("the environment in ways that hurt not only animals, but people too.");
+                            troll += tk->skillval(SKILL_SCIENCE) - a.skillval(SKILL_SCIENCE);
+                            troll += tk->skillval(SKILL_BUSINESS) - a.skillval(SKILL_BUSINESS);
                             break;
 
                         case LAW_LABOR:
@@ -520,6 +1337,7 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("less money?  It's all part of a plan to keep you enslaved, man.\"");
+                            troll += tk->skillval(SKILL_BUSINESS) - a.skillval(SKILL_BUSINESS);
                             break;
 
                         case LAW_GAY:
@@ -527,6 +1345,8 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("country as if they are deviants fit only for cheap entertainment.\"");
+                            troll += tk->skillval(SKILL_RELIGION) - a.skillval(SKILL_RELIGION);
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
                             break;
 
                         case LAW_CORPORATE:
@@ -534,20 +1354,23 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("that suck wealth out of this country and put it into their pockets.\"");
+                            troll += tk->skillval(SKILL_BUSINESS) - a.skillval(SKILL_BUSINESS);
                             break;
 
                         case LAW_FREESPEECH:
-                            addstr("\"Protests and demonstrations are regularly and often brutally suppressed in\"");
+                            addstr("\"Protests and demonstrations are regularly and often brutally suppressed in");
                             move(y, 1);
                             y++;
                             addstr("this country.  People have to watch what they write -- even what they read.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
                             break;
 
                         case LAW_FLAGBURNING:
                             addstr("\"Burning a piece of cloth is actually stigmatized in this country.");
                             move(y, 1);
                             y++;
-                            addstr("You love freedom and still hate our government stands for.\"");
+                            addstr("You can love freedom and still hate what our government stands for.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
                             break;
 
                         case LAW_TAX:
@@ -555,6 +1378,7 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("structure that is keeping you oppressed.\"");
+                            troll += tk->skillval(SKILL_BUSINESS) - a.skillval(SKILL_BUSINESS);
                             break;
 
                         case LAW_GUNCONTROL:
@@ -562,6 +1386,66 @@ char talk(creaturest &a, int32 t) {
                             move(y, 1);
                             y++;
                             addstr("a right to walk around with the power to murder at any moment.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_WOMEN:
+                            addstr("\"Sexism is still pervasive, in subtle ways, and women make much less");
+                            move(y, 1);
+                            y++;
+                            addstr("than they deserve for their labor.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_CIVILRIGHTS:
+                            addstr("\"You might think we have all these civil rights laws on the books, but");
+                            move(y, 1);
+                            y++;
+                            addstr("we aren't enforcing them consistently.  We still have a long way to go.\"");
+                            troll += tk->skillval(SKILL_RELIGION) - a.skillval(SKILL_RELIGION);
+                            break;
+
+                        case LAW_DRUGS:
+                            addstr("\"The government's drug policy is a mess.  We need to stop filling");
+                            move(y, 1);
+                            y++;
+                            addstr("prisons with drug users, and focus on helping only those that need it.\"");
+                            troll += tk->skillval(SKILL_RELIGION) - a.skillval(SKILL_RELIGION);
+                            troll += tk->skillval(SKILL_FIRSTAID) - a.skillval(SKILL_FIRSTAID);
+                            break;
+
+                        case LAW_IMMIGRATION:
+                            addstr("\"Millions of people are doing jobs most folks don't even want, and");
+                            move(y, 1);
+                            y++;
+                            addstr("saving their families from poverty, but we just try to kick them out.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
+                            troll += tk->skillval(SKILL_BUSINESS) - a.skillval(SKILL_BUSINESS);
+                            break;
+
+                        case LAW_ELECTIONS:
+                            addstr("\"Political favors are bought and sold for campaign contributions,");
+                            move(y, 1);
+                            y++;
+                            addstr("and the voting system enforces two party dominance.\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_MILITARY:
+                            addstr("\"Take a breath and think about the world we live in, that we're spending");
+                            move(y, 1);
+                            y++;
+                            addstr("hundreds of billions on new ways to kill people.  This has to stop!\"");
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
+                            break;
+
+                        case LAW_TORTURE:
+                            addstr("\"In the name of the war on terror, we've sacrificed our soul by letting");
+                            move(y, 1);
+                            y++;
+                            addstr("the government torture and abuse human beings on our behalf.\"");
+                            troll += tk->skillval(SKILL_RELIGION) - a.skillval(SKILL_RELIGION);
+                            troll += tk->skillval(SKILL_LAW) - a.skillval(SKILL_LAW);
                             break;
                         }
                     }
@@ -569,7 +1453,8 @@ char talk(creaturest &a, int32 t) {
                     refresh();
                     getch();
 
-                    if(aroll > troll) {
+                    if(aroll > troll * (1 + !(tk->talkreceptive()) + 2 * (tk->enemy())) &&
+                            tk->type != CREATURE_PRISONER) {
                         y++;
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(y, 1);
@@ -583,8 +1468,57 @@ char talk(creaturest &a, int32 t) {
                         if(tk->type == CREATURE_MUTANT &&
                                 tk->attval(ATTRIBUTE_INTELLIGENCE) < 3)
                             addstr("\"Aaaahhh...\"");
-                        else
-                            addstr("\"That *is* disturbing!   What can I do?\"");
+                        else {
+                            switch(rand() % 10) {
+                            case 0:
+                                addstr("\"Dear me! Is there anything we can do?\"");
+                                break;
+
+                            case 1:
+                                addstr("\"That *is* disturbing!   What can I do?\"");
+                                break;
+
+                            case 2:
+                                addstr("\"Gosh!   Is there anything I can do?\"");
+                                break;
+
+                            case 3:
+                                addstr("\"That's frightening!   What can we do?\"");
+                                break;
+
+                            case 4:
+                                addstr("\"Oh, really?\" ");
+                                refresh();
+                                getch();
+                                move(y, 1);
+                                y++;
+                                set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                                addstr("\"Yeah, really!\"");
+                                break;
+
+                            case 5:
+                                addstr("\"Oh my Science!   We've got to do something!\"");
+                                break;
+
+                            case 6:
+                                addstr("\"Dude... that's like... totally bumming me.\"");
+                                break;
+
+                            case 7:
+                                addstr("\"Gadzooks! Something must be done!\"");
+                                break;
+
+                            case 8:
+                                addstr("\"You got anything to smoke on you?\" ");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr("*cough*");
+                                break;
+
+                            case 9:
+                                addstr("\"Lawks, I don't think we can allow that.\"");
+                                break;
+                            }
+                        }
 
                         refresh();
                         getch();
@@ -599,17 +1533,17 @@ char talk(creaturest &a, int32 t) {
                         refresh();
                         getch();
 
-                        creaturest *newcr = new creaturest;
+                        Creature *newcr = new Creature;
                         *newcr = *tk;
-                        namecreature(*newcr);
+                        newcr->namecreature();
 
-                        newcr->location = a.location;
-                        newcr->base = a.base;
-                        newcr->hireid = a.id;
-                        newcr->align = 1;
+                        recruitst *newrst = new recruitst;
+                        newrst->recruit = newcr;
+                        newrst->recruiter_id = a.id;
 
-                        pool.push_back(newcr);
-                        stat_recruits++;
+                        //newcr->align=1;
+
+                        recruit.push_back(newrst);
 
                         delenc(t, 0);
                         return 1;
@@ -627,8 +1561,152 @@ char talk(creaturest &a, int32 t) {
                         if(tk->type == CREATURE_MUTANT &&
                                 tk->attval(ATTRIBUTE_INTELLIGENCE) < 3)
                             addstr("\"Ugh.  Pfft.\"");
-                        else
-                            addstr("\"Whatever.\"");
+                        else {
+                            if(tk->align < 1 && aroll > troll) {
+                                switch(lw) {
+                                case LAW_ABORTION:
+                                    addstr("\"Abortion is murder.\"");
+                                    break;
+
+                                case LAW_ANIMALRESEARCH:
+                                    addstr("\"Don't pretend animals are human.\"");
+                                    break;
+
+                                case LAW_POLICEBEHAVIOR:
+                                    addstr("\"Only criminals have reason to fear police.\"");
+                                    break;
+
+                                case LAW_PRIVACY:
+                                    addstr("\"National security is important.\"");
+                                    break;
+
+                                case LAW_DEATHPENALTY:
+                                    addstr("\"Some people deserve to die.\"");
+                                    break;
+
+                                case LAW_NUCLEARPOWER:
+                                    addstr("\"Nuclear power is clean.\"");
+                                    break;
+
+                                case LAW_POLLUTION:
+                                    addstr("\"It's not that bad.\"");
+                                    break;
+
+                                case LAW_LABOR:
+                                    addstr("\"Trust the free market, it hasn't failed us yet.\"");
+                                    break;
+
+                                case LAW_GAY:
+                                    addstr("\"Homosexuality is a sin.\"");
+                                    break;
+
+                                case LAW_CORPORATE:
+                                    addstr("\"Corporations are part of capitalism.\"");
+                                    break;
+
+                                case LAW_FREESPEECH:
+                                    addstr("\"Don't be offensive and you'll be fine.\"");
+                                    break;
+
+                                case LAW_FLAGBURNING:
+                                    addstr("\"That flag is the sacred symbol of our country.\"");
+                                    break;
+
+                                case LAW_TAX:
+                                    addstr("\"Conservatives want low taxes, and I do too.\"");
+                                    break;
+
+                                case LAW_GUNCONTROL:
+                                    addstr("\"Without guns, we're slaves to the Government.\"");
+                                    break;
+
+                                case LAW_WOMEN:
+                                    addstr("\"Why don't you go burn a bra or something?\"");
+                                    break;
+
+                                case LAW_CIVILRIGHTS:
+                                    addstr("\"Reverse discrimination is still discrimination.\"");
+                                    break;
+
+                                case LAW_DRUGS:
+                                    addstr("\"Drugs are a terrible influence on society.\"");
+                                    break;
+
+                                case LAW_IMMIGRATION:
+                                    if(law[LAW_IMMIGRATION] > 0)
+                                        addstr("\"Migrant workers undermines our economy and culture.\"");
+                                    else
+                                        addstr("\"Illegal immigrants are undermining our economy and culture.\"");
+
+                                    break;
+
+                                case LAW_ELECTIONS:
+                                    addstr("\"Unregulated campaigning is a matter of free speech.\"");
+                                    break;
+
+                                case LAW_MILITARY:
+                                    addstr("\"The military protects us and enables our way of life.\"");
+                                    break;
+
+                                case LAW_TORTURE:
+                                    addstr("\"The terrorists would do worse to us.\"");
+                                    break;
+                                }
+                            } else if(tk->align == -1 || badthing) {
+                                if(tk->type == CREATURE_GANGUNIT)
+                                    addstr("\"Go away before I arrest you.\"");
+                                else if(tk->type == CREATURE_DEATHSQUAD)
+                                    addstr("\"Go away before I shoot you.\"");
+                                else if(tk->skillval(SKILL_RELIGION))
+                                    addstr("\"Jesus loves even idiots like you.\"");
+                                else if(tk->skillval(SKILL_BUSINESS))
+                                    addstr("\"If I was your boss, I'd fire you.\"");
+                                else {
+                                    switch(LCSrandom(10)) {
+                                    case 0:
+                                        addstr("\"Don't they put people like you in zoos?\"");
+                                        break;
+
+                                    case 1:
+                                        addstr("\"Save your breath. You'll need it to blow up your date.\"");
+                                        break;
+
+                                    case 2:
+                                        addstr("\"Please, stop breathing on me!\"");
+                                        break;
+
+                                    case 3:
+                                        addstr("\"The exit is that way. Go.\"");
+                                        break;
+
+                                    case 4:
+                                        addstr("\"People like you are the reason I'm on medication.\"");
+                                        break;
+
+                                    case 5:
+                                        addstr("\"Everyone is entitled to be stupid, but you abuse the privilege.\"");
+                                        break;
+
+                                    case 6:
+                                        addstr("\"Earth is full. Go home.\"");
+                                        break;
+
+                                    case 7:
+                                        addstr("\"Don't you have a parole meeting to get to?\"");
+                                        break;
+
+                                    case 8:
+                                        addstr("\"Wow. Why am I talking to you again?\"");
+                                        break;
+
+                                    case 9:
+                                        addstr("\"Were you dropped as a child?\"");
+                                        break;
+                                    }
+                                }
+                            } else
+                                addstr("\"Whatever.\"");
+                        }
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         addstr(" <turns away>");
@@ -687,7 +1765,7 @@ char talk(creaturest &a, int32 t) {
                     refresh();
                     getch();
 
-                    int32 rent = 200;
+                    long rent = 200;
 
                     switch(location[cursite]->type) {
                     case SITE_RESIDENTIAL_APARTMENT:
@@ -756,7 +1834,32 @@ char talk(creaturest &a, int32 t) {
                     refresh();
                     getch();
 
-                    if(talkreceptive(*tk)) {
+                    if((tk->animalgloss == ANIMALGLOSS_ANIMAL && law[LAW_ANIMALRESEARCH] != 2) ||
+                            tk->animalgloss == ANIMALGLOSS_TANK) {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(12, 1);
+                        addstr(tk->name);
+
+                        switch(tk->type) {
+                        case CREATURE_TANK:
+                            addstr(" rumbles disinterestedly.");
+                            break;
+
+                        case CREATURE_GUARDDOG:
+                            addstr(" barks.");
+                            break;
+
+                        default:
+                            addstr(" doesn't understand.");
+                        }
+
+                        refresh();
+                        getch();
+
+                        return 1;
+                    } else if(tk->type != CREATURE_PRISONER &&
+                              (tk->talkreceptive() ||
+                               a.skillval(SKILL_PERSUASION) + a.attval(ATTRIBUTE_CHARISMA) > (int)LCSrandom(20))) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(12, 1);
                         addstr(tk->name);
@@ -786,8 +1889,8 @@ char talk(creaturest &a, int32 t) {
                     }
                 }
 
-                if(c == 'b' && !kid(*tk) && !kid(a)) {
-                    int32 y = 12;
+                if(c == 'b' && tk->can_date(a)) {
+                    int y = 12;
                     clearcommandarea();
                     clearmessagearea();
                     clearmaparea();
@@ -797,7 +1900,7 @@ char talk(creaturest &a, int32 t) {
                     addstr(" says,");
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
                     move(10, 1);
-                    int32 line;
+                    int line;
 
                     if(law[LAW_FREESPEECH] == -2) {
                         line = LCSrandom(3);
@@ -819,7 +1922,6 @@ char talk(creaturest &a, int32 t) {
                         line = LCSrandom(44);
 
                         switch(line) {
-//LIMIT             :-----------------------------------------------------------------------------:
                         case 0:
                             addstr("\"Hey baby, you're kinda ugly.  I like that.\"");
                             break;
@@ -1013,15 +2115,60 @@ char talk(creaturest &a, int32 t) {
                     refresh();
                     getch();
 
-                    int16 aroll = LCSrandom(21) + a.attval(ATTRIBUTE_CHARISMA) * 2 + LCSrandom(a.skill[SKILL_PERSUASION] * 2 + 1);
+                    int aroll = LCSrandom(21) + a.attval(ATTRIBUTE_CHARISMA) * 2 + LCSrandom(a.skillval(SKILL_SEDUCTION) * 2 + 1);
 
                     if(a.armor.type == ARMOR_NONE)
                         aroll -= 30;
 
-                    int16 troll = LCSrandom(21) + tk->attval(ATTRIBUTE_CHARISMA) + tk->attval(ATTRIBUTE_WISDOM);
-                    a.skill_ip[SKILL_PERSUASION] += LCSrandom(2) + 1;
+                    int troll = LCSrandom(21) + tk->attval(ATTRIBUTE_CHARISMA) + tk->attval(ATTRIBUTE_WISDOM);
 
-                    if(aroll > troll) {
+                    if(!(tk->animalgloss == ANIMALGLOSS_ANIMAL && law[LAW_ANIMALRESEARCH] != 2) ||
+                            tk->animalgloss == ANIMALGLOSS_TANK)
+                        a.train(SKILL_SEDUCTION, LCSrandom(5) + 2);
+
+                    if((tk->animalgloss == ANIMALGLOSS_ANIMAL && law[LAW_ANIMALRESEARCH] != 2) ||
+                            tk->animalgloss == ANIMALGLOSS_TANK) {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(12, 1);
+                        addstr(tk->name);
+
+                        switch(tk->type) {
+                        case CREATURE_TANK:
+                            addstr(" shakes its turret a firm 'no'.");
+                            break;
+
+                        case CREATURE_GUARDDOG:
+                            addstr(" sniffs ");
+                            addstr(a.name);
+                            addstr(".");
+                            break;
+
+                        default:
+                            addstr(" doesn't quite pick up on the subtext.");
+                        }
+
+                        refresh();
+                        getch();
+
+                        return 1;
+                    } else if((a.armor.type == ARMOR_POLICEUNIFORM || a.armor.type == ARMOR_POLICEARMOR)
+                              && tk->type == CREATURE_PROSTITUTE) {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
+                        addstr(tk->name);
+                        addstr(" responds,");
+                        set_color(COLOR_RED, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
+
+                        addstr("I'm not like that, officer.");
+
+                        refresh();
+                        getch();
+
+                        encounter[t].cantbluff = 1;
+                    } else if(aroll > troll) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(y, 1);
                         y++;
@@ -1047,7 +2194,7 @@ char talk(creaturest &a, int32 t) {
                             }
                         } else {
                             switch(line) {
-//LIMIT             :-----------------------------------------------------------------------------:
+                            //LIMIT             :-----------------------------------------------------------------------------:
                             case 0:
                                 addstr("\"You're not so cute yourself.  Wanna get a room?\"");
                                 break;
@@ -1245,17 +2392,17 @@ char talk(creaturest &a, int32 t) {
                             y++;
                             addstr(tk->name);
                             addstr(" breaks for the exit");
-                            tk->lawflag[LAWFLAG_ESCAPED]++;
+                            criminalize(*tk, LAWFLAG_ESCAPED);
                         }
 
                         addstr(".  ");
                         refresh();
                         getch();
 
-                        int32 olddate = 0;
+                        int olddate = 0;
                         datest *newd = NULL;
 
-                        for(int32 d = 0; d < date.size(); d++) {
+                        for(int d = 0; d < date.size(); d++) {
                             if(date[d]->mac_id == a.id) {
                                 newd = date[d];
                                 break;
@@ -1265,10 +2412,11 @@ char talk(creaturest &a, int32 t) {
                         if(newd == NULL) {
                             newd = new datest;
                             newd->mac_id = a.id;
+
                             date.push_back(newd);
                         }
 
-                        creaturest *newcr = new creaturest;
+                        Creature *newcr = new Creature;
                         *newcr = *tk;
 
                         newcr->location = a.location;
@@ -1286,9 +2434,57 @@ char talk(creaturest &a, int32 t) {
                         set_color(COLOR_BLUE, COLOR_BLACK, 1);
                         move(y, 1);
                         y++;
-                        addstr("\"Jesus...\"");
-                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        addstr(" <turns away>");
+
+                        switch (rand() % 8) {
+                        case 0:
+                            addstr("\"Jesus...\"");
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            addstr(" <turns away>");
+                            break;
+
+                        case 1:
+                            addstr("\"Touch me and you'll regret it.\"");
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            addstr(" <crosses arms>");
+                            break;
+
+                        case 2:
+                            addstr("\"I'm.. uh.. waiting for someone.\"");
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            addstr(" <turns away>");
+                            break;
+
+                        case 3:
+                            addstr("\"Hey, look, a UFO!\"");
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            addstr(" <ducks away>");
+                            break;
+
+                        case 4:
+                            addstr("\"You're not my type. I like the sane.\"");
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            addstr(" <turns away>");
+                            break;
+
+                        case 5:
+                            addstr("\"Hahahahaha!\"");
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            addstr(" <shakes head>");
+                            break;
+
+                        case 6:
+                            addstr("\"You're disgusting.\"");
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            addstr(" <turns away>");
+                            break;
+
+                        case 7:
+                            addstr("\"Are you serious?\"");
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            addstr(" <turns away>");
+                            break;
+                        }
+
                         refresh();
                         getch();
 
@@ -1330,7 +2526,7 @@ char talk(creaturest &a, int32 t) {
                             return 1;
                         }
 
-                        int32 rent = 200;
+                        int rent = 200;
 
                         switch(location[cursite]->type) {
                         case SITE_RESIDENTIAL_APARTMENT:
@@ -1392,59 +2588,86 @@ char talk(creaturest &a, int32 t) {
                     }
                 }
 
+                if((encounter[t].type == CREATURE_GANGMEMBER || encounter[t].type == CREATURE_MERC) &&
+                        sitealarm == 0) {
+                    if(c == 'd') {
+                        clearcommandarea();
+                        clearmessagearea();
+                        clearmaparea();
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(9, 1);
+                        addstr(a.name);
+                        addstr(" says,");
+                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                        move(10, 1);
+                        addstr("\"Hey, I need a gun.\"");
+                        refresh();
+                        getch();
+
+                        if(a.armor.type == ARMOR_NONE) {
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"Jesus...\"");
+                            refresh();
+                            getch();
+                            return 1;
+                        }
+
+                        if(a.armor.type == ARMOR_POLICEUNIFORM || a.armor.type == ARMOR_POLICEARMOR) {
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"I don't sell guns, officer.\"");
+                            refresh();
+                            getch();
+                            return 1;
+                        }
+
+                        switch(location[cursite]->type) {
+                        case SITE_OUTDOOR_BUNKER:
+                        case SITE_BUSINESS_CRACKHOUSE:
+                        case SITE_BUSINESS_BARANDGRILL:
+                        case SITE_BUSINESS_ARMSDEALER:
+                        case SITE_RESIDENTIAL_TENEMENT:
+                        case SITE_RESIDENTIAL_BOMBSHELTER:
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"What exactly do you need?\"");
+                            refresh();
+                            getch();
+                            break;
+
+                        default:
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"Uhhh... not a good place for this.\"");
+                            refresh();
+                            getch();
+                            return 1;
+                        }
+
+                        armsdealer(cursite);
+                    }
+                }
+
                 break;
             }
         }
     } while(1);
 }
 
-
-
-/* are they interested in talking about the issues? */
-char talkreceptive(creaturest &cr) {
-    if(cr.align == -1)
-        return 0;
-
-    switch(cr.type) {
-    case CREATURE_WORKER_SERVANT:
-    case CREATURE_WORKER_JANITOR:
-    case CREATURE_WORKER_SWEATSHOP:
-    case CREATURE_WORKER_FACTORY_CHILD:
-    case CREATURE_TEENAGER:
-    case CREATURE_SEWERWORKER:
-    case CREATURE_COLLEGESTUDENT:
-    case CREATURE_MUSICIAN:
-    case CREATURE_MATHEMATICIAN:
-    case CREATURE_TEACHER:
-    case CREATURE_HSDROPOUT:
-    case CREATURE_BUM:
-    case CREATURE_GANGMEMBER:
-    case CREATURE_CRACKHEAD:
-    case CREATURE_FASTFOODWORKER:
-    case CREATURE_TELEMARKETER:
-    case CREATURE_PROSTITUTE:
-    case CREATURE_GARBAGEMAN:
-    case CREATURE_PLUMBER:
-    case CREATURE_AMATEURMAGICIAN:
-    case CREATURE_HIPPIE:
-    case CREATURE_RETIREE:
-    case CREATURE_HAIRSTYLIST:
-    case CREATURE_CLERK:
-    case CREATURE_MUTANT:
-        return 1;
-    }
-
-    return 0;
-}
-
-
-
-/* is the character too young to be dating? */
-char kid(creaturest &cr) {
-    switch(cr.type) {
-    case CREATURE_WORKER_FACTORY_CHILD:
-        return 1;
-    }
-
-    return 0;
-}

@@ -1,12 +1,50 @@
 ChangeLog for Version 3.11.4:
 
-2007-12-14   Chris Johnson   <grundee@users.sourceforge.net>
-* ALL FILES: Changed all ints/longs to int32s. Changed all shorts to int16s.
+2007-07-14   Jonathan Stickles   <jonathansfox@users.sourceforge.net>
+* Created branch
+* commonactions.cpp: Added enforcement of the -50 juice minimum.
+* fight.cpp, haulkidnap.cpp, commondisplay.cpp, getnames.cpp, shopsnstuff.cpp,
+stealth.cpp, includes.h: Replaced Axe with Daisho (axe skill removed) and
+changed the getweaponfull function to support three versions of the call,
+ignored by most weapons but used by Daisho to decide whether the weapon is
+called Daisho, Katana, or Wakizashi, depending on the context the weapon is
+used in.
+* activate.cpp, fight.cpp, commonactions.cpp, commondisplay.cpp, creature.cpp,
+getnames.cpp, date.cpp, news.cpp, siege.cpp, lcsmonthly.cpp, sitemode.cpp,
+stealth.cpp, talk.cpp, newgame.cpp, includes.h: Pretty much doubled the number
+of skills, and removed a couple of minor melee skills.
+* activate.cpp, getnames.cpp, activities.cpp, includes.h: New activate the
+uninvolved interface and about doubled the number of actions a Liberal can be
+assigned to. Not all are working yet.
+* activities.cpp: Heavily rewritten interrogation system.
+* activate.cpp: Changed to Return to back out of a few screens where it said it
+wanted X.
+* activities.cpp, daily.cpp, justice.cpp: Some actions now steadily diminish in
+skill gains depending on current skill level. Currently exploitable by dropping
+juice to cap the skill low and then practicing heavily before switching back.
+* daily.cpp: Blood (injury level) slowly heals daily, but major injuries must
+be treated at a hospital. Still really shallow.
+* news.cpp: Major news events now increase the public interest level.
+* news.cpp: Changed some of the rules for what sites affect what issue in the
+news.
+* justice.cpp: Changed the formula for calculating self-defense in court.
+* monthly.cpp: Public interest diminishes more slowly month over month.
+* mapspecials.cpp: Nuclear power plants now require science skill to shut down.
+* miscactions.cpp: Unlock and bash calculations changed to require some amount
+of skill.
+* newencounter.cpp: Increased the presence of rare encounters at the CEO house.
+* sitemode.cpp: Only criminalized if there are witnesses to your theft.
+* stealth.cpp: Chance that moderates/liberals won't notice your alienating
+activities if you're sneaky.
+* stealth.cpp: Disguiseskill now considers the most skilled liberal in the group
+as well as the least skilled.
+* talk.cpp: Made the issue you pick affect what skills are used on each side
+when talking about the issues.
 
-2007-12-14   Chris Johnson   <grundee@users.sourceforge.net>
-* configure.ac: Added sizeof checks for data types.
-* compat.h: Added typedefs for integer sizes using new sizeof macros.
-* cursesmovie.h, cursesgraphics.h, lcsio.h: Included compat.h.
+2007-07-12   Jonathan Stickles   <jonathansfox@users.sourceforge.net>
+* news.cpp, monthly.cpp: Changed some of the associations between issues and
+sites, made public interest more enduring month over month, and made major
+events affect public interest.
 
 2007-07-12   Jonathan Stickles   <jonathansfox@users.sourceforge.net>
 * fight.cpp, monthly.cpp: Added more places where Wisdom is used.
