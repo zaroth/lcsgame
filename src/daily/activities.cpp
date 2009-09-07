@@ -1127,6 +1127,7 @@ int checkforarrest(Creature &liberal, const char *string, int clearformess) {
 
         newsstoryst *ns = new newsstoryst;
         ns->type = NEWSSTORY_NUDITYARREST;
+        ns->loc = -1;
         newsstory.push_back(ns);
         sitestory = ns;
 
@@ -1135,6 +1136,7 @@ int checkforarrest(Creature &liberal, const char *string, int clearformess) {
         if(!LCSrandom(50)) {
             newsstoryst *ns = new newsstoryst;
             ns->type = NEWSSTORY_WANTEDARREST;
+            ns->loc = -1;
             newsstory.push_back(ns);
             sitestory = ns;
 
@@ -1467,6 +1469,7 @@ void funds_and_trouble(char &clearformess) {
         if(dodgelawroll == 0 && law[LAW_DRUGS] <= 0) { // Busted! Sort of
             newsstoryst *ns = new newsstoryst;
             ns->type = NEWSSTORY_DRUGARREST;
+            ns->loc = -1;
             newsstory.push_back(ns);
             sitestory = ns;
 
@@ -2090,6 +2093,7 @@ void funds_and_trouble(char &clearformess) {
 
                     newsstoryst *ns = new newsstoryst;
                     ns->type = NEWSSTORY_GRAFFITIARREST;
+                    ns->loc = -1;
                     ns->positive = 0;
                     newsstory.push_back(ns);
                     sitestory = ns;
@@ -2753,6 +2757,7 @@ void funds_and_trouble(char &clearformess) {
                               bury[b]->attval(ATTRIBUTE_INTELLIGENCE) + 1)) {
                     newsstoryst *ns = new newsstoryst;
                     ns->type = NEWSSTORY_BURIALARREST;
+                    ns->loc = -1;
                     newsstory.push_back(ns);
                     sitestory = ns;
 
