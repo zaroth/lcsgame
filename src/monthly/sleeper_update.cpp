@@ -88,7 +88,7 @@ void sleepereffect(Creature &cr, char &clearformess, char canseethings, int *lib
 **********************************/
 void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int *libpower) {
 
-    if(LCSrandom(100) > 100 * cr.infiltration) {
+    if(LCSrandom(100) > 100 * cr.infiltration && !disbanding) {
         if(!LCSrandom(static_cast<int>(cr.infiltration * 20) + 1))
             cr.juice -= 1;
 

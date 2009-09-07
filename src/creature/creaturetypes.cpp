@@ -1466,12 +1466,15 @@ void makecreature(Creature &cr, short type) {
             switch(LCSrandom(3)) {
             case 0:
                 cr.lawflag[LAWFLAG_BROWNIES]++;
+                break;
 
             case 1:
                 cr.lawflag[LAWFLAG_ASSAULT]++;
+                break;
 
             case 2:
                 cr.lawflag[LAWFLAG_MURDER]++;
+                break;
             }
         }
 

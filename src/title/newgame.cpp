@@ -112,6 +112,11 @@ void setup_newgame(void) {
     }
 }
 
+enum recruits {
+    RECRUITS_GANG,
+    RECRUITS_NONE
+};
+
 /* creates your founder */
 void makecharacter(void) {
     Creature *newcr = new Creature;
@@ -236,6 +241,8 @@ void makecharacter(void) {
     bool hasmaps = false;
     bool makelawyer = false;
     bool gaylawyer = false;
+    char recruits = RECRUITS_NONE;
+    char base = SITE_RESIDENTIAL_SHELTER;
 
     for(int q = 0; q < 10; q++) {
         erase();
@@ -639,6 +646,7 @@ void makecharacter(void) {
             if(choices || selection == 0)
                 addstr("A - I stole a security uniform."); //XXX: No theft?
 
+            // Right; no skills this question -Fox
             move(7, 0);
 
             if(choices || selection == 1)
@@ -669,11 +677,14 @@ void makecharacter(void) {
             if(choices || selection == 0)
                 addstr("A - stealing from Corporations.  I know they're still keeping more secrets."); //XXX: No theft?
 
+            // Not as useful as the ones you do get
             //ATTRIBUTE_INTELLIGENCE 2
             //ATTRIBUTE_AGILITY 2
             //SKILL_DISGUISE 2
             //SKILL_SECURITY 1
             //SKILL_STEALTH 1
+            // +Downtown apartment
+            // +$1200 (one month rent)
             move(7, 0);
 
             if(choices || selection == 1)
@@ -683,6 +694,8 @@ void makecharacter(void) {
             //SKILL_PISTOL 2
             //ATTRIBUTE_AGILITY 2
             //ATTRIBUTE_HEALTH 2
+            // +Crack house (with stockpiled rations)
+            // +A crew (four gang members with knives and pistols)
             move(9, 0);
 
             if(choices || selection == 2)
@@ -691,6 +704,8 @@ void makecharacter(void) {
             //SKILL_SCIENCE 2
             //SKILL_COMPUTERS 2
             //ATTRIBUTE_INTELLIGENCE 4
+            // +University apartment
+            // +$650 (one month rent)
             move(11, 0);
 
             if(choices || selection == 3)
@@ -701,6 +716,8 @@ void makecharacter(void) {
             //ATTRIBUTE_INTELLIGENCE 1
             //ATTRIBUTE_AGILITY 1
             //ATTRIBUTE_HEALTH 2
+            // +Homeless shelter
+            // +1 all stats (except Wisdom)
             move(13, 0);
 
             if(choices || selection == 4)
@@ -711,6 +728,9 @@ void makecharacter(void) {
             //SKILL_LAW 1
             //SKILL_LEADERSHIP 1
             //SKILL_WRITING 2
+            // +Industrial apartment
+            // +$200 (one month rent)
+            // +50 juice
             move(17, 0);
             addstr("I live in ");
             addstr(lcityname);
@@ -997,6 +1017,8 @@ void makecharacter(void) {
                 newcr->skill[SKILL_SECURITY] += 1;
                 newcr->skill[SKILL_STEALTH] += 1;
                 newcr->type = CREATURE_THIEF;
+                base = SITE_RESIDENTIAL_APARTMENT_UPSCALE;
+                funds += 1200;
             }
 
             if(c == 'b') {
@@ -1005,6 +1027,8 @@ void makecharacter(void) {
                 newcr->att[ATTRIBUTE_AGILITY] += 2;
                 newcr->att[ATTRIBUTE_HEALTH] += 2;
                 newcr->type = CREATURE_GANGMEMBER;
+                base = SITE_BUSINESS_CRACKHOUSE;
+                recruits = RECRUITS_GANG;
             }
 
             if(c == 'c') {
@@ -1012,6 +1036,8 @@ void makecharacter(void) {
                 newcr->skill[SKILL_SCIENCE] += 2;
                 newcr->skill[SKILL_COMPUTERS] += 2;
                 newcr->type = CREATURE_COLLEGESTUDENT;
+                base = SITE_RESIDENTIAL_APARTMENT;
+                funds += 650;
             }
 
             if(c == 'd') {
@@ -1021,6 +1047,13 @@ void makecharacter(void) {
                 newcr->skill[SKILL_FIRSTAID] += 2;
                 newcr->skill[SKILL_STREETSENSE] += 2;
                 newcr->type = CREATURE_HSDROPOUT;
+                base = SITE_RESIDENTIAL_SHELTER;
+
+                newcr->att[ATTRIBUTE_HEART] += 1;
+                newcr->att[ATTRIBUTE_INTELLIGENCE] += 1;
+                newcr->att[ATTRIBUTE_AGILITY] += 1;
+                newcr->att[ATTRIBUTE_STRENGTH] += 1;
+                newcr->att[ATTRIBUTE_HEALTH] += 1;
             }
 
             if(c == 'e') {
@@ -1030,6 +1063,9 @@ void makecharacter(void) {
                 newcr->skill[SKILL_WRITING] += 2;
                 newcr->skill[SKILL_LEADERSHIP] += 1;
                 newcr->type = CREATURE_POLITICALACTIVIST;
+                base = SITE_RESIDENTIAL_TENEMENT;
+                funds += 200;
+                newcr->juice += 50;
             }
 
             break;
@@ -1447,9 +1483,65 @@ void makecharacter(void) {
     strcpy(newsq->name, "The Liberal Crime Squad");
 
     for(int l = 0; l < location.size(); l++) {
-        if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
+        if(location[l]->type == base) {
             newcr->base = l;
             newcr->location = l;
+
+            switch(base) {
+            case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
+                location[l]->renting = 1200;
+                break;
+
+            case SITE_RESIDENTIAL_APARTMENT:
+                location[l]->renting = 650;
+                break;
+
+            case SITE_RESIDENTIAL_TENEMENT:
+                location[l]->renting = 200;
+                break;
+
+            case SITE_BUSINESS_CRACKHOUSE:
+                location[l]->renting = 0;
+                location[l]->compound_stores += 50;
+                break;
+            }
+
+            location[l]->newrental = 1;
+
+            switch(recruits) {
+            case RECRUITS_GANG:
+                for(int i = 0; i < 4; i++) {
+                    Creature *recruit = new Creature;
+                    makecreature(*recruit, CREATURE_GANGMEMBER);
+
+                    if(recruit->weapon.type == WEAPON_AUTORIFLE_AK47 ||
+                            recruit->weapon.type == WEAPON_SMG_MP5 ||
+                            recruit->weapon.type == WEAPON_NONE) {
+                        recruit->weapon.type = WEAPON_SEMIPISTOL_9MM;
+                        recruit->weapon.ammo = 15;
+                        recruit->clip[CLIP_9] = 3;
+                    }
+
+                    recruit->align = ALIGN_LIBERAL;
+                    recruit->att[ATTRIBUTE_HEART] += recruit->att[ATTRIBUTE_WISDOM] / 2;
+                    recruit->att[ATTRIBUTE_WISDOM] -= recruit->att[ATTRIBUTE_WISDOM] / 2;
+
+                    recruit->namecreature();
+                    strcpy(recruit->name, recruit->propername);
+
+                    recruit->location = l;
+                    recruit->base = l;
+
+                    recruit->hireid = newcr->id;
+
+                    newsq->squad[i + 1] = recruit;
+                    recruit->squadid = newsq->id;
+                    pool.push_back(recruit);
+                }
+
+                break;
+            }
+
 
             #ifdef GIVEBLOODYARMOR
             itemst *newi = new itemst;

@@ -124,7 +124,7 @@ void advanceday(char &clearformess, char canseethings) {
         }
 
         if(disbanding)
-            break;
+            continue;
 
         if(pool[p]->clinic)
             continue;

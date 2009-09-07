@@ -855,7 +855,7 @@ void siegeturn(char clearformess) {
     }
 
     for(l = 0; l < location.size(); l++) {
-        if(!location[l]->siege.siege && location[l]->renting != -1 && location[l]->type != SITE_RESIDENTIAL_SHELTER) {
+        if(!location[l]->siege.siege && location[l]->renting >= 0 && location[l]->type != SITE_RESIDENTIAL_SHELTER) {
             //locations not under siege eat
             int eat = numbereating(l);
             int price = (int)(3 * eat * ((10 - food_prep[l]) / 10.0f) + 0.5f);
