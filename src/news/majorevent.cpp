@@ -77,50 +77,49 @@ void constructeventstory(char *story, short view, char positive) {
             if(law[LAW_WOMEN] = -2) {
                 strcat(story, " later admitted to being a rogue FBI vigilante, hunting down ");
                 strcat(story, " abortion doctors as opposed to arresting them.&r");
-            }
-
-            {
+            } else {
                 strcat(story, " surrendered without a struggle, reportedly saying that God's work ");
                 strcat(story, "had been completed.&r");
-                strcat(story, "  ");
-                strcat(story, dstr2);
-                strcat(story, " is survived by ");
-                strcat(story, gen);
-                strcat(story, " ");
-                char spouse = LCSrandom(2);
+            }
 
-                if(law[LAW_GAY] <= 1)
-                    spouse = 1 - gn;
+            strcat(story, "  ");
+            strcat(story, dstr2);
+            strcat(story, " is survived by ");
+            strcat(story, gen);
+            strcat(story, " ");
+            char spouse = LCSrandom(2);
 
-                switch(spouse) {
-                case 0:
-                    strcat(story, "husband");
-                    break;
+            if(law[LAW_GAY] <= 1)
+                spouse = 1 - gn;
 
-                case 1:
-                    strcat(story, "wife");
-                    break;
-                }
+            switch(spouse) {
+            case 0:
+                strcat(story, "husband");
+                break;
 
-                strcat(story, " and ");
-
-                switch(LCSrandom(3)) {
-                case 0:
-                    strcat(story, "two");
-                    break;
-
-                case 1:
-                    strcat(story, "three");
-                    break;
-
-                case 2:
-                    strcat(story, "five");
-                    break;
-                }
-
-                strcat(story, " children.&r");
+            case 1:
+                strcat(story, "wife");
                 break;
             }
+
+            strcat(story, " and ");
+
+            switch(LCSrandom(3)) {
+            case 0:
+                strcat(story, "two");
+                break;
+
+            case 1:
+                strcat(story, "three");
+                break;
+
+            case 2:
+                strcat(story, "five");
+                break;
+            }
+
+            strcat(story, " children.&r");
+            break;
         }
 
         case VIEW_GAY: {

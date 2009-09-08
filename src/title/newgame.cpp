@@ -703,9 +703,13 @@ void makecharacter(void) {
 
             //SKILL_SCIENCE 2
             //SKILL_COMPUTERS 2
+            //SKILL_WRITING 2
+            //SKILL_TEACHING 2
+            //SKILL_BUSINESS 1
+            //SKILL_LAW 1
             //ATTRIBUTE_INTELLIGENCE 4
             // +University apartment
-            // +$650 (one month rent)
+            // +$500 (one month rent)
             move(11, 0);
 
             if(choices || selection == 3)
@@ -1035,9 +1039,13 @@ void makecharacter(void) {
                 newcr->att[ATTRIBUTE_INTELLIGENCE] += 4;
                 newcr->skill[SKILL_SCIENCE] += 2;
                 newcr->skill[SKILL_COMPUTERS] += 2;
+                newcr->skill[SKILL_WRITING] += 2;
+                newcr->skill[SKILL_TEACHING] += 2;
+                newcr->skill[SKILL_BUSINESS] += 1;
+                newcr->skill[SKILL_LAW] += 1;
                 newcr->type = CREATURE_COLLEGESTUDENT;
                 base = SITE_RESIDENTIAL_APARTMENT;
-                funds += 650;
+                funds += 500;
             }
 
             if(c == 'd') {
@@ -1054,6 +1062,7 @@ void makecharacter(void) {
                 newcr->att[ATTRIBUTE_AGILITY] += 1;
                 newcr->att[ATTRIBUTE_STRENGTH] += 1;
                 newcr->att[ATTRIBUTE_HEALTH] += 1;
+                newcr->att[ATTRIBUTE_CHARISMA] += 1;
             }
 
             if(c == 'e') {
@@ -1493,7 +1502,7 @@ void makecharacter(void) {
                 break;
 
             case SITE_RESIDENTIAL_APARTMENT:
-                location[l]->renting = 650;
+                location[l]->renting = 500;
                 break;
 
             case SITE_RESIDENTIAL_TENEMENT:
@@ -1556,7 +1565,7 @@ void makecharacter(void) {
         }
     }
 
-    newcr->juice = 0;
+    //newcr->juice=0;
     squad.push_back(newsq);
     activesquad = newsq;
 
