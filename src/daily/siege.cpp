@@ -40,8 +40,7 @@ make it less likely to be raided based on:
 
 make it more likely to be raided:
 	- when a liberal hacks or steals credit cards.
-	- dead bodies in the base. XXX DONE
-	-
+	- dead bodies in the base. [DONE]
 */
 
 
@@ -1271,7 +1270,7 @@ void siegeturn(char clearformess) {
 
                         addstr(" ");
 
-                        switch(LCSrandom(11)) {
+                        switch(LCSrandom(12)) {
                         case 0:
                             addstr("Daily");
                             break;
@@ -1314,6 +1313,10 @@ void siegeturn(char clearformess) {
 
                         case 10:
                             addstr("International");
+                            break;
+
+                        case 11:
+                            addstr("County");
                             break;
                         }
 
@@ -1423,7 +1426,11 @@ void siegeturn(char clearformess) {
                                 break;
 
                             case 1:
-                                addstr("Retarded");
+                                if(law[LAW_FREESPEECH] == -2)
+                                    addstr("Dumb");
+                                else
+                                    addstr("Retarded");
+
                                 break;
 
                             case 2:

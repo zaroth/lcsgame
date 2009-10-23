@@ -197,6 +197,10 @@ void getactivity(char *str, activityst &act) {
     case ACTIVITY_SLEEPER_STEAL:
         strcat(str, "Stealing Equipment");
         break;
+
+    default:
+        strcat(str, "Reporting Bugs to the Dev Team");
+        break;
     }
 }
 
@@ -335,6 +339,10 @@ void getweapon(char *str, int type) {
         case WEAPON_FLAMETHROWER:
             strcpy(str, "M2A1-7");
             break;
+
+        default:
+            strcpy(str, "Error");
+            break;
         }
     } else {
         switch(type) {
@@ -465,6 +473,10 @@ void getweapon(char *str, int type) {
 
         case WEAPON_FLAMETHROWER:
             strcpy(str, "Plasmagun");
+            break;
+
+        default:
+            strcpy(str, "Error");
             break;
         }
     }
@@ -616,6 +628,10 @@ void getweaponfull(char *str, int type, int subtype) {
         case WEAPON_FLAMETHROWER:
             strcpy(str, "M2 Flamethrower");
             break;
+
+        default:
+            strcpy(str, "Error");
+            break;
         }
     } else {
         switch(type) {
@@ -758,6 +774,10 @@ void getweaponfull(char *str, int type, int subtype) {
 
         case WEAPON_FLAMETHROWER:
             strcpy(str, "Plasma Gun");
+            break;
+
+        default:
+            strcpy(str, "Error");
             break;
         }
     }
@@ -1998,6 +2018,10 @@ void getloot(char *str, int loot) {
     case LOOT_AMRADIOFILES:
         strcat(str, "AM Radio Plans");
         break;
+
+    default:
+        strcpy(str, "Programming Errors");
+        break;
     }
 }
 
@@ -2958,6 +2982,10 @@ void getcarcolor(char *str, int type) {
     case VEHICLECOLOR_BLACK:
         strcat(str, "Black");
         break;
+
+    default:
+        strcat(str, "Translucent");
+        break;
     }
 }
 
@@ -3142,6 +3170,10 @@ void cityname(char *story) {
 
     case 41:
         strcpy(story, "Baton Rouge, LA");
+        break;
+
+    default:
+        strcpy(story, "ERROR, AR");
         break;
     }
 }

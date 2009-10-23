@@ -1953,7 +1953,7 @@ char talk(Creature &a, int t) {
                             addstr("\"Daaaaaamn girl, I want to wrap your legs around my face and");
                             move(11, 1);
                             y++;
-                            addstr("wear you like a feed bag!\"");
+                            addstr("wear you like a feed bag!\""); // Bill Hicks
                             break;
 
                         case 7:

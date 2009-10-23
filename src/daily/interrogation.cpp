@@ -814,7 +814,7 @@ void tendhostage(Creature *cr, char &clearformess) {
                 switch(LCSrandom(6)) {
                 case 0:
                     addstr(" recreates scenes from Abu Ghraib");
-                    break;//lol, sodomy
+                    break;
 
                 case 1:
                     addstr(" whips the Automaton with a steel cable");
@@ -864,7 +864,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     case 4:
                         addstr("Don't fuck with me");
-                        break; // Don't censor profanity in interrogations, even if C+ free speech
+                        break;//NOTE: Don't censor profanity in interrogations, even if C+ free speech
 
                     case 5:
                         addstr("This is Liberalism");

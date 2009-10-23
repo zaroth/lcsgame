@@ -338,6 +338,7 @@ void printwall(int x, int y, int z, int px, int py) {
         if(levelmap[x][y + 1][z].flag & SITEBLOCK_BLOODY2)
             bloody[WALL_DOWN] = true;
 
+//TODO: Add Stalinist Graffiti, SCS
         // Check for other graffiti
         if(levelmap[x - 1][y][z].flag & SITEBLOCK_GRAFFITI_OTHER) {
             strcpy(graffiti[WALL_LEFT], "GNG");

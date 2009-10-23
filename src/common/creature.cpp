@@ -6683,7 +6683,7 @@ void lastname(char *str)
 //}}}
 
     default:
-        strcat(str, "Defaultson");
+        strcat(str, "Errorman");
         break;
     }
 }
@@ -7314,6 +7314,9 @@ void liberalize(Creature &cr, bool rename) {
         case CREATURE_WORKER_FACTORY_NONUNION:
             strcpy(cr.name, "New Union Worker");
             break;
+//	 case CREATURE_JUDGE_CONSERVATIVE:
+//	    strcpy(cr.name,"Enlightened Judge");
+//	    break;
         }
     }
 }
@@ -7420,7 +7423,7 @@ bool Creature::talkreceptive() {
     case CREATURE_RETIREE:
     case CREATURE_HAIRSTYLIST:
     case CREATURE_CLERK:
-    case CREATURE_MUTANT:
+    case CREATURE_MUTANT: // What? -- LK
         return true;
     }
 
@@ -7431,12 +7434,10 @@ bool Creature::talkreceptive() {
 
 /* are the characters close enough in age to date? */
 bool Creature::can_date(Creature &a) {
-    if(age < 11)
+    if(age < 11 || a.age < 11)
         return false;
 
-    if(a.age < 11)
-        return false;
-
+//   if(a.age<11) return false;
     if(age < 16 || a.age < 16) {
         if(ABS(age - a.age) < 5)
             return true;
