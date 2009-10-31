@@ -431,7 +431,7 @@ void tendhostage(Creature *cr, char &clearformess) {
                 addstr("to ");
                 addstr(a->name);
                 addstr(" as its only friend.");
-            } //XXX: What would 4, 2, 0, -2, -3, and/or -5 mean? (Some of these may not exist) -- LK
+            } // What would 4, 2, 0, -2, -3, and/or -5 mean? (Some of these may not exist) -- LK
             // These are greater than and less than comparisons, so they are testing ranges -Fox
             else if(rapport[a->id] > 1) {
                 addstr("The Conservative likes ");
@@ -813,7 +813,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 switch(LCSrandom(6)) {
                 case 0:
-                    addstr(" recreates scenes from Abu Ghraib");
+                    addstr(" reenacts scenes from Abu Ghraib");
                     break;
 
                 case 1:
@@ -979,7 +979,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     case 4:
                         addstr("George W. Bush");
-                        break;//XXX: Dubya? //Disambiguated. -Fox
+                        break;// Dubya? //Disambiguated. -Fox
 
                     case 5:
                         addstr("ExxonMobil");
@@ -1240,7 +1240,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 case 5:
                     addstr(" watches the anime film Bible Black with ");
-                    break;//XXX: Wasn't this basically a porno? //Yes. -Fox
+                    break;// Wasn't this basically a porno? //Yes. -Fox
 
                 case 6:
                     addstr(" watches a documentary about Emmett Till with ");
@@ -1874,7 +1874,7 @@ void tendhostage(Creature *cr, char &clearformess) {
                 case 4:
                     addstr(" is bleeding from self-inflicted wounds.");
                     cr->blood -= LCSrandom(15) + 10;
-                    break;//XXX: should be cr->blood-=LCSrandom(15)+10 or something... I mean, blood loss isn't the same *every* time.
+                    break;// should be cr->blood-=LCSrandom(15)+10 or something... I mean, blood loss isn't the same *every* time.
                 }
             } else {
                 set_color(COLOR_RED, COLOR_BLACK, 1);

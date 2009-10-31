@@ -88,7 +88,11 @@ void setup_newgame(void) {
             continue;
         }
 
-        if(c == 'c') {
+        if(c == 'c')   if(a.special[SPECIALWOUND_RIGHTEYE] != 1 &&
+                              a.special[SPECIALWOUND_LEFTEYE] != 1)
+                aroll -= LCSrandom(20);
+
+        {
             nightmarelaws = !nightmarelaws;
             continue;
         }
@@ -121,6 +125,39 @@ enum recruits {
 void makecharacter(void) {
     Creature *newcr = new Creature;
     initliberal(*newcr);
+
+    #ifdef BLIND
+    newcr->special[SPECIALWOUND_RIGHTEYE] = 1;
+    newcr->special[SPECIALWOUND_LEFTEYE] = 1;
+    #endif
+    #ifdef SPINE
+    newcr->special[SPECIALWOUND_UPPERSPINE] = 1;
+    newcr->special[SPECIALWOUND_LOWERSPINE] = 1;
+    #endif
+    #ifdef NOFACE
+    newcr->special[SPECIALWOUND_TONGUE] = 1;
+    newcr->special[SPECIALWOUND_RIGHTEYE] = 1;
+    newcr->special[SPECIALWOUND_LEFTEYE] = 1;
+    newcr->special[SPECIALWOUND_NOSE] = 1;
+    #endif
+    #ifdef NOWALK
+    newcr->special[SPECIALWOUND_UPPERSPINE] = 1;
+    newcr->special[SPECIALWOUND_LOWERSPINE] = 1;
+    newcr->special[SPECIALWOUND_NECK] = 1;
+    newcr->wound[BODYPART_LEG_RIGHT] = 1;
+    newcr->wound[BODYPART_LEG_LEFT] = 1;
+    #endif
+    #ifdef INTERNAL
+    newcr->special[SPECIALWOUND_RIGHTLUNG] = 1;
+    newcr->special[SPECIALWOUND_LEFTLUNG] = 1;
+    newcr->special[SPECIALWOUND_HEART] = 1;
+    newcr->special[SPECIALWOUND_LIVER] = 1;
+    newcr->special[SPECIALWOUND_STOMACH] = 1;
+    newcr->special[SPECIALWOUND_LEFTKIDNEY] = 1;
+    newcr->special[SPECIALWOUND_RIGHTKIDNEY] = 1;
+    newcr->special[SPECIALWOUND_SPLEEN] = 1;
+    #endif
+
 
     newcr->att[ATTRIBUTE_HEART] = 8;
     newcr->att[ATTRIBUTE_WISDOM] = 1;
@@ -1089,7 +1126,9 @@ void makecharacter(void) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(4, 2);
-    addstr("The Year is 2009.");
+    addstr("The Year is ");
+    addstr(year);
+    addstr(".");
     move(6, 2);
     addstr("Conservative President ");
     char president[80];

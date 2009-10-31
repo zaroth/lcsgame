@@ -444,6 +444,10 @@ char hack(short type, char &actual) {
         addstr("You can't find anyone to do the job.");
 
         if(blind) {
+            // Screen readers FTW. Honestly, it should just be a handicap
+            //	instead of an impossibility, just make the chances
+            //	much, much less.
+            //			-- LK
             refresh();
             getch();
             move(17, 1);
@@ -498,7 +502,7 @@ char radio_broadcast(void) {
     switch(viewhit) {
     case VIEW_WOMEN:
         addstr("discusses abortion.");
-        break;
+        break;//XXX: "performs an abortion live on the air." Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
 
     case VIEW_CIVILRIGHTS:
         addstr("debates affirmative action.");
@@ -677,7 +681,7 @@ char radio_broadcast(void) {
 
                     switch(viewhit) {
                     case VIEW_WOMEN:
-                        addstr("discusses abortion.");
+                        addstr("discuss abortion.");
                         break;
 
                     case VIEW_CIVILRIGHTS:
@@ -1073,7 +1077,7 @@ char news_broadcast(void) {
 
                     switch(viewhit) {
                     case VIEW_WOMEN:
-                        addstr("discusses abortion.");
+                        addstr("discuss abortion.");
                         break;
 
                     case VIEW_CIVILRIGHTS:
