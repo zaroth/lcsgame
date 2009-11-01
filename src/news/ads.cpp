@@ -117,14 +117,17 @@ void displaysinglead(bool liberalguardian, char addplace[2][3], short *storyx_s,
                 strcat(ad, "&cCall for Details&r");
                 break;
 
-            case 1:
+            case 1: {
                 int chairprice = LCSrandom(201) + 400;
                 strcpy(ad, "&cFine Leather Chairs&r&r");
                 strcat(ad, "&cSpecial Purchase&r");
                 strcat(ad, "&cNow $");
-                strcat(ad, chairprice);
+                char chairprice_s [10];
+                itoa (chairprice, chairprice_s, 10);
+                strcat(ad, chairprice_s);
                 strcat(ad, "&r");
                 break;
+            }
 
             case 2:
                 strcpy(ad, "&cParis Flea Market&r&r");
@@ -132,23 +135,28 @@ void displaysinglead(bool liberalguardian, char addplace[2][3], short *storyx_s,
                 strcat(ad, "&c50% Off&r");
                 break;
 
-            case 3:
+            case 3: {
                 int caryear = year - LCSrandom(15);
                 int carprice = LCSrandom(16) + 15;
                 int carprice2 = LCSrandom(1000);
                 strcpy(ad, "&cQuality Pre-Owned&r");
                 strcat(ad, "&cVehicles&r");
                 strcat(ad, "&c");
-                strcat(ad, caryear);
+                char caryear_s [80];
+                itoa (caryear, caryear_s, 10);
+                strcat(ad, caryear_s);
                 strcat(ad, " ");
 //               strcat(ad,cartype);
 //TODO: leading zeros, etc.
                 strcat(ad, "Lexus GS 300&r");
                 strcat(ad, "&cSedan 4D&r");
                 strcat(ad, "&cOnly $");
-                strcat(ad, carprice);
+                char carprice_s[80];
+                itoa (carprice, carprice_s, 10);
+                strcat(ad, carprice_s);
                 strcat(ad, "&r");
                 break;
+            }
 
             case 4:
                 strcpy(ad, "&cSpa&r");
@@ -209,14 +217,17 @@ void displaysinglead(bool liberalguardian, char addplace[2][3], short *storyx_s,
                 strcat(ad, "&cCo-Op&r");
                 break;
 
-            case 1:
+            case 1: {
                 int numyears = LCSrandom(11) + 20;
+                char numyears_s [10];
+                itoa (numyears, numyears_s, 10);
                 strcpy(ad, "&cLiberal Defense Lawyer&r");
                 strcpy(ad, "&c");
-                strcpy(ad, numyears);
+                strcpy(ad, numyears_s);
                 strcat(ad, " Years Experience&r&r");
                 strcat(ad, "&cCall Today&r");
                 break;
+            }
 
             case 2://XXX: Should this only be if abortion is legal?
                 strcpy(ad, "&cAbortion Clinic&r&r"); // I have no clue what &c or &r does, so bear with me... -- LK
