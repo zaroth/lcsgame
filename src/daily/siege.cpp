@@ -61,7 +61,7 @@ void siegecheck(char canseethings) {
         if(location[l]->siege.siege)
             continue;
 
-        if(location[l]->renting == -1)
+        if(location[l]->renting == RENTING_NOCONTROL)
             continue;
 
         numpres = 0;
@@ -913,7 +913,7 @@ void siegeturn(char clearformess) {
 
                 if(location[l]->siege.siegetype == SIEGE_CCS) {
                     if(location[l]->type == SITE_INDUSTRY_WAREHOUSE)
-                        location[l]->renting = -2;  // CCS Captures warehouse
+                        location[l]->renting = RENTING_CCS;  // CCS Captures warehouse
                 }
 
                 refresh();
@@ -1576,7 +1576,7 @@ void giveup(void) {
         return;
 
     if(location[loc]->renting > 1)
-        location[loc]->renting = -1;
+        location[loc]->renting = RENTING_NOCONTROL;
 
     //IF POLICE, END SIEGE
     if(location[loc]->siege.siegetype == SIEGE_POLICE ||
@@ -1826,7 +1826,7 @@ void giveup(void) {
 
         if(location[loc]->siege.siegetype == SIEGE_CCS) {
             if(location[loc]->type == SITE_INDUSTRY_WAREHOUSE)
-                location[loc]->renting = -2;  // CCS Captures warehouse
+                location[loc]->renting = RENTING_CCS;  // CCS Captures warehouse
         }
 
         erase();
@@ -1989,7 +1989,7 @@ void escape_engage(void) { // FIXME: Wait... LCC? //Liberal Command Center. Prob
 
     if(location[loc]->siege.siegetype == SIEGE_CCS) {
         if(location[loc]->type == SITE_INDUSTRY_WAREHOUSE)
-            location[loc]->renting = -2;  // CCS Captures warehouse -- this will be reversed if you fight them off
+            location[loc]->renting = RENTING_CCS;  // CCS Captures warehouse -- this will be reversed if you fight them off
     }
 
     //CRIMINALIZE
@@ -2106,7 +2106,7 @@ void escapesiege(char won) {
 
         //GET RID OF DEAD, etc.
         if(location[cursite]->renting > 1)
-            location[cursite]->renting = -1;
+            location[cursite]->renting = RENTING_NOCONTROL;
 
         for(int p = pool.size() - 1; p >= 0; p--) {
             if(pool[p]->location != cursite)

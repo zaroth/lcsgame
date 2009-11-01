@@ -36,7 +36,7 @@ void trial(Creature &g) {
 
     // If their old base is no longer under LCS control, wander back to the
     // homeless shelter instead.
-    if(location[g.base]->renting == -1) {
+    if(location[g.base]->renting < 0) {
         for(int i = 0; i < location.size(); ++i) {
             if(location[i]->type == SITE_RESIDENTIAL_SHELTER) {
                 g.base = i;
@@ -1442,7 +1442,7 @@ char prison(Creature &g) {
 
                 // If their old base is no longer under LCS control, wander back to the
                 // homeless shelter instead.
-                if(location[g.base]->renting == -1) {
+                if(location[g.base]->renting < 0) {
                     for(int i = 0; i < location.size(); ++i) {
                         if(location[i]->type == SITE_RESIDENTIAL_SHELTER) {
                             g.base = i;

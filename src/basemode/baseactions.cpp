@@ -261,21 +261,9 @@ void stopevil(void) {
 
     vector<long> temploc;
 
-    for(l = 0; l < location.size(); l++) {
-        if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
+    for(l = 0; l < location.size(); l++)
+        if(location[l]->parent == loc && !location[l]->hidden)
             temploc.push_back(l);
-    }
-
-    for(l = 0; l < location.size(); l++) {
-        //locationst* loc2 = location[l]; //what was this for?
-        if(location[l]->parent == loc && location[l]->renting == -2 && !location[l]->hidden)
-            temploc.push_back(l);
-    }
-
-    for(l = 0; l < location.size(); l++) {
-        if(location[l]->parent == loc && location[l]->renting == -1 && !location[l]->hidden)
-            temploc.push_back(l);
-    }
 
     do {
         erase();
@@ -389,7 +377,7 @@ void stopevil(void) {
                 addstr("%");
             }
 
-            if(location[temploc[p]]->renting == -2) {
+            if(location[temploc[p]]->renting == RENTING_CCS) {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
                 addstr(" (Enemy Safe House)");
             }
@@ -460,20 +448,9 @@ void stopevil(void) {
                 loc = temploc[sq];
                 temploc.clear();
 
-                for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
+                for(l = 0; l < location.size(); l++)
+                    if(location[l]->parent == loc && !location[l]->hidden)
                         temploc.push_back(l);
-                }
-
-                for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting == -2 && !location[l]->hidden)
-                        temploc.push_back(l);
-                }
-
-                for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting == -1 && !location[l]->hidden)
-                        temploc.push_back(l);
-                }
 
                 if(temploc.size() == 0) {
                     if(!location[loc]->closed &&
@@ -484,20 +461,9 @@ void stopevil(void) {
                     } else {
                         loc = oldloc;
 
-                        for(l = 0; l < location.size(); l++) {
-                            if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
+                        for(l = 0; l < location.size(); l++)
+                            if(location[l]->parent == loc && !location[l]->hidden)
                                 temploc.push_back(l);
-                        }
-
-                        for(l = 0; l < location.size(); l++) {
-                            if(location[l]->parent == loc && location[l]->renting == -2 && !location[l]->hidden)
-                                temploc.push_back(l);
-                        }
-
-                        for(l = 0; l < location.size(); l++) {
-                            if(location[l]->parent == loc && location[l]->renting == -1 && !location[l]->hidden)
-                                temploc.push_back(l);
-                        }
                     }
                 }
             }
@@ -520,7 +486,7 @@ void stopevil(void) {
             }
 
             for(l = 0; l < location.size(); l++) {
-                if(location[l]->parent == loc && location[l]->renting == -1)
+                if(location[l]->parent == loc && location[l]->renting == RENTING_NOCONTROL)
                     temploc.push_back(l);
             }
         } else if(c == 10) {

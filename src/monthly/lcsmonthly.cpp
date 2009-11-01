@@ -84,7 +84,7 @@ int choosespecialedition(char &clearformess) {
 
     //FIND ALL LOOT TYPES
     for(int loc = 0; loc < location.size(); loc++) {
-        if(location[loc]->renting == -1)
+        if(location[loc]->renting == RENTING_NOCONTROL)
             continue;
 
         for(int l = 0; l < location[loc]->loot.size(); l++) {
@@ -194,7 +194,7 @@ int choosespecialedition(char &clearformess) {
             if(slot >= 0 && slot < loottype.size()) {
                 //DELETE THE ITEM
                 for(int loc = 0; loc < location.size(); loc++) {
-                    if(location[loc]->renting == -1)
+                    if(location[loc]->renting == RENTING_NOCONTROL)
                         continue;
 
                     for(int l = 0; l < location[loc]->loot.size(); l++) {

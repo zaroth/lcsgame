@@ -889,7 +889,7 @@ void advanceday(char &clearformess, char canseethings) {
             } else if(transfer && pool[p]->location > -1 &&
                       pool[p]->alive == 1 &&
                       pool[p]->align == 1 &&
-                      location[pool[p]->location]->renting != -1 &&
+                      location[pool[p]->location]->renting != RENTING_NOCONTROL &&
                       location[pool[p]->location]->type != SITE_HOSPITAL_UNIVERSITY) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(8, 1);
@@ -991,7 +991,7 @@ void advanceday(char &clearformess, char canseethings) {
                     refresh();
                     getch();
 
-                    location[l]->renting = -1;
+                    location[l]->renting = RENTING_NOCONTROL;
 
                     //MOVE ALL ITEMS AND SQUAD MEMBERS
                     int hs = 0;
@@ -1032,7 +1032,7 @@ void advanceday(char &clearformess, char canseethings) {
         int p = getpoolcreature(recruit[r]->recruiter_id);
 
         // Stand up recruits if 1) recruiter does not exist, or 2) recruiter was not able to return to a safehouse today
-        if(p != -1 && ((pool[p]->location != -1 && location[pool[p]->location]->renting != -1) ||
+        if(p != -1 && ((pool[p]->location != -1 && location[pool[p]->location]->renting != RENTING_NOCONTROL) ||
                        recruit[r]->timeleft > 0)) {
             //RECRUIT TASKS
             if(recruit[r]->timeleft > 0) {
@@ -1083,7 +1083,7 @@ void advanceday(char &clearformess, char canseethings) {
         int p = getpoolcreature(date[d]->mac_id);
 
         // Stand up dates if 1) dater does not exist, or 2) dater was not able to return to a safehous today (and is not in the hospital)
-        if(p != -1 && pool[p]->location != -1 && (location[pool[p]->location]->renting != -1 ||
+        if(p != -1 && pool[p]->location != -1 && (location[pool[p]->location]->renting != RENTING_NOCONTROL ||
                 location[pool[p]->location]->type == SITE_HOSPITAL_CLINIC ||
                 location[pool[p]->location]->type == SITE_HOSPITAL_UNIVERSITY) ||
                 date[d]->timeleft) {
@@ -1309,7 +1309,7 @@ void dispersalcheck(char &clearformess) {
                     if(promotesubordinates(*pool[p], clearformess))
                         promotion = 1;
 
-                    if(pool[p]->location == -1 || location[pool[p]->location]->renting == -1) {
+                    if(pool[p]->location == -1 || location[pool[p]->location]->renting == RENTING_NOCONTROL) {
                         delete pool[p];
                         pool.erase(pool.begin() + p);
                     }
