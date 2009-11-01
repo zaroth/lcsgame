@@ -26,6 +26,7 @@ This file is part of Liberal Crime Squad.                                       
 	the bottom of includes.h in the top src folder.
 */
 
+
 //#include <includes.h>
 #include <externs.h>
 
@@ -35,9 +36,9 @@ void setup_newgame(void) {
     bool classicmode   = false;
     bool strongccs     = false;
     bool nightmarelaws = false;
+    clear();
 
     while(1) {
-        clear();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(4, 6);
         addstr("New Game of Liberal Crime Squad: Advanced Gameplay Options");
@@ -176,7 +177,7 @@ void makecharacter(void) {
     bool choices = true;
 
     while(1) {
-        clear();
+        erase();
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(4, 6);
