@@ -20,10 +20,10 @@ This file is part of Liberal Crime Squad.                                       
 */
 
 /*
-	This file was created by Chris Johnson (grundee@users.sourceforge.net)
-	by copying code from game.cpp.
-	To see descriptions of files and functions, see the list at
-	the bottom of includes.h in the top src folder.
+        This file was created by Chris Johnson (grundee@users.sourceforge.net)
+        by copying code from game.cpp.
+        To see descriptions of files and functions, see the list at
+        the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -2006,7 +2006,6 @@ void printhealthstat(Creature &g, int y, int x, char smll) {
 */
 void printfunds(int y, int offsetx, char *prefix) {
     char moneystr[50];
-
     char prefixbuffer[50];
 
     if(prefix == NULL)
@@ -2015,7 +2014,6 @@ void printfunds(int y, int offsetx, char *prefix) {
         strncpy(prefixbuffer, prefix, 50);
 
     sprintf(moneystr, "$%d", funds);
-
 
     //Save screen coordinates for later.
     int begy, begx;

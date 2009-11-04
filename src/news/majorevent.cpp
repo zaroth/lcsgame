@@ -989,10 +989,10 @@ void constructeventstory(char *story, short view, char positive) {
             strcat(story, " issued an apology later in the program, but ");
             strcat(story, "the damage might already be done.  ");
             strcat(story, "According to a poll completed yesterday, ");
-            strcat(story, "fully half of the host's most loyal supporters ");			// XXX How many of them switch
-            strcat(story, "have decided to leave the program for saner ");			// XXX should depend on
-            strcat(story, "pastures.  Of these, many said that they would be switching over ");	// XXX [LAW_FREESPEECH]
-            strcat(story, "to the FM band.");							// 		-- LK
+            strcat(story, "fully half of the host's most loyal supporters ");                       // XXX How many of them switch
+            strcat(story, "have decided to leave the program for saner ");                       // XXX should depend on
+            strcat(story, "pastures.  Of these, many said that they would be switching over ");       // XXX [LAW_FREESPEECH]
+            strcat(story, "to the FM band.");                                                       //                 -- LK
             strcat(story, "&r");
             break;
         }
@@ -2419,7 +2419,7 @@ void displaymajoreventstory(newsstoryst &ns, char *story, short *storyx_s, short
 
         case VIEW_CORPORATECULTURE:
             displaycenterednewsfont("BELLY UP", 5);
-            displaycenteredsmallnews("An enormous company files for bankruptcy, shattering the previous record.", 12);
+            displaycenteredsmallnews("An enormous company files for bankruptcy, shattering the previous record.", 12); // random company name
             displaynewspicture(PICTURE_DOLLARS, 13);
             break;
 

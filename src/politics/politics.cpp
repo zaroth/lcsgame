@@ -20,10 +20,10 @@ This file is part of Liberal Crime Squad.                                       
 */
 
 /*
-	This file was created by Chris Johnson (grundee@users.sourceforge.net)
-	by copying code from game.cpp.
-	To see descriptions of files and functions, see the list at
-	the bottom of includes.h in the top src folder.
+        This file was created by Chris Johnson (grundee@users.sourceforge.net)
+        by copying code from game.cpp.
+        To see descriptions of files and functions, see the list at
+        the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -2619,45 +2619,45 @@ char wincheck(void) {
 
 
 /*
-	FIXED:
-		At the present time, VIEW_CIVILRIGHTS has far too much sway.
-		However, before this was the case, as an example, LAW_ABORTION
-		and LAW_WOMEN, had the same "return attitude[]" attribute, and
-		both returned VIEW_WOMEN. What I think is needed, is some sort
-		of indicators for things such as:
-			1) Desire for change, which could be based on the
-				approval rate of the president.
-			2) Liberal, Conservative, and Stalinist percentage of
-				the country, i.e. how much support each party
-				has.
-			3) VIEW_HUMANRIGHTS, which should be based off of the
-				two previous things, (i.e. A higher liberal
-				percentage, and a higher desire for change would
-				make VIEW_HUMANRIGHTS get closer to 100.)
+        FIXED:
+                At the present time, VIEW_CIVILRIGHTS has far too much sway.
+                However, before this was the case, as an example, LAW_ABORTION
+                and LAW_WOMEN, had the same "return attitude[]" attribute, and
+                both returned VIEW_WOMEN. What I think is needed, is some sort
+                of indicators for things such as:
+                        1) Desire for change, which could be based on the
+                                approval rate of the president.
+                        2) Liberal, Conservative, and Stalinist percentage of
+                                the country, i.e. how much support each party
+                                has.
+                        3) VIEW_HUMANRIGHTS, which should be based off of the
+                                two previous things, (i.e. A higher liberal
+                                percentage, and a higher desire for change would
+                                make VIEW_HUMANRIGHTS get closer to 100.)
 
-	-- LiteralKa
+        -- LiteralKa
 
-	ADDENDUM (20090812): Keeping this for historical purposes, and to
-		possibly improve future changes to this issue.
+        ADDENDUM (20090812): Keeping this for historical purposes, and to
+                possibly improve future changes to this issue.
 */
 /*
 FIXME, PART1:
-	LAW_HUMANRIGHTS is added as a sort of an indictator, but it relies on
-		all the other Human Rights issue, rather than affecting the
-		issues to be more "pro-Human Rights". Essentially, if you
-		support Gay Rights but not Abortion Rights, you will not be
-		considered as someone who supports 'human rights'.
+        LAW_HUMANRIGHTS is added as a sort of an indictator, but it relies on
+                all the other Human Rights issue, rather than affecting the
+                issues to be more "pro-Human Rights". Essentially, if you
+                support Gay Rights but not Abortion Rights, you will not be
+                considered as someone who supports 'human rights'.
 
-	---Servant Corps
+        ---Servant Corps
 
 /////                                                                      /////
 
 @Servant:
-	As it stands, (revision 316) the only alarming thing is that this may
-		influence LAW_*s that are affected by LAW_HUMANRIGHTS. This is
-		only midly alarming because the LAW_* itself is effected, and
-		not the attitude[VIEW_*].
-	-- LiteralKa
+        As it stands, (revision 316) the only alarming thing is that this may
+                influence LAW_*s that are affected by LAW_HUMANRIGHTS. This is
+                only midly alarming because the LAW_* itself is effected, and
+                not the attitude[VIEW_*].
+        -- LiteralKa
 */
 
 /* politics - checks the prevailing attitude on a specific law, or overall */

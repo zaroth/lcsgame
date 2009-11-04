@@ -1145,7 +1145,7 @@ void makecreature(Creature &cr, short type) {
         else
             strcpy(cr.name, "");
 
-        switch(LCSrandom(10)) {
+        switch(LCSrandom(11)) {
         case 0:
             strcat(cr.name, "Genetic Monster");
             break;
@@ -1188,6 +1188,10 @@ void makecreature(Creature &cr, short type) {
 
         case 9:
             strcat(cr.name, "Something Bad");
+            break;
+
+        case 10:
+            strcat(cr.name, "Pink Elephant");
             break;
         }
 

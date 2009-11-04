@@ -20,10 +20,10 @@ This file is part of Liberal Crime Squad.                                       
 */
 
 /*
-	This file was created by Chris Johnson (grundee@users.sourceforge.net)
-	by copying code from game.cpp.
-	To see descriptions of files and functions, see the list at
-	the bottom of includes.h in the top src folder.
+        This file was created by Chris Johnson (grundee@users.sourceforge.net)
+        by copying code from game.cpp.
+        To see descriptions of files and functions, see the list at
+        the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -445,9 +445,9 @@ char hack(short type, char &actual) {
 
         if(blind) {
             // Screen readers FTW. Honestly, it should just be a handicap
-            //	instead of an impossibility, just make the chances
-            //	much, much less.
-            //			-- LK
+            //        instead of an impossibility, just make the chances
+            //        much, much less.
+            //                        -- LK
             refresh();
             getch();
             move(17, 1);

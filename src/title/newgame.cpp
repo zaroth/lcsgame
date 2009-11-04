@@ -20,10 +20,10 @@ This file is part of Liberal Crime Squad.                                       
 */
 
 /*
-	This file was created by Chris Johnson (grundee@users.sourceforge.net)
-	by copying code from game.cpp.
-	To see descriptions of files and functions, see the list at
-	the bottom of includes.h in the top src folder.
+        This file was created by Chris Johnson (grundee@users.sourceforge.net)
+        by copying code from game.cpp.
+        To see descriptions of files and functions, see the list at
+        the bottom of includes.h in the top src folder.
 */
 
 
@@ -296,8 +296,8 @@ void makecharacter(void) {
         switch(q) {
 
         /*
-        	- The anniversary of Hitler's suicide. - SKILL_PISTOL 1 (lol)
-        	- Indira Gandhi Killed
+                - The anniversary of Hitler's suicide. - SKILL_PISTOL 1 (lol)
+                - Indira Gandhi Killed
         */
 
         case 0:

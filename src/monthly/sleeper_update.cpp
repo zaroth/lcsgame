@@ -241,8 +241,8 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
 
     /*if(law[LAW_RELIGION]<=1)
     {
-     libpower[VIEW_LIBERALCRIMESQUAD]+=power;
-     libpower[VIEW_LIBERALCRIMESQUADPOS]+=power;
+           libpower[VIEW_LIBERALCRIMESQUAD]+=power;
+           libpower[VIEW_LIBERALCRIMESQUADPOS]+=power;
     }
     break;*/
     /* All these other Cultural Sleepers are inherently good at affecting culture, in fact, they get to produce

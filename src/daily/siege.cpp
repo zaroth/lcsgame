@@ -20,10 +20,10 @@ This file is part of Liberal Crime Squad.                                       
 */
 
 /*
-	This file was created by Chris Johnson (grundee@users.sourceforge.net)
-	by copying code from game.cpp.
-	To see descriptions of files and functions, see the list at
-	the bottom of includes.h in the top src folder.
+        This file was created by Chris Johnson (grundee@users.sourceforge.net)
+        by copying code from game.cpp.
+        To see descriptions of files and functions, see the list at
+        the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -33,14 +33,14 @@ This file is part of Liberal Crime Squad.                                       
 
 /* TODO
 make it less likely to be raided based on:
-	- the number of sleepers.
-	- how effective said sleepers are.
-	- what action each sleeper is doing (promoting liberalism decreases chance while promoting conservatism increases chance)
-	- what the sleeper does for a living (police officers are more influential than janitors, for instance)
+        - the number of sleepers.
+        - how effective said sleepers are.
+        - what action each sleeper is doing (promoting liberalism decreases chance while promoting conservatism increases chance)
+        - what the sleeper does for a living (police officers are more influential than janitors, for instance)
 
 make it more likely to be raided:
-	- when a liberal hacks or steals credit cards.
-	- dead bodies in the base. [DONE]
+        - when a liberal hacks or steals credit cards.
+        - dead bodies in the base. [DONE]
 */
 
 
