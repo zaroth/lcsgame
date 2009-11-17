@@ -301,5 +301,5 @@ void sextype(char *str) {
 */
 /* generate a non-vanity plate for the squad. */
 void plate(char *str) {
-    strcpy(str, "")
+    strcpy(str, "");
 }

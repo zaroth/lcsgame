@@ -206,46 +206,45 @@ void squadstory_text_opening(newsstoryst &ns, bool liberalguardian, bool ccs, ch
                 switch(LCSrandom(3)) {
                 case 0:
                     strcat(story, "pathetic, ");
-                    break
+                    break;
 
                 case 1:
                     strcat(story, "worthless, ");
-                    break
+                    break;
 
                 case 2:
                     strcat(story, "disheveled, ");
-                    break
+                    break;
                 }
 
                 switch(LCSrandom(3)) {
                 case 0:
                     strcat(story, "violent, ");
-                    break
+                    break;
 
                 case 1:
                     strcat(story, "bloodthirsty, ");
-                    break
+                    break;
 
                 case 2:
                     strcat(story, "");
-                    break
+                    break;
                 }
 
                 strcat(story, "M16-toting ");
-                break;
 
                 switch(LCSrandom(3)) {
                 case 0:
                     strcat(story, "hicks ");
-                    break
+                    break;
 
                 case 1:
                     strcat(story, "rednecks ");
-                    break
+                    break;
 
                 case 2:
                     strcat(story, "losers ");
-                    break
+                    break;
                 }
 
                 strcat(story, "calling themselves the Conservative Crime Squad went on a ");
