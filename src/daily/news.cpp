@@ -728,8 +728,7 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
                     strcat(story, "intelligence officials seemed very nervous about something.");
                     strcat(story, "&r");
                 } else {
-                    strcat(story,
-                           "  Liberal Crime Squad hackers worked to liberate information from CIA computers."); //XXX: Can't find a better word for `hacker'.
+                    strcat(story, "  Liberal Crime Squad computer specialists worked to liberate information from CIA computers.");
                     strcat(story, "&r");
                 }
             }
