@@ -819,7 +819,7 @@ int lawflagheat(int lawflag) {
         return 0;
 
     case LAWFLAG_ASSAULT:
-        return 0;
+        return 0; // XXX: This is on the same level as "harmful speech"?
 
     case LAWFLAG_ARMEDASSAULT:
         return 1;

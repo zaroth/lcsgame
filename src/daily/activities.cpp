@@ -3282,7 +3282,7 @@ char stealcar(Creature &cr, char &clearformess) {
                     y++;
 
                     if(law[LAW_FREESPEECH] == -2)
-                        addstr("Holy [Car Keys]!  ");
+                        addstr("Holy [Car Keys]!  ");  // Holy car keys Batman!
                     else
                         addstr("Holy shit!  ");
 

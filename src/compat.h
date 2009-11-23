@@ -44,6 +44,9 @@
 *
 * History
 *
+* LiteralKa's changes:
+* 1) Added Window's mostly nonsensical custom type definitions.
+*
 * Changes for portability...
 * 1) For Visual C++ 6.0 don't use namespace std.
 * 2) MINGW32 had a name clash between the UNIX-like time() function and
@@ -63,12 +66,16 @@
 #define LCS_WIN64
 #endif
 
+typedef signed int INT32;
 typedef long long __int64;
-
+typedef signed long long INT64;
 typedef unsigned long ULONG;
-#if defined(LCS_WIN64)
-typedef unsigned __int64 ULONG_PTR;
+
+#ifdef LCS_WIN64
+typedef long long LONG_PTR;
+typedef unsigned long long ULONG_PTR;
 #else
+typedef long LONG_PTR;
 typedef unsigned long ULONG_PTR;
 #endif
 
@@ -77,17 +84,20 @@ defined(intel) || defined(x86) || defined(i86pc)
 #define LCS_M_IX86
 #endif
 
-#if !defined(LCS_M_IX86)
-typedef unsigned __int64 ULONGLONG;
+#ifndef LCS_M_IX86
+typedef long long LONGLONG;
+typedef unsigned long long ULONGLONG;
 #else
+typedef double LONGLONG;
 typedef double ULONGLONG;
 #endif
+
 
 typedef unsigned long DWORD;
 typedef ULONGLONG DWORDLONG;
 typedef ULONG_PTR DWORD_PTR;
 typedef unsigned int DWORD32;
-typedef unsigned __int64 DWORD64;
+typedef unsigned long long DWORD64;
 
 typedef void *PVOID;
 typedef PVOID HANDLE;
@@ -97,12 +107,11 @@ typedef PVOID HANDLE;
 
 #ifndef HAS_SRTICMP
 // Portable equivalent of Windows stricmp() function.
-// This is strcmp() on lowercase versions of the
-//string.
+// This is strcmp() on lowercase versions of the string.
 
-//strToLower() allocates a string and converts it to
-//Lower Case using POSIX tolower() function.
-//Free returned string after use.
+// strToLower() allocates a string and converts it to lower Case using POSIX
+// tolower() function.
+// Free returned string after use.
 
 char *strToLower (const char *str);
 
@@ -127,10 +136,8 @@ void alarmwait();
 #ifndef HAS_ITOA
 // Portable equivalent of Windows itoa() function.
 // Note the radix parameter is expected to be 10.
-// The function is not fully ported and doesn't support
-//other bases, it's just enough for this program to be
-//ported.
+// The function is not fully ported and doesn't support other bases, it's just
+//  enough for this program to be ported.
 // Ensure buffer is of sufficient size.
 char *itoa(int value, char *buffer, int radix);
 #endif
-
