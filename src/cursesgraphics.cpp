@@ -21,32 +21,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
-* \file		cursesgraphics.cpp
+* cursesgraphics.cpp
 *
-* \brief	Portability Functions for CP437 Code Page Graphics Characters
+* Portability Functions for CP437 Code Page Graphics Characters
 *
 * $Author: sadler $
 * $Date: 2004/08/11 18:28:38 $
-* \version	$Name: HEAD $ $Revision: 1.4 $
+* $Name: HEAD $ $Revision: 1.4 $
 *
 * $Id: cursesgraphics.cpp,v 1.4 2004/08/11 18:28:38 sadler Exp $
 *
-* <HR>
-* \b Liberal Crime Squad
+* Liberal Crime Squad
 *
-*
-* <HR>
-*
-* \par Abstract
+* Abstract
 *
 * Translate character codes, stored in cp437 within files in the arts directory
 * into native alternative characters.
 *
-* <HR>
+* History
 *
-* \par History
-*
-* \par
 * $Log: cursesgraphics.cpp,v $
 * Revision 1.4  2004/08/11 18:28:38  sadler
 * New translateGraphicsChar() routine.
@@ -75,14 +68,13 @@ int translateGraphicsChar(int c) {
 #else
 int translateGraphicsChar(int c) {
     // This will be no good for Unicode...
-
     int cin = c;
     int cout = cin;
 
-//	if ((cin >= 0) && (cin <32))
-//	{
-//		cout = (cin | A_ALTCHARSET);
-//	}
+//    if ((cin >= 0) && (cin <32))
+//    {
+//        cout = (cin | A_ALTCHARSET);
+//    }
     if ((cin >= 0) && (cin < 256)) {
         cout = gchar[cin].native_code;
 
