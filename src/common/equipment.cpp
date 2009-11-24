@@ -205,7 +205,7 @@ void equip(vector<itemst *> &loot, int loc) {
 
             move(22, 1);
             addstr("Y - Get things from ");
-            addstr(location[loc]->shortname);
+            addshortname(location[loc]);
 
             if(loot.size() > 0)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -214,7 +214,7 @@ void equip(vector<itemst *> &loot, int loc) {
 
             move(22, 40);
             addstr("Z - Stash things at ");
-            addstr(location[loc]->shortname);
+            addshortname(location[loc]);
         }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -653,7 +653,7 @@ void equipmentbaseassign(void) {
             addstr(str);
 
             move(y, 25);
-            addstr(temploot2[temploot[p]]->shortname);
+            addshortname(temploot2[temploot[p]]);
 
             y++;
         }
@@ -669,7 +669,7 @@ void equipmentbaseassign(void) {
             move(y, 51);
             addch(y + '1' - 2);
             addstr(" - ");
-            addstr(location[temploc[p]]->shortname);
+            addshortname(location[temploc[p]]);
 
             y++;
         }

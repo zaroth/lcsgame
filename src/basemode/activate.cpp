@@ -114,7 +114,7 @@ void activate(void) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
             move(y, 42);
-            addstr(location[temppool[p]->location]->shortname);
+            addshortname(location[temppool[p]->location]);
 
             move(y, 57);
             // Let's add some color here...
@@ -1118,7 +1118,7 @@ void select_tendhostage(Creature *cr) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
             move(y, 42);
-            addstr(location[temppool[p]->location]->shortname);
+            addshortname(location[temppool[p]->location]);
 
             move(y, 57);
             set_color(COLOR_MAGENTA, COLOR_BLACK, 1);

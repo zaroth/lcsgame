@@ -60,7 +60,7 @@ void review(void) {
                 move(y, 31);
 
                 if(squad[p]->squad[0] != NULL)
-                    addstr(location[squad[p]->squad[0]->location]->shortname);
+                    addshortname(location[squad[p]->squad[0]->location]);
 
                 move(y, 51);
 
@@ -391,7 +391,7 @@ void review_mode(short mode) {
             if(temppool[p]->location == -1)
                 addstr("Away");
             else
-                addstr(location[temppool[p]->location]->shortname);
+                addshortname(location[temppool[p]->location]);
 
             move(y, 57);
 
@@ -1079,7 +1079,7 @@ void squadlessbaseassign(void) {
             addstr(temppool[p]->name);
 
             move(y, 25);
-            addstr(location[temppool[p]->base]->shortname);
+            addshortname(location[temppool[p]->base]);
 
             y++;
         }
@@ -1095,7 +1095,7 @@ void squadlessbaseassign(void) {
             move(y, 51);
             addch(y + '1' - 2);
             addstr(" - ");
-            addstr(location[temploc[p]]->shortname);
+            addshortname(location[temploc[p]]);
 
             y++;
         }
