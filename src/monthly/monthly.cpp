@@ -619,7 +619,8 @@ void updateworld_laws(short *law, short *oldlaw) {
     if((law[LAW_DRUGS] == 2 || oldlaw[LAW_DRUGS] == 2) &&
             law[LAW_DRUGS] != oldlaw[LAW_DRUGS]) {
         for(int l = 0; l < location.size(); l++) {
-            if(location[l]->type == SITE_BUSINESS_CRACKHOUSE)   // Crack House, or Recreational Drugs Center?
+            if(location[l]->type == SITE_BUSINESS_CRACKHOUSE // Crack House, or Recreational Drugs Center?
+                    && location[l]->renting < 0)   // Only rename locations not under LCS control, to avoid switching names around under the player
                 initlocation(*location[l]);
         }
     }

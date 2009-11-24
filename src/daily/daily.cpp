@@ -2035,17 +2035,48 @@ void initlocation(locationst &loc) {
         break;
 
     case SITE_BUSINESS_CRACKHOUSE:
-        if(law[LAW_DRUGS] == 2) {
+        do {
+            char str[50];
             lastname(str);
             strcpy(loc.name, str);
-            strcat(loc.name, " St. Recreational Drugs Center");
-            strcpy(loc.shortname, "Crack House");
-        } else {
-            lastname(str);
-            strcpy(loc.name, str);
-            strcat(loc.name, " St. Crack House");
-            strcpy(loc.shortname, "Crack House");
-        }
+            strcat(loc.name, " St. ");
+
+            if (law[LAW_DRUGS] == 2) {
+                switch (LCSrandom (3)) {
+                case 0:
+                    strcat (loc.name, "Recreational Drugs Center");
+                    strcpy (loc.shortname, "Drugs Center");
+                    break;
+
+                case 1:
+                    strcat (loc.name, "Coffee House");
+                    strcpy (loc.shortname, "Coffee House");
+                    break;
+
+                case 2:
+                    strcat (loc.name, "Cannabis Lounge");
+                    strcpy (loc.shortname, "Cannabis Lounge");
+                    break;
+                }
+            } else {
+                switch (LCSrandom (3)) {
+                case 0:
+                    strcat (loc.name, "Crack House");
+                    strcpy (loc.shortname, "Crack House");
+                    break;
+
+                case 1:
+                    strcat (loc.name, "Slum Block");
+                    strcpy (loc.shortname, "Slum Block");
+                    break;
+
+                case 2:
+                    strcat (loc.name, "Ghetto Block");
+                    strcpy (loc.shortname, "Ghetto Block");
+                    break;
+                }
+            }
+        } while (duplicatelocation (loc));
 
         break;
 
