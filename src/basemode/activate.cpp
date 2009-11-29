@@ -258,6 +258,10 @@ void activate(Creature *cr) {
         addstr("Z - Dispose of bodies");
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
+        move(19, 40);
+        addstr("? - Help");
+
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(20, 40);
         addstr("Enter - Confirm Selection");
 
@@ -382,13 +386,14 @@ void activate(Creature *cr) {
         case ACTIVITY_COMMUNITYSERVICE:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will help old ladies cross the street.");
+            //addstr(" will help old ladies cross the street.");
+            addstr(" will help the elderly, local library, anything that is liberal.");
             break;
 
         case ACTIVITY_TROUBLE:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will create public disturbances.");
+            addstr(" will create public disturbances. ");
             break;
 
         case ACTIVITY_GRAFFITI:
@@ -402,19 +407,27 @@ void activate(Creature *cr) {
         case ACTIVITY_POLLS:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will search the internet for public opinion polls.");
+            addstr(" will search the internet for public opinion polls. Polls will");
+            move(23, 3);
+            addstr("give an idea on how the liberal agenda is going. Computers and");
+            move(24, 3);
+            addstr("and intelligence will provide better results.");
             break;
 
         case ACTIVITY_DOS_ATTACKS:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will harass Conservative websites.");
+            addstr(" will harass Conservative websites. Computer skill will give greater");
+            move(23, 3);
+            addstr("effect.");
             break;
 
         case ACTIVITY_HACKING:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will hack into private Conservative networks.");
+            addstr(" will hack into private Conservative networks. Computer skill and");
+            move(23, 3);
+            addstr("intelligence will give greater effect.");
             break;
 
         case ACTIVITY_WRITE_LETTERS:
@@ -433,6 +446,10 @@ void activate(Creature *cr) {
             move(22, 3);
             addstr(cr->name);
             addstr(" will walk around and ask for donations to the LCS.");
+            move(23, 3);
+            addstr("Based on persuasion, business, charisma, heart, public's view on the");
+            move(24, 3);
+            addstr("cause and how proffesional the activist's clothes are.");
             break;
 
         case ACTIVITY_SELL_TSHIRTS:
@@ -830,8 +847,15 @@ void activate(Creature *cr) {
             break;
         }
 
+        // Enter pressed
         if(c == 10)
             break;
+
+        // ? Pressed
+        if(c == 63) {
+            // Call activity help pages
+            HelpActivities(cr->activity.type);
+        }
     } while(1);
 }
 
