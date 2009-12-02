@@ -1,29 +1,29 @@
 /*
 
 Copyright (c) 2002,2003,2004 by Tarn Adams                                            //
-                                                                                      //
+//
 This file is part of Liberal Crime Squad.                                             //
-                                                                                    //
-    Liberal Crime Squad is free software; you can redistribute it and/or modify     //
-    it under the terms of the GNU General Public License as published by            //
-    the Free Software Foundation; either version 2 of the License, or               //
-    (at your option) any later version.                                             //
-                                                                                    //
-    Liberal Crime Squad is distributed in the hope that it will be useful,          //
-    but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
-    GNU General Public License for more details.                                    //
-                                                                                    //
-    You should have received a copy of the GNU General Public License               //
-    along with Liberal Crime Squad; if not, write to the Free Software              //
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
+//
+Liberal Crime Squad is free software; you can redistribute it and/or modify     //
+it under the terms of the GNU General Public License as published by            //
+the Free Software Foundation; either version 2 of the License, or               //
+(at your option) any later version.                                             //
+//
+Liberal Crime Squad is distributed in the hope that it will be useful,          //
+but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
+GNU General Public License for more details.                                    //
+//
+You should have received a copy of the GNU General Public License               //
+along with Liberal Crime Squad; if not, write to the Free Software              //
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
 */
 
 /*
-        This file was created by Chris Johnson (grundee@users.sourceforge.net)
-        by copying code from game.cpp.
-        To see descriptions of files and functions, see the list at
-        the bottom of includes.h in the top src folder.
+This file was created by Chris Johnson (grundee@users.sourceforge.net)
+by copying code from game.cpp.
+To see descriptions of files and functions, see the list at
+the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -586,8 +586,21 @@ void review_mode(short mode) {
                     else if(page == 1)
                         printliberalskills(*temppool[p]);
 
-                    move(23, 0);
+                    // Add removal of squad members member
+                    move(22, 0);
 
+                    if((temppool[p]->flag != CREATUREFLAG_SLEEPER) &&
+                            temppool[p]->hireid != -1 &&
+                            temppool[p]->clinic == 0 &&
+                            temppool[p]->dating == 0 &&
+                            temppool[p]->hiding == 0 &&
+                            temppool[p]->alive == 1 &&
+                            location[temppool[p]->location]->type != SITE_GOVERNMENT_POLICESTATION &&
+                            location[temppool[p]->location]->type != SITE_GOVERNMENT_COURTHOUSE &&
+                            location[temppool[p]->location]->type != SITE_GOVERNMENT_PRISON)   // If alive and not own boss? (suicide?)
+                        addstr("R - Remove member         K - Kill member");
+
+                    move(23, 0);
 
                     if(temppool[p]->align != 1)
                         addstr("Press N to change this Automaton's Code Name");
@@ -657,6 +670,110 @@ void review_mode(short mode) {
 
                         if(temppool[p]->gender_liberal > 2)
                             temppool[p]->gender_liberal = 0;
+                    } else if(c == 'r' && (temppool[p]->flag != CREATUREFLAG_SLEEPER) &&
+                              temppool[p]->hireid != -1 &&
+                              temppool[p]->clinic == 0 &&
+                              temppool[p]->dating == 0 &&
+                              temppool[p]->hiding == 0 &&
+                              temppool[p]->alive == 1 &&
+                              location[temppool[p]->location]->type != SITE_GOVERNMENT_POLICESTATION &&
+                              location[temppool[p]->location]->type != SITE_GOVERNMENT_COURTHOUSE &&
+                              location[temppool[p]->location]->type != SITE_GOVERNMENT_PRISON) { // If alive and not own boss? (suicide?)
+                        int boss = getpoolcreature(temppool[p]->hireid);
+
+                        move(22, 0);
+                        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                        addstr("Confirm you want to release squad member at the loss of ");
+                        addstr(pool[boss]->name);
+                        addstr("s juice.          ");
+
+                        move(23, 0);
+                        addstr("If the member has low heart they may goto the police.                      ");
+
+                        move(24, 0);
+                        addstr("  C - Confirm       Any other key to continue                                                ");
+
+                        c = getch();
+                        translategetch(c);
+
+                        if(c == 'c') {
+                            move(22, 0);
+                            addstr(temppool[p]->name);
+                            addstr(" has been released.");
+
+                            // Chance of member going to police.
+                            if(temppool[p]->attval(ATTRIBUTE_HEART) < LCSrandom(10)) {
+                                // Gone to police increase heat.
+                                addstr(" Unfortunately with thier lack of heart they");
+                                move(23, 0);
+                                addstr("have gone to the police. ");
+                                addstr(pool[boss]->name);
+                                addstr("s heat rises.                                                      ");
+                                move(24, 0);
+                                addstr("                                                                   ");
+                                pool[boss]->heat += 5;
+                                getch();
+                            }
+
+                            // Remove squad member
+                            removesquadinfo(*temppool[p]);
+
+                            if(temppool[p]->align == 1) {
+                                if(boss != -1 && pool[boss]->juice > 50) {
+                                    int juice = pool[boss]->juice - 50;
+
+                                    if(juice > 10)
+                                        juice = 10;
+
+                                    addjuice(*pool[boss], -juice);
+                                }
+                            }
+
+                            int thisPersonIndex = getpoolcreature(temppool[p]->id);
+                            delete temppool[p];
+                            temppool.erase(temppool.begin() + p);
+                            pool.erase(pool.begin() + thisPersonIndex);
+                        }
+                    } else if(c == 'k' && (temppool[p]->flag != CREATUREFLAG_SLEEPER) &&
+                              temppool[p]->hireid != -1 &&
+                              temppool[p]->clinic == 0 &&
+                              temppool[p]->dating == 0 &&
+                              temppool[p]->hiding == 0 &&
+                              temppool[p]->alive == 1 &&
+                              location[temppool[p]->location]->type != SITE_GOVERNMENT_POLICESTATION &&
+                              location[temppool[p]->location]->type != SITE_GOVERNMENT_COURTHOUSE &&
+                              location[temppool[p]->location]->type != SITE_GOVERNMENT_PRISON) { // If alive and not own boss? (suicide?)
+                        // Kill squad member
+                        int boss = getpoolcreature(temppool[p]->hireid);
+
+                        move(22, 0);
+                        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                        addstr("Confirm you want to kill off squad member (at a loss of ");
+                        addstr(pool[boss]->name);
+                        addstr("s juice).         ");
+                        move(23, 0);
+                        addstr("                                                                           ");
+                        move(24, 0);
+                        addstr("  C - Confirm       Any other key to continue                                                ");
+
+                        c = getch();
+                        translategetch(c);
+
+                        if(c == 'c') {
+                            temppool[p]->alive = 0;
+
+                            // Dejuice boss
+                            if(boss != -1) {
+                                int juice = temppool[p]->juice / 10;
+
+                                if(juice < 5)
+                                    juice = 5;
+
+                                addjuice(*pool[boss], -juice);
+                            }
+
+                            break;
+                        }
                     } else
                         break;
                 } while(1);
@@ -1195,7 +1312,7 @@ static void printname(Creature &cr) {
 
     // Determine name brightness, based on subordinates left
     /*if(subordinatesleft(cr))
-       brightness=1;
+    brightness=1;
     else*/
     brightness = 0;
 
