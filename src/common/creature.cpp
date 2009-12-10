@@ -29,6 +29,14 @@ This file is part of Liberal Crime Squad.                                       
 //#include <includes.h>
 #include <externs.h>
 
+
+void Creature::stop_hauling_me() {
+    for(int p = 0; p < pool.size(); p++) {
+        if(pool[p]->prisoner == this)
+            pool[p]->prisoner = NULL;
+    }
+}
+
 void Creature::train(int trainedskill, int experience, int upto) {
     // Do we allow animals to gain skills? Right now, yes
     //if(animalgloss==ANIMALGLOSS_ANIMAL)return;

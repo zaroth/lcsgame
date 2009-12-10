@@ -931,8 +931,6 @@ void evasiverun(void) {
                 refresh();
                 getch();
 
-                removesquadinfo(*activesquad->squad[p]);
-
                 //Unload hauled hostage or body when they get back to the safehouse
                 if(activesquad->squad[p]->prisoner != NULL) {
                     //If this is an LCS member or corpse being hauled (marked as in the squad)
@@ -950,6 +948,8 @@ void evasiverun(void) {
 
                     activesquad->squad[p]->prisoner = NULL;
                 }
+
+                removesquadinfo(*activesquad->squad[p]);
 
                 printparty();
             } else if(yourspeed[p] < theirbest - 10) {

@@ -1005,6 +1005,8 @@ class Creature {
     char pref_is_driver;
     short flag;
 
+    void stop_hauling_me();
+
     Creature() {
         creatureinit();
     }
@@ -1013,6 +1015,9 @@ class Creature {
             if(prisoner->squadid != -1)
                 delete prisoner;
         }
+
+        // Clean up hostage situation
+        stop_hauling_me();
     }
     char canwalk(void) {
         if(!alive)
