@@ -249,6 +249,10 @@ void getweapon(char *str, int type) {
             strcpy(str, ".44 Mag.");
             break;
 
+        case WEAPON_DESERT_EAGLE:
+            strcpy(str, "Deagle");
+            break;
+
         case WEAPON_SEMIPISTOL_9MM:
             strcpy(str, "9mm Semi.");
             break;
@@ -382,6 +386,10 @@ void getweapon(char *str, int type) {
 
         case WEAPON_REVOLVER_44:
             strcpy(str, ".44 Slug");
+            break;
+
+        case WEAPON_DESERT_EAGLE:
+            strcpy(str, "Deagle");
             break;
 
         case WEAPON_SEMIPISTOL_9MM:
@@ -525,6 +533,10 @@ void getweaponfull(char *str, int type, int subtype) {
             strcpy(str, ".44 Magnum");
             break;
 
+        case WEAPON_DESERT_EAGLE:
+            strcpy(str, "Desert Eagle");
+            break;
+
         case WEAPON_SEMIPISTOL_9MM:
             strcpy(str, "9mm Semiauto");
             break;
@@ -666,6 +678,10 @@ void getweaponfull(char *str, int type, int subtype) {
 
         case WEAPON_REVOLVER_44:
             strcpy(str, ".44 Heavy Slug Pistol");
+            break;
+
+        case WEAPON_DESERT_EAGLE:
+            strcpy(str, "Desert Eagle");
             break;
 
         case WEAPON_SEMIPISTOL_9MM:
@@ -1878,6 +1894,10 @@ void getclip(char *str, int clip) {
             strcat(str, ".44 Speedloader");
             break;
 
+        case CLIP_50AE:
+            strcat(str, ".50AE Pistol Mag");
+            break;
+
         case CLIP_BUCKSHOT:
             strcat(str, "6 Shotgun Shells");
             break;
@@ -1914,6 +1934,10 @@ void getclip(char *str, int clip) {
 
         case CLIP_44:
             strcat(str, ".44 Heavy Slug Mag");
+            break;
+
+        case CLIP_50AE:
+            strcat(str, ".50AE Pistol Mag");
             break;
 
         case CLIP_BUCKSHOT:

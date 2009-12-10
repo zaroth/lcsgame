@@ -590,7 +590,7 @@ char ratify(int level, int lawview, int view, char congress, char canseethings) 
 
                 case 1:
                     addstr("Alaska");
-                    break;
+                    break;   // It already does, actually. See below. -Fox
 
                 case 2:
                     addstr("Arkansas");
@@ -800,42 +800,43 @@ char ratify(int level, int lawview, int view, char congress, char canseethings) 
         for(int s = 0; s < 50; s++) {
             smood = mood;
 
+            // State biases.
             switch(s) {
             case 0:
                 smood -= 10;
-                break;
+                break;  // Alabama
 
             case 4:
                 smood = 100;
-                break;
+                break;  // California (Always L+)
 
             case 9:
                 smood -= 10;
-                break;
+                break;  // Georgia
 
             case 11:
                 smood -= 10;
-                break;
+                break; // Idaho
 
             case 20:
                 smood += 25;
-                break;
+                break; // Massachusetts
 
             case 23:
                 smood -= 10;
-                break;
+                break; // Mississippi
 
             case 39:
                 smood -= 10;
-                break;
+                break; // South Carolina
 
             case 42:
                 smood -= 10;
-                break;
+                break; // Texas
 
             case 43:
                 smood = 0;
-                break;
+                break;   // Utah (Always C+)
             }
 
             vote = 0;

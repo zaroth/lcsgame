@@ -67,11 +67,11 @@
 #endif
 
 #ifndef PACKAGE_VERSION
-#define PACKAGE_VERSION "4.00.5"
+#define PACKAGE_VERSION "4.01.00"
 #endif
 
-const int version = 40008;
-const int lowestloadversion = 40008;
+const int version = 40100;
+const int lowestloadversion = 40100;
 const int lowestloadscoreversion = 31203;
 
 #ifdef WIN32
@@ -563,6 +563,7 @@ enum Weapons {
     WEAPON_MOLOTOV,
     WEAPON_AXE,
     WEAPON_FLAMETHROWER,
+    WEAPON_DESERT_EAGLE,
     WEAPONNUM
 };
 
@@ -574,6 +575,7 @@ struct weaponst {
         switch(type) {
         case WEAPON_REVOLVER_38:
         case WEAPON_REVOLVER_44:
+        case WEAPON_DESERT_EAGLE:
         case WEAPON_SEMIPISTOL_9MM:
         case WEAPON_SEMIPISTOL_45:
         case WEAPON_AUTORIFLE_M16:
@@ -739,6 +741,7 @@ enum ClipType {
     CLIP_BUCKSHOT,
     CLIP_MOLOTOV,
     CLIP_GASOLINE,
+    CLIP_50AE,
     CLIPNUM
 };
 

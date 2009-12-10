@@ -415,6 +415,7 @@ int weaponskill(int weapon) {
 
     case WEAPON_REVOLVER_38:
     case WEAPON_REVOLVER_44:
+    case WEAPON_DESERT_EAGLE:
     case WEAPON_SEMIPISTOL_9MM:
     case WEAPON_SEMIPISTOL_45:
         wsk = SKILL_PISTOL;
