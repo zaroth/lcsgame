@@ -681,7 +681,6 @@ void investlocation(void) {
                 stat_spent += 3000;
                 moneylost_compound += 3000;
                 location[loc]->compound_walls |= COMPOUND_PRINTINGPRESS;
-                break;
             }
         }
 

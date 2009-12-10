@@ -53,7 +53,8 @@ char talk(Creature &a, int t) {
         for(int i = 0; i < 6; i++) {
             if(activesquad->squad[i] &&
                     activesquad->squad[i]->prisoner &&
-                    activesquad->squad[i]->prisoner->alive) {
+                    activesquad->squad[i]->prisoner->alive &&
+                    activesquad->squad[i]->prisoner->enemy()) {
                 hostages++;
 
                 if(activesquad->squad[i]->weapon.type != WEAPON_NONE &&
@@ -427,7 +428,10 @@ char talk(Creature &a, int t) {
                         if(a.prisoner)
                             executer = &a;
                         else for(int i = 0; i < 6; i++) {
-                                if(activesquad->squad[i]->prisoner != NULL) {
+                                if(activesquad->squad[i] &&
+                                        activesquad->squad[i]->prisoner &&
+                                        activesquad->squad[i]->prisoner->alive &&
+                                        activesquad->squad[i]->prisoner->enemy()) {
                                     executer = activesquad->squad[i];
                                     break;
                                 }
