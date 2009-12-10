@@ -911,7 +911,7 @@ char talk(Creature &a, int t) {
                 move(11, 1);
                 addstr("A - Strike up a conversation about politics");
 
-                if(a.armor.type == ARMOR_NONE)
+                if(a.armor.type == ARMOR_NONE  && a.animalgloss != ANIMALGLOSS_ANIMAL)
                     addstr(" while naked");
 
                 addstr(".");
@@ -924,7 +924,7 @@ char talk(Creature &a, int t) {
 
                 addstr("B - Drop a pickup line");
 
-                if(a.armor.type == ARMOR_NONE)
+                if(a.armor.type == ARMOR_NONE && a.animalgloss != ANIMALGLOSS_ANIMAL)
                     addstr(" while naked");
 
                 addstr(".");
@@ -932,7 +932,7 @@ char talk(Creature &a, int t) {
                 move(13, 1);
                 addstr("C - On second thought, don't say anything");
 
-                if(a.armor.type == ARMOR_NONE)
+                if(a.armor.type == ARMOR_NONE && a.animalgloss != ANIMALGLOSS_ANIMAL)
                     addstr(" while naked");
 
                 addstr(".");
@@ -942,7 +942,7 @@ char talk(Creature &a, int t) {
                     move(14, 1);
                     addstr("D - Rent a room");
 
-                    if(a.armor.type == ARMOR_NONE)
+                    if(a.armor.type == ARMOR_NONE && a.animalgloss != ANIMALGLOSS_ANIMAL)
                         addstr(" while naked");
 
                     addstr(".");
@@ -953,7 +953,7 @@ char talk(Creature &a, int t) {
                     move(14, 1);
                     addstr("D - Buy weapons");
 
-                    if(a.armor.type == ARMOR_NONE)
+                    if(a.armor.type == ARMOR_NONE && a.animalgloss != ANIMALGLOSS_ANIMAL)
                         addstr(" while naked");
 
                     addstr(".");
@@ -1032,7 +1032,7 @@ char talk(Creature &a, int t) {
                     else if(law[lw] == ALIGN_ELITELIBERAL && newscherrybusted)
                         badthing = 2;
 
-                    if(a.armor.type == ARMOR_NONE)
+                    if(a.armor.type == ARMOR_NONE && a.animalgloss != ANIMALGLOSS_ANIMAL)
                         aroll -= 30;
 
                     int troll = LCSrandom(21) +
@@ -2117,7 +2117,7 @@ char talk(Creature &a, int t) {
 
                     int aroll = LCSrandom(21) + a.attval(ATTRIBUTE_CHARISMA) * 2 + LCSrandom(a.skillval(SKILL_SEDUCTION) * 2 + 1);
 
-                    if(a.armor.type == ARMOR_NONE)
+                    if(a.armor.type == ARMOR_NONE && a.animalgloss != ANIMALGLOSS_ANIMAL)
                         aroll -= 30;
 
                     int troll = LCSrandom(21) + tk->attval(ATTRIBUTE_CHARISMA) + tk->attval(ATTRIBUTE_WISDOM);
@@ -2513,7 +2513,7 @@ char talk(Creature &a, int t) {
                         refresh();
                         getch();
 
-                        if(a.armor.type == ARMOR_NONE) {
+                        if(a.armor.type == ARMOR_NONE && a.animalgloss != ANIMALGLOSS_ANIMAL) {
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(12, 1);
                             addstr(tk->name);
@@ -2604,7 +2604,7 @@ char talk(Creature &a, int t) {
                         refresh();
                         getch();
 
-                        if(a.armor.type == ARMOR_NONE) {
+                        if(a.armor.type == ARMOR_NONE && a.animalgloss != ANIMALGLOSS_ANIMAL) {
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(12, 1);
                             addstr(tk->name);

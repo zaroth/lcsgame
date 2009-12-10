@@ -1274,6 +1274,8 @@ void pawnshop(int loc) {
                         memset(fenceloot, 0, LOOTNUM * sizeof(int));
                     else {
                         fenceloot[LOOT_CEOPHOTOS] = 0;
+                        fenceloot[LOOT_CEOLOVELETTERS] = 0;
+                        fenceloot[LOOT_CEOTAXPAPERS] = 0;
                         fenceloot[LOOT_INTHQDISK] = 0;
                         fenceloot[LOOT_CORPFILES] = 0;
                         fenceloot[LOOT_JUDGEFILES] = 0;
@@ -3370,6 +3372,18 @@ int fencevalue(itemst &it) {
 
     case ITEM_LOOT:
         switch(it.loottype) {
+        case LOOT_KIDART:
+            fenceamount = 1;
+            break;
+
+        case LOOT_FAMILYPHOTO:
+            fenceamount = 1;
+            break;
+
+        case LOOT_DIRTYSOCK:
+            fenceamount = 1;
+            break;
+
         case LOOT_LABEQUIPMENT:
             fenceamount = 50;
             break;
@@ -3378,11 +3392,11 @@ int fencevalue(itemst &it) {
             fenceamount = 200;
             break;
 
-        case LOOT_TV:
-            fenceamount = 50;
+        case LOOT_WATCH:
+            fenceamount = 20;
             break;
 
-        case LOOT_VCR:
+        case LOOT_PDA:
             fenceamount = 50;
             break;
 
@@ -3390,24 +3404,24 @@ int fencevalue(itemst &it) {
             fenceamount = 20;
             break;
 
-        case LOOT_TVCAMERA:
-            fenceamount = 50;
+        case LOOT_MICROPHONE:
+            fenceamount = 20;
             break;
 
-        case LOOT_BROADCASTINGEQUIPMENT:
-            fenceamount = 50;
+        case LOOT_TRINKET:
+            fenceamount = 5;
             break;
 
         case LOOT_SILVERWARE:
             fenceamount = 20;
             break;
 
-        case LOOT_SCANNER:
+        case LOOT_CHEAPJEWELERY:
             fenceamount = 50;
             break;
 
-        case LOOT_PRINTER:
-            fenceamount = 50;
+        case LOOT_EXPENSIVEJEWELERY:
+            fenceamount = 500;
             break;
 
         case LOOT_FINECLOTH:
@@ -3419,6 +3433,14 @@ int fencevalue(itemst &it) {
             break;
 
         case LOOT_CEOPHOTOS:
+            fenceamount = 1000;
+            break;
+
+        case LOOT_CEOLOVELETTERS:
+            fenceamount = 250;
+            break;
+
+        case LOOT_CEOTAXPAPERS:
             fenceamount = 1000;
             break;
 

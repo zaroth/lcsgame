@@ -147,35 +147,24 @@ void setpriority(newsstoryst &ns) {
         ns.violence_level += crime[CRIME_ATTACKED_MISTAKE ] *  12;
         ns.violence_level += crime[CRIME_ATTACKED         ] *   4;
 
+        /*
         short violence_threshhold;
+        if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<5)violence_threshhold=1;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<25)violence_threshhold=2;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<45)violence_threshhold=3;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<65)violence_threshhold=4;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<85)violence_threshhold=5;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<105)violence_threshhold=6;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<125)violence_threshhold=7;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<145)violence_threshhold=8;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<165)violence_threshhold=9;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+attitude[VIEW_LIBERALCRIMESQUADPOS]<185)violence_threshhold=10;
+        else violence_threshhold=50;
+        */
 
-        if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 5)
-            violence_threshhold = 1;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 25)
-            violence_threshhold = 2;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 45)
-            violence_threshhold = 3;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 65)
-            violence_threshhold = 4;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 85)
-            violence_threshhold = 5;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 105)
-            violence_threshhold = 6;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 125)
-            violence_threshhold = 7;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 145)
-            violence_threshhold = 8;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 165)
-            violence_threshhold = 9;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + attitude[VIEW_LIBERALCRIMESQUADPOS] < 185)
-            violence_threshhold = 10;
-        else
-            violence_threshhold = 50;
-
-        if(ns.violence_level / (ns.politics_level + 1) > violence_threshhold)
-            ns.positive = 0;
-        else
-            ns.positive = 1;
+        //if(ns.violence_level / (ns.politics_level+1) > violence_threshhold)
+        //   ns.positive = 0;
+        //else ns.positive = 1;
 
         // Add additional priority based on the type of news story
         // and how high profile the LCS is
@@ -338,35 +327,29 @@ void setpriority(newsstoryst &ns) {
         // Set story's political and violence levels for determining whether
         // a story becomes positive or negative
 
-        short violence_threshhold;
-
-        if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 5)
-            violence_threshhold = 1;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 25)
-            violence_threshhold = 2;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 45)
-            violence_threshhold = 4;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 65)
-            violence_threshhold = 6;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 85)
-            violence_threshhold = 8;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 105)
-            violence_threshhold = 10;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 125)
-            violence_threshhold = 13;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 145)
-            violence_threshhold = 17;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 165)
-            violence_threshhold = 20;
-        else if(attitude[VIEW_POLITICALVIOLENCE] + 100 - attitude[VIEW_CONSERVATIVECRIMESQUAD] < 185)
-            violence_threshhold = 30;
-        else
-            violence_threshhold = 50;
-
-        if(ns.violence_level / (ns.politics_level + 1) > violence_threshhold)
+        if(!LCSrandom(5))
             ns.positive = 1;
         else
             ns.positive = 0;
+
+        /*
+        short violence_threshhold;
+        if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<5)violence_threshhold=1;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<25)violence_threshhold=2;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<45)violence_threshhold=4;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<65)violence_threshhold=6;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<85)violence_threshhold=8;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<105)violence_threshhold=10;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<125)violence_threshhold=13;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<145)violence_threshhold=17;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<165)violence_threshhold=20;
+        else if(attitude[VIEW_POLITICALVIOLENCE]+100-attitude[VIEW_CONSERVATIVECRIMESQUAD]<185)violence_threshhold=30;
+        else violence_threshhold=50;
+
+        if(ns.violence_level / (ns.politics_level+1) > violence_threshhold)
+           ns.positive = 1;
+        else ns.positive = 0;
+        */
 
         break;
 
@@ -648,7 +631,7 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
             }
 
             if(crime[CRIME_SHUTDOWNREACTOR]) {
-                if(law[LAW_NUCLEARPOWER] = 2) {
+                if(law[LAW_NUCLEARPOWER] == 2) {
                     if(!liberalguardian) {
                         strcat(story, "  According to sources that were at the scene, ");
                         strcat(story, "the Liberal Crime Squad contaminated the state's water supply");
@@ -1642,8 +1625,13 @@ void majornewspaper(char &clearformess, char canseethings) {
             if(ns->view == VIEW_CIVILRIGHTS)
                 continue;
 
-            if(ns->view == VIEW_POLITICALVIOLENCE)
+            if(ns->view == VIEW_TORTURE)
                 continue;
+
+            if(ns->view == VIEW_GUNCONTROL)
+                continue;
+
+            //if(ns->view==VIEW_POLITICALVIOLENCE)continue;
 
             //NO ABORTION
             if(ns->view == VIEW_WOMEN && ns->positive && law[LAW_ABORTION] == -2)
@@ -2068,7 +2056,7 @@ void majornewspaper(char &clearformess, char canseethings) {
                         break;
 
                     case SITE_GOVERNMENT_PRISON:
-                        header = VIEW_PRISONS;
+                        header = VIEW_DEATHPENALTY;
                         break;
 
                     case SITE_GOVERNMENT_INTELLIGENCEHQ:
@@ -2211,33 +2199,29 @@ void majornewspaper(char &clearformess, char canseethings) {
             power /= 10;
             power++;
 
+            /*
             short violence_threshhold;
 
-            if(attitude[VIEW_POLITICALVIOLENCE] < 15)
-                violence_threshhold = 1;
-            else if(attitude[VIEW_POLITICALVIOLENCE] < 25)
-                violence_threshhold = 2;
-            else if(attitude[VIEW_POLITICALVIOLENCE] < 35)
-                violence_threshhold = 3;
-            else if(attitude[VIEW_POLITICALVIOLENCE] < 45)
-                violence_threshhold = 4;
-            else if(attitude[VIEW_POLITICALVIOLENCE] < 55)
-                violence_threshhold = 5;
-            else if(attitude[VIEW_POLITICALVIOLENCE] < 65)
-                violence_threshhold = 6;
-            else if(attitude[VIEW_POLITICALVIOLENCE] < 75)
-                violence_threshhold = 7;
-            else if(attitude[VIEW_POLITICALVIOLENCE] < 85)
-                violence_threshhold = 8;
-            else if(attitude[VIEW_POLITICALVIOLENCE] < 95)
-                violence_threshhold = 9;
-            else
-                violence_threshhold = 10;
+            if(attitude[VIEW_POLITICALVIOLENCE]<15)violence_threshhold=1;
+            else if(attitude[VIEW_POLITICALVIOLENCE]<25)violence_threshhold=2;
+            else if(attitude[VIEW_POLITICALVIOLENCE]<35)violence_threshhold=3;
+            else if(attitude[VIEW_POLITICALVIOLENCE]<45)violence_threshhold=4;
+            else if(attitude[VIEW_POLITICALVIOLENCE]<55)violence_threshhold=5;
+            else if(attitude[VIEW_POLITICALVIOLENCE]<65)violence_threshhold=6;
+            else if(attitude[VIEW_POLITICALVIOLENCE]<75)violence_threshhold=7;
+            else if(attitude[VIEW_POLITICALVIOLENCE]<85)violence_threshhold=8;
+            else if(attitude[VIEW_POLITICALVIOLENCE]<95)violence_threshhold=9;
+            else violence_threshhold=10;
 
-            if(newsstory[n]->violence_level / (newsstory[n]->politics_level + 1) > violence_threshhold)
-                change_public_opinion(VIEW_POLITICALVIOLENCE, power);
+            if(newsstory[n]->violence_level / (newsstory[n]->politics_level+1) > violence_threshhold)
+            {
+               change_public_opinion(VIEW_POLITICALVIOLENCE,power);
+            }
             else
-                change_public_opinion(VIEW_POLITICALVIOLENCE, -power);
+            {
+               change_public_opinion(VIEW_POLITICALVIOLENCE,-power);
+            }
+            */
 
             char colored = 0;
 
@@ -2265,8 +2249,10 @@ void majornewspaper(char &clearformess, char canseethings) {
 
             if(newsstory[n]->positive)
                 colored = -1;
-            else
+            else {
                 power = -power;
+                change_public_opinion(VIEW_GUNCONTROL, abs(power), 0, power * 10);
+            }
 
             switch(location[newsstory[n]->loc]->type) {
             case SITE_LABORATORY_COSMETICS:
@@ -2295,12 +2281,15 @@ void majornewspaper(char &clearformess, char canseethings) {
 
             case SITE_GOVERNMENT_PRISON:
                 change_public_opinion(VIEW_DEATHPENALTY, power, colored, power * 10);
-                change_public_opinion(VIEW_PRISONS, power, colored, power * 10);
                 change_public_opinion(VIEW_DRUGS, power, colored, power * 10);
+                change_public_opinion(VIEW_TORTURE, power, colored, power * 10);
                 break;
 
             case SITE_GOVERNMENT_INTELLIGENCEHQ:
                 change_public_opinion(VIEW_INTELLIGENCE, power, colored, power * 10);
+                change_public_opinion(VIEW_TORTURE, power, colored, power * 10);
+                change_public_opinion(VIEW_MILITARY, power, colored, power * 10); // Doesn't fit, but we need at least one place
+                // that can affect this issue! - Jonathan S. Fox
                 break;
 
             case SITE_INDUSTRY_SWEATSHOP:

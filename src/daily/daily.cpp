@@ -1025,6 +1025,9 @@ void advanceday(char &clearformess, char canseethings) {
     }
 
     //MEET WITH POTENTIAL RECRUITS
+    for(int i = pool.size() - 1; i >= 0; i--)
+        pool[i]->meetings = 0;
+
     for(int r = recruit.size() - 1; r >= 0; r--) {
         if(disbanding)
             break;

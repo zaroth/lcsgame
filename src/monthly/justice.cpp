@@ -218,7 +218,7 @@ void trial(Creature &g) {
 
             addstr("escaping prison");
             breaker[LAWFLAG_ESCAPED] = 0;
-            autoconvict = 1; // *Impossible* to beat this charge
+            //autoconvict=1; // *Impossible* to beat this charge
         } else if(breaker[LAWFLAG_HELPESCAPE]) {
             if(g.lawflag[LAWFLAG_HELPESCAPE] > 1) {
                 char str[10];
@@ -685,7 +685,7 @@ void trial(Creature &g) {
 
         //PROSECUTION MESSAGE
         // *JDS* The bigger your record, the stronger the evidence
-        prosecution += 40 + LCSrandom(61);
+        prosecution += 40 + LCSrandom(101);
         prosecution += scarefactor;
         prosecution += 20 * g.confessions;
 
@@ -710,7 +710,7 @@ void trial(Creature &g) {
                 addstr("The prosecution makes an airtight case.");
             else {
                 addstr(g.name);
-                addstr("'s chances are beyond bleak.");
+                addstr("'s chances are bleak.");
             }
         }
 
@@ -749,8 +749,8 @@ void trial(Creature &g) {
                     defensepower = LCSrandom(71) + 80;  // Ace Liberal attorney
                 else if(defense == 4) {
                     // Sleeper attorney
-                    defensepower = LCSrandom(71) + sleeperlawyer->skillval(SKILL_LAW) * 4
-                                   + sleeperlawyer->skillval(SKILL_PERSUASION) * 4;
+                    defensepower = LCSrandom(71) + sleeperlawyer->skillval(SKILL_LAW) * 2
+                                   + sleeperlawyer->skillval(SKILL_PERSUASION) * 2;
                     sleeperlawyer->train(SKILL_LAW, prosecution / 4);
                     sleeperlawyer->train(SKILL_PERSUASION, prosecution / 4);
                 }

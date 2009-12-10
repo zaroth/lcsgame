@@ -1485,8 +1485,18 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                         clearmessagearea();
                         move(16, 1);
                         addstr(target->name);
-                        addstr(" courageously shields ");
+
+                        if(!t.alive)
+                            addstr(" misguidedly ");
+                        else
+                            addstr(" heroically ");
+
+                        addstr(" shields ");
                         addstr(t.name);
+
+                        if(!t.alive)
+                            addstr("'s corpse ");
+
                         addstr("!");
 
                         addjuice(*target, 10); //Instant juice!! Way to take the bullet!!
@@ -1548,6 +1558,14 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
             if(damagearmor)
                 armordamage(target->armor, w);
+
+            if(target->align == ALIGN_LIBERAL && target->juice >= 20 && damamount < severamount) {
+                if(damamount > 70)
+                    damamount = 70;  // Never give instakill hits against
+
+                // your better peeps unless they're
+                // head explodies or body blown apart
+            }
 
             target->blood -= damamount;
 

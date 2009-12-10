@@ -1941,11 +1941,11 @@ void getloot(char *str, int loot) {
         break;
 
     case LOOT_COMPUTER:
-        strcat(str, "Computer");
+        strcat(str, "Laptop");
         break;
 
-    case LOOT_TV:
-        strcat(str, "TV");
+    case LOOT_WATCH:
+        strcat(str, "Watch");
         break;
 
     case LOOT_SECRETDOCUMENTS:
@@ -1956,32 +1956,32 @@ void getloot(char *str, int loot) {
         strcat(str, "Police Records");
         break;
 
-    case LOOT_VCR:
-        strcat(str, "VCR");
+    case LOOT_PDA:
+        strcat(str, "PDA");
         break;
 
     case LOOT_CELLPHONE:
         strcat(str, "Cellphone");
         break;
 
-    case LOOT_TVCAMERA:
-        strcat(str, "TV Camera");
+    case LOOT_CHEAPJEWELERY:
+        strcat(str, "Cheap Jewelery");
         break;
 
-    case LOOT_BROADCASTINGEQUIPMENT:
-        strcat(str, "Broadcasting Equip.");
+    case LOOT_MICROPHONE:
+        strcat(str, "Microphone");
         break;
 
     case LOOT_SILVERWARE:
         strcat(str, "Silverware");
         break;
 
-    case LOOT_SCANNER:
-        strcat(str, "Scanner");
+    case LOOT_EXPENSIVEJEWELERY:
+        strcat(str, "Fine Jewelery");
         break;
 
-    case LOOT_PRINTER:
-        strcat(str, "Printer");
+    case LOOT_TRINKET:
+        strcat(str, "Kitschy Trinket");
         break;
 
     case LOOT_FINECLOTH:
@@ -1994,6 +1994,14 @@ void getloot(char *str, int loot) {
 
     case LOOT_CEOPHOTOS:
         strcat(str, "CEO Photos");
+        break;
+
+    case LOOT_CEOLOVELETTERS:
+        strcat(str, "CEO Love Letters");
+        break;
+
+    case LOOT_CEOTAXPAPERS:
+        strcat(str, "CEO Tax Papers");
         break;
 
     case LOOT_INTHQDISK:
@@ -2021,7 +2029,19 @@ void getloot(char *str, int loot) {
         break;
 
     case LOOT_AMRADIOFILES:
-        strcat(str, "AM Radio Plans");
+        strcat(str, "AM Radio Memos");
+        break;
+
+    case LOOT_KIDART:
+        strcat(str, "Macaroni Art");
+        break;
+
+    case LOOT_FAMILYPHOTO:
+        strcat(str, "Family Photos");
+        break;
+
+    case LOOT_DIRTYSOCK:
+        strcat(str, "Dirty Sock");
         break;
 
     default:
@@ -2541,8 +2561,8 @@ void getview(char *str, short view) {
         strcat(str, "The Police");
         break;
 
-    case VIEW_PRISONS:
-        strcat(str, "Prisons");
+    case VIEW_TORTURE:
+        strcat(str, "Torture");
         break;
 
     case VIEW_INTELLIGENCE:
@@ -2559,6 +2579,10 @@ void getview(char *str, short view) {
 
     case VIEW_JUSTICES:
         strcat(str, "The Judiciary");
+        break;
+
+    case VIEW_GUNCONTROL:
+        strcat(str, "Gun Control");
         break;
 
     case VIEW_SWEATSHOPS:
@@ -2605,10 +2629,7 @@ void getview(char *str, short view) {
         strcat(str, "Cable News");
         break;
 
-    case VIEW_POLITICALVIOLENCE:
-        strcat(str, "The Need For Action");
-        break;
-
+    //case VIEW_POLITICALVIOLENCE:strcat(str,"The Need For Action");break;
     case VIEW_LIBERALCRIMESQUAD:
         strcat(str, "Who We Are");
         break;
@@ -2653,8 +2674,8 @@ void getviewsmall(char *str, short view) {
         strcat(str, "the cops");
         break;
 
-    case VIEW_PRISONS:
-        strcat(str, "prison conditions");
+    case VIEW_TORTURE:
+        strcat(str, "torture");
         break;
 
     case VIEW_INTELLIGENCE:
@@ -2721,10 +2742,7 @@ void getviewsmall(char *str, short view) {
         strcat(str, "cable news");
         break;
 
-    case VIEW_POLITICALVIOLENCE:
-        strcat(str, "the need for action");
-        break;
-
+    //case VIEW_POLITICALVIOLENCE:strcat(str,"the need for action");break;
     case VIEW_LIBERALCRIMESQUAD:
         strcat(str, "the LCS");
         break;

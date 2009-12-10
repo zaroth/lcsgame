@@ -107,7 +107,7 @@ void special_bouncer_assess_squad() {
         for(int s = 0; s < 6; s++) {
             if(activesquad->squad[s]) {
                 // Wrong clothes? Gone
-                if(activesquad->squad[s]->armor.type == ARMOR_NONE)
+                if(activesquad->squad[s]->armor.type == ARMOR_NONE && activesquad->squad[s]->animalgloss != ANIMALGLOSS_ANIMAL)
                     if(rejected > REJECTED_NUDE)
                         rejected = REJECTED_NUDE;
 
@@ -570,7 +570,7 @@ void special_nuclear_onoff(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
-        if(law[LAW_NUCLEARPOWER] = 2) {
+        if(law[LAW_NUCLEARPOWER] == 2) {
             move(16, 1);
             addstr("You see the nuclear waste center control room.");
             move(17, 1);
@@ -623,7 +623,7 @@ void special_nuclear_onoff(void) {
                 refresh();
                 getch();
 
-                if(law[LAW_NUCLEARPOWER] = 2) {
+                if(law[LAW_NUCLEARPOWER] == 2) {
                     move(17, 1);
                     addstr("The nuclear waste gets released into the state's water supply!");
                     change_public_opinion(VIEW_NUCLEARPOWER, 15, 0, 95);
@@ -970,11 +970,11 @@ void special_courthouse_jury(void) {
                 int p = goodp[LCSrandom(goodp.size())];
 
                 short aroll = LCSrandom(21) +
-                              activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
-                              activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
-                              activesquad->squad[p]->skillval(SKILL_PERSUASION) +
-                              activesquad->squad[p]->skillval(SKILL_LAW) * 2;
-                short troll = LCSrandom(21) + 20;
+                              LCSrandom(activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
+                                        activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
+                                        activesquad->squad[p]->skillval(SKILL_PERSUASION) +
+                                        activesquad->squad[p]->skillval(SKILL_LAW) * 2);
+                short troll = LCSrandom(21) + 10;
                 activesquad->squad[p]->train(SKILL_PERSUASION, troll);
                 activesquad->squad[p]->train(SKILL_LAW, troll);
 
@@ -1424,15 +1424,105 @@ void special_house_photos(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("The Squad has found some... very comprising photos.");
+                addstr("This guy sure had a lot of $100 bills.");
+
+                refresh();
+                getch();
 
                 itemst *it = new itemst;
-                it->type = ITEM_LOOT;
-                it->loottype = LOOT_CEOPHOTOS;
+                it->type = ITEM_MONEY;
+                it->money = 1000 * (1 + LCSrandom(10));
                 activesquad->loot.push_back(it);
 
+                if(LCSrandom(2)) {
+                    clearmessagearea();
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(16, 1);
+                    addstr("Hmm... there is also some very expensive-looking");
+                    move(17, 1);
+                    addstr("jewelery here.  The squad will take that.");
+
+                    refresh();
+                    getch();
+
+                    it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_EXPENSIVEJEWELERY;
+                    activesquad->loot.push_back(it);
+                    it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_EXPENSIVEJEWELERY;
+                    activesquad->loot.push_back(it);
+                    it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_EXPENSIVEJEWELERY;
+                    activesquad->loot.push_back(it);
+                }
+
+                if(!LCSrandom(3)) {
+                    clearmessagearea();
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(16, 1);
+                    addstr("There are some... very compromising photos here.");
+
+                    refresh();
+                    getch();
+
+                    it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_CEOPHOTOS;
+                    activesquad->loot.push_back(it);
+                }
+
+                if(!LCSrandom(3)) {
+                    clearmessagearea();
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(16, 1);
+                    addstr("There are some drugs here.");
+
+                    refresh();
+                    getch();
+                }
+
+                if(!LCSrandom(3)) {
+                    clearmessagearea();
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(16, 1);
+                    addstr("Wow, get a load of these love letters.");
+                    move(17, 1);
+                    addstr("The squad will take those.");
+
+                    refresh();
+                    getch();
+
+                    it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_CEOLOVELETTERS;
+                    activesquad->loot.push_back(it);
+                }
+
+                if(!LCSrandom(3)) {
+                    clearmessagearea();
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(16, 1);
+                    addstr("These documents show serious tax evasion.");
+
+                    refresh();
+                    getch();
+
+                    it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_CEOTAXPAPERS;
+                    activesquad->loot.push_back(it);
+                }
+
                 juiceparty(10);
-                sitecrime += 20;
+                sitecrime += 40;
 
                 int time = 20 + LCSrandom(10);
 
@@ -1441,9 +1531,6 @@ void special_house_photos(void) {
 
                 if(sitealarmtimer > time || sitealarmtimer == -1)
                     sitealarmtimer = time;
-
-                refresh();
-                getch();
             }
 
             if(actual) {
@@ -1494,9 +1581,13 @@ void special_corporate_files(void) {
                 it->type = ITEM_LOOT;
                 it->loottype = LOOT_CORPFILES;
                 activesquad->loot.push_back(it);
+                it = new itemst;
+                it->type = ITEM_LOOT;
+                it->loottype = LOOT_CORPFILES;
+                activesquad->loot.push_back(it);
 
                 juiceparty(10);
-                sitecrime += 20;
+                sitecrime += 40;
 
                 int time = 20 + LCSrandom(10);
 

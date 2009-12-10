@@ -313,6 +313,30 @@ int main(int argc, char *argv[]) {
 
     strcpy(slogan, "We need a slogan!");
 
+    if(!LCSrandom(20)) {
+        switch(LCSrandom(5)) {
+        case 0:
+            strcpy(slogan, "To Rogues and Revolution!");
+            break;
+
+        case 1:
+            strcpy(slogan, "Lob the light grenades that burst and blind with truth!");
+            break;
+
+        case 2:
+            strcpy(slogan, "No serenade, no fire brigade, just pyromania!");
+            break;
+
+        case 3:
+            strcpy(slogan, "Revolution never comes with a warning!");
+            break;
+
+        case 4:
+            strcpy(slogan, "If you're not affected, you're not paying attention!");
+            break;
+        }
+    }
+
     for(int v = 0; v < VIEWNUM; v++) {
         attitude[v] = 30 + LCSrandom(25);
         public_interest[v] = 0;
@@ -321,7 +345,7 @@ int main(int argc, char *argv[]) {
 
     attitude[VIEW_LIBERALCRIMESQUAD] = 0;
     attitude[VIEW_LIBERALCRIMESQUADPOS] = 5;
-    attitude[VIEW_POLITICALVIOLENCE] = 5;
+    //attitude[VIEW_POLITICALVIOLENCE]=5;
 
     #ifdef REVOLUTIONNOW
 

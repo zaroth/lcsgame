@@ -81,7 +81,7 @@ void displaystoryheader(newsstoryst &ns, bool liberalguardian, int &y, int heade
                             displaycenterednewsfont("LCS VS COPS", 5);
                             break;
 
-                        case VIEW_PRISONS:
+                        case VIEW_DEATHPENALTY:
                             displaycenterednewsfont("PRISON WAR", 5);
                             break;
 

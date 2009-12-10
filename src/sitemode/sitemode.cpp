@@ -29,7 +29,73 @@ This file is part of Liberal Crime Squad.                                       
 //#include <includes.h>
 #include <externs.h>
 
+void fight_subdued(void) {
+    int p;
+    int ps = -1;
 
+    for(int l = 0; l < location.size(); l++) {
+        if(location[l]->type == SITE_GOVERNMENT_POLICESTATION)
+            ps = l;
+    }
+
+    for(int v = 0; v < chaseseq.friendcar.size(); v++) {
+        for(int v2 = (int)vehicle.size() - 1; v2 >= 0; v2--) {
+            if(vehicle[v2] == chaseseq.friendcar[v]) {
+                removecarprefs_pool(vehicle[v2]->id);
+                delete vehicle[v2];
+                vehicle.erase(vehicle.begin() + v2);
+            }
+        }
+    }
+
+    chaseseq.friendcar.clear();
+    int hostagefreed = 0;
+
+    for(p = 0; p < 6; p++) {
+        if(activesquad->squad[p] == NULL)
+            continue;
+
+        activesquad->squad[p]->squadid = -1;
+        activesquad->squad[p]->carid = -1;
+        activesquad->squad[p]->location = ps;
+        activesquad->squad[p]->weapon.type = WEAPON_NONE;
+        activesquad->squad[p]->weapon.ammo = 0;
+        activesquad->squad[p]->activity.type = ACTIVITY_NONE;
+
+        if(activesquad->squad[p]->prisoner != NULL) {
+            if(activesquad->squad[p]->prisoner->squadid == -1)
+                hostagefreed++;
+
+            freehostage(*activesquad->squad[p], 2);
+        }
+
+        activesquad->squad[p] = NULL;
+    }
+
+    for(p = 0; p < pool.size(); p++) {
+        for(int w = 0; w < BODYPARTNUM; w++)
+            pool[p]->wound[w] &= ~WOUND_BLEEDING;
+    }
+
+    clearmessagearea();
+    clearcommandarea();
+    set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
+    move(16, 1);
+    addstr("The police subdue and arrest the squad.");
+
+    if(hostagefreed > 0) {
+        move(17, 1);
+        addstr("Your hostage");
+
+        if(hostagefreed > 1)
+            addstr("s are free.");
+        else
+            addstr(" is free.");
+    }
+
+    refresh();
+    getch();
+}
 
 void mode_site(short loc) {
     sitetype = location[loc]->type;
@@ -1065,6 +1131,26 @@ void mode_site(void) {
             }
 
             if(enemy && c == 'f') {
+                for(int i = 0; i < ENCMAX; i++) {
+                    if(encounter[i].exists &&
+                            encounter[i].blood > 60 &&
+                            (encounter[i].type == CREATURE_COP)) {
+                        for(i = 0; i < 6; i++) {
+                            if(activesquad->squad[i] &&
+                                    activesquad->squad[i]->alive &&
+                                    activesquad->squad[i]->blood > 40)
+                                break;
+                        }
+
+                        if(i == 6) {
+                            fight_subdued();
+                            return;
+                        }
+
+                        break;
+                    }
+                }
+
                 youattack();
                 enemyattack();
                 creatureadvance();
@@ -1274,12 +1360,18 @@ void mode_site(void) {
                         case SITE_RESIDENTIAL_TENEMENT:
                             item = new itemst;
                             item->type = ITEM_LOOT;
-                            item->loottype = LOOT_TV;
+
+                            if(!LCSrandom(3))
+                                item->loottype = LOOT_KIDART;
+                            else if(!LCSrandom(2))
+                                item->loottype = LOOT_DIRTYSOCK;
+                            else
+                                item->loottype = LOOT_FAMILYPHOTO;
+
                             activesquad->loot.push_back(item);
                             break;
 
                         case SITE_RESIDENTIAL_APARTMENT:
-                        case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
@@ -1288,9 +1380,29 @@ void mode_site(void) {
                             else if(!LCSrandom(4))
                                 item->loottype = LOOT_SILVERWARE;
                             else if(!LCSrandom(3))
-                                item->loottype = LOOT_PRINTER;
+                                item->loottype = LOOT_TRINKET;
                             else if(!LCSrandom(2))
-                                item->loottype = LOOT_TV;
+                                item->loottype = LOOT_CHEAPJEWELERY;
+                            else
+                                item->loottype = LOOT_COMPUTER;
+
+                            activesquad->loot.push_back(item);
+                            break;
+
+                        case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
+                            item = new itemst;
+                            item->type = ITEM_LOOT;
+
+                            if(!LCSrandom(10))
+                                item->loottype = LOOT_EXPENSIVEJEWELERY;
+                            else if(!LCSrandom(5))
+                                item->loottype = LOOT_CELLPHONE;
+                            else if(!LCSrandom(4))
+                                item->loottype = LOOT_SILVERWARE;
+                            else if(!LCSrandom(3))
+                                item->loottype = LOOT_PDA;
+                            else if(!LCSrandom(2))
+                                item->loottype = LOOT_CHEAPJEWELERY;
                             else
                                 item->loottype = LOOT_COMPUTER;
 
@@ -1303,14 +1415,14 @@ void mode_site(void) {
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
-                            if(!LCSrandom(2))
+                            if(!LCSrandom(20))
+                                item->loottype = LOOT_RESEARCHFILES;
+                            else if(!LCSrandom(2))
                                 item->loottype = LOOT_LABEQUIPMENT;
                             else if(!LCSrandom(2))
-                                item->loottype = LOOT_TV;
+                                item->loottype = LOOT_COMPUTER;
                             else if(!LCSrandom(5))
-                                item->loottype = LOOT_SCANNER;
-                            else if(!LCSrandom(3))
-                                item->loottype = LOOT_PRINTER;
+                                item->loottype = LOOT_PDA;
                             else if(!LCSrandom(5))
                                 item->loottype = LOOT_CHEMICAL;
                             else
@@ -1323,12 +1435,12 @@ void mode_site(void) {
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
-                            if(!LCSrandom(40))
+                            if(!LCSrandom(20))
                                 item->loottype = LOOT_POLICERECORDS;
                             else if(!LCSrandom(3))
-                                item->loottype = LOOT_TV;
+                                item->loottype = LOOT_CELLPHONE;
                             else if(!LCSrandom(2))
-                                item->loottype = LOOT_PRINTER;
+                                item->loottype = LOOT_PDA;
                             else
                                 item->loottype = LOOT_COMPUTER;
 
@@ -1339,8 +1451,12 @@ void mode_site(void) {
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
-                            if(!LCSrandom(2))
-                                item->loottype = LOOT_TV;
+                            if(!LCSrandom(20))
+                                item->loottype = LOOT_JUDGEFILES;
+                            else if(!LCSrandom(3))
+                                item->loottype = LOOT_CELLPHONE;
+                            else if(!LCSrandom(2))
+                                item->loottype = LOOT_PDA;
                             else
                                 item->loottype = LOOT_COMPUTER;
 
@@ -1359,14 +1475,14 @@ void mode_site(void) {
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
-                            if(!LCSrandom(3))
+                            if(!LCSrandom(20))
+                                item->loottype = LOOT_SECRETDOCUMENTS;
+                            else if(!LCSrandom(3))
                                 item->loottype = LOOT_CELLPHONE;
                             else if(!LCSrandom(2))
-                                item->loottype = LOOT_TV;
-                            else if(LCSrandom(49))
-                                item->loottype = LOOT_COMPUTER;
+                                item->loottype = LOOT_PDA;
                             else
-                                item->loottype = LOOT_SECRETDOCUMENTS;
+                                item->loottype = LOOT_COMPUTER;
 
                             activesquad->loot.push_back(item);
                             break;
@@ -1376,7 +1492,7 @@ void mode_site(void) {
                             item->type = ITEM_LOOT;
 
                             if(LCSrandom(2))
-                                item->loottype = LOOT_TV;
+                                item->loottype = LOOT_TRINKET;
                             else
                                 item->loottype = LOOT_COMPUTER;
 
@@ -1393,16 +1509,7 @@ void mode_site(void) {
                         case SITE_INDUSTRY_POLLUTER:
                             item = new itemst;
                             item->type = ITEM_LOOT;
-
-                            if(!LCSrandom(4))
-                                item->loottype = LOOT_PRINTER;
-                            else if(!LCSrandom(3))
-                                item->loottype = LOOT_TV;
-                            else if(!LCSrandom(2))
-                                item->loottype = LOOT_CHEMICAL;
-                            else
-                                item->loottype = LOOT_COMPUTER;
-
+                            item->loottype = LOOT_CHEMICAL;
                             activesquad->loot.push_back(item);
                             break;
 
@@ -1410,12 +1517,12 @@ void mode_site(void) {
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
-                            if(!LCSrandom(4))
-                                item->loottype = LOOT_PRINTER;
+                            if(!LCSrandom(50))
+                                item->loottype = LOOT_CORPFILES;
                             else if(!LCSrandom(3))
-                                item->loottype = LOOT_TV;
-                            else if(!LCSrandom(2))
                                 item->loottype = LOOT_CELLPHONE;
+                            else if(!LCSrandom(2))
+                                item->loottype = LOOT_PDA;
                             else
                                 item->loottype = LOOT_COMPUTER;
 
@@ -1426,14 +1533,20 @@ void mode_site(void) {
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
-                            if(!LCSrandom(5))
+                            if(!LCSrandom(8))
+                                item->loottype = LOOT_TRINKET;
+                            else if(!LCSrandom(7))
+                                item->loottype = LOOT_WATCH;
+                            else if(!LCSrandom(6))
+                                item->loottype = LOOT_PDA;
+                            else if(!LCSrandom(5))
                                 item->loottype = LOOT_CELLPHONE;
                             else if(!LCSrandom(4))
                                 item->loottype = LOOT_SILVERWARE;
                             else if(!LCSrandom(3))
-                                item->loottype = LOOT_PRINTER;
+                                item->loottype = LOOT_CHEAPJEWELERY;
                             else if(!LCSrandom(2))
-                                item->loottype = LOOT_TV;
+                                item->loottype = LOOT_FAMILYPHOTO;
                             else
                                 item->loottype = LOOT_COMPUTER;
 
@@ -1444,14 +1557,14 @@ void mode_site(void) {
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
-                            if(!LCSrandom(5))
-                                item->loottype = LOOT_CELLPHONE;
+                            if(!LCSrandom(20))
+                                item->loottype = LOOT_AMRADIOFILES;
                             else if(!LCSrandom(4))
-                                item->loottype = LOOT_BROADCASTINGEQUIPMENT;
+                                item->loottype = LOOT_MICROPHONE;
                             else if(!LCSrandom(3))
-                                item->loottype = LOOT_PRINTER;
+                                item->loottype = LOOT_PDA;
                             else if(!LCSrandom(2))
-                                item->loottype = LOOT_TV;
+                                item->loottype = LOOT_CELLPHONE;
                             else
                                 item->loottype = LOOT_COMPUTER;
 
@@ -1462,14 +1575,14 @@ void mode_site(void) {
                             item = new itemst;
                             item->type = ITEM_LOOT;
 
-                            if(!LCSrandom(5))
-                                item->loottype = LOOT_CELLPHONE;
+                            if(!LCSrandom(20))
+                                item->loottype = LOOT_CABLENEWSFILES;
                             else if(!LCSrandom(4))
-                                item->loottype = LOOT_TVCAMERA;
+                                item->loottype = LOOT_MICROPHONE;
                             else if(!LCSrandom(3))
-                                item->loottype = LOOT_PRINTER;
+                                item->loottype = LOOT_PDA;
                             else if(!LCSrandom(2))
-                                item->loottype = LOOT_TV;
+                                item->loottype = LOOT_CELLPHONE;
                             else
                                 item->loottype = LOOT_COMPUTER;
 
@@ -1506,6 +1619,7 @@ void mode_site(void) {
                         }
                     }
 
+                    juiceparty(1);
                     activesquad->squad[beststealer]->train(SKILL_THEFT, 5);
 
                     if(!LCSrandom(maxsleightofhand + 1)) {
@@ -1619,6 +1733,13 @@ void mode_site(void) {
                         if(activesquad->squad[p] != NULL) {
                             if(activesquad->squad[p]->carid != -1) {
                                 havecar = 1;
+
+                                for(int i = 0; i < 6; i++) {
+                                    if(activesquad->squad[i] != NULL &&
+                                            activesquad->squad[i]->carid == -1)
+                                        activesquad->squad[i]->carid = activesquad->squad[p]->carid;
+                                }
+
                                 break;
                             }
                         }
@@ -1819,7 +1940,7 @@ void mode_site(void) {
                 }
 
                 //BAIL UPON VICTORY (version 2 -- defeated CCS safehouse)
-                if(ccs_siege_kills >= 25 && !location[cursite]->siege.siege && location[cursite]->renting == RENTING_CCS) {
+                if(ccs_siege_kills >= 12 && !location[cursite]->siege.siege && location[cursite]->renting == RENTING_CCS) {
                     //DEAL WITH PRISONERS AND STOP BLEEDING
                     for(p = 0; p < 6; p++) {
                         if(activesquad->squad[p] == NULL)
@@ -1859,22 +1980,20 @@ void mode_site(void) {
                     refresh();
                     getch();
 
+                    location[cursite]->renting = 0;
+                    location[cursite]->closed = 0;
+                    location[cursite]->heat = 100;
+
                     // CCS Safehouse killed?
                     if(location[cursite]->type == SITE_RESIDENTIAL_BOMBSHELTER ||
                             location[cursite]->type == SITE_BUSINESS_BARANDGRILL ||
                             location[cursite]->type == SITE_OUTDOOR_BUNKER) {
-                        //location[cursite]->hidden=1;  // Either re-hide the location...
-                        location[cursite]->renting = 0; // ...OR convert it to an LCS safehouse
-                        location[cursite]->closed = 0; // one of the above two should be commented out
-                        location[cursite]->heat = 100;
                         ccs_kills++;
 
                         if(ccs_kills < 3)
                             endgamestate--;
                         else
                             endgamestate = ENDGAME_CCS_DEFEATED;
-
-                        // Move any CCS Sleepers at this location back to the homeless shelter
                     }
 
                     conquertextccs();
@@ -2290,7 +2409,7 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The computer has been disconnected.");
+                            addstr("The computer has been unplugged.");
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2316,10 +2435,12 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The table has been abandoned.");
+                            addstr("Some people are hiding under the table.");
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
+
+                            prepareencounter(sitetype, 0);
                         } else {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);

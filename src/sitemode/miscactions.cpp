@@ -540,8 +540,8 @@ char radio_broadcast(void) {
         addstr("goes over cases of police brutality.");
         break;
 
-    case VIEW_PRISONS:
-        addstr("discusses the prison system.");
+    case VIEW_TORTURE:
+        addstr("discusses prisoner abuse and torture.");
         break;
 
     case VIEW_INTELLIGENCE:
@@ -720,8 +720,8 @@ char radio_broadcast(void) {
                         addstr("go over cases of police brutality.");
                         break;
 
-                    case VIEW_PRISONS:
-                        addstr("discuss the prison system.");
+                    case VIEW_TORTURE:
+                        addstr("discuss prisoner abuse and torture.");
                         break;
 
                     case VIEW_INTELLIGENCE:
@@ -937,8 +937,8 @@ char news_broadcast(void) {
         addstr("goes over cases of police brutality.");
         break;
 
-    case VIEW_PRISONS:
-        addstr("discusses the prison system.");
+    case VIEW_TORTURE:
+        addstr("discusses prisoner abuse and torture.");
         break;
 
     case VIEW_INTELLIGENCE:
@@ -1116,8 +1116,8 @@ char news_broadcast(void) {
                         addstr("go over cases of police brutality.");
                         break;
 
-                    case VIEW_PRISONS:
-                        addstr("discuss the prison system.");
+                    case VIEW_TORTURE:
+                        addstr("discuss prisoner abuse and torture.");
                         break;
 
                     case VIEW_INTELLIGENCE:

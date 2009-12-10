@@ -79,10 +79,10 @@ int Creature::get_skill_ip(int skill) {
 }
 
 bool Creature::enemy() {
-    if(align == -1)
+    if(align == ALIGN_CONSERVATIVE)
         return true;
     else {
-        if(type == CREATURE_COP) {
+        if(type == CREATURE_COP && align == ALIGN_MODERATE) {
             for(int i = 0; i < pool.size(); i++) {
                 if(pool[i] == this)
                     return false;
@@ -199,7 +199,7 @@ void firstname(char *str, char gender) {
     if(gender == GENDER_MALE) {
         // Roll on the number of gender-specific names,
         // plus the number of gender-neutral names
-        roll = LCSrandom(346 + 34);
+        roll = LCSrandom(347 + 34);
 
         // Decide whether to use a gender-specific name
         // or a gender-neutral name
@@ -694,6 +694,10 @@ void firstname(char *str, char gender) {
 
         case 117:
             strcat(str, "Fabio");
+            break;
+
+        case 118:
+            strcat(str, "Lyle");
             break;
 
         case 119:
@@ -1602,6 +1606,10 @@ void firstname(char *str, char gender) {
 
         case 345:
             strcat(str, "Zeke");
+            break;
+
+        case 346:
+            strcat(str, "Quentin");
             break;
 
 //}}}
@@ -6689,6 +6697,10 @@ void lastname(char *str)
 
     case 828:
         strcat(str, "Starr");
+        break;
+
+    case 829:
+        strcat(str, "Falstaff");
         break;
 
 //}}}
