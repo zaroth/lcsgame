@@ -272,8 +272,15 @@ void disguisecheck(void) {
                     stealthpractice(i, spotchance);
             }
 
-            if(encounter[n].type == CREATURE_GUARDDOG)
-                spotchance *= 3;  // Sniff sniff Grrrrowl
+            if(encounter[n].type == CREATURE_GUARDDOG) { // Sniff sniff Grrrrowl
+                // The guard dog should SCARE thieves
+                spotchance = 30;  // Higher ability to spot you than most
+
+                if(!LCSrandom(4)) { // Always a chance of detecting you, even with insane skills
+                    noticed = 1;
+                    break;
+                }
+            }
 
             if(sitealarmtimer ?
                     spotchance > (int)LCSrandom(21) + disguise :
@@ -281,7 +288,6 @@ void disguisecheck(void) {
                 noticed = 1;
                 break;
             }
-
         } while(noticer.size() > 0);
 
         if(!noticed)
@@ -770,7 +776,7 @@ char hasdisguise(Creature &cr, short type) {
         }
         }
     } else {
-        if((cr.armor.type != ARMOR_NONE || cr.animalgloss != ANIMALGLOSS_ANIMAL)
+        if((cr.armor.type != ARMOR_NONE || cr.animalgloss == ANIMALGLOSS_ANIMAL)
                 && cr.armor.type != ARMOR_HEAVYARMOR)
             uniformed = 1;
 

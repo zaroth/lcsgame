@@ -978,12 +978,76 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
         }
 
         do {
-            //Body gets two entries
-            w = LCSrandom(BODYPARTNUM + 1);
+            int offset = 0;
 
-            if(w > BODYPART_BODY)
-                w--;
-        } while((t.wound[w]&WOUND_CLEANOFF) || (t.wound[w]&WOUND_NASTYOFF) || canhit == false);
+            if(aroll > droll + 10 || mode == GAMEMODE_CHASECAR)
+                offset = 4;  // NICE SHOT; MORE LIKELY TO HIT BODY/HEAD or it's a car chase and we don't want to hit the car too much
+
+            if(aroll > droll + 20)
+                offset = 8;  // NO LIMB HITS HERE YOU AWESOME PERSON
+
+            if(aroll > droll + 30)
+                offset = 12;  // BOOM AUTOMATIC HEADSHOT MOTHA******
+
+            //Weighted location roll:
+            //200% chance to hit body
+            //50% chance to hit head
+            w = offset + LCSrandom(13 - offset);
+
+            switch(w) {
+            case 12:
+                w = BODYPART_HEAD;
+                break;
+
+            case 11:
+                w = BODYPART_BODY;
+                break;
+
+            case 10:
+                w = BODYPART_BODY;
+                break;
+
+            case 9:
+                w = BODYPART_BODY;
+                break;
+
+            case 8:
+                w = BODYPART_BODY;
+                break;
+
+            case 7:
+                w = BODYPART_ARM_RIGHT;
+                break;
+
+            case 6:
+                w = BODYPART_ARM_LEFT;
+                break;
+
+            case 5:
+                w = BODYPART_LEG_RIGHT;
+                break;
+
+            case 4:
+                w = BODYPART_LEG_LEFT;
+                break;
+
+            case 3:
+                w = BODYPART_ARM_RIGHT;
+                break;
+
+            case 2:
+                w = BODYPART_ARM_LEFT;
+                break;
+
+            case 1:
+                w = BODYPART_LEG_RIGHT;
+                break;
+
+            case 0:
+                w = BODYPART_LEG_LEFT;
+                break;
+            }
+        } while(((t.wound[w]&WOUND_CLEANOFF) || (t.wound[w]&WOUND_NASTYOFF)) && canhit == true);
 
         if(t.animalgloss == ANIMALGLOSS_TANK) {
             switch(w) {
@@ -1320,7 +1384,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                 }
 
                 damagearmor = 1;
-                armorpiercing = 5;
+                armorpiercing = 7;
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(21) + 5;
@@ -1346,7 +1410,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                 }
 
                 damagearmor = 1;
-                armorpiercing = 5;
+                armorpiercing = 7;
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(25) + 5;
@@ -1482,8 +1546,15 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             damamount = 0; // no damage to shots to the car body
         }
 
+        if(t.squadid != -1 && t.hireid == -1) //if the founder is hit
+            damamount /= 4;               //inflict 1/4 damage
+
+        //(this lets you be heroic)
+
         if(damamount > 0) {
             Creature *target = 0;
+
+
 
             if(t.squadid != -1 && t.hireid == -1 && //if the founder is hit...
                     (damamount > t.blood || damamount >= 10) && //and lethal or potentially crippling damage is done...
@@ -1576,14 +1647,6 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
             if(damagearmor)
                 armordamage(target->armor, w);
-
-            if(target->align == ALIGN_LIBERAL && target->juice >= 20 && damamount < severamount) {
-                if(damamount > 70)
-                    damamount = 70;  // Never give instakill hits against
-
-                // your better peeps unless they're
-                // head explodies or body blown apart
-            }
 
             target->blood -= damamount;
 

@@ -167,10 +167,11 @@ void HelpActivities(int activityType) {
         move(3, 1);
         addstr("However, if you want to help us, you could write one, and send it to us!");
         break;
-
-
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(20, 5);
-        addstr("Press any key - Return to previous screen");
-        getch();
     }
+
+
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    move(20, 5);
+    addstr("Press any key - Return to previous screen");
+    getch();
+}

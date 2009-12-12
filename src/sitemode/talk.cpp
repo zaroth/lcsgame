@@ -867,9 +867,19 @@ char talk(Creature &a, int t) {
             addstr("The police arrest the Squad.");
             getch();
 
+            int stolen = 0;
+
+            // Police assess stolen goods in inventory
+            for(int l = 0; l < activesquad->loot.size(); l++) {
+                if(activesquad->loot[l]->type == ITEM_LOOT)
+                    stolen++;
+            }
+
             for(int i = 0; i < 6; ++i) {
-                if(activesquad->squad[i])
+                if(activesquad->squad[i]) {
+                    activesquad->squad[i]->lawflag[LAWFLAG_THEFT] += stolen;
                     capturecreature(*activesquad->squad[i]);
+                }
 
                 activesquad->squad[i] = NULL;
             }
@@ -952,8 +962,7 @@ char talk(Creature &a, int t) {
                     addstr(".");
                 }
 
-                if((encounter[t].type == CREATURE_GANGMEMBER || encounter[t].type == CREATURE_MERC) &&
-                        sitealarm == 0) {
+                if((encounter[t].type == CREATURE_GANGMEMBER || encounter[t].type == CREATURE_MERC)) {
                     move(14, 1);
                     addstr("D - Buy weapons");
 
@@ -2592,8 +2601,7 @@ char talk(Creature &a, int t) {
                     }
                 }
 
-                if((encounter[t].type == CREATURE_GANGMEMBER || encounter[t].type == CREATURE_MERC) &&
-                        sitealarm == 0) {
+                if((encounter[t].type == CREATURE_GANGMEMBER || encounter[t].type == CREATURE_MERC)) {
                     if(c == 'd') {
                         clearcommandarea();
                         clearmessagearea();
@@ -2629,6 +2637,19 @@ char talk(Creature &a, int t) {
                             set_color(COLOR_BLUE, COLOR_BLACK, 1);
                             move(13, 1);
                             addstr("\"I don't sell guns, officer.\"");
+                            refresh();
+                            getch();
+                            return 1;
+                        }
+
+                        if(sitealarm != 0) {
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"We can talk when things are calm.\"");
                             refresh();
                             getch();
                             return 1;

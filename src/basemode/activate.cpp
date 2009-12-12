@@ -387,7 +387,9 @@ void activate(Creature *cr) {
             move(22, 3);
             addstr(cr->name);
             //addstr(" will help old ladies cross the street.");
-            addstr(" will help the elderly, local library, anything that is liberal.");
+            addstr(" will help the elderly, local library, anything that is");
+            move(23, 3);
+            addstr("liberal.");
             break;
 
         case ACTIVITY_TROUBLE:
