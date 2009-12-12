@@ -1,3 +1,6 @@
+/**
+ * Running `g++ -lncurses -o cpc -DNCURSES cpc.cpp' works fine for me -- LK
+ */
 #include <vector>
 #include <map>
 #include <string.h>
@@ -23,6 +26,16 @@ using namespace std;
 
 #include "../src/cursesgraphics.h"
 
+/* raw_output() is provided in PDcurses/Xcurses but is not in ncurses.
+  * This function is for compatibility and is currently a do nothing function.
+  */
+#ifdef NCURSES
+inline int raw_output(bool bf) {
+    raw();
+    return OK;
+}
+
+#endif
 
 unsigned long picnum, dimx, dimy;
 unsigned char bigletters[27][5][7][4];
@@ -268,11 +281,11 @@ int main(/*int nargs, char *args[]*/) {
             c = getch();
 
         // Act on input
-        if(c == 10)
+        if(c == 10)/*exit(0);*/
             return 0;
         else if(c == ']')
             index++;
-        else if(c == '[')
+        else if(c == '[' && index != 0)
             index--;
 
         if(index == -1)
