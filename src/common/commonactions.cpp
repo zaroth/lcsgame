@@ -1050,6 +1050,7 @@ void sleeperize_prompt(Creature &converted, Creature &recruiter, int y) {
             location[converted.worklocation]->interrogated = 1;
             location[converted.worklocation]->hidden = 0;
             converted.base = converted.worklocation;
+            liberalize(converted, false);
             break;
         } else if(keystroke == 10 && selection == 0) {
             converted.location = recruiter.location;

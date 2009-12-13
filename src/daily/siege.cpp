@@ -418,6 +418,7 @@ void siegecheck(char canseethings) {
                 location[l]->siege.underattack = 1;
                 location[l]->siege.lights_off = 0;
                 location[l]->siege.cameras_off = 0;
+                offended_corps = 0;
             } else if(location[l]->siege.timeuntilcorps == 0)
                 location[l]->siege.timeuntilcorps = -1;  // Silently call off foiled corp raids
 
@@ -636,6 +637,7 @@ void siegecheck(char canseethings) {
                 location[l]->siege.underattack = 1;
                 location[l]->siege.lights_off = 0;
                 location[l]->siege.cameras_off = 0;
+                offended_amradio = 0;
             }
 
             if(!location[l]->siege.siege && offended_cablenews && attitude[VIEW_CABLENEWS] <= 35 && !LCSrandom(600) && numpres > 0) {
@@ -657,6 +659,7 @@ void siegecheck(char canseethings) {
                 location[l]->siege.underattack = 1;
                 location[l]->siege.lights_off = 0;
                 location[l]->siege.cameras_off = 0;
+                offended_cablenews = 0;
             }
 
             //Firemen
@@ -733,6 +736,7 @@ void siegecheck(char canseethings) {
                 location[l]->siege.underattack = 1;
                 location[l]->siege.lights_off = 0;
                 location[l]->siege.cameras_off = 0;
+                offended_firemen = 0;
             } else if(location[l]->siege.timeuntilfiremen == 0) {
                 erase();
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -801,6 +805,7 @@ void siegecheck(char canseethings) {
                     move(10, 1);
                     addstr("The printing press is dismantled and burned.");
                     location[l]->compound_walls &= ~COMPOUND_PRINTINGPRESS;
+                    offended_firemen = 0;
                 }
 
                 if(location[l]->front_business != -1) {
@@ -1037,7 +1042,7 @@ void siegeturn(char clearformess) {
 
                     //CUT LIGHTS
                     if(!location[l]->siege.lights_off &&
-                            !(location[l]->compound_walls & COMPOUND_GENERATOR) && !LCSrandom(5)) {
+                            !(location[l]->compound_walls & COMPOUND_GENERATOR) && !LCSrandom(3)) {
                         no_bad = 0;
 
                         if(clearformess)
@@ -1047,7 +1052,7 @@ void siegeturn(char clearformess) {
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
-                        addstr("The police have cut the lights.");
+                        addstr("The police have cut the lights!");
 
                         refresh();
                         getch();
@@ -1805,6 +1810,8 @@ void giveup(void) {
                 pool[p]->activity.type = ACTIVITY_NONE;
             }
         }
+
+        location[loc]->siege.siege = 0;
     } else {
         //OTHERWISE IT IS SUICIDE
         int killnumber = 0;

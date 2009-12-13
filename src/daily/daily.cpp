@@ -721,6 +721,9 @@ void advanceday(char &clearformess, char canseethings) {
         if(disbanding)
             break;
 
+        if(!(pool[p]->alive))
+            continue;
+
         if(clinictime(*pool[p])) {
             int damage = 0; // Amount health degrades
             int release = 1;
