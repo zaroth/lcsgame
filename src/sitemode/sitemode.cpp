@@ -398,6 +398,9 @@ void mode_site(void) {
 
                 case SITE_GOVERNMENT_POLICESTATION:
                 default:
+                    if(location[cursite]->renting == RENTING_CCS)
+                        addstr(": CCS VIGILANTES ON SITE");
+
                     if(law[LAW_DEATHPENALTY] == -2 &&
                             law[LAW_POLICEBEHAVIOR] == -2)
                         addstr(": DEATH SQUADS ON SITE");

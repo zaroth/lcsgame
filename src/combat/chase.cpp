@@ -961,12 +961,17 @@ void evasiverun(void) {
 
                 switch(encounter[0].type) {
                 case CREATURE_COP:
-                    addstr("pushed to the ground, and handcuffed!");
-                    break;
+                    if(law[LAW_POLICEBEHAVIOR] >= ALIGN_LIBERAL)
+                        addstr("pushed to the ground, and handcuffed!");
+                    else {
+                        if(activesquad->squad[p]->blood < 10)
+                            addstr("thrown to the ground, and tazed to death!");
+                        else
+                            addstr("thrown to the ground, and tazed repeatedly!");
 
-                case CREATURE_GANGUNIT:
-                    addstr("thrown to the ground, and tazed repeatedly!");
-                    activesquad->squad[p]->blood -= 10;
+                        activesquad->squad[p]->blood -= 10;
+                    }
+
                     break;
 
                 case CREATURE_DEATHSQUAD:
@@ -975,7 +980,11 @@ void evasiverun(void) {
                     break;
 
                 default:
-                    addstr("thrown to the ground, and beaten senseless!");
+                    if(activesquad->squad[p]->blood < 60)
+                        addstr("thrown to the ground, and beaten to death!");
+                    else
+                        addstr("thrown to the ground, and beaten senseless!");
+
                     activesquad->squad[p]->blood -= 60;
                     break;
                 }
@@ -1210,13 +1219,27 @@ void makechasers(long sitetype, long sitecrime) {
         case SITE_MEDIA_AMRADIO:
         case SITE_MEDIA_CABLENEWS:
             cartype = VEHICLE_PICKUP;
-            pnum = LCSrandom(sitecrime / 5 + 1) + 1;
+            pnum = LCSrandom(sitecrime / 3 + 1) + 1;
 
             if(pnum > 18)
                 pnum = 18;
 
             for(n = 0; n < pnum; n++) {
                 makecreature(encounter[encslot], CREATURE_HICK);
+                encslot++;
+            }
+
+            break;
+
+        case SITE_BUSINESS_CRACKHOUSE:
+            cartype = VEHICLE_STATIONWAGON;
+            pnum = LCSrandom(sitecrime / 3 + 1) + 1;
+
+            if(pnum > 18)
+                pnum = 18;
+
+            for(n = 0; n < pnum; n++) {
+                makecreature(encounter[encslot], CREATURE_GANGMEMBER);
                 encslot++;
             }
 

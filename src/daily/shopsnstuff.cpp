@@ -3103,6 +3103,7 @@ int fencevalue(itemst &it) {
 
     case ITEM_ARMOR:
         switch(it.armor.type) { // *JDS* all armor fence values changed to 2x manufacture cost (without cloth)
+        // OR to manufacture cost +$50, whichever is LESS
         case ARMOR_CLOTHES:
             fenceamount = 20;
             break;
@@ -3140,11 +3141,11 @@ int fencevalue(itemst &it) {
             break;
 
         case ARMOR_EXPENSIVESUIT:
-            fenceamount = 600;
+            fenceamount = 350;
             break;
 
         case ARMOR_BLACKSUIT:
-            fenceamount = 120;
+            fenceamount = 110;
             break;
 
         case ARMOR_CHEAPDRESS:
@@ -3152,11 +3153,11 @@ int fencevalue(itemst &it) {
             break;
 
         case ARMOR_EXPENSIVEDRESS:
-            fenceamount = 600;
+            fenceamount = 350;
             break;
 
         case ARMOR_BLACKDRESS:
-            fenceamount = 120;
+            fenceamount = 110;
             break;
 
         case ARMOR_LABCOAT:
