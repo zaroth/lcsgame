@@ -792,7 +792,7 @@ void mode_base(void) {
 
                 addstr("P - PROTEST: burn the flag");
             } else {
-                if(funds >= 20 && !sieged &&
+                if(ledger.get_funds() >= 20 && !sieged &&
                         (selectedsiege != -1 || activesquad != NULL))
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
@@ -961,10 +961,9 @@ void mode_base(void) {
                     change_public_opinion(VIEW_FREESPEECH, 5, 1, 90);
                 }
             }
-        } else if(c == 'p' && funds >= 20 && !sieged &&
+        } else if(c == 'p' && ledger.get_funds() >= 20 && !sieged &&
                   (selectedsiege != -1 || activesquad != NULL)) {
-            funds -= 20;
-            stat_spent += 20;
+            ledger.subtract_funds(20, EXPENSE_COMPOUND);
 
             if(selectedsiege != -1)
                 location[selectedsiege]->haveflag = 1;
@@ -973,7 +972,6 @@ void mode_base(void) {
                 location[activesquad->squad[0]->base]->haveflag = 1;
 
             stat_buys++;
-            moneylost_compound += 20;
         }
 
         if(c == 's')

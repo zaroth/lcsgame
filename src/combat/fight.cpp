@@ -1265,7 +1265,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                 damamount = LCSrandom(141) + 10;
                 //severtype=WOUND_NASTYOFF; *JDS* no dismemberment from revolvers
                 damagearmor = 1;
-                armorpiercing = 2;
+                armorpiercing = 3;
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(6) + 5;
@@ -1317,7 +1317,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                 damamount = LCSrandom(181) + 10;
                 //severtype=WOUND_NASTYOFF; *JDS* no dismemberment from semi-automatics
                 damagearmor = 1;
-                armorpiercing = 3;
+                armorpiercing = 4;
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(6) + 5;
@@ -1335,7 +1335,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                 damamount = LCSrandom(251) + 10;
 
                 damagearmor = 1;
-                armorpiercing = 5;
+                armorpiercing = 7;
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(21) + 5;
@@ -1434,7 +1434,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                 }
 
                 damagearmor = 1;
-                armorpiercing = 3;
+                armorpiercing = 4;
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(21) + 5;
@@ -2459,7 +2459,7 @@ void damagemod(Creature &t, char &damtype, int &damamount,
 
     if(t.animalgloss == ANIMALGLOSS_TANK) {
         if(damtype != WOUND_BURNED)
-            damamount = LCSrandom(armorpenetration + 1);
+            damamount = 0;
         else
             armor = 10;
     } else if(hitlocation == BODYPART_HEAD)
@@ -3288,7 +3288,7 @@ void capturecreature(Creature &t) {
             t.heat = 0;
 
             for(int i = 0; i < LAWFLAGNUM; i++)
-                t.lawflag[i] = 0;
+                t.crimes_suspected[i] = 0;
         }
     } else {
         for(int l = 0; l < location.size(); l++) {

@@ -69,9 +69,9 @@ void trial(Creature &g) {
     // can get up there
 
     for(int i = 0; i < LAWFLAGNUM; i++) {
-        if(g.lawflag[i]) {
+        if(g.crimes_suspected[i]) {
             typenum++;
-            scarefactor += lawflagheat(i) * g.lawflag[i];
+            scarefactor += lawflagheat(i) * g.crimes_suspected[i];
             breaker[i] = 1;
         }
     }
@@ -142,9 +142,9 @@ void trial(Creature &g) {
         // intelligence secrets, and illegal immigrants are not taken to trial.
         //    - Jonathan S. Fox
         if(breaker[LAWFLAG_TREASON]) {
-            if(g.lawflag[LAWFLAG_TREASON] > 1) {
+            if(g.crimes_suspected[LAWFLAG_TREASON] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_TREASON], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_TREASON], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -152,9 +152,9 @@ void trial(Creature &g) {
             addstr("treason");
             breaker[LAWFLAG_TREASON] = 0;
         } else if(breaker[LAWFLAG_TERRORISM]) {
-            if(g.lawflag[LAWFLAG_TERRORISM] > 1) {
+            if(g.crimes_suspected[LAWFLAG_TERRORISM] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_TERRORISM], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_TERRORISM], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -162,9 +162,9 @@ void trial(Creature &g) {
             addstr("terrorism");
             breaker[LAWFLAG_TERRORISM] = 0;
         } else if(breaker[LAWFLAG_KIDNAPPING]) {
-            if(g.lawflag[LAWFLAG_KIDNAPPING] > 1) {
+            if(g.crimes_suspected[LAWFLAG_KIDNAPPING] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_KIDNAPPING], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_KIDNAPPING], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -172,9 +172,9 @@ void trial(Creature &g) {
             addstr("kidnapping");
             breaker[LAWFLAG_KIDNAPPING] = 0;
         } else if(breaker[LAWFLAG_BURNFLAG]) {
-            if(g.lawflag[LAWFLAG_BURNFLAG] > 1) {
+            if(g.crimes_suspected[LAWFLAG_BURNFLAG] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_BURNFLAG], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_BURNFLAG], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -188,9 +188,9 @@ void trial(Creature &g) {
 
             breaker[LAWFLAG_BURNFLAG] = 0;
         } else if(breaker[LAWFLAG_SPEECH]) {
-            if(g.lawflag[LAWFLAG_SPEECH] > 1) {
+            if(g.crimes_suspected[LAWFLAG_SPEECH] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_SPEECH], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_SPEECH], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -198,9 +198,9 @@ void trial(Creature &g) {
             addstr("harmful speech");
             breaker[LAWFLAG_SPEECH] = 0;
         } else if(breaker[LAWFLAG_BROWNIES]) {
-            if(g.lawflag[LAWFLAG_BROWNIES] > 1) {
+            if(g.crimes_suspected[LAWFLAG_BROWNIES] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_BROWNIES], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_BROWNIES], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -209,9 +209,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_BROWNIES] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_ESCAPED]) {
-            if(g.lawflag[LAWFLAG_ESCAPED] > 1) {
+            if(g.crimes_suspected[LAWFLAG_ESCAPED] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_ESCAPED], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_ESCAPED], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -220,9 +220,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_ESCAPED] = 0;
             //autoconvict=1; // *Impossible* to beat this charge
         } else if(breaker[LAWFLAG_HELPESCAPE]) {
-            if(g.lawflag[LAWFLAG_HELPESCAPE] > 1) {
+            if(g.crimes_suspected[LAWFLAG_HELPESCAPE] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_HELPESCAPE], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_HELPESCAPE], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -231,9 +231,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_HELPESCAPE] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_JURY]) {
-            if(g.lawflag[LAWFLAG_JURY] > 1) {
+            if(g.crimes_suspected[LAWFLAG_JURY] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_JURY], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_JURY], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -244,9 +244,9 @@ void trial(Creature &g) {
             addstr("racketeering");
             breaker[LAWFLAG_RACKETEERING] = 0;
         } else if(breaker[LAWFLAG_ARMEDASSAULT]) {
-            if(g.lawflag[LAWFLAG_ARMEDASSAULT] > 1) {
+            if(g.crimes_suspected[LAWFLAG_ARMEDASSAULT] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_ARMEDASSAULT], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_ARMEDASSAULT], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -255,9 +255,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_ARMEDASSAULT] = 0;
         } else if(breaker[LAWFLAG_MURDER]) { //XXX: How about the addition of a `manslaughter` charge? -- LK
             //                Manslaughter is murder without forethought or malice, IIRC. -- LK
-            if(g.lawflag[LAWFLAG_MURDER] > 1) {
+            if(g.crimes_suspected[LAWFLAG_MURDER] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_MURDER], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_MURDER], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -265,9 +265,9 @@ void trial(Creature &g) {
             addstr("murder");
             breaker[LAWFLAG_MURDER] = 0;
         } else if(breaker[LAWFLAG_ARSON]) {
-            if(g.lawflag[LAWFLAG_ARSON] > 1) {
+            if(g.crimes_suspected[LAWFLAG_ARSON] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_ARSON], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_ARSON], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -275,9 +275,9 @@ void trial(Creature &g) {
             addstr("arson");
             breaker[LAWFLAG_ARSON] = 0;
         } else if(breaker[LAWFLAG_ASSAULT]) {
-            if(g.lawflag[LAWFLAG_ASSAULT] > 1) {
+            if(g.crimes_suspected[LAWFLAG_ASSAULT] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_ASSAULT], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_ASSAULT], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -285,9 +285,9 @@ void trial(Creature &g) {
             addstr("misdemeanor assault");
             breaker[LAWFLAG_ASSAULT] = 0;
         } else if(breaker[LAWFLAG_GUNCARRY]) {
-            if(g.lawflag[LAWFLAG_GUNCARRY] > 1) {
+            if(g.crimes_suspected[LAWFLAG_GUNCARRY] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_GUNCARRY], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_GUNCARRY], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -296,9 +296,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_GUNCARRY] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_GUNUSE]) {
-            if(g.lawflag[LAWFLAG_GUNUSE] > 1) {
+            if(g.crimes_suspected[LAWFLAG_GUNUSE] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_GUNUSE], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_GUNUSE], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -307,9 +307,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_GUNUSE] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_CARTHEFT]) {
-            if(g.lawflag[LAWFLAG_CARTHEFT] > 1) {
+            if(g.crimes_suspected[LAWFLAG_CARTHEFT] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_CARTHEFT], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_CARTHEFT], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -318,9 +318,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_CARTHEFT] = 0; //XXX: this should be `Grand Theft Auto`
         }                              //                 -- LK
         else if(breaker[LAWFLAG_CCFRAUD]) {
-            if(g.lawflag[LAWFLAG_CCFRAUD] > 1) {
+            if(g.crimes_suspected[LAWFLAG_CCFRAUD] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_CCFRAUD], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_CCFRAUD], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -328,9 +328,9 @@ void trial(Creature &g) {
             addstr("credit card fraud");
             breaker[LAWFLAG_CCFRAUD] = 0;
         } else if(breaker[LAWFLAG_THEFT]) {
-            if(g.lawflag[LAWFLAG_THEFT] > 1) {
+            if(g.crimes_suspected[LAWFLAG_THEFT] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_THEFT], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_THEFT], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -338,9 +338,9 @@ void trial(Creature &g) {
             addstr("theft");
             breaker[LAWFLAG_THEFT] = 0;
         } else if(breaker[LAWFLAG_PROSTITUTION]) {
-            if(g.lawflag[LAWFLAG_PROSTITUTION] > 1) {
+            if(g.crimes_suspected[LAWFLAG_PROSTITUTION] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_PROSTITUTION], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_PROSTITUTION], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -348,9 +348,9 @@ void trial(Creature &g) {
             addstr("prostitution");
             breaker[LAWFLAG_PROSTITUTION] = 0;
         } else if(breaker[LAWFLAG_HIREILLEGAL]) {
-            if(g.lawflag[LAWFLAG_HIREILLEGAL] > 1) {
+            if(g.crimes_suspected[LAWFLAG_HIREILLEGAL] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_HIREILLEGAL], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_HIREILLEGAL], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -359,9 +359,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_HIREILLEGAL] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_COMMERCE]) {
-            if(g.lawflag[LAWFLAG_COMMERCE] > 1) {
+            if(g.crimes_suspected[LAWFLAG_COMMERCE] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_COMMERCE], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_COMMERCE], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -370,9 +370,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_COMMERCE] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_INFORMATION]) {
-            if(g.lawflag[LAWFLAG_INFORMATION] > 1) {
+            if(g.crimes_suspected[LAWFLAG_INFORMATION] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_INFORMATION], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_INFORMATION], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -381,9 +381,9 @@ void trial(Creature &g) {
             breaker[LAWFLAG_INFORMATION] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_BURIAL]) {
-            if(g.lawflag[LAWFLAG_BURIAL] > 1) {
+            if(g.crimes_suspected[LAWFLAG_BURIAL] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_BURIAL], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_BURIAL], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -391,9 +391,9 @@ void trial(Creature &g) {
             addstr("unlawful burial");
             breaker[LAWFLAG_BURIAL] = 0;
         } else if(breaker[LAWFLAG_BREAKING]) {
-            if(g.lawflag[LAWFLAG_BREAKING] > 1) {
+            if(g.crimes_suspected[LAWFLAG_BREAKING] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_BREAKING], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_BREAKING], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -401,9 +401,9 @@ void trial(Creature &g) {
             addstr("breaking and entering");
             breaker[LAWFLAG_BREAKING] = 0;
         } else if(breaker[LAWFLAG_VANDALISM]) {
-            if(g.lawflag[LAWFLAG_VANDALISM] > 1) {
+            if(g.crimes_suspected[LAWFLAG_VANDALISM] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_VANDALISM], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_VANDALISM], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -414,9 +414,9 @@ void trial(Creature &g) {
             addstr("resisting arrest");
             breaker[LAWFLAG_RESIST] = 0;
         } else if(breaker[LAWFLAG_DISTURBANCE]) {
-            if(g.lawflag[LAWFLAG_DISTURBANCE] > 1) {
+            if(g.crimes_suspected[LAWFLAG_DISTURBANCE] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_DISTURBANCE], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_DISTURBANCE], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -424,9 +424,9 @@ void trial(Creature &g) {
             addstr("disturbing the peace");
             breaker[LAWFLAG_DISTURBANCE] = 0;
         } else if(breaker[LAWFLAG_PUBLICNUDITY]) {
-            if(g.lawflag[LAWFLAG_PUBLICNUDITY] > 1) {
+            if(g.crimes_suspected[LAWFLAG_PUBLICNUDITY] > 1) {
                 char str[10];
-                itoa(g.lawflag[LAWFLAG_PUBLICNUDITY], str, 10);
+                itoa(g.crimes_suspected[LAWFLAG_PUBLICNUDITY], str, 10);
                 addstr(str);
                 addstr(" counts of ");
             }
@@ -490,7 +490,7 @@ void trial(Creature &g) {
     y++;
     addstr("C - Plead guilty.");
 
-    if(funds < 5000)
+    if(ledger.get_funds() < 5000)
         set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
     move(y, 1);
@@ -508,7 +508,7 @@ void trial(Creature &g) {
         addstr("'s offer to assist pro bono.");
     }
 
-    if(funds < 5000)
+    if(ledger.get_funds() < 5000)
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
     //SAV - added in display of skills and relevant attributes to help
@@ -558,11 +558,9 @@ void trial(Creature &g) {
             break;
         }
 
-        if(c == 'd' && funds >= 5000) {
-            funds -= 5000;
-            stat_spent += 5000;
+        if(c == 'd' && ledger.get_funds() >= 5000) {
+            ledger.subtract_funds(5000, EXPENSE_LEGAL);
             defense = 3;
-            moneylost_legal += 5000;
             break;
         }
 
@@ -975,7 +973,7 @@ void trial(Creature &g) {
         //CLEAN UP LAW FLAGS
         if(!keeplawflags) {
             for(int i = 0; i < LAWFLAGNUM; i++)
-                g.lawflag[i] = 0;
+                g.crimes_suspected[i] = 0;
         }
 
         g.heat = 0;
@@ -1004,7 +1002,7 @@ void trial(Creature &g) {
 
         //CLEAN UP LAW FLAGS
         for(int i = 0; i < LAWFLAGNUM; i++)
-            g.lawflag[i] = 0;
+            g.crimes_suspected[i] = 0;
 
         g.heat = 0;
         //Clean up confessions
@@ -1031,7 +1029,7 @@ void penalize(Creature &g, char lenient) {
     refresh();
     getch();
 
-    if(g.lawflag[LAWFLAG_ESCAPED]) {
+    if(g.crimes_suspected[LAWFLAG_ESCAPED]) {
         lenient = 0;
 
         if(law[LAW_DEATHPENALTY] == 2)
@@ -1039,8 +1037,8 @@ void penalize(Creature &g, char lenient) {
     } else
         g.deathpenalty = 0;
 
-    if(!lenient && ((g.lawflag[LAWFLAG_MURDER]) || (g.lawflag[LAWFLAG_TREASON]) ||
-                    ((g.lawflag[LAWFLAG_BURNFLAG]) && law[LAW_FLAGBURNING] == -2) ||
+    if(!lenient && ((g.crimes_suspected[LAWFLAG_MURDER]) || (g.crimes_suspected[LAWFLAG_TREASON]) ||
+                    ((g.crimes_suspected[LAWFLAG_BURNFLAG]) && law[LAW_FLAGBURNING] == -2) ||
                     law[LAW_DEATHPENALTY] == -2)) {
         if(law[LAW_DEATHPENALTY] == -2)
             g.deathpenalty = 1;
@@ -1059,82 +1057,82 @@ void penalize(Creature &g, char lenient) {
     }
 
     for(int l = 0; l < LAWFLAGNUM; l++) {
-        if(g.lawflag[l] > 10)
-            g.lawflag[l] = 10;
+        if(g.crimes_suspected[l] > 10)
+            g.crimes_suspected[l] = 10;
     }
 
     //CALC TIME
     if(!g.deathpenalty) {
         if(!(g.sentence < 0)) {
-            g.sentence += (36 + LCSrandom(18)) * g.lawflag[LAWFLAG_KIDNAPPING];
-            g.sentence += (1 + LCSrandom(4)) * g.lawflag[LAWFLAG_THEFT];
-            g.sentence += (4 + LCSrandom(12)) * (!!g.lawflag[LAWFLAG_GUNUSE]) + // Extra for first incident only
-                          (2 + LCSrandom(4) * g.lawflag[LAWFLAG_GUNUSE]);  // Generally
-            g.sentence += (1 + LCSrandom(4)) * (!!g.lawflag[LAWFLAG_GUNCARRY]);
-            g.sentence += (6 + LCSrandom(7)) * g.lawflag[LAWFLAG_CARTHEFT];
-            g.sentence += (1 + LCSrandom(13)) * g.lawflag[LAWFLAG_INFORMATION];
-            g.sentence += (1 + LCSrandom(13)) * g.lawflag[LAWFLAG_COMMERCE];
-            g.sentence += (6 + LCSrandom(25)) * g.lawflag[LAWFLAG_CCFRAUD];
-            g.sentence += (3 + LCSrandom(12)) * g.lawflag[LAWFLAG_BURIAL];
-            g.sentence += (1 + LCSrandom(6)) * g.lawflag[LAWFLAG_PROSTITUTION];
-            g.sentence += 1 * g.lawflag[LAWFLAG_DISTURBANCE];
-            g.sentence += 1 * g.lawflag[LAWFLAG_PUBLICNUDITY];
-            //g.sentence+=1*g.lawflag[LAWFLAG_LOITERING];
-            g.sentence += 1 * g.lawflag[LAWFLAG_HIREILLEGAL];
-            g.sentence += (12 + LCSrandom(100)) * g.lawflag[LAWFLAG_RACKETEERING];
+            g.sentence += (36 + LCSrandom(18)) * g.crimes_suspected[LAWFLAG_KIDNAPPING];
+            g.sentence += (1 + LCSrandom(4)) * g.crimes_suspected[LAWFLAG_THEFT];
+            g.sentence += (4 + LCSrandom(12)) * (!!g.crimes_suspected[LAWFLAG_GUNUSE]) + // Extra for first incident only
+                          (2 + LCSrandom(4) * g.crimes_suspected[LAWFLAG_GUNUSE]);  // Generally
+            g.sentence += (1 + LCSrandom(4)) * (!!g.crimes_suspected[LAWFLAG_GUNCARRY]);
+            g.sentence += (6 + LCSrandom(7)) * g.crimes_suspected[LAWFLAG_CARTHEFT];
+            g.sentence += (1 + LCSrandom(13)) * g.crimes_suspected[LAWFLAG_INFORMATION];
+            g.sentence += (1 + LCSrandom(13)) * g.crimes_suspected[LAWFLAG_COMMERCE];
+            g.sentence += (6 + LCSrandom(25)) * g.crimes_suspected[LAWFLAG_CCFRAUD];
+            g.sentence += (3 + LCSrandom(12)) * g.crimes_suspected[LAWFLAG_BURIAL];
+            g.sentence += (1 + LCSrandom(6)) * g.crimes_suspected[LAWFLAG_PROSTITUTION];
+            g.sentence += 1 * g.crimes_suspected[LAWFLAG_DISTURBANCE];
+            g.sentence += 1 * g.crimes_suspected[LAWFLAG_PUBLICNUDITY];
+            //g.sentence+=1*g.crimes_suspected[LAWFLAG_LOITERING];
+            g.sentence += 1 * g.crimes_suspected[LAWFLAG_HIREILLEGAL];
+            g.sentence += (12 + LCSrandom(100)) * g.crimes_suspected[LAWFLAG_RACKETEERING];
 
             // How illegal is marijuana?
             if(law[LAW_DRUGS] == -2)
-                g.sentence += (3 + LCSrandom(360)) * g.lawflag[LAWFLAG_BROWNIES];  //insanely illegal
+                g.sentence += (3 + LCSrandom(360)) * g.crimes_suspected[LAWFLAG_BROWNIES];  //insanely illegal
             else if(law[LAW_DRUGS] == -1)
-                g.sentence += (3 + LCSrandom(120)) * g.lawflag[LAWFLAG_BROWNIES];  //very illegal
+                g.sentence += (3 + LCSrandom(120)) * g.crimes_suspected[LAWFLAG_BROWNIES];  //very illegal
             else if(law[LAW_DRUGS] == 0)
-                g.sentence += (3 + LCSrandom(12)) * g.lawflag[LAWFLAG_BROWNIES];  //moderately illegal
+                g.sentence += (3 + LCSrandom(12)) * g.crimes_suspected[LAWFLAG_BROWNIES];  //moderately illegal
 
             // else not illegal
 
-            g.sentence += 1 * g.lawflag[LAWFLAG_BREAKING];
-            g.sentence += (60 + LCSrandom(181)) * g.lawflag[LAWFLAG_TERRORISM];
-            g.sentence += (30 + LCSrandom(61)) * g.lawflag[LAWFLAG_JURY];
-            g.sentence += (30 + LCSrandom(61)) * g.lawflag[LAWFLAG_HELPESCAPE];
-            g.sentence += (1 + LCSrandom(1)) * g.lawflag[LAWFLAG_RESIST];
+            g.sentence += 1 * g.crimes_suspected[LAWFLAG_BREAKING];
+            g.sentence += (60 + LCSrandom(181)) * g.crimes_suspected[LAWFLAG_TERRORISM];
+            g.sentence += (30 + LCSrandom(61)) * g.crimes_suspected[LAWFLAG_JURY];
+            g.sentence += (30 + LCSrandom(61)) * g.crimes_suspected[LAWFLAG_HELPESCAPE];
+            g.sentence += (1 + LCSrandom(1)) * g.crimes_suspected[LAWFLAG_RESIST];
 
-            g.sentence += (4 + LCSrandom(3)) * g.lawflag[LAWFLAG_SPEECH];
-            g.sentence += 1 * g.lawflag[LAWFLAG_VANDALISM];
-            g.sentence += (12 + LCSrandom(12)) * g.lawflag[LAWFLAG_ARSON];
-            g.sentence += (12 + LCSrandom(1)) * g.lawflag[LAWFLAG_ARMEDASSAULT];
-            g.sentence += (3 + LCSrandom(1)) * g.lawflag[LAWFLAG_ASSAULT];
+            g.sentence += (4 + LCSrandom(3)) * g.crimes_suspected[LAWFLAG_SPEECH];
+            g.sentence += 1 * g.crimes_suspected[LAWFLAG_VANDALISM];
+            g.sentence += (12 + LCSrandom(12)) * g.crimes_suspected[LAWFLAG_ARSON];
+            g.sentence += (12 + LCSrandom(1)) * g.crimes_suspected[LAWFLAG_ARMEDASSAULT];
+            g.sentence += (3 + LCSrandom(1)) * g.crimes_suspected[LAWFLAG_ASSAULT];
         }
 
         if(law[LAW_FLAGBURNING] == -2) {
             if(!LCSrandom(2))
-                g.sentence += (120 + LCSrandom(241)) * g.lawflag[LAWFLAG_BURNFLAG];
-            else if(g.lawflag[LAWFLAG_BURNFLAG])
-                g.sentence = -1 * g.lawflag[LAWFLAG_BURNFLAG];
+                g.sentence += (120 + LCSrandom(241)) * g.crimes_suspected[LAWFLAG_BURNFLAG];
+            else if(g.crimes_suspected[LAWFLAG_BURNFLAG])
+                g.sentence = -1 * g.crimes_suspected[LAWFLAG_BURNFLAG];
         } else if(law[LAW_FLAGBURNING] == -1)
-            g.sentence += 36 * g.lawflag[LAWFLAG_BURNFLAG];
+            g.sentence += 36 * g.crimes_suspected[LAWFLAG_BURNFLAG];
         else if(law[LAW_FLAGBURNING] == 0)
-            g.sentence += 1 * g.lawflag[LAWFLAG_BURNFLAG];
+            g.sentence += 1 * g.crimes_suspected[LAWFLAG_BURNFLAG];
 
-        if((LCSrandom(4) - g.lawflag[LAWFLAG_MURDER]) > 0) {
+        if((LCSrandom(4) - g.crimes_suspected[LAWFLAG_MURDER]) > 0) {
             if(!(g.sentence < 0))
-                g.sentence += (120 + LCSrandom(241)) * g.lawflag[LAWFLAG_MURDER];
+                g.sentence += (120 + LCSrandom(241)) * g.crimes_suspected[LAWFLAG_MURDER];
         } else {
             if(g.sentence < 0)
-                g.sentence -= -1 * g.lawflag[LAWFLAG_MURDER];
-            else if(g.lawflag[LAWFLAG_MURDER])
-                g.sentence = -1 * g.lawflag[LAWFLAG_MURDER];
+                g.sentence -= -1 * g.crimes_suspected[LAWFLAG_MURDER];
+            else if(g.crimes_suspected[LAWFLAG_MURDER])
+                g.sentence = -1 * g.crimes_suspected[LAWFLAG_MURDER];
         }
 
         if(g.sentence < 0)
-            g.sentence -= 1 * g.lawflag[LAWFLAG_ESCAPED];
-        else if(g.lawflag[LAWFLAG_ESCAPED])
-            g.sentence = -1 * g.lawflag[LAWFLAG_ESCAPED];
+            g.sentence -= 1 * g.crimes_suspected[LAWFLAG_ESCAPED];
+        else if(g.crimes_suspected[LAWFLAG_ESCAPED])
+            g.sentence = -1 * g.crimes_suspected[LAWFLAG_ESCAPED];
 
         if(g.sentence < 0)
-            g.sentence -= 1 * g.lawflag[LAWFLAG_TREASON];
-        else if(g.lawflag[LAWFLAG_TREASON])
-            g.sentence = -1 * g.lawflag[LAWFLAG_TREASON];
+            g.sentence -= 1 * g.crimes_suspected[LAWFLAG_TREASON];
+        else if(g.crimes_suspected[LAWFLAG_TREASON])
+            g.sentence = -1 * g.crimes_suspected[LAWFLAG_TREASON];
 
         if(lenient && g.sentence != -1)
             g.sentence /= 2;

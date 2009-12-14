@@ -395,7 +395,7 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
 
     move(13, 0);
 
-    if(funds < 50)
+    if(ledger.get_funds() < 50)
         set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
     addstr("A - Spend $50 on props and a book for them to keep afterward.");
@@ -477,11 +477,9 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
             }
         }
 
-        if(c == 'b' || (c == 'a' && funds >= 50)) {
-            if(c == 'a') {
-                funds -= 50;
-                moneylost_dating += 50;
-            }
+        if(c == 'b' || (c == 'a' && ledger.get_funds() >= 50)) {
+            if(c == 'a')
+                ledger.subtract_funds(50, EXPENSE_RECRUITMENT);
 
             //SAV - You can get your skill up to a 3 by chatting. Past that,
             // you must successfully recruit people. Training is slower the

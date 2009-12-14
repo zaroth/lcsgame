@@ -309,7 +309,7 @@ char gunselect(Creature *cr, short &gun, bool legal = 1) {
         for(int p = page * 19; p < guntype.size() && p < page * 19 + 19; p++) {
             int price = gun_price(guntype[p]);
 
-            if(funds < price)
+            if(ledger.get_funds() < price)
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
             else
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -357,11 +357,9 @@ char gunselect(Creature *cr, short &gun, bool legal = 1) {
             if(p < guntype.size()) {
                 int price = gun_price(guntype[p]);
 
-                if(price < funds) {
+                if(price < ledger.get_funds()) {
                     gun = guntype[p];
-                    funds -= price;
-                    stat_spent += price;
-                    moneylost_goods += price;
+                    ledger.subtract_funds(price, EXPENSE_SHOPPING);
                 }
 
                 return 1;
@@ -401,7 +399,7 @@ void armsdealer(int loc) {
 
         if(in_gunshop == 2) {
             if(year < 2100) {
-                if(funds >= 25)
+                if(ledger.get_funds() >= 25)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -409,7 +407,7 @@ void armsdealer(int loc) {
                 move(10, 1);
                 addstr("P - Buy Shotgun Shells        ($25)");
 
-                if(funds >= 25)
+                if(ledger.get_funds() >= 25)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -417,7 +415,7 @@ void armsdealer(int loc) {
                 move(10, 40);
                 addstr("T - Buy a .38 Speedloader     ($25)");
 
-                if(funds >= 40)
+                if(ledger.get_funds() >= 40)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -425,7 +423,7 @@ void armsdealer(int loc) {
                 move(11, 1);
                 addstr("N - Buy a 9mm Pistol Magazine ($40)");
 
-                if(funds >= 40)
+                if(ledger.get_funds() >= 40)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -433,7 +431,7 @@ void armsdealer(int loc) {
                 move(11, 40);
                 addstr("F - Buy a .45 Pistol Magazine ($40)");
 
-                if(funds >= 40)
+                if(ledger.get_funds() >= 40)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -441,7 +439,7 @@ void armsdealer(int loc) {
                 move(12, 1);
                 addstr("M - Buy a .44 Speedloader     ($40)");
 
-                if(funds >= 50)
+                if(ledger.get_funds() >= 50)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -449,7 +447,7 @@ void armsdealer(int loc) {
                 move(12, 40);
                 addstr("S - Buy a 9mm SMG Magazine    ($50)");
 
-                if(funds >= 50)
+                if(ledger.get_funds() >= 50)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -457,7 +455,7 @@ void armsdealer(int loc) {
                 move(13, 1);
                 addstr("R - Buy an Assault Rifle Mag  ($50)");
             } else {
-                if(funds >= 25)
+                if(ledger.get_funds() >= 25)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -465,7 +463,7 @@ void armsdealer(int loc) {
                 move(10, 1);
                 addstr("P - Buy a Shotgun Plasma Pack ($25)");
 
-                if(funds >= 25)
+                if(ledger.get_funds() >= 25)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -473,7 +471,7 @@ void armsdealer(int loc) {
                 move(10, 40);
                 addstr("T - Buy a .38 Slug Magazine   ($25)");
 
-                if(funds >= 40)
+                if(ledger.get_funds() >= 40)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -481,7 +479,7 @@ void armsdealer(int loc) {
                 move(11, 1);
                 addstr("N - Buy a 9mm Powerpack       ($40)");
 
-                if(funds >= 40)
+                if(ledger.get_funds() >= 40)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -489,7 +487,7 @@ void armsdealer(int loc) {
                 move(11, 40);
                 addstr("F - Buy a .45 Powerpack       ($40)");
 
-                if(funds >= 40)
+                if(ledger.get_funds() >= 40)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -497,7 +495,7 @@ void armsdealer(int loc) {
                 move(12, 1);
                 addstr("M - Buy a .44 Heavy Slug Mag  ($40)");
 
-                if(funds >= 50)
+                if(ledger.get_funds() >= 50)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -505,7 +503,7 @@ void armsdealer(int loc) {
                 move(12, 40);
                 addstr("S - Buy a SMG Powerpack       ($50)");
 
-                if(funds >= 50)
+                if(ledger.get_funds() >= 50)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -606,53 +604,39 @@ void armsdealer(int loc) {
         if(in_gunshop == 2) {
             int clipbought = -1;
 
-            if(funds >= 25 && c == 't') {
+            if(ledger.get_funds() >= 25 && c == 't') {
                 clipbought = CLIP_38;
-                funds -= 25;
-                stat_spent += 25;
-                moneylost_goods += 25;
+                ledger.subtract_funds(25, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 40 && c == 'm') {
+            if(ledger.get_funds() >= 40 && c == 'm') {
                 clipbought = CLIP_44;
-                funds -= 20;
-                stat_spent += 20;
-                moneylost_goods += 20;
+                ledger.subtract_funds(40, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 40 && c == 'n') {
+            if(ledger.get_funds() >= 40 && c == 'n') {
                 clipbought = CLIP_9;
-                funds -= 30;
-                stat_spent += 30;
-                moneylost_goods += 30;
+                ledger.subtract_funds(40, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 40 && c == 'f') {
+            if(ledger.get_funds() >= 40 && c == 'f') {
                 clipbought = CLIP_45;
-                funds -= 30;
-                stat_spent += 30;
-                moneylost_goods += 30;
+                ledger.subtract_funds(40, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 25 && c == 'p') {
+            if(ledger.get_funds() >= 25 && c == 'p') {
                 clipbought = CLIP_BUCKSHOT;
-                funds -= 25;
-                stat_spent += 25;
-                moneylost_goods += 25;
+                ledger.subtract_funds(25, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 50 && c == 'r') {
+            if(ledger.get_funds() >= 50 && c == 'r') {
                 clipbought = CLIP_ASSAULT;
-                funds -= 50;
-                stat_spent += 50;
-                moneylost_goods += 50;
+                ledger.subtract_funds(50, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 50 && c == 's') {
+            if(ledger.get_funds() >= 50 && c == 's') {
                 clipbought = CLIP_SMG;
-                funds -= 50;
-                stat_spent += 50;
-                moneylost_goods += 50;
+                ledger.subtract_funds(50, EXPENSE_SHOPPING);
             }
 
             char conf = 1;
@@ -783,7 +767,7 @@ void pawnshop(int loc) {
             addstr("Enter - Done pawning");
         } else if(in_gunshop == 2) {
             if(year < 2100) {
-                if(funds >= 20)
+                if(ledger.get_funds() >= 20)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -793,7 +777,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 2)
                     addstr("P - Buy Shotgun Shells        ($20)");
 
-                if(funds >= 15)
+                if(ledger.get_funds() >= 15)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -803,7 +787,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 2)
                     addstr("T - Buy a .38 Speedloader     ($15)");
 
-                if(funds >= 30)
+                if(ledger.get_funds() >= 30)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -813,7 +797,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 1)
                     addstr("N - Buy a 9mm Pistol Magazine ($30)");
 
-                if(funds >= 30)
+                if(ledger.get_funds() >= 30)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -823,7 +807,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 1)
                     addstr("F - Buy a .45 Pistol Magazine ($30)");
 
-                if(funds >= 20)
+                if(ledger.get_funds() >= 20)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -833,7 +817,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 1)
                     addstr("M - Buy a .44 Speedloader     ($20)");
 
-                if(funds >= 35)
+                if(ledger.get_funds() >= 35)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -843,7 +827,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 0)
                     addstr("R - Buy a Rifle/Aslt.Rifle Mag($35)");
 
-                if(funds >= 35)
+                if(ledger.get_funds() >= 35)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -853,7 +837,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < -1)
                     addstr("S - Buy a 9mm SMG Magazine    ($35)");
             } else {
-                if(funds >= 20)
+                if(ledger.get_funds() >= 20)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -863,7 +847,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 2)
                     addstr("P - Buy a Shotgun Plasma Pack ($20)");
 
-                if(funds >= 15)
+                if(ledger.get_funds() >= 15)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -873,7 +857,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 2)
                     addstr("T - Buy a .38 Slug Magazine   ($15)");
 
-                if(funds >= 30)
+                if(ledger.get_funds() >= 30)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -883,7 +867,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 1)
                     addstr("N - Buy a 9mm Powerpack       ($30)");
 
-                if(funds >= 30)
+                if(ledger.get_funds() >= 30)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -893,7 +877,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 1)
                     addstr("F - Buy a .45 Powerpack       ($30)");
 
-                if(funds >= 20)
+                if(ledger.get_funds() >= 20)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -903,7 +887,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 1)
                     addstr("M - Buy a .44 Heavy Slug Mag  ($20)");
 
-                if(funds >= 35)
+                if(ledger.get_funds() >= 35)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -913,7 +897,7 @@ void pawnshop(int loc) {
                 if(law[LAW_GUNCONTROL] < 0)
                     addstr("R - Buy a Rifle Powerpack     ($35)");
 
-                if(funds >= 35)
+                if(ledger.get_funds() >= 35)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -931,7 +915,7 @@ void pawnshop(int loc) {
         } else if(in_gunshop == 1) {
             if(year < 2100) {
                 if(law[LAW_GUNCONTROL] < 2) {
-                    if(funds >= 400)
+                    if(ledger.get_funds() >= 400)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -939,7 +923,7 @@ void pawnshop(int loc) {
                     move(10, 1);
                     addstr("G - Buy a Shotgun             ($400)");
 
-                    if(funds >= 150)
+                    if(ledger.get_funds() >= 150)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -949,7 +933,7 @@ void pawnshop(int loc) {
                 }
 
                 if(law[LAW_GUNCONTROL] < 1) {
-                    if(funds >= 300)
+                    if(ledger.get_funds() >= 300)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -957,7 +941,7 @@ void pawnshop(int loc) {
                     move(11, 1);
                     addstr("N - Buy a 9mm Semi-automatic  ($300)");
 
-                    if(funds >= 300)
+                    if(ledger.get_funds() >= 300)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -965,7 +949,7 @@ void pawnshop(int loc) {
                     move(11, 40);
                     addstr("F - Buy a .45 Semi-automatic  ($300)");
 
-                    if(funds >= 300)
+                    if(ledger.get_funds() >= 300)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -975,7 +959,7 @@ void pawnshop(int loc) {
                 }
 
                 if(law[LAW_GUNCONTROL] < 0) {
-                    if(funds >= 350)
+                    if(ledger.get_funds() >= 350)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -985,7 +969,7 @@ void pawnshop(int loc) {
                 }
 
                 if(law[LAW_GUNCONTROL] == -2) {
-                    if(funds >= 1200)
+                    if(ledger.get_funds() >= 1200)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -993,7 +977,7 @@ void pawnshop(int loc) {
                     move(13, 1);
                     addstr("S - Buy a 9mm MP5 SMG         ($1200)");
 
-                    if(funds >= 1400)
+                    if(ledger.get_funds() >= 1400)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1001,7 +985,7 @@ void pawnshop(int loc) {
                     move(13, 40);
                     addstr("C - Buy an M4 Carbine         ($1400)");
 
-                    if(funds >= 1500)
+                    if(ledger.get_funds() >= 1500)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1009,7 +993,7 @@ void pawnshop(int loc) {
                     move(14, 1);
                     addstr("A - Buy an M16                ($1500)");
 
-                    if(funds >= 1500)
+                    if(ledger.get_funds() >= 1500)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1019,7 +1003,7 @@ void pawnshop(int loc) {
                 }
             } else {
                 if(law[LAW_GUNCONTROL] < 2) {
-                    if(funds >= 400)
+                    if(ledger.get_funds() >= 400)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1027,7 +1011,7 @@ void pawnshop(int loc) {
                     move(10, 1);
                     addstr("G - Buy a Plasma Shotgun      ($400)");
 
-                    if(funds >= 150)
+                    if(ledger.get_funds() >= 150)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1037,7 +1021,7 @@ void pawnshop(int loc) {
                 }
 
                 if(law[LAW_GUNCONTROL] < 1) {
-                    if(funds >= 300)
+                    if(ledger.get_funds() >= 300)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1045,7 +1029,7 @@ void pawnshop(int loc) {
                     move(11, 1);
                     addstr("N - Buy a 9mm Laser Pistol    ($300)");
 
-                    if(funds >= 300)
+                    if(ledger.get_funds() >= 300)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1053,7 +1037,7 @@ void pawnshop(int loc) {
                     move(11, 40);
                     addstr("F - Buy a .45 Laser Pistol    ($300)");
 
-                    if(funds >= 300)
+                    if(ledger.get_funds() >= 300)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1063,7 +1047,7 @@ void pawnshop(int loc) {
                 }
 
                 if(law[LAW_GUNCONTROL] < 0) {
-                    if(funds >= 350)
+                    if(ledger.get_funds() >= 350)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1073,7 +1057,7 @@ void pawnshop(int loc) {
                 }
 
                 if(law[LAW_GUNCONTROL] == -2) {
-                    if(funds >= 1200)
+                    if(ledger.get_funds() >= 1200)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1081,7 +1065,7 @@ void pawnshop(int loc) {
                     move(13, 1);
                     addstr("S - Buy a Beijing Prince SMG  ($1200)");
 
-                    if(funds >= 1400)
+                    if(ledger.get_funds() >= 1400)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1089,7 +1073,7 @@ void pawnshop(int loc) {
                     move(13, 40);
                     addstr("C - Buy an X4 Laser Carbine   ($1400)");
 
-                    if(funds >= 1500)
+                    if(ledger.get_funds() >= 1500)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1097,7 +1081,7 @@ void pawnshop(int loc) {
                     move(14, 1);
                     addstr("A - Buy an Army X-15 Rifle    ($1500)");
 
-                    if(funds >= 1500)
+                    if(ledger.get_funds() >= 1500)
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     else
                         set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1111,7 +1095,7 @@ void pawnshop(int loc) {
             move(16, 40);
             addstr("Enter - Done buying Liberal guns");
         } else if(in_tools == 1) {
-            if(funds >= 20)
+            if(ledger.get_funds() >= 20)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1119,7 +1103,7 @@ void pawnshop(int loc) {
             move(10, 1);
             addstr("C - Buy a Crowbar              ($20)");
 
-            if(funds >= 20)
+            if(ledger.get_funds() >= 20)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1127,7 +1111,7 @@ void pawnshop(int loc) {
             move(10, 40);
             addstr("S - Buy Spray Paint            ($20)");
 
-            if(funds >= 200)
+            if(ledger.get_funds() >= 200)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1135,7 +1119,7 @@ void pawnshop(int loc) {
             move(11, 1);
             addstr("G - Buy a Guitar              ($200)");
 
-            if(funds >= 40)
+            if(ledger.get_funds() >= 40)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1390,82 +1374,60 @@ void pawnshop(int loc) {
                     refresh();
                     getch();
 
-                    funds += fenceamount;
-                    stat_funds += fenceamount;
-                    moneygained_goods += fenceamount;
+                    ledger.add_funds(fenceamount, INCOME_PAWN);
                 }
             }
         } else if(in_gunshop == 1) {
             int gunbought = -1;
 
-            if(funds >= 150 && c == 't' && law[LAW_GUNCONTROL] < 2) {
+            if(ledger.get_funds() >= 150 && c == 't' && law[LAW_GUNCONTROL] < 2) {
                 gunbought = WEAPON_REVOLVER_38;
-                funds -= 150;
-                stat_spent += 150;
-                moneylost_goods += 150;
+                ledger.subtract_funds(150, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 300 && c == 'm' && law[LAW_GUNCONTROL] < 1) {
+            if(ledger.get_funds() >= 300 && c == 'm' && law[LAW_GUNCONTROL] < 1) {
                 gunbought = WEAPON_REVOLVER_44;
-                funds -= 300;
-                stat_spent += 300;
-                moneylost_goods += 300;
+                ledger.subtract_funds(300, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 300 && c == 'n' && law[LAW_GUNCONTROL] < 2) {
+            if(ledger.get_funds() >= 300 && c == 'n' && law[LAW_GUNCONTROL] < 2) {
                 gunbought = WEAPON_SEMIPISTOL_9MM;
-                funds -= 300;
-                stat_spent += 300;
-                moneylost_goods += 300;
+                ledger.subtract_funds(300, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 300 && c == 'f' && law[LAW_GUNCONTROL] < 2) {
+            if(ledger.get_funds() >= 300 && c == 'f' && law[LAW_GUNCONTROL] < 2) {
                 gunbought = WEAPON_SEMIPISTOL_45;
-                funds -= 300;
-                stat_spent += 300;
-                moneylost_goods += 300;
+                ledger.subtract_funds(300, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 400 && c == 'g' && law[LAW_GUNCONTROL] < 2) {
+            if(ledger.get_funds() >= 400 && c == 'g' && law[LAW_GUNCONTROL] < 2) {
                 gunbought = WEAPON_SHOTGUN_PUMP;
-                funds -= 400;
-                stat_spent += 400;
-                moneylost_goods += 400;
+                ledger.subtract_funds(400, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 350 && c == 'r' && law[LAW_GUNCONTROL] < 0) {
+            if(ledger.get_funds() >= 350 && c == 'r' && law[LAW_GUNCONTROL] < 0) {
                 gunbought = WEAPON_SEMIRIFLE_AR15;
-                funds -= 350;
-                stat_spent += 350;
-                moneylost_goods += 350;
+                ledger.subtract_funds(350, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 1200 && c == 's' && law[LAW_GUNCONTROL] == -2) {
+            if(ledger.get_funds() >= 1200 && c == 's' && law[LAW_GUNCONTROL] == -2) {
                 gunbought = WEAPON_SMG_MP5;
-                funds -= 1200;
-                stat_spent += 1200;
-                moneylost_goods += 1200;
+                ledger.subtract_funds(1200, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 1400 && c == 'c' && law[LAW_GUNCONTROL] == -2) {
+            if(ledger.get_funds() >= 1400 && c == 'c' && law[LAW_GUNCONTROL] == -2) {
                 gunbought = WEAPON_CARBINE_M4;
-                funds -= 1400;
-                stat_spent += 1400;
-                moneylost_goods += 1400;
+                ledger.subtract_funds(1400, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 1500 && c == 'a' && law[LAW_GUNCONTROL] == -2) {
+            if(ledger.get_funds() >= 1500 && c == 'a' && law[LAW_GUNCONTROL] == -2) {
                 gunbought = WEAPON_AUTORIFLE_M16;
-                funds -= 1500;
-                stat_spent += 1500;
-                moneylost_goods += 1500;
+                ledger.subtract_funds(1500, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 1500 && c == 'k' && law[LAW_GUNCONTROL] == -2) {
+            if(ledger.get_funds() >= 1500 && c == 'k' && law[LAW_GUNCONTROL] == -2) {
                 gunbought = WEAPON_AUTORIFLE_AK47;
-                funds -= 1500;
-                stat_spent += 1500;
-                moneylost_goods += 1500;
+                ledger.subtract_funds(1500, EXPENSE_SHOPPING);
             }
 
 
@@ -1509,53 +1471,39 @@ void pawnshop(int loc) {
         } else if(in_gunshop == 2) {
             int clipbought = -1;
 
-            if(funds >= 15 && c == 't' && law[LAW_GUNCONTROL] < 2) {
+            if(ledger.get_funds() >= 15 && c == 't' && law[LAW_GUNCONTROL] < 2) {
                 clipbought = CLIP_38;
-                funds -= 15;
-                stat_spent += 15;
-                moneylost_goods += 15;
+                ledger.subtract_funds(15, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 20 && c == 'm' && law[LAW_GUNCONTROL] < 1) {
+            if(ledger.get_funds() >= 20 && c == 'm' && law[LAW_GUNCONTROL] < 1) {
                 clipbought = CLIP_44;
-                funds -= 20;
-                stat_spent += 20;
-                moneylost_goods += 20;
+                ledger.subtract_funds(20, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 30 && c == 'n' && law[LAW_GUNCONTROL] < 2) {
+            if(ledger.get_funds() >= 30 && c == 'n' && law[LAW_GUNCONTROL] < 2) {
                 clipbought = CLIP_9;
-                funds -= 30;
-                stat_spent += 30;
-                moneylost_goods += 30;
+                ledger.subtract_funds(30, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 30 && c == 'f' && law[LAW_GUNCONTROL] < 2) {
+            if(ledger.get_funds() >= 30 && c == 'f' && law[LAW_GUNCONTROL] < 2) {
                 clipbought = CLIP_45;
-                funds -= 30;
-                stat_spent += 30;
-                moneylost_goods += 30;
+                ledger.subtract_funds(30, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 20 && c == 'p' && law[LAW_GUNCONTROL] < 2) {
+            if(ledger.get_funds() >= 20 && c == 'p' && law[LAW_GUNCONTROL] < 2) {
                 clipbought = CLIP_BUCKSHOT;
-                funds -= 20;
-                stat_spent += 20;
-                moneylost_goods += 20;
+                ledger.subtract_funds(20, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 35 && c == 'r' && law[LAW_GUNCONTROL] < 0) {
+            if(ledger.get_funds() >= 35 && c == 'r' && law[LAW_GUNCONTROL] < 0) {
                 clipbought = CLIP_ASSAULT;
-                funds -= 35;
-                stat_spent += 35;
-                moneylost_goods += 35;
+                ledger.subtract_funds(35, EXPENSE_SHOPPING);
             }
 
-            if(funds >= 35 && c == 's' && law[LAW_GUNCONTROL] == -2) {
+            if(ledger.get_funds() >= 35 && c == 's' && law[LAW_GUNCONTROL] == -2) {
                 clipbought = CLIP_SMG;
-                funds -= 35;
-                stat_spent += 35;
-                moneylost_goods += 35;
+                ledger.subtract_funds(35, EXPENSE_SHOPPING);
             }
 
             char conf = 1;
@@ -1579,35 +1527,23 @@ void pawnshop(int loc) {
         } else if(in_tools == 1) {
             int toolbought = -1;
 
-            if(c == 'c' && funds >= 20) {
-                funds -= 20;
-                stat_spent += 20;
-                moneylost_goods += 20;
-
+            if(c == 'c' && ledger.get_funds() >= 20) {
+                ledger.subtract_funds(20, EXPENSE_SHOPPING);
                 toolbought = WEAPON_CROWBAR;
             }
 
-            if(c == 's' && funds >= 20) {
-                funds -= 20;
-                stat_spent += 20;
-                moneylost_goods += 20;
-
+            if(c == 's' && ledger.get_funds() >= 20) {
+                ledger.subtract_funds(20, EXPENSE_SHOPPING);
                 toolbought = WEAPON_SPRAYCAN;
             }
 
-            if(c == 'g' && funds >= 200) {
-                funds -= 200;
-                stat_spent += 200;
-                moneylost_goods += 200;
-
+            if(c == 'g' && ledger.get_funds() >= 200) {
+                ledger.subtract_funds(200, EXPENSE_SHOPPING);
                 toolbought = WEAPON_GUITAR;
             }
 
-            if(c == 'm' && funds >= 40) {
-                funds -= 40;
-                stat_spent += 40;
-                moneylost_goods += 40;
-
+            if(c == 'm' && ledger.get_funds() >= 40) {
+                ledger.subtract_funds(40, EXPENSE_SHOPPING);
                 toolbought = WEAPON_MOLOTOV;
             }
 
@@ -1786,7 +1722,7 @@ void dealership(int loc) {
             addstr("S - Sell a car");
         }
 
-        /*if(car_to_sell && car_to_sell->heat>1 && funds>=500)
+        /*if(car_to_sell && car_to_sell->heat>1 && ledger.get_funds()>=500)
            set_color(COLOR_WHITE,COLOR_BLACK,0);
         else
            set_color(COLOR_BLACK,COLOR_BLACK,1);
@@ -1831,8 +1767,7 @@ void dealership(int loc) {
 
         //Sell the car
         if(c == 's' && car_to_sell) {
-            funds += price;
-            moneygained_goods += price;
+            ledger.subtract_funds(price, EXPENSE_CARS);
             removecarprefs_pool(car_to_sell->id);
             delete car_to_sell;
 
@@ -1852,7 +1787,7 @@ void dealership(int loc) {
                 locheader();
                 printparty();
 
-                if(funds >= 5000)
+                if(ledger.get_funds() >= 5000)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1862,7 +1797,7 @@ void dealership(int loc) {
                 move(10, 40);
                 addstr("B - Pickup Truck ($5000)");
 
-                if(funds >= 10000)
+                if(ledger.get_funds() >= 10000)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1901,7 +1836,7 @@ void dealership(int loc) {
 
                 //Picked a car
                 if(c >= 'a' && c <= 'd') {
-                    if(funds < 5000 || (funds < 10000 && c >= 'c'))
+                    if(ledger.get_funds() < 5000 || (ledger.get_funds() < 10000 && c >= 'c'))
                         continue;
 
                     int cartype = -1;
@@ -2016,14 +1951,12 @@ void dealership(int loc) {
                         switch(cartype) {
                         case VEHICLE_BUG:
                         case VEHICLE_PICKUP:
-                            funds -= 5000;
-                            moneylost_goods += 5000;
+                            ledger.subtract_funds(5000, EXPENSE_CARS);
                             break;
 
                         case VEHICLE_SPORTSCAR:
                         case VEHICLE_SUV:
-                            funds -= 10000;
-                            moneylost_goods += 10000;
+                            ledger.subtract_funds(10000, EXPENSE_CARS);
 
                         default:
                             continue;
@@ -2049,7 +1982,7 @@ void dealership(int loc) {
         }
 
         // Reduce heat
-        /*if(c=='p' && car_to_sell && car_to_sell->heat>1 && funds>=500)
+        /*if(c=='p' && car_to_sell && car_to_sell->heat>1 && ledger.get_funds()>=500)
         {
            funds-=500;
            moneylost_goods+=500;
@@ -2102,7 +2035,7 @@ void deptstore(int loc) {
         addstr("Buyer: ");
         addstr(activesquad->squad[buyer]->name);
 
-        if(funds >= 400)
+        if(ledger.get_funds() >= 400)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2110,7 +2043,7 @@ void deptstore(int loc) {
         move(10, 1);
         addstr("C - Buy a Cheap Suit         ($400)");
 
-        if(funds >= 5000)
+        if(ledger.get_funds() >= 5000)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2118,7 +2051,7 @@ void deptstore(int loc) {
         move(11, 1);
         addstr("V - Buy an Expensive Suit   ($5000)");
 
-        if(funds >= 500)
+        if(ledger.get_funds() >= 500)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2126,7 +2059,7 @@ void deptstore(int loc) {
         move(12, 1);
         addstr("S - Buy a Black Suit         ($500)");
 
-        if(funds >= 400)
+        if(ledger.get_funds() >= 400)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2134,7 +2067,7 @@ void deptstore(int loc) {
         move(10, 40);
         addstr("H - Buy a Cheap Dress        ($400)");
 
-        if(funds >= 5000)
+        if(ledger.get_funds() >= 5000)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2142,7 +2075,7 @@ void deptstore(int loc) {
         move(11, 40);
         addstr("D - Buy an Expensive Dress  ($5000)");
 
-        if(funds >= 500)
+        if(ledger.get_funds() >= 500)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2187,46 +2120,34 @@ void deptstore(int loc) {
         if(c == 10)
             break;
 
-        if(funds >= 400 && c == 'c') {
+        if(ledger.get_funds() >= 400 && c == 'c') {
             armorbought = ARMOR_CHEAPSUIT;
-            funds -= 400;
-            stat_spent += 400;
-            moneylost_goods += 400;
+            ledger.subtract_funds(400, EXPENSE_SHOPPING);
         }
 
-        if(funds >= 5000 && c == 'v') {
+        if(ledger.get_funds() >= 5000 && c == 'v') {
             armorbought = ARMOR_EXPENSIVESUIT;
-            funds -= 5000;
-            stat_spent += 5000;
-            moneylost_goods += 5000;
+            ledger.subtract_funds(5000, EXPENSE_SHOPPING);
         }
 
-        if(funds >= 500 && c == 's') {
+        if(ledger.get_funds() >= 500 && c == 's') {
             armorbought = ARMOR_BLACKSUIT;
-            funds -= 500;
-            stat_spent += 500;
-            moneylost_goods += 500;
+            ledger.subtract_funds(500, EXPENSE_SHOPPING);
         }
 
-        if(funds >= 400 && c == 'h') {
+        if(ledger.get_funds() >= 400 && c == 'h') {
             armorbought = ARMOR_CHEAPDRESS;
-            funds -= 400;
-            stat_spent += 400;
-            moneylost_goods += 400;
+            ledger.subtract_funds(400, EXPENSE_SHOPPING);
         }
 
-        if(funds >= 5000 && c == 'd') {
+        if(ledger.get_funds() >= 5000 && c == 'd') {
             armorbought = ARMOR_EXPENSIVEDRESS;
-            funds -= 5000;
-            stat_spent += 5000;
-            moneylost_goods += 5000;
+            ledger.subtract_funds(5000, EXPENSE_SHOPPING);
         }
 
-        if(funds >= 500 && c == 'r') {
+        if(ledger.get_funds() >= 500 && c == 'r') {
             armorbought = ARMOR_BLACKDRESS;
-            funds -= 500;
-            stat_spent += 500;
-            moneylost_goods += 500;
+            ledger.subtract_funds(500, EXPENSE_SHOPPING);
         }
 
         if(armorbought != -1) {
@@ -2329,7 +2250,7 @@ void halloweenstore(int loc) {
         addstr(activesquad->squad[buyer]->name);
 
         if(in_halloween == 1) {
-            if(funds >= 70)
+            if(ledger.get_funds() >= 70)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2337,7 +2258,7 @@ void halloweenstore(int loc) {
             move(10, 1);
             addstr("T - Buy a Trench Coat         ($70)");
 
-            if(funds >= 50)
+            if(ledger.get_funds() >= 50)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2345,7 +2266,7 @@ void halloweenstore(int loc) {
             move(11, 1);
             addstr("W - Buy Work Clothes          ($50)");
 
-            if(funds >= 200)
+            if(ledger.get_funds() >= 200)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2353,7 +2274,7 @@ void halloweenstore(int loc) {
             move(12, 1);
             addstr("L - Buy a Lab Coat           ($200)");
 
-            if(funds >= 200)
+            if(ledger.get_funds() >= 200)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2361,7 +2282,7 @@ void halloweenstore(int loc) {
             move(13, 1);
             addstr("R - Buy a Black Judge's Robe ($200)");
 
-            if(funds >= 200)
+            if(ledger.get_funds() >= 200)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2369,7 +2290,7 @@ void halloweenstore(int loc) {
             move(10, 40);
             addstr("C - Buy a Clown Suit         ($200)");
 
-            if(funds >= 350)
+            if(ledger.get_funds() >= 350)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2377,7 +2298,7 @@ void halloweenstore(int loc) {
             move(11, 40);
             addstr("G - Buy Bondage Gear         ($350)");
 
-            if(funds >= 15)
+            if(ledger.get_funds() >= 15)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2385,7 +2306,7 @@ void halloweenstore(int loc) {
             move(12, 40);
             addstr("M - Buy a Mask                ($15)");
 
-            if(funds >= 90)
+            if(ledger.get_funds() >= 90)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2393,7 +2314,7 @@ void halloweenstore(int loc) {
             move(13, 40);
             addstr("O - Buy a Toga                ($90)");
 
-            if(funds >= 1000)
+            if(ledger.get_funds() >= 1000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2401,7 +2322,7 @@ void halloweenstore(int loc) {
             move(14, 40);
             addstr("E - Buy an Elephant Suit    ($1000)");
 
-            if(funds >= 1000)
+            if(ledger.get_funds() >= 1000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2414,7 +2335,7 @@ void halloweenstore(int loc) {
             addstr("Enter - Done");
         } else if(in_halloween == 2) {
             if(year < 2100) {
-                if(funds >= 20)
+                if(ledger.get_funds() >= 20)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2422,7 +2343,7 @@ void halloweenstore(int loc) {
                 move(10, 1);
                 addstr("K - Buy a Knife                 ($20)");
 
-                if(funds >= 250)
+                if(ledger.get_funds() >= 250)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2430,7 +2351,7 @@ void halloweenstore(int loc) {
                 move(11, 1);
                 addstr("S - Buy the Sword of Morfiegor ($250)");
 
-                if(funds >= 250)
+                if(ledger.get_funds() >= 250)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2438,7 +2359,7 @@ void halloweenstore(int loc) {
                 move(12, 1);
                 addstr("A - Buy a Katana and Wakizashi ($250)");
             } else {
-                if(funds >= 20)
+                if(ledger.get_funds() >= 20)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2446,7 +2367,7 @@ void halloweenstore(int loc) {
                 move(10, 1);
                 addstr("K - Buy a Vibro-Knife          ($20)");
 
-                if(funds >= 250)
+                if(ledger.get_funds() >= 250)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2454,7 +2375,7 @@ void halloweenstore(int loc) {
                 move(11, 1);
                 addstr("S - Buy a Light Sword          ($250)");
 
-                if(funds >= 250)
+                if(ledger.get_funds() >= 250)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2463,7 +2384,7 @@ void halloweenstore(int loc) {
                 addstr("A - Buy the Liberal Twin Swords($250)");
             }
 
-            if(funds >= 250)
+            if(ledger.get_funds() >= 250)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2471,7 +2392,7 @@ void halloweenstore(int loc) {
             move(13, 1);
             addstr("H - Buy a Dwarven Hammer       ($250)");
 
-            if(funds >= 250)
+            if(ledger.get_funds() >= 250)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2479,7 +2400,7 @@ void halloweenstore(int loc) {
             move(10, 40);
             addstr("M - Buy the Maul of Anrin      ($250)");
 
-            if(funds >= 250)
+            if(ledger.get_funds() >= 250)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2487,7 +2408,7 @@ void halloweenstore(int loc) {
             move(11, 40);
             addstr("C - Buy a Silver Cross         ($250)");
 
-            if(funds >= 250)
+            if(ledger.get_funds() >= 250)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2495,7 +2416,7 @@ void halloweenstore(int loc) {
             move(12, 40);
             addstr("W - Buy a Wizard's Staff       ($250)");
 
-            if(funds >= 1000)
+            if(ledger.get_funds() >= 1000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -2553,138 +2474,102 @@ void halloweenstore(int loc) {
             if(c == 10)
                 in_halloween = 0;
 
-            if(c == 't' && funds >= 70) {
+            if(c == 't' && ledger.get_funds() >= 70) {
                 armorbought = ARMOR_TRENCHCOAT;
-                funds -= 70;
-                stat_spent += 70;
-                moneylost_goods += 70;
+                ledger.subtract_funds(70, EXPENSE_SHOPPING);
             }
 
-            if(c == 'w' && funds >= 50) {
+            if(c == 'w' && ledger.get_funds() >= 50) {
                 armorbought = ARMOR_WORKCLOTHES;
-                funds -= 50;
-                stat_spent += 50;
-                moneylost_goods += 50;
+                ledger.subtract_funds(50, EXPENSE_SHOPPING);
             }
 
-            if(c == 'l' && funds >= 200) {
+            if(c == 'l' && ledger.get_funds() >= 200) {
                 armorbought = ARMOR_LABCOAT;
-                funds -= 200;
-                stat_spent += 200;
-                moneylost_goods += 200;
+                ledger.subtract_funds(200, EXPENSE_SHOPPING);
             }
 
-            if(c == 'r' && funds >= 200) {
+            if(c == 'r' && ledger.get_funds() >= 200) {
                 armorbought = ARMOR_BLACKROBE;
-                funds -= 200;
-                stat_spent += 200;
-                moneylost_goods += 200;
+                ledger.subtract_funds(200, EXPENSE_SHOPPING);
             }
 
-            if(c == 'c' && funds >= 200) {
+            if(c == 'c' && ledger.get_funds() >= 200) {
                 armorbought = ARMOR_CLOWNSUIT;
-                funds -= 200;
-                stat_spent += 200;
-                moneylost_goods += 200;
+                ledger.subtract_funds(200, EXPENSE_SHOPPING);
             }
 
-            if(c == 'g' && funds >= 350) {
+            if(c == 'g' && ledger.get_funds() >= 350) {
                 armorbought = ARMOR_BONDAGEGEAR;
-                funds -= 350;
-                stat_spent += 350;
-                moneylost_goods += 350;
+                ledger.subtract_funds(350, EXPENSE_SHOPPING);
             }
 
-            if(c == 'e' && funds >= 1000) {
+            if(c == 'e' && ledger.get_funds() >= 1000) {
                 armorbought = ARMOR_ELEPHANTSUIT;
-                funds -= 1000;
-                stat_spent += 1000;
-                moneylost_goods += 1000;
+                ledger.subtract_funds(1000, EXPENSE_SHOPPING);
             }
 
-            if(c == 'd' && funds >= 1000) {
+            if(c == 'd' && ledger.get_funds() >= 1000) {
                 armorbought = ARMOR_DONKEYSUIT;
-                funds -= 1000;
-                stat_spent += 1000;
-                moneylost_goods += 1000;
+                ledger.subtract_funds(1000, EXPENSE_SHOPPING);
             }
 
-            if(c == 'm' && funds >= 15) {
+            if(c == 'm' && ledger.get_funds() >= 15) {
                 short mask;
 
                 if(maskselect(activesquad->squad[buyer], mask)) {
                     armorbought = ARMOR_MASK;
                     armorbought2 = mask;
-                    funds -= 15;
-                    stat_spent += 15;
-                    moneylost_goods += 15;
+                    ledger.subtract_funds(15, EXPENSE_SHOPPING);
                 }
             }
 
-            if(c == 'o' && funds >= 90) {
+            if(c == 'o' && ledger.get_funds() >= 90) {
                 armorbought = ARMOR_TOGA;
-                funds -= 90;
-                stat_spent += 90;
-                moneylost_goods += 90;
+                ledger.subtract_funds(90, EXPENSE_SHOPPING);
             }
         } else if(in_halloween == 2) {
             if(c == 10)
                 in_halloween = 0;
 
-            if(c == 'k' && funds >= 20) {
+            if(c == 'k' && ledger.get_funds() >= 20) {
                 weaponbought = WEAPON_KNIFE;
-                funds -= 20;
-                stat_spent += 20;
-                moneylost_goods += 20;
+                ledger.subtract_funds(20, EXPENSE_SHOPPING);
             }
 
-            if(c == 's' && funds >= 250) {
+            if(c == 's' && ledger.get_funds() >= 250) {
                 weaponbought = WEAPON_SWORD;
-                funds -= 250;
-                stat_spent += 250;
-                moneylost_goods += 250;
+                ledger.subtract_funds(250, EXPENSE_SHOPPING);
             }
 
-            if(c == 'a' && funds >= 250) {
+            if(c == 'a' && ledger.get_funds() >= 250) {
                 weaponbought = WEAPON_DAISHO;
-                funds -= 250;
-                stat_spent += 250;
-                moneylost_goods += 250;
+                ledger.subtract_funds(250, EXPENSE_SHOPPING);
             }
 
-            if(c == 'h' && funds >= 250) {
+            if(c == 'h' && ledger.get_funds() >= 250) {
                 weaponbought = WEAPON_HAMMER;
-                funds -= 250;
-                stat_spent += 250;
-                moneylost_goods += 250;
+                ledger.subtract_funds(250, EXPENSE_SHOPPING);
             }
 
-            if(c == 'm' && funds >= 250) {
+            if(c == 'm' && ledger.get_funds() >= 250) {
                 weaponbought = WEAPON_MAUL;
-                funds -= 250;
-                stat_spent += 250;
-                moneylost_goods += 250;
+                ledger.subtract_funds(250, EXPENSE_SHOPPING);
             }
 
-            if(c == 'c' && funds >= 250) {
+            if(c == 'c' && ledger.get_funds() >= 250) {
                 weaponbought = WEAPON_CROSS;
-                funds -= 250;
-                stat_spent += 250;
-                moneylost_goods += 250;
+                ledger.subtract_funds(250, EXPENSE_SHOPPING);
             }
 
-            if(c == 'w' && funds >= 250) {
+            if(c == 'w' && ledger.get_funds() >= 250) {
                 weaponbought = WEAPON_STAFF;
-                funds -= 250;
-                stat_spent += 250;
-                moneylost_goods += 250;
+                ledger.subtract_funds(250, EXPENSE_SHOPPING);
             }
 
-            if(c == '!' && funds >= 1000) {
+            if(c == '!' && ledger.get_funds() >= 1000) {
                 armorbought = ARMOR_MITHRIL;
-                funds -= 1000;
-                stat_spent += 1000;
-                moneylost_goods += 1000;
+                ledger.subtract_funds(1000, EXPENSE_SHOPPING);
             }
         } else {
             if(c == 10)

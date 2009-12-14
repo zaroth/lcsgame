@@ -544,7 +544,7 @@ void investlocation(void) {
         printlocation(loc);
 
         if(!(location[loc]->compound_walls & COMPOUND_BASIC)) {
-            if(funds >= 2000)
+            if(ledger.get_funds() >= 2000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -554,7 +554,7 @@ void investlocation(void) {
         }
 
         if(!(location[loc]->compound_walls & COMPOUND_CAMERAS)) {
-            if(funds >= 2000)
+            if(ledger.get_funds() >= 2000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -564,7 +564,7 @@ void investlocation(void) {
         }
 
         if(!(location[loc]->compound_walls & COMPOUND_TRAPS)) {
-            if(funds >= 3000)
+            if(ledger.get_funds() >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -574,7 +574,7 @@ void investlocation(void) {
         }
 
         if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS)) {
-            if(funds >= 3000)
+            if(ledger.get_funds() >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -584,7 +584,7 @@ void investlocation(void) {
         }
 
         if(!(location[loc]->compound_walls & COMPOUND_GENERATOR)) {
-            if(funds >= 3000)
+            if(ledger.get_funds() >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -594,7 +594,7 @@ void investlocation(void) {
         }
 
         if(!(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS)) {
-            if(funds >= 3000)
+            if(ledger.get_funds() >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -604,7 +604,7 @@ void investlocation(void) {
         }
 
         if(location[loc]->front_business == -1) {
-            if(funds >= 3000)
+            if(ledger.get_funds() >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -613,7 +613,7 @@ void investlocation(void) {
             addstr("F - Setup a Business Front ($3000)");
         }
 
-        if(funds >= 150)
+        if(ledger.get_funds() >= 150)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -631,73 +631,57 @@ void investlocation(void) {
             break;
 
         if(c == 'w') {
-            if(!(location[loc]->compound_walls & COMPOUND_BASIC) && funds >= 2000) {
-                funds -= 2000;
-                stat_spent += 2000;
-                moneylost_compound += 2000;
+            if(!(location[loc]->compound_walls & COMPOUND_BASIC) && ledger.get_funds() >= 2000) {
+                ledger.subtract_funds(2000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_BASIC;
             }
         }
 
         if(c == 'c') {
-            if(!(location[loc]->compound_walls & COMPOUND_CAMERAS) && funds >= 2000) {
-                funds -= 2000;
-                stat_spent += 2000;
-                moneylost_compound += 2000;
+            if(!(location[loc]->compound_walls & COMPOUND_CAMERAS) && ledger.get_funds() >= 2000) {
+                ledger.subtract_funds(2000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_CAMERAS;
             }
         }
 
         if(c == 'b') {
-            if(!(location[loc]->compound_walls & COMPOUND_TRAPS) && funds >= 3000) {
-                funds -= 3000;
-                stat_spent += 3000;
-                moneylost_compound += 3000;
+            if(!(location[loc]->compound_walls & COMPOUND_TRAPS) && ledger.get_funds() >= 3000) {
+                ledger.subtract_funds(3000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_TRAPS;
             }
         }
 
         if(c == 't') {
-            if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS) && funds >= 3000) {
-                funds -= 3000;
-                stat_spent += 3000;
-                moneylost_compound += 3000;
+            if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS) && ledger.get_funds() >= 3000) {
+                ledger.subtract_funds(3000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_TANKTRAPS;
             }
         }
 
         if(c == 'g') {
-            if(!(location[loc]->compound_walls & COMPOUND_GENERATOR) && funds >= 3000) {
-                funds -= 3000;
-                stat_spent += 3000;
-                moneylost_compound += 3000;
+            if(!(location[loc]->compound_walls & COMPOUND_GENERATOR) && ledger.get_funds() >= 3000) {
+                ledger.subtract_funds(3000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_GENERATOR;
             }
         }
 
         if(c == 'p') {
-            if(!(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && funds >= 3000) {
-                funds -= 3000;
-                stat_spent += 3000;
-                moneylost_compound += 3000;
+            if(!(location[loc]->compound_walls & COMPOUND_PRINTINGPRESS) && ledger.get_funds() >= 3000) {
+                ledger.subtract_funds(3000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_PRINTINGPRESS;
             }
         }
 
         if(c == 'r') {
-            if(funds >= 150) {
-                funds -= 150;
-                stat_spent += 150;
-                moneylost_compound += 150;
+            if(ledger.get_funds() >= 150) {
+                ledger.subtract_funds(150, EXPENSE_COMPOUND);
                 location[loc]->compound_stores += 20;
             }
         }
 
         if(c == 'f') {
-            if(location[loc]->front_business == -1 && funds >= 3000) {
-                funds -= 3000;
-                stat_spent += 3000;
-                moneylost_compound += 3000;
+            if(location[loc]->front_business == -1 && ledger.get_funds() >= 3000) {
+                ledger.subtract_funds(150, EXPENSE_COMPOUND);
 
                 do {
                     location[loc]->front_business = LCSrandom(BUSINESSFRONTNUM);

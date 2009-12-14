@@ -99,7 +99,7 @@ void removecarprefs_pool(long carid) {
 // *JDS* Checks if the character is a criminal
 bool iscriminal(Creature &cr) {
     for(int i = 0; i < LAWFLAGNUM; i++)
-        if(cr.lawflag[i])
+        if(cr.crimes_suspected[i])
             return 1;
 
     return 0;
@@ -460,7 +460,8 @@ void criminalizeparty(short crime) {
             if(!activesquad->squad[p]->alive)
                 continue;
 
-            activesquad->squad[p]->lawflag[crime]++;
+            //activesquad->squad[p]->crimes_committed[crime]++;
+            activesquad->squad[p]->crimes_suspected[crime]++;
             activesquad->squad[p]->heat += lawflagheat(crime);
         }
     }
@@ -477,14 +478,15 @@ void criminalizepool(short crime, long exclude, short loc) {
         if(loc != -1 && pool[p]->location != loc)
             continue;
 
-        pool[p]->lawflag[crime]++;
+        //pool[p]->crimes_committed[crime]++;
+        pool[p]->crimes_suspected[crime]++;
         pool[p]->heat += lawflagheat(crime);
     }
 }
 
 /* common - applies a crime to a person */
 void criminalize(Creature &cr, short crime) {
-    cr.lawflag[crime]++;
+    cr.crimes_suspected[crime]++;
     cr.heat += lawflagheat(crime);
 }
 
@@ -596,9 +598,7 @@ void cleangonesquads(void) {
         else {
             for(int l = squad[sq]->loot.size() - 1; l >= 0; l--) {
                 if(squad[sq]->loot[l]->type == ITEM_MONEY) {
-                    funds += squad[sq]->loot[l]->money;
-                    stat_funds += squad[sq]->loot[l]->money;
-                    moneygained_thievery += squad[sq]->loot[l]->money;
+                    ledger.add_funds(squad[sq]->loot[l]->money, INCOME_THIEVERY);
                     delete squad[sq]->loot[l];
                     squad[sq]->loot.erase(squad[sq]->loot.begin() + l);
                 } else {

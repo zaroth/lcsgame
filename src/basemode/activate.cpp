@@ -411,25 +411,25 @@ void activate(Creature *cr) {
             addstr(cr->name);
             addstr(" will search the internet for public opinion polls. Polls will");
             move(23, 3);
-            addstr("give an idea on how the liberal agenda is going. Computers and");
+            addstr("give an idea on how the liberal agenda is going. Computers and intelligence");
             move(24, 3);
-            addstr("and intelligence will provide better results.");
+            addstr("will provide better results.");
             break;
 
         case ACTIVITY_DOS_ATTACKS:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will harass Conservative websites. Computer skill will give greater");
+            addstr(" will harass Conservative websites. Computer skill will give");
             move(23, 3);
-            addstr("effect.");
+            addstr("greater effect.");
             break;
 
         case ACTIVITY_HACKING:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will hack into private Conservative networks. Computer skill and");
+            addstr(" will hack into private Conservative networks. Computer skill");
             move(23, 3);
-            addstr("intelligence will give greater effect.");
+            addstr("and intelligence will give greater effect.");
             break;
 
         case ACTIVITY_WRITE_LETTERS:

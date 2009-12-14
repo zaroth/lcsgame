@@ -118,16 +118,16 @@ void siegecheck(char canseethings) {
 
                 // Cleanse record on things that aren't illegal right now
                 if(law[LAW_FLAGBURNING] > 0)
-                    pool[p]->lawflag[LAWFLAG_BURNFLAG] = 0;
+                    pool[p]->crimes_suspected[LAWFLAG_BURNFLAG] = 0;
 
                 if(law[LAW_DRUGS] > 0)
-                    pool[p]->lawflag[LAWFLAG_BROWNIES] = 0;
+                    pool[p]->crimes_suspected[LAWFLAG_BROWNIES] = 0;
 
                 if(law[LAW_IMMIGRATION] == 2)
                     pool[p]->flag &= ~CREATUREFLAG_ILLEGALALIEN;
 
                 if(law[LAW_FREESPEECH] > -2)
-                    pool[p]->lawflag[LAWFLAG_SPEECH] = 0;
+                    pool[p]->crimes_suspected[LAWFLAG_SPEECH] = 0;
 
                 //Heat doesn't matter for sieges until it gets high
                 crimes = pool[p]->heat - 5;
@@ -867,10 +867,9 @@ void siegeturn(char clearformess) {
             if(price < 0)
                 price = 0;
 
-            if(funds >= price) {
-                funds -= price;
-                moneylost_food += price;
-            } else {
+            if(ledger.get_funds() >= price)
+                ledger.subtract_funds(price, EXPENSE_FOOD);
+            else {
                 if(location[l]->compound_stores >= eat)
                     location[l]->compound_stores -= eat;
                 else if(liberalcount[l]) {
@@ -1704,18 +1703,17 @@ void giveup(void) {
             addstr(" Liberals are taken to the police station.");
         }
 
-        if(funds > 0) {
-            if(funds <= 10000 || location[loc]->siege.siegetype == SIEGE_FIREMEN) {
+        if(ledger.get_funds() > 0) {
+            if(ledger.get_funds() <= 10000 || location[loc]->siege.siegetype == SIEGE_FIREMEN) {
                 move(8, 1);
                 addstr("Fortunately, your funds remain intact.");
             } else {
                 move(8, 1);
-                int confiscated = LCSrandom(LCSrandom(funds - 10000) + 1) + 1000;
+                int confiscated = LCSrandom(LCSrandom(ledger.get_funds() - 10000) + 1) + 1000;
                 char str[100];
                 sprintf(str, "Law enforcement have confiscated $%d in LCS funds.", confiscated);
                 addstr(str);
-                funds -= confiscated;
-                moneylost_confiscated += confiscated;
+                ledger.subtract_funds(confiscated, EXPENSE_CONFISCATED);
             }
         }
 
@@ -2306,7 +2304,7 @@ void statebrokenlaws(int loc) {
             criminalcount++;
 
         for(int i = 0; i < LAWFLAGNUM; i++) {
-            if(pool[p]->lawflag[i])
+            if(pool[p]->crimes_suspected[i])
                 breakercount[i]++;
         }
 
@@ -2636,7 +2634,7 @@ void statebrokenlaws(Creature &cr) {
         kidnapped++;
 
     for(int i = 0; i < LAWFLAGNUM; i++)
-        if(cr.lawflag[i]) {
+        if(cr.crimes_suspected[i]) {
             breakercount[i] = true;
             criminal = true;
         } else

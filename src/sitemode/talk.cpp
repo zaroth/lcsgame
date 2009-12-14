@@ -877,7 +877,7 @@ char talk(Creature &a, int t) {
 
             for(int i = 0; i < 6; ++i) {
                 if(activesquad->squad[i]) {
-                    activesquad->squad[i]->lawflag[LAWFLAG_THEFT] += stolen;
+                    activesquad->squad[i]->crimes_suspected[LAWFLAG_THEFT] += stolen;
                     capturecreature(*activesquad->squad[i]);
                 }
 
@@ -1790,11 +1790,9 @@ char talk(Creature &a, int t) {
                         break;
                     }
 
-                    funds -= rent;
-                    stat_spent += rent;
+                    ledger.subtract_funds(rent, EXPENSE_RENT);
                     location[cursite]->renting = rent;
                     location[cursite]->newrental = 1;
-                    moneylost_rent += rent;
 
                     basesquad(activesquad, cursite);
                     return 1;
@@ -2570,7 +2568,7 @@ char talk(Creature &a, int t) {
                         refresh();
                         getch();
 
-                        if(funds >= rent)
+                        if(ledger.get_funds() >= rent)
                             talkmode = TALKMODE_RENTING;
                         else {
                             clearcommandarea();

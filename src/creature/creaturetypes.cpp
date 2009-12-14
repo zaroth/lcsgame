@@ -1463,16 +1463,16 @@ void makecreature(Creature &cr, short type) {
 
         if(!LCSrandom(2)) {
             switch(LCSrandom(3)) {
-            case 0:
-                cr.lawflag[LAWFLAG_BROWNIES]++;
+            case 0://cr.crimes_committed[LAWFLAG_BROWNIES]++;
+                cr.crimes_suspected[LAWFLAG_BROWNIES]++;
                 break;
 
-            case 1:
-                cr.lawflag[LAWFLAG_ASSAULT]++;
+            case 1://cr.crimes_committed[LAWFLAG_ASSAULT]++;
+                cr.crimes_suspected[LAWFLAG_ASSAULT]++;
                 break;
 
-            case 2:
-                cr.lawflag[LAWFLAG_MURDER]++;
+            case 2://cr.crimes_committed[LAWFLAG_MURDER]++;
+                cr.crimes_suspected[LAWFLAG_MURDER]++;
                 break;
             }
         }
@@ -1605,8 +1605,9 @@ void makecreature(Creature &cr, short type) {
         cr.skill[SKILL_PERSUASION] = LCSrandom(4) + 2;
         cr.skill[SKILL_SEDUCTION] = LCSrandom(4) + 2;
 
+        //cr.crimes_committed[LAWFLAG_PROSTITUTION]++;
         if(!LCSrandom(3))
-            cr.lawflag[LAWFLAG_PROSTITUTION]++;
+            cr.crimes_suspected[LAWFLAG_PROSTITUTION]++;
 
         break;
 
@@ -1690,8 +1691,10 @@ void makecreature(Creature &cr, short type) {
         cr.skill[SKILL_ART] = LCSrandom(2);
         cr.skill[SKILL_TAILORING] = LCSrandom(2);
 
-        if(!LCSrandom(10))
-            cr.lawflag[LAWFLAG_BROWNIES]++;
+        if(!LCSrandom(10)) {
+            //cr.crimes_committed[LAWFLAG_BROWNIES]++;
+            cr.crimes_suspected[LAWFLAG_BROWNIES]++;
+        }
 
         break;
 
@@ -1902,13 +1905,15 @@ void makecreature(Creature &cr, short type) {
         cr.skill[SKILL_THEFT] = LCSrandom(5) + 3;
         cr.age = AGE_MATURE;
 
+        //cr.crimes_committed[LAWFLAG_BREAKING]++;
+        //cr.crimes_committed[LAWFLAG_THEFT]++;
         if(!LCSrandom(10)) {
             switch(LCSrandom(2)) {
             case 0:
-                cr.lawflag[LAWFLAG_BREAKING]++;
+                cr.crimes_suspected[LAWFLAG_BREAKING]++;
 
             case 1:
-                cr.lawflag[LAWFLAG_THEFT]++;
+                cr.crimes_suspected[LAWFLAG_THEFT]++;
             }
         }
 

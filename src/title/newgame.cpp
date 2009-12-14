@@ -1038,7 +1038,7 @@ void makecharacter(void) {
             }
 
             if(c == 'c')
-                funds = 1000;
+                ledger.force_funds(1000);
 
             if(c == 'd')
                 makelawyer = true;
@@ -1057,7 +1057,7 @@ void makecharacter(void) {
                 newcr->skill[SKILL_STEALTH] += 1;
                 newcr->type = CREATURE_THIEF;
                 base = SITE_RESIDENTIAL_APARTMENT_UPSCALE;
-                funds += 1200;
+                ledger.force_funds(ledger.get_funds() + 1200);
             }
 
             if(c == 'b') {
@@ -1080,7 +1080,7 @@ void makecharacter(void) {
                 newcr->skill[SKILL_LAW] += 1;
                 newcr->type = CREATURE_COLLEGESTUDENT;
                 base = SITE_RESIDENTIAL_APARTMENT;
-                funds += 500;
+                ledger.force_funds(ledger.get_funds() + 500);
             }
 
             if(c == 'd') {
@@ -1108,7 +1108,7 @@ void makecharacter(void) {
                 newcr->skill[SKILL_LEADERSHIP] += 1;
                 newcr->type = CREATURE_POLITICALACTIVIST;
                 base = SITE_RESIDENTIAL_TENEMENT;
-                funds += 200;
+                ledger.force_funds(ledger.get_funds() + 200);
                 newcr->juice += 50;
             }
 

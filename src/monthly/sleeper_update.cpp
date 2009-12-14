@@ -73,6 +73,11 @@ void sleepereffect(Creature &cr, char &clearformess, char canseethings, int *lib
         break;
 
     case ACTIVITY_NONE:
+        cr.infiltration += 0.01f;
+
+        if(cr.infiltration >= 1)
+            cr.infiltration = 1;
+
     case ACTIVITY_SLEEPER_JOINLCS:
     default:
         break;
@@ -87,39 +92,6 @@ void sleepereffect(Creature &cr, char &clearformess, char canseethings, int *lib
 **
 **********************************/
 void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int *libpower) {
-
-    if(LCSrandom(100) > 100 * cr.infiltration && !disbanding) {
-        if(!LCSrandom(static_cast<int>(cr.infiltration * 20) + 1))
-            cr.juice -= 1;
-
-        if(cr.juice < -2) {
-            erase();
-            move(6, 1);
-            addstr("Sleeper ");
-            addstr(cr.name);
-            addstr(" is tired of indirect methods.");
-
-            move(8, 1);
-            addstr("The Liberal is waiting at the shelter.");
-
-            refresh();
-            getch();
-
-            int hs;
-
-            for(hs = 0; location[hs]->type != SITE_RESIDENTIAL_SHELTER; hs++);
-
-            removesquadinfo(cr);
-            cr.location = hs;
-            cr.weapon.type = WEAPON_NONE;
-            cr.weapon.ammo = 0;
-            cr.activity.type = ACTIVITY_NONE;
-            cr.flag &= ~CREATUREFLAG_SLEEPER;
-        }
-
-        return;
-    }
-
     int power = (cr.attval(ATTRIBUTE_CHARISMA) +
                  cr.attval(ATTRIBUTE_HEART) +
                  cr.attval(ATTRIBUTE_INTELLIGENCE) +
@@ -203,50 +175,27 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
     power = static_cast<int>(power * cr.infiltration);
 
     switch(cr.type) {
-    /* Cultural leaders block - small influence on everything */
-    /*Radio Personalities and News Anchors subvert Conservative news stations and convince people to watch
-    Liberal news stations. But once people watch Liberal news, nobody will want to listen to the
-    Radio Personalities and News Anchors anymore! They lose their ability to change Culture!*/
+    /* Radio Personalities and News Anchors subvert Conservative news stations by
+       reducing their audience and twisting views on the issues. As their respective
+       media establishments become marginalized, so does their influence. */
     case CREATURE_RADIOPERSONALITY:
-        if(attitude[VIEW_AMRADIO] <= 50) {
-            change_public_opinion(VIEW_AMRADIO, 1);
+        change_public_opinion(VIEW_AMRADIO, 1);
 
-            for(int i = 0; i < VIEWNUM - 3; i++)
-                libpower[i] += power / 2;
-        } else {
-            libpower[VIEW_LIBERALCRIMESQUAD] += power;
-            libpower[VIEW_LIBERALCRIMESQUADPOS] += power;
-        }
+        for(int i = 0; i < VIEWNUM - 3; i++)
+            libpower[i] += power * attitude[VIEW_AMRADIO] / 100;
 
         break;
 
     case CREATURE_NEWSANCHOR:
-        if(attitude[VIEW_CABLENEWS] <= 50) {
-            change_public_opinion(VIEW_CABLENEWS, 1);
+        change_public_opinion(VIEW_CABLENEWS, 1);
 
-            for(int i = 0; i < VIEWNUM - 3; i++)
-                libpower[i] += power / 2;
-        } else {
-            libpower[VIEW_LIBERALCRIMESQUAD] += power;
-            libpower[VIEW_LIBERALCRIMESQUADPOS] += power;
-        }
+        for(int i = 0; i < VIEWNUM - 3; i++)
+            libpower[i] += power * attitude[VIEW_CABLENEWS] / 100;
 
         break;
 
-    /* Priests gain their cultural power through their ability to "creatively interpert" religion to promote
-    Liberal ideas, such as the seperation of church and state. But if the government strictly
-    enforce the seperation of church and state (L+), prohibiting faith-based views from affecting public policy,
-    then Priests would be unable to use their Religious preachings to change the Culture of society!*/
+    /* Cultural leaders block - influences cultural issues */
     case CREATURE_PRIEST:
-
-    /*if(law[LAW_RELIGION]<=1)
-    {
-           libpower[VIEW_LIBERALCRIMESQUAD]+=power;
-           libpower[VIEW_LIBERALCRIMESQUADPOS]+=power;
-    }
-    break;*/
-    /* All these other Cultural Sleepers are inherently good at affecting culture, in fact, they get to produce
-    Culture! Nothing can be done to strip them of their power. */
     case CREATURE_PAINTER:
     case CREATURE_SCULPTOR:
     case CREATURE_AUTHOR:
@@ -256,24 +205,32 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
     case CREATURE_CRITIC_ART:
     case CREATURE_CRITIC_MUSIC:
     case CREATURE_ACTOR:
-        break;
-
-    /* Legal block - influences an array of social issues */
-    case CREATURE_LAWYER:
-    case CREATURE_JUDGE_CONSERVATIVE:
         libpower[VIEW_WOMEN] += power;
         libpower[VIEW_CIVILRIGHTS] += power;
         libpower[VIEW_GAY] += power;
-        libpower[VIEW_DEATHPENALTY] += power;
         libpower[VIEW_FREESPEECH] += power;
+        libpower[VIEW_DRUGS] += power;
+        libpower[VIEW_IMMIGRATION] += power;
+        break;
+
+    /* Legal block - influences an array of social issues */
+    case CREATURE_JUDGE_CONSERVATIVE:
         libpower[VIEW_JUSTICES] += power;
+        libpower[VIEW_FREESPEECH] += power;
         libpower[VIEW_INTELLIGENCE] += power;
-        libpower[VIEW_ANIMALRESEARCH] += power;
+
+    case CREATURE_LAWYER:
+        libpower[VIEW_POLICEBEHAVIOR] += power;
+        libpower[VIEW_DEATHPENALTY] += power;
+        libpower[VIEW_GUNCONTROL] += power;
+        libpower[VIEW_DRUGS] += power;
         break;
 
     /* Scientists block */
-    case CREATURE_SCIENTIST_LABTECH:
     case CREATURE_SCIENTIST_EMINENT:
+        libpower[VIEW_POLLUTION] += power;
+
+    case CREATURE_SCIENTIST_LABTECH:
         libpower[VIEW_NUCLEARPOWER] += power;
         libpower[VIEW_ANIMALRESEARCH] += power;
         libpower[VIEW_GENETICS] += power;
@@ -281,36 +238,58 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
 
     /* Corporate block */
     case CREATURE_CORPORATE_CEO:
+        libpower[VIEW_CEOSALARY] += power;
+
     case CREATURE_CORPORATE_MANAGER:
+        libpower[VIEW_WOMEN] += power;
+        libpower[VIEW_TAXES] += power;
+        libpower[VIEW_CORPORATECULTURE] += power;
+        libpower[VIEW_SWEATSHOPS] += power;
+        libpower[VIEW_POLLUTION] += power;
+        libpower[VIEW_CIVILRIGHTS] += power;
         break;
 
     /* Law enforcement block */
     case CREATURE_DEATHSQUAD:
+        libpower[VIEW_DEATHPENALTY] += power;
+
     case CREATURE_SWAT:
     case CREATURE_COP:
     case CREATURE_GANGUNIT:
         libpower[VIEW_POLICEBEHAVIOR] += power;
         libpower[VIEW_DRUGS] += power;
+        libpower[VIEW_TORTURE] += power;
+        libpower[VIEW_GUNCONTROL] += power;
         break;
 
     /* Prison block */
     case CREATURE_EDUCATOR:
     case CREATURE_PRISONGUARD:
     case CREATURE_PRISONER:
+        libpower[VIEW_POLICEBEHAVIOR] += power;
         libpower[VIEW_DEATHPENALTY] += power;
         libpower[VIEW_DRUGS] += power;
+        libpower[VIEW_TORTURE] += power;
         break;
 
     /* Intelligence block */
     case CREATURE_AGENT:
         libpower[VIEW_INTELLIGENCE] += power;
+        libpower[VIEW_TORTURE] += power;
+        libpower[VIEW_FREESPEECH] += power;
         break;
 
     /* Military block */
+    case CREATURE_MERC:
+        libpower[VIEW_GUNCONTROL] += power;
+        break;
+
     case CREATURE_SOLDIER:
     case CREATURE_VETERAN:
-    case CREATURE_MERC:
         libpower[VIEW_MILITARY] += power;
+        libpower[VIEW_TORTURE] += power;
+        libpower[VIEW_GAY] += power;
+        libpower[VIEW_WOMEN] += power;
         break;
 
     /* Sweatshop workers */
@@ -333,16 +312,15 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
     case CREATURE_MUTANT:
         return;
 
-    /* Talk up LCS block -- includes everyone else */
+    /* Miscellaneous block -- includes everyone else */
     case CREATURE_FIREFIGHTER:
         if(law[LAW_FREESPEECH] == -2) {
             libpower[VIEW_FREESPEECH] += power;
             break;
         }
 
-    default:
-        libpower[VIEW_LIBERALCRIMESQUAD] += power;
-        libpower[VIEW_LIBERALCRIMESQUADPOS] += power;
+    default: // Affect a random issue
+        libpower[LCSrandom(VIEWNUM)] += power;
     }
 }
 
@@ -628,7 +606,7 @@ void sleeper_embezzle(Creature &cr, char &clearformess, char canseethings, int *
 
             for(ps = 0; location[ps]->type != SITE_GOVERNMENT_POLICESTATION; ps++);
 
-            cr.lawflag[LAWFLAG_COMMERCE]++;
+            cr.crimes_suspected[LAWFLAG_COMMERCE]++;
             removesquadinfo(cr);
             cr.location = ps;
             cr.weapon.type = WEAPON_NONE;
@@ -648,32 +626,31 @@ void sleeper_embezzle(Creature &cr, char &clearformess, char canseethings, int *
             cr.juice = 100;
     }
 
+    int income;
+
     switch(cr.type) {
     case CREATURE_SCIENTIST_EMINENT:
-        funds += static_cast<int>(3000 * cr.infiltration);
-        moneygained_embezzlement += static_cast<int>(3000 * cr.infiltration);
+        income = static_cast<int>(3000 * cr.infiltration);
         break;
 
     case CREATURE_CORPORATE_CEO:
-        funds += static_cast<int>(10000 * cr.infiltration);
-        moneygained_embezzlement += static_cast<int>(10000 * cr.infiltration);
+        income = static_cast<int>(10000 * cr.infiltration);
         break;
 
     case CREATURE_CORPORATE_MANAGER:
-        funds += static_cast<int>(2000 * cr.infiltration);
-        moneygained_embezzlement += static_cast<int>(2000 * cr.infiltration);
+        income = static_cast<int>(2000 * cr.infiltration);
         break;
 
     case CREATURE_AGENT:
-        funds += static_cast<int>(1000 * cr.infiltration);
-        moneygained_embezzlement += static_cast<int>(1000 * cr.infiltration);
+        income = static_cast<int>(1000 * cr.infiltration);
         break;
 
     default:
-        funds += static_cast<int>(100 * cr.infiltration);
-        moneygained_embezzlement += static_cast<int>(100 * cr.infiltration);
-        return;
+        income = static_cast<int>(100 * cr.infiltration);
+        break;
     }
+
+    ledger.add_funds(income, INCOME_EMBEZZLEMENT);
 }
 
 /*********************************
@@ -699,7 +676,7 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
 
             for(ps = 0; location[ps]->type != SITE_GOVERNMENT_POLICESTATION; ps++);
 
-            cr.lawflag[LAWFLAG_THEFT]++;
+            cr.crimes_suspected[LAWFLAG_THEFT]++;
             removesquadinfo(cr);
             cr.location = ps;
             cr.weapon.type = WEAPON_NONE;
