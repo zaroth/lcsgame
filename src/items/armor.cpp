@@ -60,7 +60,6 @@ int armorst::interrogation_basepower() {
         case MASK_BUSH_GEORGE:
         case MASK_BUSH_GEORGE2:
         case MASK_CARTER:
-        case MASK_CHENEY:
         case MASK_CLINTON_BILL:
         case MASK_CLINTON_HILLARY:
         case MASK_FALWELL:
@@ -100,6 +99,7 @@ int armorst::interrogation_basepower() {
         default:
             return 4;
 
+        case MASK_CHENEY:
         case MASK_GUY_FAWKES:
         case MASK_JASON:
         case MASK_SATAN:

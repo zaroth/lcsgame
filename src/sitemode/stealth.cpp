@@ -590,6 +590,10 @@ char weaponcheck(Creature &cr, short type) {
                 cr.armor.type == ARMOR_POLICEARMOR)
             incharacter = CREATURE_COP;
 
+        // Cheney
+        if(cr.armor.subtype == MASK_CHENEY)
+            incharacter = CREATURE_HICK;
+
         break;
 
     case WEAPON_SMG_MP5:
