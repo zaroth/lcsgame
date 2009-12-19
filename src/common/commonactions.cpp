@@ -460,9 +460,7 @@ void criminalizeparty(short crime) {
             if(!activesquad->squad[p]->alive)
                 continue;
 
-            //activesquad->squad[p]->crimes_committed[crime]++;
-            activesquad->squad[p]->crimes_suspected[crime]++;
-            activesquad->squad[p]->heat += lawflagheat(crime);
+            criminalize(*(activesquad->squad[p]), crime);
         }
     }
 }
@@ -478,9 +476,7 @@ void criminalizepool(short crime, long exclude, short loc) {
         if(loc != -1 && pool[p]->location != loc)
             continue;
 
-        //pool[p]->crimes_committed[crime]++;
-        pool[p]->crimes_suspected[crime]++;
-        pool[p]->heat += lawflagheat(crime);
+        criminalize(*pool[p], crime);
     }
 }
 
