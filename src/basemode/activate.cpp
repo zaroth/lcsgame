@@ -1,29 +1,29 @@
 /*
 
 Copyright (c) 2002,2003,2004 by Tarn Adams                                            //
-                                                                                      //
+//
 This file is part of Liberal Crime Squad.                                             //
-                                                                                    //
-    Liberal Crime Squad is free software; you can redistribute it and/or modify     //
-    it under the terms of the GNU General Public License as published by            //
-    the Free Software Foundation; either version 2 of the License, or               //
-    (at your option) any later version.                                             //
-                                                                                    //
-    Liberal Crime Squad is distributed in the hope that it will be useful,          //
-    but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
-    GNU General Public License for more details.                                    //
-                                                                                    //
-    You should have received a copy of the GNU General Public License               //
-    along with Liberal Crime Squad; if not, write to the Free Software              //
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
+//
+Liberal Crime Squad is free software; you can redistribute it and/or modify     //
+it under the terms of the GNU General Public License as published by            //
+the Free Software Foundation; either version 2 of the License, or               //
+(at your option) any later version.                                             //
+//
+Liberal Crime Squad is distributed in the hope that it will be useful,          //
+but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
+GNU General Public License for more details.                                    //
+//
+You should have received a copy of the GNU General Public License               //
+along with Liberal Crime Squad; if not, write to the Free Software              //
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
 */
 
 /*
-   This file was created by Chris Johnson (grundee@users.sourceforge.net)
-   by copying code from game.cpp.
-   To see descriptions of files and functions, see the list at
-   the bottom of includes.h in the top src folder.
+This file was created by Chris Johnson (grundee@users.sourceforge.net)
+by copying code from game.cpp.
+To see descriptions of files and functions, see the list at
+the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -257,9 +257,11 @@ void activate(Creature *cr) {
         move(19, 1);
         addstr("Z - Dispose of bodies");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(19, 40);
-        addstr("? - Help");
+        if(state == 'a' || state == 'b' || state == 'c' || state == 'd' ) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(19, 40);
+            addstr("? - Help");
+        }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(20, 40);
@@ -827,12 +829,12 @@ void activate(Creature *cr) {
 
         /*if(c=='w'&&location[cr->location]->compound_walls==COMPOUND_PRINTINGPRESS)
         {
-           activityst oact=cr->activity;
-           cr->activity.type=ACTIVITY_NONE;
-           if(select_view(cr,cr->activity.arg))
-              cr->activity.type=ACTIVITY_WRITE_GUARDIAN;
-           else cr->activity=oact;
-           break;
+        activityst oact=cr->activity;
+        cr->activity.type=ACTIVITY_NONE;
+        if(select_view(cr,cr->activity.arg))
+        cr->activity.type=ACTIVITY_WRITE_GUARDIAN;
+        else cr->activity=oact;
+        break;
         }*/
         if(c == 'm' && clinictime(*cr)) {
             cr->activity.type = ACTIVITY_CLINIC;
@@ -855,8 +857,10 @@ void activate(Creature *cr) {
 
         // ? Pressed
         if(c == 63) {
-            // Call activity help pages
-            HelpActivities(cr->activity.type);
+            if(state == 'a' || state == 'b' || state == 'c' || state == 'd' ) {
+                // Call activity help pages
+                HelpActivities(cr->activity.type);
+            }
         }
     } while(1);
 }
@@ -976,10 +980,10 @@ void activatebulk(void) {
             addstr(str);
             /*if(temppool[p]->activity.type==ACTIVITY_TROUBLE)
             {
-               addstr(" ($");
-               itoa(temppool[p]->activity.arg,num,10);
-               addstr(num);
-               addstr(")");
+            addstr(" ($");
+            itoa(temppool[p]->activity.arg,num,10);
+            addstr(num);
+            addstr(")");
             }*/
 
             y++;
