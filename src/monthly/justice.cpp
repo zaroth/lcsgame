@@ -945,7 +945,7 @@ void trial(Creature &g) {
                 addjuice(*sleeperlawyer, 10, 100);
             }
 
-            if(defense == 2) {
+            if(defense == 1) {
                 // Juice for self-defense
                 addjuice(g, 10, 100);
             }
