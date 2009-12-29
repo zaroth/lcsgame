@@ -1,29 +1,29 @@
 /*
 
 Copyright (c) 2002,2003,2004 by Tarn Adams                                            //
-                                                                                      //
+//
 This file is part of Liberal Crime Squad.                                             //
-                                                                                    //
-    Liberal Crime Squad is free software; you can redistribute it and/or modify     //
-    it under the terms of the GNU General Public License as published by            //
-    the Free Software Foundation; either version 2 of the License, or               //
-    (at your option) any later version.                                             //
-                                                                                    //
-    Liberal Crime Squad is distributed in the hope that it will be useful,          //
-    but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
-    GNU General Public License for more details.                                    //
-                                                                                    //
-    You should have received a copy of the GNU General Public License               //
-    along with Liberal Crime Squad; if not, write to the Free Software              //
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
+//
+Liberal Crime Squad is free software; you can redistribute it and/or modify     //
+it under the terms of the GNU General Public License as published by            //
+the Free Software Foundation; either version 2 of the License, or               //
+(at your option) any later version.                                             //
+//
+Liberal Crime Squad is distributed in the hope that it will be useful,          //
+but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
+GNU General Public License for more details.                                    //
+//
+You should have received a copy of the GNU General Public License               //
+along with Liberal Crime Squad; if not, write to the Free Software              //
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
 */
 
 /*
-        This file was created by Chris Johnson (grundee@users.sourceforge.net)
-        by copying code from game.cpp.
-        To see descriptions of files and functions, see the list at
-        the bottom of includes.h in the top src folder.
+This file was created by Chris Johnson (grundee@users.sourceforge.net)
+by copying code from game.cpp.
+To see descriptions of files and functions, see the list at
+the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -192,6 +192,8 @@ void getslogan(void) {
 
 /* base - reorder party */
 void orderparty(void) {
+    party_status = -1;
+
     if(activesquad == NULL)
         return;
 
@@ -235,7 +237,66 @@ void orderparty(void) {
     } while(spot < partysize - 1);
 }
 
+/* base - reorder party */
+void orderpartyV2(void) {
+    party_status = -1;
 
+    if(activesquad == NULL)
+        return;
+
+    int partysize = 0;
+
+    for(int p = 0; p < 6; p++) {
+        if(activesquad->squad[p] != NULL)
+            partysize++;
+    }
+
+    if(partysize <= 1)
+        return;
+
+    int spot = 0;
+
+    do {
+        printparty();
+        move(8, 20);
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+        addstr("Choose squad member to replace ");
+        refresh();
+
+        int c = getch();
+        translategetch(c);
+
+        if(c == 10)
+            return;
+
+        int oldPos = c;
+        Creature *swap = NULL;
+
+        if(c >= spot + '1' && c <= partysize + '1' - 1)
+            swap = activesquad->squad[oldPos - '1'];
+
+        if(swap == NULL) {
+            // Haven't found a member
+            return;
+        }
+
+        char num[20];
+        itoa(oldPos, num, 10);
+        addstr(swap->name);
+        addstr(" with");
+
+        c = getch();
+        translategetch(c);
+
+        if(c == 10)
+            return;
+
+        if(c >= spot + '1' && c <= partysize + '1' - 1) {
+            activesquad->squad[oldPos - '1'] = activesquad->squad[c - '1'];
+            activesquad->squad[c - '1'] = swap;
+        }
+    } while(true);
+}
 
 /* base - go forth to stop evil */
 void stopevil(void) {
@@ -297,29 +358,29 @@ void stopevil(void) {
         switch(activesquad->stance)
         {
         case SQUADSTANCE_ANONYMOUS:
-           move(13,50);
-           set_color(COLOR_WHITE,COLOR_BLACK,1);
-           addstr("ANONYMOUS ACTION");
-           move(14,50);
-           set_color(COLOR_BLACK,COLOR_BLACK,1);
-           addstr("Unlikely to make the news");
-           break;
+        move(13,50);
+        set_color(COLOR_WHITE,COLOR_BLACK,1);
+        addstr("ANONYMOUS ACTION");
+        move(14,50);
+        set_color(COLOR_BLACK,COLOR_BLACK,1);
+        addstr("Unlikely to make the news");
+        break;
         case SQUADSTANCE_STANDARD:
-           move(13,50);
-           set_color(COLOR_GREEN,COLOR_BLACK,1);
-           addstr("CLAIMED ACTION");
-           move(14,50);
-           set_color(COLOR_BLACK,COLOR_BLACK,1);
-           addstr("Likely to make the news");
-           break;
+        move(13,50);
+        set_color(COLOR_GREEN,COLOR_BLACK,1);
+        addstr("CLAIMED ACTION");
+        move(14,50);
+        set_color(COLOR_BLACK,COLOR_BLACK,1);
+        addstr("Likely to make the news");
+        break;
         case SQUADSTANCE_BATTLECOLORS:
-           move(13,50);
-           set_color(COLOR_GREEN,COLOR_BLACK,1);
-           addstr("GREEN ARMBANDS");
-           move(14,50);
-           set_color(COLOR_BLACK,COLOR_BLACK,1);
-           addstr("(No Stealth, High Profile)");
-           break;
+        move(13,50);
+        set_color(COLOR_GREEN,COLOR_BLACK,1);
+        addstr("GREEN ARMBANDS");
+        move(14,50);
+        set_color(COLOR_BLACK,COLOR_BLACK,1);
+        addstr("(No Stealth, High Profile)");
+        break;
         }*/
 
 
@@ -505,9 +566,9 @@ void stopevil(void) {
 
         /*if(c=='z')
         {
-           activesquad->stance++;
-           if(activesquad->stance>SQUADSTANCE_STANDARD)
-              activesquad->stance=0;
+        activesquad->stance++;
+        if(activesquad->stance>SQUADSTANCE_STANDARD)
+        activesquad->stance=0;
         }*/
 
         if(c == 10 && loc != -1) {

@@ -2028,6 +2028,7 @@ void burnflag(void);
 void getslogan(void);
 /* base - reorder party */
 void orderparty(void);
+void orderpartyV2(void);
 /* base - go forth to stop evil */
 void stopevil(void);
 /* base - liberal agenda */
