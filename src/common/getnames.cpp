@@ -1,29 +1,29 @@
 /*
 
 Copyright (c) 2002,2003,2004 by Tarn Adams                                            //
-                                                                                      //
+//
 This file is part of Liberal Crime Squad.                                             //
-                                                                                    //
-    Liberal Crime Squad is free software; you can redistribute it and/or modify     //
-    it under the terms of the GNU General Public License as published by            //
-    the Free Software Foundation; either version 2 of the License, or               //
-    (at your option) any later version.                                             //
-                                                                                    //
-    Liberal Crime Squad is distributed in the hope that it will be useful,          //
-    but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
-    GNU General Public License for more details.                                    //
-                                                                                    //
-    You should have received a copy of the GNU General Public License               //
-    along with Liberal Crime Squad; if not, write to the Free Software              //
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
+//
+Liberal Crime Squad is free software; you can redistribute it and/or modify     //
+it under the terms of the GNU General Public License as published by            //
+the Free Software Foundation; either version 2 of the License, or               //
+(at your option) any later version.                                             //
+//
+Liberal Crime Squad is distributed in the hope that it will be useful,          //
+but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
+GNU General Public License for more details.                                    //
+//
+You should have received a copy of the GNU General Public License               //
+along with Liberal Crime Squad; if not, write to the Free Software              //
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
 */
 
 /*
-        This file was created by Chris Johnson (grundee@users.sourceforge.net)
-        by copying code from game.cpp.
-        To see descriptions of files and functions, see the list at
-        the bottom of includes.h in the top src folder.
+This file was created by Chris Johnson (grundee@users.sourceforge.net)
+by copying code from game.cpp.
+To see descriptions of files and functions, see the list at
+the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -3241,4 +3241,134 @@ void enter_name(char *name, int len, char *defname) {
         strncpy(name, defname, len);
 
     name[len - 1] = '\0';
+}
+
+void getlawflag(char *str, int type) {
+    strcpy(str, "");
+
+    switch(type) {
+    case LAWFLAG_KIDNAPPING:
+        strcat(str, "Kidnapping");
+        break;
+
+    case LAWFLAG_MURDER:
+        strcat(str, "Murder");
+        break;
+
+    case LAWFLAG_THEFT:
+        strcat(str, "Theft");
+        break;
+
+    case LAWFLAG_BREAKING:
+        strcat(str, "Breaking and entering");
+        break;
+
+    case LAWFLAG_TERRORISM:
+        strcat(str, "Terrorism");
+        break;
+
+    case LAWFLAG_JURY:
+        strcat(str, "Jury tampering");
+        break;
+
+    case LAWFLAG_TREASON:
+        strcat(str, "Treason");
+        break;
+
+    case LAWFLAG_ESCAPED:
+        strcat(str, "Escaping prison");
+        break;
+
+    case LAWFLAG_HELPESCAPE:
+        strcat(str, "Releasing prisoners");
+        break;
+
+    case LAWFLAG_RESIST:
+        strcat(str, "Resisting arrest");
+        break;
+
+    case LAWFLAG_BURNFLAG:
+        strcat(str, "Flag burning");
+        break;
+
+    case LAWFLAG_SPEECH:
+        strcat(str, "Harmful speech");
+        break;
+
+    case LAWFLAG_VANDALISM:
+        strcat(str, "Vandalism");
+        break;
+
+    case LAWFLAG_ASSAULT:
+        strcat(str, "Assault");
+        break;
+
+    case LAWFLAG_ARMEDASSAULT:
+        strcat(str, "Armed assault");
+        break;
+
+    case LAWFLAG_CARTHEFT:
+        strcat(str, "Grand theft auto");
+        break;
+
+    case LAWFLAG_INFORMATION:
+        strcat(str, "Hacking");
+        break;
+
+    case LAWFLAG_COMMERCE:
+        strcat(str, "Electronic sabotage");
+        break;
+
+    case LAWFLAG_CCFRAUD:
+        strcat(str, "Credit card fraud");
+        break;
+
+    case LAWFLAG_BROWNIES:
+        strcat(str, "Drug dealing");
+        break;
+
+    case LAWFLAG_BURIAL:
+        strcat(str, "Unlawful burial");
+        break;
+
+    case LAWFLAG_PROSTITUTION:
+        strcat(str, "Prostitution");
+        break;
+
+    case LAWFLAG_DISTURBANCE:
+        strcat(str, "Disturbing the peace");
+        break;
+
+    case LAWFLAG_HIREILLEGAL:
+        strcat(str, "Hiring illegal aliens");
+        break;
+
+    case LAWFLAG_RACKETEERING:
+        strcat(str, "Racketeering");
+        break;
+
+    case LAWFLAG_LOITERING:
+        strcat(str, "Loitering");
+        break;
+
+    case LAWFLAG_GUNCARRY:
+        strcat(str, "Using illegal weapons");
+        break;
+
+    case LAWFLAG_GUNUSE:
+        strcat(str, "Firing illegal weapons");
+        break;
+
+    case LAWFLAG_ARSON:
+        strcat(str, "Arson");
+        break;
+
+    case LAWFLAG_PUBLICNUDITY:
+        strcat(str, "Public nudity");
+        break;
+
+    default:
+        strcpy(str, "ERROR, AR");
+        break;
+    }
 }

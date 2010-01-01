@@ -585,6 +585,8 @@ void review_mode(short mode) {
                         printliberalstats(*temppool[p]);
                     else if(page == 1)
                         printliberalskills(*temppool[p]);
+                    else if(page == 2)
+                        printliberalcrimes(*temppool[p]);
 
                     // Add removal of squad members member
                     move(22, 0);
@@ -631,7 +633,7 @@ void review_mode(short mode) {
                     if(c == KEY_DOWN) {
                         page++;
 
-                        if(page > 1)
+                        if(page > 2)
                             page = 0;
 
                         continue;
@@ -641,7 +643,7 @@ void review_mode(short mode) {
                         page--;
 
                         if(page < 0)
-                            page = 1;
+                            page = 2;
 
                         continue;
                     }

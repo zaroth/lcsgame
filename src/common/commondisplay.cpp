@@ -1,29 +1,29 @@
 /*
 
 Copyright (c) 2002,2003,2004 by Tarn Adams                                            //
-                                                                                      //
+//
 This file is part of Liberal Crime Squad.                                             //
-                                                                                    //
-    Liberal Crime Squad is free software; you can redistribute it and/or modify     //
-    it under the terms of the GNU General Public License as published by            //
-    the Free Software Foundation; either version 2 of the License, or               //
-    (at your option) any later version.                                             //
-                                                                                    //
-    Liberal Crime Squad is distributed in the hope that it will be useful,          //
-    but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
-    GNU General Public License for more details.                                    //
-                                                                                    //
-    You should have received a copy of the GNU General Public License               //
-    along with Liberal Crime Squad; if not, write to the Free Software              //
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
+//
+Liberal Crime Squad is free software; you can redistribute it and/or modify     //
+it under the terms of the GNU General Public License as published by            //
+the Free Software Foundation; either version 2 of the License, or               //
+(at your option) any later version.                                             //
+//
+Liberal Crime Squad is distributed in the hope that it will be useful,          //
+but WITHOUT ANY WARRANTY; without even the implied warranty of                  //
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the                  //
+GNU General Public License for more details.                                    //
+//
+You should have received a copy of the GNU General Public License               //
+along with Liberal Crime Squad; if not, write to the Free Software              //
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
 */
 
 /*
-        This file was created by Chris Johnson (grundee@users.sourceforge.net)
-        by copying code from game.cpp.
-        To see descriptions of files and functions, see the list at
-        the bottom of includes.h in the top src folder.
+This file was created by Chris Johnson (grundee@users.sourceforge.net)
+by copying code from game.cpp.
+To see descriptions of files and functions, see the list at
+the bottom of includes.h in the top src folder.
 */
 
 //#include <includes.h>
@@ -1035,7 +1035,7 @@ void fullstatus(int p) {
     if(activesquad == NULL)
         return;
 
-    const int pagenum = 2;
+    const int pagenum = 3;
     int page = 0;
 
     do {
@@ -1049,6 +1049,8 @@ void fullstatus(int p) {
             printliberalstats(*activesquad->squad[p]);
         else if(page == 1)
             printliberalskills(*activesquad->squad[p]);
+        else if (page == 2)
+            printliberalcrimes(*activesquad->squad[p]);
 
         move(23, 0);
         addstr("N - Change Code Name      G - Fix Gender Label");
@@ -1387,7 +1389,7 @@ void printliberalstats(Creature &cr) {
     char used[SKILLNUM];
     memset(used, 0, sizeof(char)*SKILLNUM);
 
-    int skills_max = 17;
+    int skills_max = 16;
     char printed = 1;
 
     move(5, 28);
@@ -1773,6 +1775,58 @@ void printliberalstats(Creature &cr) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
 }
 
+/* Full screen character sheet, crime sheet */
+void printliberalcrimes(Creature &cr) {
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    char str[200];
+    char num[5];
+
+    // Add name
+    move(2, 0);
+
+    if(strcmp(cr.propername, cr.name) != 0)
+        addstr("Code name: ");
+    else
+        addstr("Name: ");
+
+    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+    addstr(cr.name);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    addstr(", ");
+    gettitle(str, cr);
+    addstr(str);
+    addstr(" (");
+    getrecruitcreature(str, cr.type);
+    addstr(str);
+    addstr(")");
+
+    // Add all crimes
+    for(int i = 0; i < LAWFLAGNUM; i++) {
+        if(i % 2 == 0 && i < 4) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(4, 40 * (i / 2));
+            addstr("CRIME");
+            move(4, 30 + 40 * (i / 2));
+            addstr("NUM");
+        }
+
+        // Commited crimes are yellow
+        if(cr.crimes_suspected[i] > 0)
+            set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+        else
+            set_color(COLOR_BLACK, COLOR_BLACK, 1);
+
+        move(5 + i / 2, 40 * (i % 2));
+        getlawflag(str, i);
+        strcat(str, ": ");
+        addstr(str);
+        move(5 + i / 2, 30 + 40 * (i % 2));
+        sprintf(num, "%2d", cr.crimes_suspected[i]);
+        addstr(num);
+    }
+
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+}
 
 /* draws a horizontal line across the screen */
 void makedelimiter(int y, int x) {
@@ -2007,11 +2061,11 @@ void printhealthstat(Creature &g, int y, int x, char smll) {
 }
 
 /*
-  This function prints the cash the player has with optional prefix as
-  well as screen coordinates.
+This function prints the cash the player has with optional prefix as
+well as screen coordinates.
 
-  Please note that offsetx is the offset from the right of the screen, y is
-  the offset from the top as always.
+Please note that offsetx is the offset from the right of the screen, y is
+the offset from the top as always.
 */
 void printfunds(int y, int offsetx, char *prefix) {
     char moneystr[50];
