@@ -1724,8 +1724,8 @@ enum ReviewModes {
 };
 
 /*
-	Declarations for every function grouped by folder and file.
-	Created by jonathansfox.
+   Declarations for every function grouped by folder and file.
+   Created by jonathansfox.
 */
 
 

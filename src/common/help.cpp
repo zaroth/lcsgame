@@ -332,7 +332,9 @@ void HelpActivities(int activityType) {
         move(11, 0);
         addstr(" Additionally depending on the current drug laws, the more illegal drugs are the ");
         move(12, 0);
-        addstr(" more money you will make.");
+        addstr(" more money you will make. However, the consequences of being convicted will ");
+        move(13, 0);
+        addstr(" increase as well. ");
         break;
 
     case ACTIVITY_PROSTITUTION:
@@ -356,7 +358,7 @@ void HelpActivities(int activityType) {
         move(4, 0);
         addstr(" To steal credit card numbers you need to have someone who has a computer ");
         move(5, 0);
-        addstr(" skill greater than 1. The more computer skill your hacker has the more money  ");
+        addstr(" skill of at least 2. The more computer skill your hacker has the more money ");
         move(6, 0);
         addstr(" you will make. This activity trains computer skill.");
         break;
@@ -365,7 +367,7 @@ void HelpActivities(int activityType) {
         move(2, 0);
         addstr("===Repair Clothing===");
         move(4, 0);
-        addstr(" Repairing clothing will repair damaged amour and remove blood stains if there ");
+        addstr(" Repairing clothing will repair damaged armour and remove blood stains if there ");
         move(5, 0);
         addstr(" are any. ");
         move(7, 0);
