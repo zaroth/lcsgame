@@ -2127,6 +2127,8 @@ void escapesiege(char won) {
                 continue;
 
             if(!pool[p]->alive) {
+                //XXX: is this safe? it seems like you ought to be deleting it AFTER
+                // doing stuff with it, unless I'm missing something. -Kurper
                 delete pool[p];
 
                 if(pool[p]->align == 1) {
@@ -2149,7 +2151,12 @@ void escapesiege(char won) {
             //BASE EVERYONE LEFT AT HOMELESS SHELTER
             removesquadinfo(*pool[p]);
             pool[p]->hiding = LCSrandom(3) + 2;
-            pool[p]->location = -1;
+
+            if(pool[p]->align == 1)   // not a hostage
+                pool[p]->location = -1;
+            else   // hostages don't go into hiding, just shove em into the homeless shelter
+                pool[p]->location = homes;
+
             pool[p]->base = homes;
         }
 

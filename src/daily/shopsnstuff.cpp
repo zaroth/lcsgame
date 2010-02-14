@@ -1228,9 +1228,6 @@ void pawnshop(int loc) {
                             break;
 
                         case ITEM_ARMOR:
-                            if(location[activesquad->squad[0]->base]->loot[l]->armor.quality != '1')
-                                break;
-
                             if(location[activesquad->squad[0]->base]->loot[l]->armor.flag != 0)
                                 break;
 
