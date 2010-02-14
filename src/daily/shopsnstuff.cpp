@@ -360,9 +360,8 @@ char gunselect(Creature *cr, short &gun, bool legal = 1) {
                 if(price < ledger.get_funds()) {
                     gun = guntype[p];
                     ledger.subtract_funds(price, EXPENSE_SHOPPING);
+                    return 1;
                 }
-
-                return 1;
             }
         }
 
