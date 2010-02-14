@@ -382,7 +382,7 @@ void siegecheck(char canseethings) {
                     if(ceosleepercount)
                         addstr("a sleeper CEO's warning");
                     else
-                        ("an anonymous tip");
+                        addstr("an anonymous tip");
 
                     addstr(" that the Corporations");
                     move(9, 1);
@@ -1801,6 +1801,10 @@ void giveup(void) {
 
             pool[p]->weapon.type = WEAPON_NONE;
             pool[p]->weapon.ammo = 0;
+
+            // CLEAR CLIPS
+            for(int cl = 0; cl < CLIPNUM; cl++)
+                pool[p]->clip[cl] = 0;
 
             if(iscriminal(*pool[p])) {
                 removesquadinfo(*pool[p]);
