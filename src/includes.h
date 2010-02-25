@@ -1092,15 +1092,7 @@ class Creature {
     Creature() {
         creatureinit();
     }
-    ~Creature() {
-        if(prisoner != NULL) {
-            if(prisoner->squadid != -1)
-                delete prisoner;
-        }
-
-        // Clean up hostage situation
-        stop_hauling_me();
-    }
+    ~Creature();
     char canwalk(void) {
         if(!alive)
             return 0;
