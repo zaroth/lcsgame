@@ -243,23 +243,26 @@ void advanceday(char &clearformess, char canseethings) {
                 for(int c = wantcar.size() - 1; c >= 0; c--) {
                     for(int c2 = 0; c2 < caridused.size(); c2++) {
                         if(wantcar[c] == caridused[c2]) {
-                            if(clearformess)
-                                erase();
-                            else
-                                makedelimiter(8, 0);
-
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(8, 1);
-                            addstr(squad[sq]->name);
-                            addstr(" couldn't use the ");
                             long v = id_getcar(caridused[c2]);
-                            char str[80];
-                            getcarfull(str, *vehicle[v]);
-                            addstr(str);
-                            addstr(".");
 
-                            refresh();
-                            getch();
+                            if(v != -1) {
+                                if(clearformess)
+                                    erase();
+                                else
+                                    makedelimiter(8, 0);
+
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                move(8, 1);
+                                addstr(squad[sq]->name);
+                                addstr(" couldn't use the ");
+                                char str[80];
+                                getcarfull(str, *vehicle[v]);
+                                addstr(str);
+                                addstr(".");
+
+                                refresh();
+                                getch();
+                            }
 
                             wantcar.erase(wantcar.begin() + c);
                         }
