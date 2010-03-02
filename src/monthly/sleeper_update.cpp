@@ -934,7 +934,6 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
                 else
                     item->armor.type = ARMOR_POLICEARMOR;
             } else {
-                item = new itemst;
                 item->type = ITEM_LOOT;
 
                 if(!LCSrandom(5))
@@ -951,6 +950,8 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
             break;
 
         case SITE_GOVERNMENT_INTELLIGENCEHQ:
+            item = new itemst;
+
             if(!LCSrandom(3)) {
                 item->type = ITEM_WEAPON;
 
@@ -966,7 +967,6 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
                 item->type = ITEM_ARMOR;
                 item->armor.type = ARMOR_BLACKSUIT;
             } else {
-                item = new itemst;
                 item->type = ITEM_LOOT;
 
                 if(!LCSrandom(5))

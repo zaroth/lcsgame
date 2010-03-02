@@ -288,6 +288,7 @@ void initsite(locationst &loc) {
         for(int y = 0; y < MAPY; y++) {
             for(int z = 0; z < MAPZ; z++) {
                 if(levelmap[x][y][z].flag & SITEBLOCK_DOOR) {
+                    // Check what sides are blocked around the door
                     block = BIT1 | BIT2 | BIT3 | BIT4;
                     opennum = 0;
 
@@ -311,10 +312,10 @@ void initsite(locationst &loc) {
                             opennum++;
                         }
 
-                    if(opennum >= 2)
-                        continue;
+                    //if(opennum>=2)continue;
 
-                    //BLAST EVERYTHING AROUND TOTALLY BLOCKED DOOR
+                    // Blast open everything around a totally blocked door
+                    // (door will later be deleted)
                     if(block == (BIT1 | BIT2 | BIT3 | BIT4)) {
                         if(x > 0)
                             levelmap[x - 1][y][z].flag &= ~SITEBLOCK_BLOCK;
@@ -328,27 +329,56 @@ void initsite(locationst &loc) {
                         if(y < MAPY - 1)
                             levelmap[x][y + 1][z].flag &= ~SITEBLOCK_BLOCK;
                     }
-                    //DEAD-END OR OPEN A THREE-BLOCKED DOOR
-                    else if(!(block & BIT1)) {
-                        if(y < MAPY - 1)
-                            levelmap[x][y + 1][z].flag &= ~SITEBLOCK_BLOCK;
-                        else
-                            levelmap[x][y + 1][z].flag |= SITEBLOCK_BLOCK;
+
+                    // Open up past doors that lead to walls
+                    if(!(block & BIT1)) {
+                        if(y < MAPY - 1) {
+                            int y1 = y + 1;
+
+                            do {
+                                levelmap[x][y1][z].flag &= ~SITEBLOCK_BLOCK;
+                                levelmap[x][y1][z].flag &= ~SITEBLOCK_DOOR;
+                                y1++;
+                            } while(!(levelmap[x + 1][y1][z].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)) &&
+                                    !(levelmap[x - 1][y1][z].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)));
+                        } else
+                            levelmap[x][y][z].flag |= SITEBLOCK_BLOCK;
                     } else if(!(block & BIT4)) {
-                        if(y > 0)
-                            levelmap[x][y - 1][z].flag &= ~SITEBLOCK_BLOCK;
-                        else
-                            levelmap[x][y - 1][z].flag |= SITEBLOCK_BLOCK;
+                        if(y > 0) {
+                            int y1 = y - 1;
+
+                            do {
+                                levelmap[x][y1][z].flag &= ~SITEBLOCK_BLOCK;
+                                levelmap[x][y1][z].flag &= ~SITEBLOCK_DOOR;
+                                y1--;
+                            } while(!(levelmap[x + 1][y1][z].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)) &&
+                                    !(levelmap[x - 1][y1][z].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)));
+                        } else
+                            levelmap[x][y][z].flag |= SITEBLOCK_BLOCK;
                     } else if(!(block & BIT2)) {
-                        if(x < MAPX - 1)
-                            levelmap[x + 1][y][z].flag &= ~SITEBLOCK_BLOCK;
-                        else
-                            levelmap[x + 1][y][z].flag |= SITEBLOCK_BLOCK;
+                        if(x < MAPX - 1) {
+                            int x1 = x + 1;
+
+                            do {
+                                levelmap[x1][y][z].flag &= ~SITEBLOCK_BLOCK;
+                                levelmap[x1][y][z].flag &= ~SITEBLOCK_DOOR;
+                                x1++;
+                            } while(!(levelmap[x1][y + 1][z].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)) &&
+                                    !(levelmap[x1][y - 1][z].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)));
+                        } else
+                            levelmap[x][y][z].flag |= SITEBLOCK_BLOCK;
                     } else if(!(block & BIT3)) {
-                        if(x > 0)
-                            levelmap[x - 1][y][z].flag &= ~SITEBLOCK_BLOCK;
-                        else
-                            levelmap[x - 1][y][z].flag |= SITEBLOCK_BLOCK;
+                        if(x > 0) {
+                            int x1 = x - 1;
+
+                            do {
+                                levelmap[x1][y][z].flag &= ~SITEBLOCK_BLOCK;
+                                levelmap[x1][y][z].flag &= ~SITEBLOCK_DOOR;
+                                x1--;
+                            } while(!(levelmap[x1][y + 1][z].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)) &&
+                                    !(levelmap[x1][y - 1][z].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)));
+                        } else
+                            levelmap[x][y][z].flag |= SITEBLOCK_BLOCK;
                     }
                 }
             }
@@ -1002,6 +1032,8 @@ void configSiteScript::build() {
         generatestairs(xstart, ystart, zstart, xend - xstart, yend - ystart, zend - zstart);
 }
 
+#define ROOMDIMENSION 3
+
 /* recursive dungeon-generating algorithm */
 void configSiteScript::generateroom(int rx, int ry, int dx, int dy, int z) {
     for(int x = rx; x < rx + dx; x++) {
@@ -1009,15 +1041,23 @@ void configSiteScript::generateroom(int rx, int ry, int dx, int dy, int z) {
             levelmap[x][y][z].flag &= ~SITEBLOCK_BLOCK;
     }
 
-    if((dx <= 3 || dy <= 3) && !LCSrandom(2))
+    // Chance to stop iterating for large rooms
+    if((dx <= (ROOMDIMENSION + 1) || dy <= (ROOMDIMENSION + 1)) &&
+            dx < dy * 2 && dy < dx * 2 && !LCSrandom(2))
         return;
 
-    if(dx <= 2 && dy <= 2)
+    // Very likely to stop iterating for small rooms
+    if(dx <= ROOMDIMENSION && dy <= ROOMDIMENSION)
         return;
+
+    // Guaranteed to stop iterating for hallways
+    if(dx <= 1 || dy <= 1)
+        return;
+
 
     //LAY DOWN WALL AND ITERATE
-    if((!LCSrandom(2) || dy <= 2) && dx > 2) {
-        int wx = rx + LCSrandom(dx - 2) + 1;
+    if((!LCSrandom(2) || dy <= ROOMDIMENSION) && dx > ROOMDIMENSION) {
+        int wx = rx + LCSrandom(dx - ROOMDIMENSION) + 1;
 
         for(int wy = 0; wy < dy; wy++)
             levelmap[wx][ry + wy][z].flag |= SITEBLOCK_BLOCK;
@@ -1033,7 +1073,7 @@ void configSiteScript::generateroom(int rx, int ry, int dx, int dy, int z) {
 
         generateroom(wx + 1, ry, rx + dx - wx - 1, dy, z);
     } else {
-        int wy = ry + LCSrandom(dy - 2) + 1;
+        int wy = ry + LCSrandom(dy - ROOMDIMENSION) + 1;
 
         for(int wx = 0; wx < dx; wx++)
             levelmap[rx + wx][wy][z].flag |= SITEBLOCK_BLOCK;
@@ -1192,7 +1232,7 @@ void configSiteSpecial::build() {
 }
 
 configSiteUnique::configSiteUnique(const std::string &value)
-    : xstart(0), xend(MAPX), ystart(0), yend(22), zstart(0), zend(0) {
+    : xstart((MAPX >> 1) - 5), xend((MAPX >> 1) + 5), ystart(10), yend(20), zstart(0), zend(0) {
     if(value == "LAB_COSMETICS_CAGEDANIMALS")
         unique = SPECIAL_LAB_COSMETICS_CAGEDANIMALS;
     else if(value == "LAB_GENETIC_CAGEDANIMALS")
@@ -1321,7 +1361,8 @@ void configSiteUnique::build() {
     for(x = xstart; x <= xend; x++) {
         for(y = ystart; y <= yend; y++) {
             for(z = zstart; z <= zend; z++) {
-                if(!(levelmap[x][y][z].flag & (SITEBLOCK_DOOR | SITEBLOCK_BLOCK | SITEBLOCK_EXIT))) {
+                if(!(levelmap[x][y][z].flag & (SITEBLOCK_DOOR | SITEBLOCK_BLOCK | SITEBLOCK_EXIT)) &&
+                        levelmap[x][y][z].special == SPECIAL_NONE) {
                     if(levelmap[x][y][z].flag & SITEBLOCK_RESTRICTED)
                         secure.push_back(coordinates(x, y, z));
                     else
