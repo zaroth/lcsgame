@@ -136,6 +136,10 @@ void printsitemap(int x, int y, int z) {
         strcpy(str, "Safe");
         break;
 
+    case SPECIAL_HOUSE_CEO:
+        strcpy(str, "CEO's Study");
+        break;
+
     case SPECIAL_CORPORATE_FILES:
         strcpy(str, "Safe");
         break;
@@ -731,6 +735,11 @@ void printblock(int x, int y, int z, int px, int py) {
             addstr("SAFE!");
             break;
 
+        case SPECIAL_HOUSE_CEO:
+            move(py, px + 1);
+            addstr("CEO");
+            break;
+
         case SPECIAL_CORPORATE_FILES:
             addstr("SAFE!");
             break;
@@ -899,8 +908,13 @@ void clearmessagearea(bool redrawmaparea) {
     move(17, 1);
     addstr("                                                    ");
 
-    if(redrawmaparea)
+    if(redrawmaparea) {
         refreshmaparea();
+
+        // Must reprint chasers when no map to the right
+        if(mode == GAMEMODE_CHASECAR || mode == GAMEMODE_CHASEFOOT)
+            printchaseencounter();
+    }
 }
 
 

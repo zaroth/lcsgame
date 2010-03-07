@@ -29,7 +29,11 @@ This file is part of Liberal Crime Squad.                                       
 //#include <includes.h>
 #include <externs.h>
 
-
+#define CARCHASE_CONTINUE        0
+#define CARCHASE_GOTOFOOTCHASE   1
+#define CARCHASE_SURRENDER       2
+#define CARCHASE_EVERYONEDEAD    3
+#define CARCHASE_ESCAPED         4
 
 char chasesequence(void) {
     int p = 0;
@@ -239,7 +243,7 @@ char chasesequence(void) {
 
                 for(int pl = pool.size() - 1; pl >= 0; pl--) {
                     if(pool[pl] == activesquad->squad[p]) {
-                        pool[pl]->alive = 0;
+                        pool[pl]->die();
                         pool[pl]->location = -1;
                         //delete pool[pl];
                         //pool.erase(pool.begin() + pl);
@@ -311,7 +315,9 @@ char chasesequence(void) {
                     evasivedrive();
                     enemyattack();
                     creatureadvance();
-                    drivingupdate(obstacle);
+
+                    if(drivingupdate(obstacle))
+                        return footchase();
                 }
 
                 if(c == 'f') {
@@ -326,7 +332,9 @@ char chasesequence(void) {
                     youattack();
                     enemyattack();
                     creatureadvance();
-                    drivingupdate(obstacle);
+
+                    if(drivingupdate(obstacle))
+                        return footchase();
                 }
 
                 if(c == 'e')
@@ -337,15 +345,21 @@ char chasesequence(void) {
                 case CARCHASE_OBSTACLE_TRUCKPULLSOUT:
                 case CARCHASE_OBSTACLE_FRUITSTAND:
                     if(c == 'd') {
-                        obstacledrive(obstacle, 0);
+                        if(obstacledrive(obstacle, 0))
+                            return footchase();
+
                         creatureadvance();
                         drivingupdate(obstacle);
                     }
 
                     if(c == 'f') {
-                        obstacledrive(obstacle, 1);
+                        if(obstacledrive(obstacle, 1))
+                            return footchase();
+
                         creatureadvance();
-                        drivingupdate(obstacle);
+
+                        if(drivingupdate(obstacle))
+                            return footchase();
                     }
 
                     break;
@@ -539,7 +553,7 @@ char footchase(void) {
 
                 for(int pl = pool.size() - 1; pl >= 0; pl--) {
                     if(pool[pl] == activesquad->squad[p]) {
-                        pool[pl]->alive = 0;
+                        pool[pl]->die();
                         pool[pl]->location = -1;
                         //delete pool[pl];
                         //pool.erase(pool.begin() + pl);
@@ -696,16 +710,17 @@ void evasivedrive(void) {
                     theirrolls_drv.push_back(encounter[e].id);
                 }
             }
-        }
+        } else if(encounter[e].carid == -1)
+            encounter[e].exists = false;
     }
 
     clearmessagearea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(16, 1);
 
-    switch(LCSrandom(yourworst / 5)) {
-    default:
-        addstr("You accelerate rapidly!");
+    switch(LCSrandom(4)) {
+    case 0:
+        addstr("You keep the gas floored!");
         break;
 
     case 1:
@@ -717,7 +732,11 @@ void evasivedrive(void) {
         break;
 
     case 3:
-        addstr("You boldly weave through oncoming traffic!");
+        if(yourworst > 15)
+            addstr("You boldly weave through oncoming traffic!");
+        else
+            addstr("You make obscene gestures at the pursuers!");
+
         break;
     }
 
@@ -778,6 +797,7 @@ void evasivedrive(void) {
                 }
             }
 
+            clearmaparea();
             printchaseencounter();
             refresh();
             getch();
@@ -819,10 +839,10 @@ void evasiverun(void) {
 
                 wheelchair++;
             } else {
-                yourspeed[p] = activesquad->squad[p]->attval(ATTRIBUTE_AGILITY) +
-                               activesquad->squad[p]->attval(ATTRIBUTE_HEALTH) + LCSrandom(10);
+                yourspeed[p] = activesquad->squad[p]->attribute_roll(ATTRIBUTE_AGILITY) +
+                               activesquad->squad[p]->attribute_roll(ATTRIBUTE_HEALTH);
 
-                healthmodroll(yourspeed[p], *activesquad->squad[p]);
+                //healthmodroll(yourspeed[p],*activesquad->squad[p]);
 
                 notwheelchair++;
             }
@@ -835,7 +855,7 @@ void evasiverun(void) {
         }
     }
 
-    if(yourworst > 5) {
+    if(yourworst > 14) {
         yourworst += LCSrandom(5);
 
         clearmessagearea();
@@ -870,10 +890,10 @@ void evasiverun(void) {
         if(!encounter[e].exists)
             continue;
 
-        int chaser = encounter[e].attval(ATTRIBUTE_AGILITY) +
-                     encounter[e].attval(ATTRIBUTE_HEALTH) + LCSrandom(10);
+        int chaser = encounter[e].attribute_roll(ATTRIBUTE_AGILITY) +
+                     encounter[e].attribute_roll(ATTRIBUTE_HEALTH);
 
-        healthmodroll(chaser, encounter[e]);
+        //healthmodroll(chaser,encounter[e]);
 
         if(theirbest < chaser)
             theirbest = chaser;
@@ -990,7 +1010,7 @@ void evasiverun(void) {
                 }
 
                 if(activesquad->squad[p]->blood <= 0)
-                    activesquad->squad[p]->alive = 0;
+                    activesquad->squad[p]->die();
 
                 capturecreature(*activesquad->squad[p]);
 
@@ -1036,7 +1056,7 @@ int driveskill(Creature &cr, vehiclest *v) {
         break;
     }
 
-    int driveskill = cr.skillval(SKILL_DRIVING) * (3 + vbonus);
+    int driveskill = cr.skill_roll(SKILL_DRIVING) * (3 + vbonus);
     healthmodroll(driveskill, cr);
 
     if(driveskill < 0)
@@ -1048,7 +1068,7 @@ int driveskill(Creature &cr, vehiclest *v) {
 
 
 
-void drivingupdate(short &obstacle) {
+char drivingupdate(short &obstacle) {
     //CHECK TO SEE WHICH CARS ARE BEING DRIVEN
     vector<int> passenger;
     int driver;
@@ -1111,6 +1131,7 @@ void drivingupdate(short &obstacle) {
         if(driver == -1) {
             crashfriendlycar(v);
             sitestory->crime.push_back(CRIME_CARCHASE);
+            return 1;
         }
     }
 
@@ -1146,6 +1167,8 @@ void drivingupdate(short &obstacle) {
         obstacle = LCSrandom(CARCHASE_OBSTACLENUM);
     else
         obstacle = -1;
+
+    return 0;
 }
 
 
@@ -1320,12 +1343,13 @@ void makechasers(long sitetype, long sitecrime) {
 
 
 
-void obstacledrive(short obstacle, char choice) {
+char obstacledrive(short obstacle, char choice) {
     switch(obstacle) {
     case CARCHASE_OBSTACLE_CROSSTRAFFIC:
-        if(choice == 0)
-            dodgedrive();
-        else if(choice == 1) {
+        if(choice == 0) {
+            if(dodgedrive())
+                return 1;
+        } else if(choice == 1) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
@@ -1347,9 +1371,10 @@ void obstacledrive(short obstacle, char choice) {
         break;
 
     case CARCHASE_OBSTACLE_TRUCKPULLSOUT:
-        if(choice == 0)
-            dodgedrive();
-        else if(choice == 1) {
+        if(choice == 0) {
+            if(dodgedrive())
+                return 1;
+        } else if(choice == 1) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
@@ -1371,9 +1396,10 @@ void obstacledrive(short obstacle, char choice) {
         break;
 
     case CARCHASE_OBSTACLE_FRUITSTAND:
-        if(choice == 0)
-            dodgedrive();
-        else if(choice == 1) {
+        if(choice == 0) {
+            if(dodgedrive())
+                return 1;
+        } else if(choice == 1) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
@@ -1394,11 +1420,13 @@ void obstacledrive(short obstacle, char choice) {
 
         break;
     }
+
+    return 0;
 }
 
 
 
-void dodgedrive(void) {
+char dodgedrive(void) {
     int v;
     clearmessagearea();
     set_color(COLOR_YELLOW, COLOR_BLACK, 1);
@@ -1425,9 +1453,10 @@ void dodgedrive(void) {
         }
 
         if(driver != -1) {
-            if(LCSrandom(11) > driveskill(*activesquad->squad[driver], vehicle[id_getcar(activesquad->squad[driver]->carid)])) {
+            if(!activesquad->squad[driver]->skill_check(SKILL_DRIVING, DIFFICULTY_EASY)) {
                 crashfriendlycar(v);
                 sitestory->crime.push_back(CRIME_CARCHASE);
+                return 1;
             }
         }
     }
@@ -1448,12 +1477,14 @@ void dodgedrive(void) {
         }
 
         if(driver != -1) {
-            if(LCSrandom(11) > driveskill(encounter[driver], chaseseq.enemycar[v])) {
+            if(!encounter[driver].skill_check(SKILL_DRIVING, DIFFICULTY_EASY)) {
                 crashenemycar(v);
                 sitestory->crime.push_back(CRIME_CARCHASE);
             }
         }
     }
+
+    return 0;
 }
 
 
@@ -1462,6 +1493,31 @@ void crashfriendlycar(int v) {
     char str[80];
     getcarfull(str, *chaseseq.friendcar[v]);
 
+    //CRASH CAR
+    clearmessagearea();
+    set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
+    move(16, 1);
+    addstr("Your ");
+    addstr(str);
+
+    switch(LCSrandom(3)) {
+    case 0:
+        addstr(" slams into a building.");
+        break;
+
+    case 1:
+        addstr(" spins out and crashes.");
+        break;
+
+    case 2:
+        addstr(" hits a parked car and flips over.");
+        break;
+    }
+
+    printparty();
+    refresh();
+    getch();
+
     int victimsum = 0;
 
     for(int p = 0; p < 6; p++) {
@@ -1469,52 +1525,187 @@ void crashfriendlycar(int v) {
             continue;
 
         if(activesquad->squad[p]->carid == chaseseq.friendcar[v]->id) {
-            victimsum++;
+            // Inflict injuries on Liberals
+            for(int w = 0; w < BODYPARTNUM; w++) {
+                // If limb is intact
+                if(!(activesquad->squad[p]->wound[w] & (WOUND_CLEANOFF | WOUND_NASTYOFF))) {
+                    // Inflict injuries
+                    if(LCSrandom(2)) {
+                        activesquad->squad[p]->wound[w] |= WOUND_TORN;
+                        activesquad->squad[p]->wound[w] |= WOUND_BLEEDING;
+                        activesquad->squad[p]->blood -= 1 + LCSrandom(25);
+                    }
 
-            if(activesquad->squad[p]->alive &&
-                    activesquad->squad[p]->align == 1)
-                stat_dead++;
+                    if(!LCSrandom(3)) {
+                        activesquad->squad[p]->wound[w] |= WOUND_CUT;
+                        activesquad->squad[p]->wound[w] |= WOUND_BLEEDING;
+                        activesquad->squad[p]->blood -= 1 + LCSrandom(25);
+                    }
 
-            activesquad->squad[p]->alive = 0;
+                    if(LCSrandom(2) || activesquad->squad[p]->wound[w] == 0) {
+                        activesquad->squad[p]->wound[w] |= WOUND_BRUISED;
+                        activesquad->squad[p]->blood -= 1 + LCSrandom(10);
+                    }
+                }
+            }
 
+            // Kill off hostages
             if(activesquad->squad[p]->prisoner != NULL) {
-                victimsum++;
-                activesquad->squad[p]->prisoner->alive = 0;
+                // Instant death
+                if(activesquad->squad[p]->prisoner->alive) {
+                    clearmessagearea();
+                    set_color(COLOR_RED, COLOR_BLACK, 1);
+                    move(16, 1);
+                    addstr(activesquad->squad[p]->prisoner->name);
 
+                    switch(LCSrandom(3)) {
+                    case 0:
+                        addstr(" is crushed inside the car.");
+                        break;
+
+                    case 1:
+                        addstr("'s lifeless body smashes through the windshield.");
+                        break;
+
+                    case 2:
+                        addstr(" is thrown from the car and killed instantly.");
+                        break;
+                    }
+
+                    printparty();
+                    refresh();
+                    getch();
+                }
+
+                activesquad->squad[p]->prisoner->alive = false;
+                victimsum++;
+
+                // Record death if living Liberal is hauled
                 if(activesquad->squad[p]->prisoner->squadid != -1) {
                     if(activesquad->squad[p]->prisoner->alive &&
                             activesquad->squad[p]->prisoner->align == 1)
                         stat_dead++;
 
-                    activesquad->squad[p]->prisoner->alive = 0;
+                    activesquad->squad[p]->prisoner->die();
                     activesquad->squad[p]->prisoner->location = -1;
-                } else
+                }
+                // Otherwise just kill them off and be done with it
+                else
                     delete activesquad->squad[p]->prisoner;
 
                 activesquad->squad[p]->prisoner = NULL;
             }
 
-            for(int pl = pool.size() - 1; pl >= 0; pl--) {
-                if(pool[pl] == activesquad->squad[p]) {
-                    pool[pl]->alive = false;
-                    //delete pool[pl];
-                    //pool.erase(pool.begin() + pl);
-                    int boss = getpoolcreature(pool[pl]->hireid);
+            // Handle squad member death
+            if(activesquad->squad[p]->blood < 0 && activesquad->squad[p]->alive) {
+                // Inform the player
+                clearmessagearea();
+                set_color(COLOR_RED, COLOR_BLACK, 1);
+                move(16, 1);
+                addstr(activesquad->squad[p]->name);
 
-                    if(boss != -1 && pool[boss]->juice > 50) {
-                        int juice = pool[boss]->juice - 50;
+                switch(LCSrandom(3)) {
+                case 0:
+                    addstr(" slumps in ");
 
-                        if(juice > 10)
-                            juice = 10;
+                    if(activesquad->squad[p]->gender_liberal == GENDER_MALE)
+                        addstr("his");
+                    else if(activesquad->squad[p]->gender_liberal == GENDER_FEMALE)
+                        addstr("her");
+                    else
+                        addstr("its");
 
-                        addjuice(*pool[boss], -juice);
-                    }
+                    addstr(" seat, out cold, and dies.");
+                    break;
 
+                case 1:
+                    addstr(" is crushed by the impact.");
+                    break;
+
+                case 2:
+                    addstr(" struggles free of the car, then collapses lifelessly.");
                     break;
                 }
-            }
 
-            activesquad->squad[p] = NULL;
+                printparty();
+                refresh();
+                getch();
+
+                // Mark as dead
+                activesquad->squad[p]->alive = false;
+                victimsum++;
+
+                // Account for deaths for high score
+                if(activesquad->squad[p]->align == ALIGN_LIBERAL)
+                    stat_dead++;
+
+                // Find boss
+                int boss = getpoolcreature(activesquad->squad[p]->hireid);
+
+                // Penalize boss in juice
+                if(boss != -1 && pool[boss]->juice > 50) {
+                    // Bring boss no lower than 50 juice
+                    int juice = pool[boss]->juice - 50;
+
+                    // Inflict no more than 10 juice damage
+                    if(juice > 10)
+                        juice = 10;
+
+                    if(juice < 0)
+                        juice = 0;
+
+                    addjuice(*pool[boss], -juice);
+                }
+
+                // Remove dead Liberal from squad
+                activesquad->squad[p] = NULL;
+            } else {
+                // Inform the player of character survival
+                clearmessagearea();
+                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+                move(16, 1);
+                addstr(activesquad->squad[p]->name);
+
+                switch(LCSrandom(3)) {
+                case 0:
+                    addstr(" grips the ");
+
+                    if(activesquad->squad[p]->weapon.type != WEAPON_NONE) {
+                        getweapon(str, activesquad->squad[p]->weapon.type);
+                        addstr(str);
+                    } else
+                        addstr("car frame");
+
+                    addstr(" and struggles to ");
+
+                    if(activesquad->squad[p]->gender_liberal == GENDER_MALE)
+                        addstr("his");
+                    else if(activesquad->squad[p]->gender_liberal == GENDER_FEMALE)
+                        addstr("her");
+                    else
+                        addstr("its");
+
+                    if(activesquad->squad[p]->flag & CREATUREFLAG_WHEELCHAIR)
+                        addstr(" wheelchair.");
+                    else
+                        addstr(" feet.");
+
+                    break;
+
+                case 1:
+                    addstr(" gasps in pain, but still lives, for now.");
+                    break;
+
+                case 2:
+                    addstr(" crawls free of the car, gasping in pain.");
+                    activesquad->squad[p]->weapon.type = WEAPON_NONE;
+                    break;
+                }
+
+                printparty();
+                refresh();
+                getch();
+            }
         }
     }
 
@@ -1534,49 +1725,25 @@ void crashfriendlycar(int v) {
             activesquad->squad[5] = NULL;
     }
 
-    //GET RID OF CAR
-    for(int v2 = (int)vehicle.size() - 1; v2 >= 0; v2--) {
-        if(vehicle[v2] == chaseseq.friendcar[v]) {
-            removecarprefs_pool(vehicle[v2]->id);
-            delete vehicle[v2];
-            vehicle.erase(vehicle.begin() + v2);
-            break;
+    //GET RID OF CARS
+    for(int v2 = 0; v2 < chaseseq.friendcar.size(); v2++) {
+        for(int v3 = (int)vehicle.size() - 1; v3 >= 0; v3--) {
+            if(vehicle[v3] == chaseseq.friendcar[v2]) {
+                removecarprefs_pool(vehicle[v3]->id);
+                delete vehicle[v3];
+                vehicle.erase(vehicle.begin() + v3);
+            }
         }
     }
 
-    chaseseq.friendcar.erase(chaseseq.friendcar.begin() + v);
+    chaseseq.friendcar.clear();
 
-    //CRASH CAR
-    clearmessagearea();
-    set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-    move(16, 1);
-    addstr("Your ");
-    addstr(str);
+    for(int p = 0; p < 6; p++) {
+        if(activesquad->squad[p] == NULL)
+            continue;
 
-    switch(LCSrandom(3)) {
-    case 0:
-        addstr(" slams into a building.");
-        break;
-
-    case 1:
-        addstr(" spins out and crashes.");
-        move(17, 1);
-
-        if(victimsum > 1)
-            addstr("Everyone inside is peeled off against the pavement.");
-        else if(victimsum == 1)
-            addstr("The person inside is squashed into a cube.");
-
-        break;
-
-    case 2:
-        addstr(" hits a parked car and flips over.");
-        break;
+        activesquad->squad[p]->carid = -1;
     }
-
-    printparty();
-    refresh();
-    getch();
 }
 
 

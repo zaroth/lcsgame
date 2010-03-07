@@ -1548,19 +1548,35 @@ void pawnshop(int loc) {
                 activesquad->squad[buyer]->weapon.type = toolbought;
                 activesquad->squad[buyer]->weapon.ammo = 0;
 
+                if(toolbought == WEAPON_MOLOTOV)
+                    activesquad->squad[buyer]->weapon.ammo = 1;
+
                 if(swap.type != WEAPON_NONE) {
-                    itemst *newi = new itemst;
-                    newi->type = ITEM_WEAPON;
-                    newi->weapon = swap;
+                    if(toolbought == WEAPON_MOLOTOV && swap.type == WEAPON_MOLOTOV) {
+                        if(activesquad->squad[buyer]->clip[CLIP_MOLOTOV] < 9)
+                            activesquad->squad[buyer]->clip[CLIP_MOLOTOV]++;
+                        else {
+                            itemst *newi = new itemst;
+                            newi->type = ITEM_WEAPON;
+                            newi->number = 1;
+                            newi->weapon = swap;
+                            location[activesquad->squad[0]->base]->loot.push_back(newi);
+                        }
+                    } else {
+                        itemst *newi = new itemst;
+                        newi->type = ITEM_WEAPON;
+                        newi->weapon = swap;
 
-                    if(swap.type == WEAPON_MOLOTOV &&
-                            activesquad->squad[buyer]->clip[CLIP_MOLOTOV]) {
-                        newi->number = 1 + activesquad->squad[buyer]->clip[CLIP_MOLOTOV];
-                        activesquad->squad[buyer]->clip[CLIP_MOLOTOV] = 0;
+                        if(swap.type == WEAPON_MOLOTOV &&
+                                activesquad->squad[buyer]->clip[CLIP_MOLOTOV]) {
+                            newi->number = 1 + activesquad->squad[buyer]->clip[CLIP_MOLOTOV];
+                            activesquad->squad[buyer]->clip[CLIP_MOLOTOV] = 0;
+                        }
+
+                        location[activesquad->squad[0]->base]->loot.push_back(newi);
                     }
-
-                    location[activesquad->squad[0]->base]->loot.push_back(newi);
                 }
+
 
                 //DROP ALL CLIPS THAT DON'T WORK
                 for(int cl = 0; cl < CLIPNUM; cl++) {
@@ -3118,6 +3134,10 @@ int fencevalue(itemst &it) {
 
         case ARMOR_WORKCLOTHES:
             fenceamount = 20;
+            break;
+
+        case ARMOR_SERVANTUNIFORM:
+            fenceamount = 40;
             break;
 
         case ARMOR_SECURITYUNIFORM:

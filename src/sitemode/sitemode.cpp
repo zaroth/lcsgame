@@ -536,13 +536,30 @@ void mode_site(void) {
             else
                 addstr("U - Use");
 
-            if(enemy && sitealarm)
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            else
-                set_color(COLOR_BLACK, COLOR_BLACK, 1);
-
             move(12, 42);
-            addstr("V - Evade");
+
+            if(enemy && sitealarm) {
+                bool evade = false;
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+
+                for(int e = 0; e < ENCMAX; e++) {
+                    if(encounter[e].exists &&
+                            encounter[e].alive  &&
+                            encounter[e].cantbluff == 2) {
+                        // You can't sneak past this person; they already know you're there
+                        evade = true;
+                        break;
+                    }
+                }
+
+                if(!evade)
+                    addstr("V - Sneak");
+                else
+                    addstr("V - Run");
+            } else {
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);
+                addstr("V - Evade");
+            }
 
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(9, 42);
@@ -663,7 +680,7 @@ void mode_site(void) {
 
                 for(int pl = pool.size() - 1; pl >= 0; pl--) {
                     if(pool[pl] == activesquad->squad[p]) {
-                        pool[pl]->alive = 0;
+                        pool[pl]->die();
                         pool[pl]->location = -1;
                         //delete pool[pl];
                         //pool.erase(pool.begin() + pl);
@@ -900,17 +917,16 @@ void mode_site(void) {
                                     addstr(" - ");
                                     addstr(activesquad->squad[p]->name);
                                     move(y, 50);
-                                    itoa(activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
-                                         activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
-                                         activesquad->squad[p]->skillval(SKILL_PERSUASION) * 2, num, 10);
+                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_HEART, true) +
+                                         activesquad->squad[p]->get_skill(SKILL_PERSUASION), num, 10);
                                     addstr(num);
                                     move(y, 60);
-                                    itoa(activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) * 2 +
-                                         activesquad->squad[p]->skillval(SKILL_SEDUCTION) * 2, num, 10);
+                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) +
+                                         activesquad->squad[p]->get_skill(SKILL_SEDUCTION), num, 10);
                                     addstr(num);
                                     move(y, 70);
-                                    itoa(activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) * 2 +
-                                         activesquad->squad[p]->attval(SKILL_DISGUISE) * 2, num, 10);
+                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) +
+                                         activesquad->squad[p]->get_skill(SKILL_DISGUISE), num, 10);
                                     addstr(num);
                                     y++;
                                 }
@@ -1608,29 +1624,15 @@ void mode_site(void) {
                 if(tookground) {
                     int maxsleightofhand = 0;
                     int beststealer = 0;
-
-                    for(int i = 0; i < 6; i++) {
-                        if(!activesquad->squad[i])
-                            break;
-
-                        if(activesquad->squad[i]->skillval(SKILL_THEFT) > maxsleightofhand) {
-                            beststealer = i;
-                            maxsleightofhand = activesquad->squad[i]->skillval(SKILL_THEFT);
-                        }
-                    }
-
                     juiceparty(1);
-                    activesquad->squad[beststealer]->train(SKILL_THEFT, 5);
 
-                    if(!LCSrandom(maxsleightofhand + 1)) {
-                        alienationcheck(1);
-                        noticecheck(-1);
-                        sitecrime++;
-                        sitestory->crime.push_back(CRIME_STOLEGROUND);
+                    alienationcheck(0);
+                    noticecheck(-1);
+                    sitecrime++;
+                    sitestory->crime.push_back(CRIME_STOLEGROUND);
 
-                        if(enemy)
-                            criminalize(*(activesquad->squad[beststealer]), LAWFLAG_THEFT);
-                    }
+                    if(enemy)
+                        criminalize(*(activesquad->squad[beststealer]), LAWFLAG_THEFT);
                 }
 
                 creatureadvance();
@@ -1657,6 +1659,7 @@ void mode_site(void) {
 
                 //ENEMIES SHOULD GET FREE SHOTS NOW
                 if(enemy && sitealarm) {
+                    bool snuck_away = true;
                     int e;
 
                     // Try to sneak past
@@ -1671,15 +1674,24 @@ void mode_site(void) {
 
                     // If you can sneak past all enemies
                     if(e == ENCMAX) {
+                        int breakout = false;
+
                         for(e = 0; e < ENCMAX; e++) {
-                            int difficulty = (1 + 3 * (encounter[e].type == CREATURE_GUARDDOG)) *
-                                             (sitecrime + encounter[e].attval(ATTRIBUTE_WISDOM) * 3 +
-                                              encounter[e].attval(ATTRIBUTE_INTELLIGENCE));
+                            if(!encounter[e].exists)
+                                continue;
 
-                            for(int i = 0; i < 6; i++)
-                                stealthpractice(i, difficulty);
+                            for(int i = 0; i < 6; i++) {
+                                if(activesquad->squad[i]) {
+                                    stealthpractice(i, DIFFICULTY_HARD);
 
-                            if(difficulty > LCSrandom(21) + stealthskill())
+                                    if(!(activesquad->squad[i]->skill_check(SKILL_STEALTH, DIFFICULTY_HARD))) {
+                                        breakout = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if(breakout)
                                 break;
                         }
                     }
@@ -1868,6 +1880,7 @@ void mode_site(void) {
                 case SPECIAL_CLUB_BOUNCER:
                 case SPECIAL_CLUB_BOUNCER_SECONDVISIT:
                 case SPECIAL_APARTMENT_LANDLORD:
+                case SPECIAL_HOUSE_CEO:
                 case SPECIAL_RESTAURANT_TABLE:
                 case SPECIAL_CAFE_COMPUTER:
                 case SPECIAL_PARK_BENCH:
@@ -1912,7 +1925,7 @@ void mode_site(void) {
 
                                 // Check for people noticing you fiddling with the lock
                                 if(actual) {
-                                    alienationcheck(1);
+                                    alienationcheck(0);
                                     noticecheck(-1);
                                 }
 
@@ -1954,7 +1967,7 @@ void mode_site(void) {
                                 }
 
                                 if(actual) {
-                                    alienationcheck(1);
+                                    alienationcheck(0);
                                     noticecheck(-1);
                                 }
 
@@ -2301,19 +2314,32 @@ void mode_site(void) {
                     //AND THEY HAVEN'T BEEN SCARED OFF
                     //MORE WAVES WILL ATTACK
                     //AND IT GETS WORSE AND WORSE
+                    //but not as bad as it used to get,
+                    //since the extra waves are small
                     location[cursite]->siege.attacktime++;
 
-                    if(!(postalarmtimer % 100) || (location[cursite]->siege.attacktime >= 100 + LCSrandom(10) &&
-                                                   (locz != 0 || locx < (MAPX / 2 - 3) || locx > (MAPX / 2 + 3) ||
-                                                    locy > 5))) {
+                    if((postalarmtimer % 100) == 0 || (location[cursite]->siege.attacktime >= 100 + LCSrandom(10) &&
+                                                       (locz != 0 || locx < (MAPX / 2 - 3) || locx > (MAPX / 2 + 3) ||
+                                                        locy > 5))) {
                         location[cursite]->siege.attacktime = 0;
+
+                        int existingUnits = 0;
+
+                        for(int x = 0; x < MAPX; x++) {
+                            for(int y = 0; y < MAPY; y++) {
+                                for(int z = 0; z < MAPZ; z++) {
+                                    if(levelmap[x][y][z].siegeflag & (SIEGEFLAG_UNIT | SIEGEFLAG_HEAVYUNIT))
+                                        existingUnits++;
+                                }
+                            }
+                        }
 
                         //PLACE UNITS
                         int lx, ly, lz;
-                        int unitnum = 5;
+                        int unitnum = 7 - existingUnits;
 
-                        if(location[cursite]->type == SITE_GOVERNMENT_POLICESTATION)
-                            unitnum = 20;
+                        if(unitnum < 0)
+                            unitnum = 0;
 
                         int count = 10000;
 
@@ -2375,7 +2401,7 @@ void mode_site(void) {
                     }
 
                     //BAIL UPON VICTORY
-                    if(location[cursite]->siege.kills >= 25 && location[cursite]->siege.siege) {
+                    if(location[cursite]->siege.kills >= 10 && location[cursite]->siege.siege) {
                         if(location[cursite]->siege.underattack)
                             sitestory->type = NEWSSTORY_SQUAD_DEFENDED;
                         else
@@ -2526,6 +2552,56 @@ void mode_site(void) {
 
                     case SPECIAL_CLUB_BOUNCER_SECONDVISIT:
                         special_bouncer_greet_squad();
+                        break;
+
+                    case SPECIAL_HOUSE_CEO:
+                        if((sitealarm || sitealienate || location[cursite]->siege.siege) &&
+                                uniqueCreatures.CEO_state == UNIQUECREATURE_ALIVE) {
+                            clearmessagearea(false);
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(16, 1);
+
+                            if(law[LAW_FREESPEECH] != ALIGN_ARCHCONSERVATIVE)
+                                addstr("Damn! ");
+                            else
+                                addstr("[Rats!] ");
+
+                            addstr("The CEO must have fled to a panic room.");
+                            levelmap[locx][locy][locz].special = -1;
+                            refresh();
+                            getch();
+                        } else {
+                            switch(uniqueCreatures.CEO_state) {
+                            case UNIQUECREATURE_ALIVE:
+                                clearmessagearea(false);
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                move(16, 1);
+                                addstr("The CEO is in his study.");
+                                levelmap[locx][locy][locz].special = -1;
+                                refresh();
+                                getch();
+
+                                for(int e = 0; e < ENCMAX; e++)
+                                    encounter[e].exists = 0;
+
+                                encounter[0] = uniqueCreatures.CEO();
+                                encounter[0].exists = true;
+                                break;
+
+                            case UNIQUECREATURE_DEAD:
+                            case UNIQUECREATURE_LIBERAL:
+                                clearmessagearea(false);
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                move(16, 1);
+                                addstr("The CEO's study lies empty.");
+                                levelmap[locx][locy][locz].special = -1;
+                                refresh();
+                                getch();
+                                break;
+                            }
+
+                        }
+
                         break;
 
                     case SPECIAL_APARTMENT_LANDLORD:

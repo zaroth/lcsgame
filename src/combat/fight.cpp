@@ -93,7 +93,7 @@ void youattack(void) {
         // Less likely to accidentally hit bystanders,
         // and never hit the wrong person if not using a ranged
         // weapon
-        if(non_enemies.size() > 0 && !LCSrandom(20) && activesquad->squad[p]->weapon.ranged()) {
+        if(non_enemies.size() > 0 && !LCSrandom(60) && activesquad->squad[p]->weapon.ranged()) {
             target = non_enemies[LCSrandom(non_enemies.size())];
             mistake = 1;
             addjuice(*activesquad->squad[p], -5);
@@ -638,7 +638,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             getch();
 
             return;
-        }
+        } else if(a.weapon.type == WEAPON_MOLOTOV)
+            a.weapon.type = WEAPON_NONE;
     }
 
     bool melee = true;
@@ -652,23 +653,23 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
     switch(a.weapon.type) {
     case WEAPON_NONE: {
         if(!a.animalgloss) {
-            if(!LCSrandom(a.skillval(SKILL_HANDTOHAND) + 1))
+            if(!LCSrandom(a.get_skill(SKILL_HANDTOHAND) + 1))
                 strcat(str, "punches");
-            else if(!LCSrandom(a.skillval(SKILL_HANDTOHAND)))
+            else if(!LCSrandom(a.get_skill(SKILL_HANDTOHAND)))
                 strcat(str, "swings at");
-            else if(!LCSrandom(a.skillval(SKILL_HANDTOHAND) - 1))
+            else if(!LCSrandom(a.get_skill(SKILL_HANDTOHAND) - 1))
                 strcat(str, "grapples with");
-            else if(!LCSrandom(a.skillval(SKILL_HANDTOHAND) - 2))
+            else if(!LCSrandom(a.get_skill(SKILL_HANDTOHAND) - 2))
                 strcat(str, "kicks");
-            else if(!LCSrandom(a.skillval(SKILL_HANDTOHAND) - 3))
+            else if(!LCSrandom(a.get_skill(SKILL_HANDTOHAND) - 3))
                 strcat(str, "strikes at");
-            else if(!LCSrandom(a.skillval(SKILL_HANDTOHAND) - 4))
+            else if(!LCSrandom(a.get_skill(SKILL_HANDTOHAND) - 4))
                 strcat(str, "jump kicks");
             else
                 strcat(str, "gracefully strikes at");
         } else {
             if(a.specialattack == ATTACK_CANNON) {
-                strcat(str, "blasts at");
+                strcat(str, "shoots at");
                 melee = false;
             } else if(a.specialattack == ATTACK_FLAME)
                 strcat(str, "breathes fire at");
@@ -777,22 +778,28 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
     int bonus = 0; // Accuracy bonus or penalty that does NOT affect damage or counterattack chance
 
-    //BASIC ROLL
-    int aroll = LCSrandom(20) + 1;
+    //SKILL EFFECTS
+    int wsk = weaponskill(a.weapon.type);
 
-    if(a.prisoner != NULL)
-        aroll -= LCSrandom(10);
+    if(rangedweapon(a.weapon) &&
+            ((a.weapon.type != WEAPON_MOLOTOV &&
+              a.weapon.ammo == 0) || force_melee)) {
+        wsk = SKILL_CLUB; // Club people with out-of-ammo guns
+    }
 
-    int droll = LCSrandom(20) + 1;
+    // Basic roll
+    int aroll = a.skill_roll(wsk);
 
+    int droll = t.skill_roll(SKILL_DODGE) / 2;
+    t.train(SKILL_DODGE, aroll * 2);
+    a.train(wsk, droll * 2);
+
+    // Hostages interfere with attack
     if(t.prisoner != NULL)
         bonus -= LCSrandom(10);
 
-    //Agility rolls for melee attack
-    if(!rangedweapon(a.weapon) || a.weapon.ammo == 0 || force_melee) {
-        aroll += LCSrandom(a.attval(ATTRIBUTE_AGILITY));
-        droll += LCSrandom(t.attval(ATTRIBUTE_AGILITY));
-    }
+    if(a.prisoner != NULL)
+        aroll -= LCSrandom(10);
 
     //Injured people suck at attacking, are like fish in a barrel to attackers
     healthmodroll(aroll, a);
@@ -804,66 +811,27 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
         healthmodroll(droll, t);
     }
 
+    // Prevent negative rolls
     if(aroll < 0)
         aroll = 0;
 
     if(droll < 0)
         droll = 0;
 
-    //SKILL EFFECTS
-    int wsk = weaponskill(a.weapon.type);
+    if(!melee) {
+        // Weapon accuracy bonuses and pentalties
+        if(a.weapon.type == WEAPON_SHOTGUN_PUMP)
+            bonus = 2;
 
-    if(rangedweapon(a.weapon) &&
-            ((a.weapon.type != WEAPON_MOLOTOV &&
-              a.weapon.ammo == 0) || force_melee)) {
-        wsk = SKILL_CLUB; // Club people with out-of-ammo guns
+        if(a.weapon.type == WEAPON_SMG_MP5)
+            bonus = 2;
+
+        if(a.weapon.type == WEAPON_CARBINE_M4)
+            bonus = 2;
+
+        //if(a.weapon.type==WEAPON_AUTORIFLE_M16)bonus=1;
+        //if(a.weapon.type==WEAPON_AUTORIFLE_AK47)bonus=1;
     }
-
-    aroll += a.skillval(wsk);
-    a.train(wsk, droll);
-
-    bool defender_is_LCS = false;
-    int maxtactics = 0;
-
-    for(int p = 0; p < 6; p++) {
-        if(activesquad->squad[p] == &t)
-            defender_is_LCS = true;
-    }
-
-    if(defender_is_LCS) {
-        for(int p = 0; p < 6; p++) {
-            if(activesquad->squad[p] && activesquad->squad[p]->alive)
-                maxtactics = max(activesquad->squad[p]->skill[SKILL_DODGE], maxtactics);
-        }
-    } else if(t.enemy()) {
-        for(int e = 0; e < ENCMAX; e++) {
-            if(encounter[e].exists && encounter[e].alive && encounter[e].enemy())
-                maxtactics = max(encounter[e].skill[SKILL_DODGE], maxtactics);
-        }
-    }
-
-    droll += LCSrandom(maxtactics / 2 + t.skill[SKILL_DODGE] + 1);
-    t.train(SKILL_DODGE, 5);
-
-    if(melee) {
-        if(!t.weapon.ranged())
-            droll += t.skillval(weaponskill(t.weapon.type)) / 2;
-        else if(weaponskill(t.weapon.type) != SKILL_THROWING)
-            droll += t.skillval(SKILL_CLUB) / 2;
-    }
-
-    // Weapon accuracy bonuses and pentalties
-    if(a.weapon.type == WEAPON_SHOTGUN_PUMP)
-        bonus = 2;
-
-    if(a.weapon.type == WEAPON_SMG_MP5)
-        bonus = 4;
-
-    if(a.weapon.type == WEAPON_CARBINE_M4)
-        bonus = 2;
-
-    //if(a.weapon.type==WEAPON_AUTORIFLE_M16)bonus=1;
-    //if(a.weapon.type==WEAPON_AUTORIFLE_AK47)bonus=1;
 
     //USE BULLETS
     int bursthits = 0; // *JDS* Used for fully automatic weapons; tracks multiple hits
@@ -872,7 +840,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
     if(a.weapon.type == WEAPON_NONE) {
         // Martial arts multi-strikes
-        bursthits = 1 + LCSrandom(a.skillval(SKILL_HANDTOHAND) / 3 + 1);
+        bursthits = 1 + LCSrandom(a.get_skill(SKILL_HANDTOHAND) / 3 + 1);
 
         if(bursthits > 5)
             bursthits = 5;
@@ -883,7 +851,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
     if(a.weapon.ammo > 0 && !force_melee) {
         switch(a.weapon.type) {
-        case WEAPON_MOLOTOV: {
+        case WEAPON_MOLOTOV:
             a.weapon.ammo--;
 
             if(a.clip[CLIP_MOLOTOV] == 0)
@@ -905,8 +873,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                     sitestory->crime.push_back(CRIME_ARSON);
                 }
             }
-        }
-        break;
+
+            break;
 
         case WEAPON_FLAMETHROWER:
             a.weapon.ammo--;
@@ -980,13 +948,13 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
         do {
             int offset = 0;
 
-            if(aroll > droll + 10 || mode == GAMEMODE_CHASECAR)
+            if(aroll > droll + 5 || mode == GAMEMODE_CHASECAR)
                 offset = 4;  // NICE SHOT; MORE LIKELY TO HIT BODY/HEAD or it's a car chase and we don't want to hit the car too much
 
-            if(aroll > droll + 20)
+            if(aroll > droll + 10)
                 offset = 8;  // NO LIMB HITS HERE YOU AWESOME PERSON
 
-            if(aroll > droll + 30)
+            if(aroll > droll + 15)
                 offset = 12;  // BOOM AUTOMATIC HEADSHOT MOTHA******
 
             //Weighted location roll:
@@ -1172,7 +1140,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
         char damtype = 0;
         int damamount = 0;
-        char strengthmod = 0;
+        char strengthmin = 1;
+        char strengthmax = 1;
         int severtype = -1;
 
         char damagearmor = 0;
@@ -1182,7 +1151,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
         case WEAPON_NONE:
 
             while(bursthits) {
-                damamount += LCSrandom(5 + a.skillval(SKILL_HANDTOHAND)) + 1 + a.skillval(SKILL_HANDTOHAND);
+                damamount += LCSrandom(5 + a.get_skill(SKILL_HANDTOHAND)) + 1 + a.get_skill(SKILL_HANDTOHAND);
                 bursthits--;
             }
 
@@ -1193,6 +1162,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                     damamount = LCSrandom(500) + 500;
                     damtype |= WOUND_BURNED;
                     damtype |= WOUND_TORN;
+                    damtype |= WOUND_SHOT;
                 } else if(a.specialattack == ATTACK_FLAME)
                     damtype |= WOUND_BURNED;
                 else if(a.specialattack == ATTACK_SUCK)
@@ -1203,14 +1173,24 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                 severtype = WOUND_NASTYOFF;
             }
 
-            strengthmod = 1;
+            strengthmin = 5;
+            strengthmax = 10;
+
             break;
 
         case WEAPON_MAUL:
+            damtype |= WOUND_BRUISED;
+            damamount = LCSrandom(41) + 5;
+            strengthmin = 8;
+            strengthmax = 18;
+
+            break;
+
         case WEAPON_BASEBALLBAT:
             damtype |= WOUND_BRUISED;
             damamount = LCSrandom(41) + 5;
-            strengthmod = 1;
+            strengthmin = 6;
+            strengthmax = 12;
 
             break;
 
@@ -1218,15 +1198,16 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             damtype |= WOUND_CUT;
             damtype |= WOUND_BLEEDING;
             damamount = LCSrandom(61) + 10;
-            strengthmod = 1;
+            strengthmin = 6;
+            strengthmax = 12;
             damagearmor = 1;
+            armorpiercing = 1;
 
             break;
 
         case WEAPON_TORCH:
             damtype |= WOUND_BURNED;
             damamount = LCSrandom(11) + 5;
-            strengthmod = 1;
             damagearmor = 1;
 
             break;
@@ -1235,7 +1216,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             damtype |= WOUND_CUT;
             damtype |= WOUND_BLEEDING;
             damamount = LCSrandom(31) + 10;
-            strengthmod = 1;
+            strengthmin = 1;
+            strengthmax = 4;
             damagearmor = 1;
             armorpiercing = 1;
 
@@ -1245,7 +1227,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             damtype |= WOUND_CUT;
             damtype |= WOUND_BLEEDING;
             damamount = LCSrandom(61) + 10;
-            strengthmod = 1;
+            strengthmin = 1;
+            strengthmax = 4;
             damagearmor = 1;
             armorpiercing = 2;
 
@@ -1253,8 +1236,10 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
         case WEAPON_SYRINGE:
             damtype |= WOUND_CUT;
-            damamount = LCSrandom(6) + 5;
-            strengthmod = 1;
+            damamount = LCSrandom(4) + 1;
+            strengthmin = 1;
+            strengthmax = 2;
+            armorpiercing = 4;
 
             break;
 
@@ -1269,7 +1254,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(6) + 5;
-                strengthmod = 1;
+                strengthmin = 2;
+                strengthmax = 6;
 
             }
 
@@ -1286,7 +1272,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(6) + 5;
-                strengthmod = 1;
+                strengthmin = 2;
+                strengthmax = 6;
 
             }
 
@@ -1303,7 +1290,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(6) + 5;
-                strengthmod = 1;
+                strengthmin = 3;
+                strengthmax = 8;
 
             }
 
@@ -1321,7 +1309,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(6) + 5;
-                strengthmod = 1;
+                strengthmin = 2;
+                strengthmax = 6;
 
             }
 
@@ -1339,7 +1328,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(21) + 5;
-                strengthmod = 1;
+                strengthmin = 6;
+                strengthmax = 12;
 
             }
 
@@ -1361,7 +1351,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(21) + 5;
-                strengthmod = 1;
+                strengthmin = 12;
+                strengthmax = 18;
 
             }
 
@@ -1388,7 +1379,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(21) + 5;
-                strengthmod = 1;
+                strengthmin = 6;
+                strengthmax = 12;
 
             }
 
@@ -1414,7 +1406,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(25) + 5;
-                strengthmod = 1;
+                strengthmin = 6;
+                strengthmax = 12;
 
             }
 
@@ -1438,7 +1431,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(21) + 5;
-                strengthmod = 1;
+                strengthmin = 5;
+                strengthmax = 10;
 
             }
 
@@ -1460,7 +1454,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             } else {
                 damtype |= WOUND_BRUISED;
                 damamount = LCSrandom(21) + 5;
-                strengthmod = 1;
+                strengthmin = 6;
+                strengthmax = 12;
 
             }
 
@@ -1472,7 +1467,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             damtype |= WOUND_CUT;
             damtype |= WOUND_BLEEDING;
             damamount = LCSrandom(101) + 10;
-            strengthmod = 1;
+            strengthmin = 6;
+            strengthmax = 12;
             severtype = WOUND_CLEANOFF;
             damagearmor = 1;
             armorpiercing = 2;
@@ -1480,54 +1476,91 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             break;
 
         case WEAPON_HAMMER:
+            damtype |= WOUND_BRUISED;
+            damtype |= WOUND_BLEEDING;
+            damamount = LCSrandom(21) + 10;
+            strengthmin = 8;
+            strengthmax = 18;
+            break;
+
         case WEAPON_CROWBAR:
             damtype |= WOUND_BRUISED;
             damtype |= WOUND_BLEEDING;
             damamount = LCSrandom(21) + 10;
-            strengthmod = 1;
+            strengthmin = 4;
+            strengthmax = 8;
+            break;
+
+        case WEAPON_STAFF:
+            damtype |= WOUND_BRUISED;
+            damamount = LCSrandom(21) + 5;
+            strengthmin = 6;
+            strengthmax = 12;
+            break;
 
         case WEAPON_GUITAR:
-        case WEAPON_STAFF:
         case WEAPON_NIGHTSTICK:
             damtype |= WOUND_BRUISED;
             damamount = LCSrandom(21) + 5;
-            strengthmod = 1;
-
+            strengthmin = 4;
+            strengthmax = 8;
             break;
 
         case WEAPON_GAVEL:
             damtype |= WOUND_BRUISED;
             damamount = LCSrandom(6) + 5;
-            strengthmod = 1;
+            strengthmin = 1;
+            strengthmax = 4;
+            break;
+
+        case WEAPON_CHAIN:
+            damtype |= WOUND_BRUISED;
+            damamount = LCSrandom(11) + 5;
+            strengthmin = 1;
+            strengthmax = 6;
             break;
 
         case WEAPON_SPRAYCAN:
-        case WEAPON_CHAIN:
         case WEAPON_CROSS:
             damtype |= WOUND_BRUISED;
             damamount = LCSrandom(11) + 5;
-            strengthmod = 1;
+            strengthmin = 1;
+            strengthmax = 4;
             break;
         }
 
+        // Coarse combat lethality reduction.
+        damamount /= 4;
+
+        if(t.squadid != -1 && t.hireid == -1) // Plot Armor: if the founder is hit, inflict
+            damamount /= 2;               // 1/4 damage, because founders are cool
+
         int mod = 0;
 
-        if(strengthmod) {
-            mod += a.attval(ATTRIBUTE_STRENGTH) - 5;
-            /*if(armorpiercing)
-               armorpiercing+=a.attval(ATTRIBUTE_STRENGTH)>>3;*/
+        if(strengthmax > strengthmin) {
+            // Melee attacks: Maximum strength bonus, minimum
+            // strength to deliver full damage
+            int strength = a.attribute_roll(ATTRIBUTE_STRENGTH);
+
+            if(strength > strengthmax)
+                strength = strengthmax;
+
+            mod += strength - strengthmin;
         }
 
         //SKILL BONUS FOR GOOD ROLL
         mod += aroll - droll - 5;
 
         //DO THE HEALTH MOD ON THE WOUND
-        mod -= t.attval(ATTRIBUTE_HEALTH) - 5;
-        //If the line below is commented out, health works like body armor
-        //else, health will only avoid critical hits, not stop low-damage attacks
-        //if(mod<0)mod=0;
+        mod -= t.attribute_roll(ATTRIBUTE_HEALTH) - 5;
+
+        //Health and poor accuracy will only avoid critical hits, not stop low-damage attacks
+        if(mod < 0)
+            mod = 0;
+
 
         damagemod(t, damtype, damamount, w, armorpiercing, mod);
+
 
         // Temporary debug output for the damage roll
         #ifdef SHOWMECHANICS
@@ -1546,11 +1579,6 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             damamount = 0; // no damage to shots to the car body
         }
 
-        if(t.squadid != -1 && t.hireid == -1) //if the founder is hit
-            damamount /= 4;               //inflict 1/4 damage
-
-        //(this lets you be heroic)
-
         if(damamount > 0) {
             Creature *target = 0;
 
@@ -1567,8 +1595,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                     if(activesquad->squad[i] == &t)
                         break;
 
-                    if(activesquad->squad[i]->attval(ATTRIBUTE_HEART) > 8 &&
-                            activesquad->squad[i]->attval(ATTRIBUTE_AGILITY) > 4) {
+                    if(activesquad->squad[i]->get_attribute(ATTRIBUTE_HEART, true) > 8 &&
+                            activesquad->squad[i]->get_attribute(ATTRIBUTE_AGILITY, true) > 4) {
                         target = activesquad->squad[i];
 
                         clearmessagearea();
@@ -1664,8 +1692,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                 char alreadydead = !target->alive;
 
                 if(!alreadydead) {
-                    target->blood = 0;
-                    target->alive = 0;
+                    target->die();
 
                     if(t.align == -a.align)
                         addjuice(a, 5 + t.juice / 20);  // Instant juice
@@ -2471,7 +2498,7 @@ void damagemod(Creature &t, char &damtype, int &damamount,
         armor -= t.armor.quality - '1';
 
     if(t.armor.flag & ARMORFLAG_DAMAGED)
-        armor /= 2;
+        armor -= 1;
 
     if(armor < 0)
         armor = 0;  // Possible from second-rate clothes
@@ -2526,9 +2553,9 @@ void specialattack(Creature &a, Creature &t, char &actual) {
     int attack = 0;
 
     if(a.align != 1)
-        attack = LCSrandom(a.attval(ATTRIBUTE_WISDOM)) + t.attval(ATTRIBUTE_WISDOM, 0);
+        attack = a.attribute_roll(ATTRIBUTE_WISDOM) + t.get_attribute(ATTRIBUTE_WISDOM, false);
     else if(a.align == 1)
-        attack = LCSrandom(a.attval(ATTRIBUTE_HEART)) + t.attval(ATTRIBUTE_HEART, 0);
+        attack = a.attribute_roll(ATTRIBUTE_HEART) + t.get_attribute(ATTRIBUTE_HEART, false);
 
     switch(a.type) {
     case CREATURE_COP:
@@ -2571,9 +2598,9 @@ void specialattack(Creature &a, Creature &t, char &actual) {
 
         strcat(str, "!");
 
-        resist = t.attval(ATTRIBUTE_HEART) - t.attval(ATTRIBUTE_WISDOM);
+        resist = t.attribute_roll(ATTRIBUTE_HEART);
 
-        attack += LCSrandom(a.skillval(SKILL_PERSUASION) + 1);
+        attack += a.skill_roll(SKILL_PERSUASION);
         break;
 
     case CREATURE_JUDGE_CONSERVATIVE:
@@ -2601,16 +2628,14 @@ void specialattack(Creature &a, Creature &t, char &actual) {
         strcat(str, "!");
 
         if(t.align == 1) {
-            resist = t.attval(ATTRIBUTE_INTELLIGENCE, 0) +
-                     t.attval(ATTRIBUTE_HEART, 0) + t.skillval(SKILL_LAW) -
-                     t.attval(ATTRIBUTE_WISDOM, 0);
+            resist = t.skill_roll(SKILL_LAW) +
+                     t.attribute_roll(ATTRIBUTE_HEART);
         } else {
-            resist = t.attval(ATTRIBUTE_INTELLIGENCE, 0) +
-                     t.attval(ATTRIBUTE_WISDOM, 0) + t.skillval(SKILL_LAW) -
-                     t.attval(ATTRIBUTE_HEART, 0);
+            resist = t.skill_roll(SKILL_LAW) +
+                     t.attribute_roll(ATTRIBUTE_WISDOM);
         }
 
-        attack += LCSrandom(a.attval(ATTRIBUTE_INTELLIGENCE) / 2 + 1) + LCSrandom(a.skillval(SKILL_LAW) + 1);
+        attack += a.skill_roll(SKILL_LAW);
         break;
 
     case CREATURE_SCIENTIST_EMINENT:
@@ -2637,18 +2662,14 @@ void specialattack(Creature &a, Creature &t, char &actual) {
         strcat(str, "!");
 
         if(t.align == 1) {
-            resist = t.attval(ATTRIBUTE_INTELLIGENCE, 0) +
-                     t.skillval(SKILL_SCIENCE) +
-                     t.attval(ATTRIBUTE_HEART, 0) -
-                     t.attval(ATTRIBUTE_WISDOM, 0);
+            resist = t.skill_roll(SKILL_SCIENCE) +
+                     t.attribute_roll(ATTRIBUTE_HEART);
         } else {
-            resist = t.attval(ATTRIBUTE_INTELLIGENCE, 0) +
-                     t.skillval(SKILL_SCIENCE) +
-                     t.attval(ATTRIBUTE_WISDOM, 0) -
-                     t.attval(ATTRIBUTE_HEART, 0);
+            resist = t.skill_roll(SKILL_SCIENCE) +
+                     t.attribute_roll(ATTRIBUTE_WISDOM);
         }
 
-        attack += LCSrandom(a.attval(ATTRIBUTE_INTELLIGENCE)) + LCSrandom(t.skillval(SKILL_SCIENCE) + 1);
+        attack += a.skill_roll(SKILL_SCIENCE);
         break;
 
     case CREATURE_CORPORATE_CEO:
@@ -2723,16 +2744,14 @@ void specialattack(Creature &a, Creature &t, char &actual) {
         strcat(str, "!");
 
         if(t.align == 1) {
-            resist = t.attval(ATTRIBUTE_HEART, 0) +
-                     t.skillval(SKILL_BUSINESS) -
-                     t.attval(ATTRIBUTE_WISDOM, 0);
+            resist = t.skill_roll(SKILL_BUSINESS) +
+                     t.attribute_roll(ATTRIBUTE_HEART);
         } else {
-            resist = t.attval(ATTRIBUTE_WISDOM, 0) +
-                     t.skillval(SKILL_BUSINESS) -
-                     t.attval(ATTRIBUTE_HEART, 0);
+            resist = t.skill_roll(SKILL_BUSINESS) +
+                     t.attribute_roll(ATTRIBUTE_WISDOM);
         }
 
-        attack += LCSrandom(a.skillval(SKILL_PERSUASION) + 1) + LCSrandom(a.skillval(SKILL_BUSINESS) + 1);
+        attack += a.skill_roll(SKILL_BUSINESS);
         break;
 
     case CREATURE_RADIOPERSONALITY:
@@ -2763,17 +2782,12 @@ void specialattack(Creature &a, Creature &t, char &actual) {
         strcat(str, t.name);
         strcat(str, "!");
 
-        if(t.align == 1) {
-            resist = t.attval(ATTRIBUTE_CHARISMA, 0) +
-                     t.attval(ATTRIBUTE_HEART, 0) -
-                     t.attval(ATTRIBUTE_WISDOM, 0);
-        } else {
-            resist = t.attval(ATTRIBUTE_CHARISMA, 0) +
-                     t.attval(ATTRIBUTE_WISDOM, 0) -
-                     t.attval(ATTRIBUTE_HEART, 0);
-        }
+        if(t.align == 1)
+            resist = t.attribute_roll(ATTRIBUTE_HEART);
+        else
+            resist = t.attribute_roll(ATTRIBUTE_WISDOM);
 
-        attack += LCSrandom(a.attval(ATTRIBUTE_CHARISMA));
+        attack += a.attribute_roll(ATTRIBUTE_CHARISMA);
         break;
 
     default:
@@ -2808,21 +2822,12 @@ void specialattack(Creature &a, Creature &t, char &actual) {
             strcat(str, t.name);
             strcat(str, "!");
 
-            attack = LCSrandom(a.skillval(SKILL_MUSIC) * 2 + 1);
+            attack = a.skill_roll(SKILL_MUSIC);
 
-            if(t.align == 1) {
-                resist = t.skillval(SKILL_MUSIC) +
-                         t.attval(ATTRIBUTE_HEART, 0) -
-                         t.attval(ATTRIBUTE_WISDOM, 0);
-
-                // LCS in full battle colors has bonus to music attack
-                if(activesquad->stance == SQUADSTANCE_BATTLECOLORS)
-                    attack = (attack * 3) / 2;
-            } else {
-                resist = t.skillval(SKILL_MUSIC) +
-                         t.attval(ATTRIBUTE_WISDOM, 0) -
-                         t.attval(ATTRIBUTE_HEART, 0);
-            }
+            if(t.align == 1)
+                resist = t.attribute_roll(ATTRIBUTE_HEART);
+            else
+                resist = t.attribute_roll(ATTRIBUTE_WISDOM);
 
             if(resist > 0)
                 a.train(SKILL_MUSIC, LCSrandom(resist) + 1);
@@ -2858,11 +2863,12 @@ void specialattack(Creature &a, Creature &t, char &actual) {
                 addstr(t.name);
                 addstr(" loses juice!");
                 addjuice(t, -50);
-            } else if(LCSrandom(15) > t.attval(ATTRIBUTE_WISDOM) || t.attval(ATTRIBUTE_WISDOM) < t.attval(ATTRIBUTE_HEART)) {
+            } else if(LCSrandom(15) > t.get_attribute(ATTRIBUTE_WISDOM, true) ||
+                      t.get_attribute(ATTRIBUTE_WISDOM, true) < t.get_attribute(ATTRIBUTE_HEART, true)) {
                 move(17, 1);
                 addstr(t.name);
                 addstr(" becomes Wiser!");
-                t.att[ATTRIBUTE_WISDOM]++;
+                t.adjust_attribute(ATTRIBUTE_WISDOM, +1);
             } else if(t.align == ALIGN_LIBERAL && t.flag & CREATUREFLAG_LOVESLAVE) {
                 move(17, 1);
                 addstr(t.name);
@@ -2910,7 +2916,7 @@ void specialattack(Creature &a, Creature &t, char &actual) {
                     if(activesquad->squad[p] == &t) {
                         for(int pl = pool.size() - 1; pl >= 0; pl--) {
                             if(pool[pl] == activesquad->squad[p]) {
-                                pool[pl]->alive = 0;
+                                pool[pl]->die();
                                 pool[pl]->location = -1;
                                 //delete pool[pl];
                                 //pool.erase(pool.begin() + pl);
@@ -2935,12 +2941,12 @@ void specialattack(Creature &a, Creature &t, char &actual) {
                 addstr(t.name);
                 addstr(" seems less badass!");
                 addjuice(t, -50);
-            } else if(LCSrandom(15) > t.attval(ATTRIBUTE_HEART) ||
-                      t.attval(ATTRIBUTE_HEART) < t.attval(ATTRIBUTE_WISDOM)) {
+            } else if(!t.attribute_check(ATTRIBUTE_HEART, DIFFICULTY_AVERAGE) ||
+                      t.get_attribute(ATTRIBUTE_HEART, true) < t.get_attribute(ATTRIBUTE_WISDOM, true)) {
                 move(17, 1);
                 addstr(t.name);
                 addstr("'s Heart swells!");
-                t.att[ATTRIBUTE_HEART]++;
+                t.adjust_attribute(ATTRIBUTE_HEART, +1);
             } else {
                 move(17, 1);
                 addstr(t.name);
@@ -3258,7 +3264,7 @@ void makeloot(Creature &cr, vector<itemst *> &loot) {
 
 /* abandoned liberal is captured by conservatives */
 void capturecreature(Creature &t) {
-    t.activity.type = 0;
+    t.activity.type = ACTIVITY_NONE;
 
     t.weapon.ammo = 0;
     t.weapon.type = 0;

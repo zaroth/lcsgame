@@ -1171,6 +1171,8 @@ configSiteSpecial::configSiteSpecial(const std::string &value)
         special = SPECIAL_NUCLEAR_ONOFF;
     else if(value == "HOUSE_PHOTOS")
         special = SPECIAL_HOUSE_PHOTOS;
+    else if(value == "HOUSE_CEO")
+        special = SPECIAL_HOUSE_CEO;
     else if(value == "CORPORATE_FILES")
         special = SPECIAL_CORPORATE_FILES;
     else if(value == "RADIO_BROADCASTSTUDIO")
@@ -1255,6 +1257,8 @@ configSiteUnique::configSiteUnique(const std::string &value)
         unique = SPECIAL_NUCLEAR_ONOFF;
     else if(value == "HOUSE_PHOTOS")
         unique = SPECIAL_HOUSE_PHOTOS;
+    else if(value == "HOUSE_CEO")
+        unique = SPECIAL_HOUSE_CEO;
     else if(value == "CORPORATE_FILES")
         unique = SPECIAL_CORPORATE_FILES;
     else if(value == "RADIO_BROADCASTSTUDIO")
@@ -1361,7 +1365,7 @@ void configSiteUnique::build() {
     for(x = xstart; x <= xend; x++) {
         for(y = ystart; y <= yend; y++) {
             for(z = zstart; z <= zend; z++) {
-                if(!(levelmap[x][y][z].flag & (SITEBLOCK_DOOR | SITEBLOCK_BLOCK | SITEBLOCK_EXIT)) &&
+                if(!(levelmap[x][y][z].flag & (SITEBLOCK_DOOR | SITEBLOCK_BLOCK | SITEBLOCK_EXIT | SITEBLOCK_OUTDOOR)) &&
                         levelmap[x][y][z].special == SPECIAL_NONE) {
                     if(levelmap[x][y][z].flag & SITEBLOCK_RESTRICTED)
                         secure.push_back(coordinates(x, y, z));

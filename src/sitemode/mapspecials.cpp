@@ -111,7 +111,7 @@ void special_bouncer_assess_squad() {
                     if(rejected > REJECTED_NUDE)
                         rejected = REJECTED_NUDE;
 
-                if(!hasdisguise(*activesquad->squad[s], sitetype))
+                if(!hasdisguise(*activesquad->squad[s]))
                     if(rejected > REJECTED_DRESSCODE)
                         rejected = REJECTED_DRESSCODE;
 
@@ -134,7 +134,7 @@ void special_bouncer_assess_squad() {
                         rejected = REJECTED_WEAPONS;
 
                 // Fail a tough disguise check? Gone
-                if(disguisesite(sitetype) && disguiseskill() + LCSrandom(20) < 40)
+                if(disguisesite(sitetype) && !(activesquad->squad[s]->skill_check(SKILL_DISGUISE, DIFFICULTY_CHALLENGING)))
                     if(rejected > REJECTED_SMELLFUNNY)
                         rejected = REJECTED_SMELLFUNNY;
 
@@ -153,7 +153,7 @@ void special_bouncer_assess_squad() {
                         // Not a man by your own definition either
                         if(rejected > REJECTED_FEMALE)
                             rejected = REJECTED_FEMALE;
-                    } else if(disguisesite(sitetype) && disguiseskill() + LCSrandom(20) < 40 && law[LAW_GAY] != 2) {
+                    } else if(disguisesite(sitetype) && !(activesquad->squad[s]->skill_check(SKILL_DISGUISE, DIFFICULTY_HARD)) && law[LAW_GAY] != 2) {
                         // Not skilled enough to pull it off
                         if(rejected > REJECTED_FEMALEISH)
                             rejected = REJECTED_FEMALEISH;
@@ -590,16 +590,14 @@ void special_nuclear_onoff(void) {
             clearmessagearea();
             levelmap[locx][locy][locz].special = -1;
 
-            char max = 15;
+            char max = DIFFICULTY_HARD;
             Creature *maxs = 0;
 
             for(int p = 0; p < 6; p++) {
                 if(activesquad->squad[p] != NULL && activesquad->squad[p]->alive) {
-                    if(activesquad->squad[p]->skillval(SKILL_SCIENCE) * 4 +
-                            activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE) > max) {
+                    if(activesquad->squad[p]->skill_check(SKILL_SCIENCE, max)) {
                         maxs = activesquad->squad[p];
-                        max = activesquad->squad[p]->skillval(SKILL_SCIENCE) * 4 +
-                              activesquad->squad[p]->attval(ATTRIBUTE_INTELLIGENCE);
+                        break;
                     }
                 }
             }
@@ -934,50 +932,33 @@ void special_courthouse_jury(void) {
             char succeed = 0;
 
             int maxattack = 0;
+            int maxp = -1;
 
             for(p = 0; p < 6; p++) {
                 if(activesquad->squad[p] != NULL) {
                     if(activesquad->squad[p]->alive) {
-                        if((activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
-                                activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
-                                activesquad->squad[p]->skillval(SKILL_PERSUASION) +
-                                activesquad->squad[p]->skillval(SKILL_LAW) * 2) > maxattack) {
-                            maxattack = activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
-                                        activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
-                                        activesquad->squad[p]->skillval(SKILL_PERSUASION) +
-                                        activesquad->squad[p]->skillval(SKILL_LAW) * 2;
+                        if(activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) +
+                                activesquad->squad[p]->get_attribute(ATTRIBUTE_INTELLIGENCE, true) +
+                                activesquad->squad[p]->get_skill(SKILL_PERSUASION) +
+                                activesquad->squad[p]->get_skill(SKILL_LAW) > maxattack) {
+                            maxattack = activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) +
+                                        activesquad->squad[p]->get_attribute(ATTRIBUTE_INTELLIGENCE, true) +
+                                        activesquad->squad[p]->get_skill(SKILL_PERSUASION) +
+                                        activesquad->squad[p]->get_skill(SKILL_LAW);
+                            maxp = p;
                         }
                     }
                 }
             }
 
-            vector<int> goodp;
+            if(maxp > -1) {
+                int p = maxp;
 
-            for(p = 0; p < 6; p++) {
-                if(activesquad->squad[p] != NULL) {
-                    if(activesquad->squad[p]->alive) {
-                        if((activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
-                                activesquad->squad[p]->attval(ATTRIBUTE_HEART) +
-                                activesquad->squad[p]->skillval(SKILL_PERSUASION) +
-                                activesquad->squad[p]->skillval(SKILL_LAW) * 2) == maxattack)
-                            goodp.push_back(p);
-                    }
-                }
-            }
+                activesquad->squad[p]->train(SKILL_PERSUASION, 20);
+                activesquad->squad[p]->train(SKILL_LAW, 20);
 
-            if(goodp.size() > 0) {
-                int p = goodp[LCSrandom(goodp.size())];
-
-                short aroll = LCSrandom(21) +
-                              LCSrandom(activesquad->squad[p]->attval(ATTRIBUTE_CHARISMA) +
-                                        activesquad->squad[p]->attval(ATTRIBUTE_HEART) + 1) +
-                              LCSrandom(activesquad->squad[p]->skillval(SKILL_PERSUASION) +
-                                        activesquad->squad[p]->skillval(SKILL_LAW) * 2 + 1);
-                short troll = 20;
-                activesquad->squad[p]->train(SKILL_PERSUASION, troll);
-                activesquad->squad[p]->train(SKILL_LAW, troll);
-
-                if(aroll > troll)
+                if(activesquad->squad[p]->skill_check(SKILL_PERSUASION, DIFFICULTY_HARD) &&
+                        activesquad->squad[p]->skill_check(SKILL_LAW, DIFFICULTY_CHALLENGING))
                     succeed = 1;
 
                 if(succeed) {
@@ -986,11 +967,11 @@ void special_courthouse_jury(void) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
                     addstr(activesquad->squad[p]->name);
-                    addstr(" works the room like Twelve Angry Men, and the jury");
+                    addstr(" works the room like in Twelve Angry Men, and the jury");
                     move(17, 1);
                     addstr("concludes that ");//XXX: This is very awkward grammar.
 
-                    switch(LCSrandom(16)) {
+                    switch(LCSrandom(16)) {   // Fixed. -Fox
                     case 0:
                         addstr("murder");
                         break;
@@ -1065,7 +1046,7 @@ void special_courthouse_jury(void) {
                     noticecheck(-1);
 
                     //INSTANT JUICE BONUS
-                    addjuice(*(activesquad->squad[p]), 10);
+                    addjuice(*(activesquad->squad[p]), 25);
                 } else {
                     clearmessagearea();
 
@@ -1382,7 +1363,7 @@ void special_polluter_equipment(void) {
 
             change_public_opinion(VIEW_POLLUTION, 2, 1, 70);
 
-            alienationcheck(1);
+            alienationcheck(0);
             noticecheck(-1);
             levelmap[locx][locy][locz].special = -1;
             sitecrime += 2;
@@ -1582,7 +1563,7 @@ void special_house_photos(void) {
             }
 
             if(actual) {
-                alienationcheck(1);
+                alienationcheck(0);
                 noticecheck(-1);
                 levelmap[locx][locy][locz].special = -1;
             }
@@ -1646,7 +1627,7 @@ void special_corporate_files(void) {
             }
 
             if(actual) {
-                alienationcheck(1);
+                alienationcheck(0);
                 noticecheck(-1);
                 levelmap[locx][locy][locz].special = -1;
                 sitecrime += 3;
@@ -1713,12 +1694,12 @@ void special_news_broadcaststudio(void) {
             addstr("The Cable News broadcasters left the equipment on in");
             move(17, 1);
             addstr("their rush to get out. Take over the studio? (Yes or No)");
+        } else {
+            move(16, 1);
+            addstr("You've found a Cable News broadcasting studio.");
+            move(17, 1);
+            addstr("Start an impromptu news program? (Yes or No)");
         }
-
-        move(16, 1);
-        addstr("You've found a Cable News broadcasting studio.");
-        move(17, 1);
-        addstr("Start an impromptu news program? (Yes or No)");
 
         refresh();
 

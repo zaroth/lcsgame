@@ -44,15 +44,14 @@ void activate(void) {
             if(location[pool[p]->location]->type != SITE_GOVERNMENT_POLICESTATION &&
                     location[pool[p]->location]->type != SITE_GOVERNMENT_COURTHOUSE &&
                     location[pool[p]->location]->type != SITE_GOVERNMENT_PRISON) {
-                if(pool[p]->squadid != -1) {
-                    sq = getsquad(pool[p]->squadid);
-
-                    if(sq != -1) {
-                        if(squad[sq]->activity.type != ACTIVITY_NONE)
-                            continue;
-                    }
-                }
-
+                /*if(pool[p]->squadid!=-1)
+                {
+                   sq=getsquad(pool[p]->squadid);
+                   if(sq!=-1)
+                   {
+                      if(squad[sq]->activity.type!=ACTIVITY_NONE)continue;
+                   }
+                }*/
                 temppool.push_back(pool[p]);
             }
         }
@@ -93,10 +92,10 @@ void activate(void) {
             int skill = 0;
 
             for(int sk = 0; sk < SKILLNUM; sk++) {
-                skill += temppool[p]->skill[sk];
+                skill += temppool[p]->get_skill(sk);
 
-                if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->skill[sk]) &&
-                        temppool[p]->skill[sk] < maxskill(sk, *temppool[p]))
+                if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->get_skill(sk)) &&
+                        temppool[p]->get_skill(sk) < temppool[p]->skill_cap(sk, true))
                     bright = 1;
             }
 
@@ -211,7 +210,7 @@ void activate(Creature *cr) {
         move(14, 1);
         addstr("E - Teaching Other Liberals");
 
-        if(cr->skill[SKILL_FIRSTAID] != 0)
+        if(cr->get_skill(SKILL_FIRSTAID) != 0)
             set_color(COLOR_WHITE, COLOR_BLACK, (cr->activity.type == ACTIVITY_HEAL || cr->activity.type == ACTIVITY_NONE) && state == 0);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -317,7 +316,11 @@ void activate(Creature *cr) {
 
             set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_SELL_TSHIRTS);
             move(11, 40);
-            addstr("2 - Sell Tie-Dyed T-Shirts");
+
+            if(cr->get_skill(SKILL_TAILORING) > 4)
+                addstr("2 - Sell Embroidered Shirts");
+            else
+                addstr("2 - Sell Tie-Dyed T-Shirts");
 
             set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_SELL_ART);
             move(12, 40);
@@ -388,7 +391,6 @@ void activate(Creature *cr) {
         case ACTIVITY_COMMUNITYSERVICE:
             move(22, 3);
             addstr(cr->name);
-            //addstr(" will help old ladies cross the street.");
             addstr(" will help the elderly, local library, anything that is");
             move(23, 3);
             addstr("liberal.");
@@ -451,15 +453,20 @@ void activate(Creature *cr) {
             addstr(cr->name);
             addstr(" will walk around and ask for donations to the LCS.");
             move(23, 3);
-            addstr("Based on persuasion, business, charisma, heart, public's view on the");
+            addstr("Based on persuasion, public's view on the cause, and how well dressed the");
             move(24, 3);
-            addstr("cause and how proffesional the activist's clothes are.");
+            addstr("activist is.");
             break;
 
         case ACTIVITY_SELL_TSHIRTS:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will tie-dye T-shirts and sell them on the street.");
+
+            if(cr->get_skill(SKILL_TAILORING) > 4)
+                addstr(" will embroid shirts and sell them on the street.");
+            else
+                addstr(" will tie-dye T-shirts and sell them on the street.");
+
             break;
 
         case ACTIVITY_SELL_ART:
@@ -606,17 +613,17 @@ void activate(Creature *cr) {
                     }
 
                 default:
-                    if(cr->attval(ATTRIBUTE_WISDOM) > 7) {
+                    if(cr->get_attribute(ATTRIBUTE_WISDOM, true) > 7) {
                         cr->activity.type = ACTIVITY_COMMUNITYSERVICE;
                         choice = '1';
-                    } else if(cr->attval(ATTRIBUTE_WISDOM) > 4) {
+                    } else if(cr->get_attribute(ATTRIBUTE_WISDOM, true) > 4) {
                         cr->activity.type = ACTIVITY_TROUBLE;
                         choice = '2';
                     } else {
-                        if(cr->skill[SKILL_COMPUTERS] > 1) {
+                        if(cr->get_skill(SKILL_COMPUTERS) > 1) {
                             cr->activity.type = ACTIVITY_DOS_ATTACKS;
                             choice = '5';
-                        } else if(cr->skill[SKILL_ART] > 1) {
+                        } else if(cr->get_skill(SKILL_ART) > 1) {
                             cr->activity.type = ACTIVITY_GRAFFITI;
                             cr->activity.arg = -1;
                             choice = '3';
@@ -648,13 +655,13 @@ void activate(Creature *cr) {
                     break;
 
                 default:
-                    if(cr->skill[SKILL_ART] > 1) {
+                    if(cr->get_skill(SKILL_ART) > 1) {
                         cr->activity.type = ACTIVITY_SELL_ART;
                         choice = '3';
-                    } else if(cr->skill[SKILL_TAILORING] > 1) {
+                    } else if(cr->get_skill(SKILL_TAILORING) > 1) {
                         cr->activity.type = ACTIVITY_SELL_TSHIRTS;
                         choice = '2';
-                    } else if(cr->skill[SKILL_MUSIC] > 1) {
+                    } else if(cr->get_skill(SKILL_MUSIC) > 1) {
                         cr->activity.type = ACTIVITY_SELL_MUSIC;
                         choice = '4';
                     } else {
@@ -681,10 +688,10 @@ void activate(Creature *cr) {
 
                 //case '4':cr->activity.type=ACTIVITY_DOS_RACKET;break;
                 default:
-                    if(cr->skill[SKILL_COMPUTERS] > 1) {
+                    if(cr->get_skill(SKILL_COMPUTERS) > 1) {
                         cr->activity.type = ACTIVITY_CCFRAUD;
                         choice = '3';
-                    } else if(cr->skill[SKILL_SEDUCTION] > 1) {
+                    } else if(cr->get_skill(SKILL_SEDUCTION) > 1) {
                         cr->activity.type = ACTIVITY_PROSTITUTION;
                         choice = '2';
                     } else {
@@ -790,7 +797,7 @@ void activate(Creature *cr) {
             }
         }
 
-        if(c == 'h' && cr->skillval(SKILL_FIRSTAID) != 0) {
+        if(c == 'h' && cr->get_skill(SKILL_FIRSTAID) != 0) {
             cr->activity.type = ACTIVITY_HEAL;
             break;
         }
@@ -1014,14 +1021,14 @@ void activatebulk(void) {
             if(p < temppool.size()) {
                 switch(selectedactivity) {
                 case 0: //Activism
-                    if(temppool[p]->attval(ATTRIBUTE_WISDOM) > 7)
+                    if(temppool[p]->get_attribute(ATTRIBUTE_WISDOM, true) > 7)
                         temppool[p]->activity.type = ACTIVITY_COMMUNITYSERVICE;
-                    else if(temppool[p]->attval(ATTRIBUTE_WISDOM) > 4)
+                    else if(temppool[p]->get_attribute(ATTRIBUTE_WISDOM, true) > 4)
                         temppool[p]->activity.type = ACTIVITY_TROUBLE;
                     else {
-                        if(temppool[p]->skillval(SKILL_COMPUTERS) > 1)
+                        if(temppool[p]->get_skill(SKILL_COMPUTERS) > 1)
                             temppool[p]->activity.type = ACTIVITY_DOS_ATTACKS;
-                        else if(temppool[p]->skillval(SKILL_ART) > 1) {
+                        else if(temppool[p]->get_skill(SKILL_ART) > 1) {
                             temppool[p]->activity.type = ACTIVITY_GRAFFITI;
                             temppool[p]->activity.arg = -1;
                         } else
@@ -1031,21 +1038,21 @@ void activatebulk(void) {
                     break;
 
                 case 1: //Fundraising
-                    if(temppool[p]->skillval(SKILL_ART) > 1)
+                    if(temppool[p]->get_skill(SKILL_ART) > 1)
                         temppool[p]->activity.type = ACTIVITY_SELL_ART;
-                    else if(temppool[p]->skillval(SKILL_TAILORING) > 1)
-                        temppool[p]->activity.type = ACTIVITY_SELL_TSHIRTS;
-                    else if(temppool[p]->skillval(SKILL_MUSIC) > 1)
+                    else if(temppool[p]->get_skill(SKILL_MUSIC) > 1)
                         temppool[p]->activity.type = ACTIVITY_SELL_MUSIC;
+                    else if(temppool[p]->get_skill(SKILL_TAILORING) > 1)
+                        temppool[p]->activity.type = ACTIVITY_SELL_TSHIRTS;
                     else
                         temppool[p]->activity.type = ACTIVITY_DONATIONS;
 
                     break;
 
                 case 2: //Illegal Fundraising
-                    if(temppool[p]->skillval(SKILL_COMPUTERS) > 1)
+                    if(temppool[p]->get_skill(SKILL_COMPUTERS) > 1)
                         temppool[p]->activity.type = ACTIVITY_CCFRAUD;
-                    else if(temppool[p]->skillval(SKILL_SEDUCTION) > 1)
+                    else if(temppool[p]->get_skill(SKILL_SEDUCTION) > 1)
                         temppool[p]->activity.type = ACTIVITY_PROSTITUTION;
                     else
                         temppool[p]->activity.type = ACTIVITY_SELL_DRUGS;
@@ -1127,10 +1134,10 @@ void select_tendhostage(Creature *cr) {
             int skill = 0;
 
             for(int sk = 0; sk < SKILLNUM; sk++) {
-                skill += temppool[p]->skill[sk];
+                skill += temppool[p]->get_skill(sk);
 
-                if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->skill[sk]) &&
-                        temppool[p]->skill[sk] < maxskill(sk, *temppool[p]))
+                if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->get_skill(sk)) &&
+                        temppool[p]->get_skill(sk) < temppool[p]->skill_cap(sk, true))
                     bright = 1;
             }
 
@@ -1281,6 +1288,8 @@ void select_makeclothing(Creature *cr) {
     vector<int> armortype;
 
     for(int a = 0; a < ARMORNUM; a++) {
+        int difficulty = 0;
+
         switch(a) {
         case ARMOR_NONE:
         case ARMOR_MITHRIL:
@@ -1292,12 +1301,15 @@ void select_makeclothing(Creature *cr) {
             break;
 
         case ARMOR_DEATHSQUADUNIFORM:
-            if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2)
-                armortype.push_back(a);
-
-            break;
+            if(law[LAW_POLICEBEHAVIOR] != -2 || law[LAW_DEATHPENALTY] != -2)
+                break;
 
         default:
+            difficulty = armor_makedifficulty(a, cr);
+
+            if(difficulty > cr->get_skill(SKILL_TAILORING) * 2 + 5)
+                break;
+
             armortype.push_back(a);
             break;
         }
@@ -1323,6 +1335,7 @@ void select_makeclothing(Creature *cr) {
         int y = 2, difficulty;
 
         for(int p = page * 19; p < armortype.size() && p < page * 19 + 19; p++) {
+            difficulty = armor_makedifficulty(armortype[p], cr);
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -1331,9 +1344,12 @@ void select_makeclothing(Creature *cr) {
             addstr(str);
 
             move(y, 37);
-            difficulty = armor_makedifficulty(armortype[p], cr);
+            int display_difficulty = difficulty - cr->get_skill(SKILL_TAILORING);
 
-            switch(difficulty) {
+            if(display_difficulty < 0)
+                display_difficulty = 0;
+
+            switch(display_difficulty) {
             case 0:
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
                 addstr("Simple");
@@ -1447,54 +1463,67 @@ int armor_makedifficulty(int type, Creature *cr) {
     case ARMOR_CLOTHES:
     case ARMOR_OVERALLS:
     case ARMOR_WORKCLOTHES:
-        basedif = 3;
+        basedif = 4;
         break;
 
-    case ARMOR_CLOWNSUIT:
     case ARMOR_PRISONER:
+    case ARMOR_BLACKROBE:
+        basedif = 5;
+        break;
+
     case ARMOR_CHEAPDRESS:
     case ARMOR_TRENCHCOAT:
     case ARMOR_LABCOAT:
-    case ARMOR_BLACKROBE:
+        basedif = 6;
+        break;
+
     case ARMOR_BONDAGEGEAR:
-        basedif = 4;
+    case ARMOR_CLOWNSUIT:
+    case ARMOR_SERVANTUNIFORM:
+        basedif = 7;
         break;
 
     case ARMOR_SECURITYUNIFORM:
     case ARMOR_PRISONGUARD:
     case ARMOR_MILITARY:
     case ARMOR_POLICEUNIFORM:
-    case ARMOR_DEATHSQUADUNIFORM:
-        basedif = 5;
+        basedif = 8;
         break;
 
     case ARMOR_CHEAPSUIT:
-    case ARMOR_CIVILLIANARMOR:
+    case ARMOR_DEATHSQUADUNIFORM:
+        basedif = 9;
+        break;
+
     case ARMOR_DONKEYSUIT:
     case ARMOR_ELEPHANTSUIT:
-        basedif = 6;
+        basedif = 10;
+        break;
+
+    case ARMOR_CIVILLIANARMOR:
+        basedif = 11;
         break;
 
     case ARMOR_BLACKSUIT:
     case ARMOR_BLACKDRESS:
-        basedif = 7;
+        basedif = 12;
         break;
 
     case ARMOR_BUNKERGEAR:
-        basedif = 8;
+        basedif = 13;
         break;
 
     case ARMOR_EXPENSIVESUIT:
     case ARMOR_EXPENSIVEDRESS:
-        basedif = 9;
+        basedif = 14;
         break;
 
     default:
-        basedif = 10;
+        basedif = 15;
         break;
     }
 
-    basedif -= cr->skillval(SKILL_TAILORING) - 3;
+    basedif -= cr->get_skill(SKILL_TAILORING) - 3;
 
     if(basedif < 0)
         basedif = 0;
@@ -1525,6 +1554,7 @@ int armor_makeprice(int type) {
     case ARMOR_TRENCHCOAT:
     case ARMOR_LABCOAT:
     case ARMOR_BLACKROBE:
+    case ARMOR_SERVANTUNIFORM:
         price = 20;
         break;
 

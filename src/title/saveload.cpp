@@ -91,7 +91,6 @@ void savegame(char *str) {
         numbytes = fwrite(&showcarprefs, sizeof(char), 1, h);
         numbytes = fwrite(&curcreatureid, sizeof(long), 1, h);
         numbytes = fwrite(&cursquadid, sizeof(long), 1, h);
-        numbytes = fwrite(&offended_cops, sizeof(short), 1, h);
         numbytes = fwrite(&police_heat, sizeof(int), 1, h);
         numbytes = fwrite(&offended_corps, sizeof(short), 1, h);
         numbytes = fwrite(&offended_cia, sizeof(short), 1, h);
@@ -171,12 +170,7 @@ void savegame(char *str) {
 
             //write extra interrogation data if applicable
             if(pool[pl]->align == -1 && pool[pl]->alive) {
-                numbytes = fwrite(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->nofood, sizeof(int), 1, h);
-                numbytes = fwrite(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->nowater, sizeof(int), 1, h);
-                numbytes = fwrite(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->nosleep, sizeof(int), 1, h);
-                numbytes = fwrite(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->nolight, sizeof(int), 1, h);
-                numbytes = fwrite(reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->techniques, sizeof(bool[9]), 1, h);
-                numbytes = fwrite(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->totalspiritcrush, sizeof(int), 1, h);
+                numbytes = fwrite(reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->techniques, sizeof(bool[6]), 1, h);
                 numbytes = fwrite(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->druguse, sizeof(int), 1, h);
 
                 //deep write rapport map
@@ -192,6 +186,9 @@ void savegame(char *str) {
                 }
             }
         }
+
+        //Unique Creatures
+        numbytes = fwrite(&uniqueCreatures, sizeof(UniqueCreatures), 1, h);
 
         //SQUADS
         dummy = squad.size();
@@ -356,7 +353,6 @@ char load(void) {
         fread(&showcarprefs, sizeof(char), 1, h);
         fread(&curcreatureid, sizeof(long), 1, h);
         fread(&cursquadid, sizeof(long), 1, h);
-        fread(&offended_cops, sizeof(short), 1, h);
         fread(&police_heat, sizeof(int), 1, h);
         fread(&offended_corps, sizeof(short), 1, h);
         fread(&offended_cia, sizeof(short), 1, h);
@@ -444,12 +440,7 @@ char load(void) {
             //read extra interrogation data if applicable
             if(pool[pl]->align == -1 && pool[pl]->alive) {
                 pool[pl]->activity.arg = reinterpret_cast<long>(new interrogation);
-                fread(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->nofood, sizeof(int), 1, h);
-                fread(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->nowater, sizeof(int), 1, h);
-                fread(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->nosleep, sizeof(int), 1, h);
-                fread(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->nolight, sizeof(int), 1, h);
-                fread(reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->techniques, sizeof(bool[9]), 1, h);
-                fread(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->totalspiritcrush, sizeof(int), 1, h);
+                fread(reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->techniques, sizeof(bool[6]), 1, h);
                 fread(&reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->druguse, sizeof(int), 1, h);
 
                 reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->rapport.clear();
@@ -466,6 +457,9 @@ char load(void) {
                 }
             }
         }
+
+        //Unique Creatures
+        fread(&uniqueCreatures, sizeof(UniqueCreatures), 1, h);
 
         //SQUADS
         fread(&dummy, sizeof(int), 1, h);

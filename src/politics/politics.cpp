@@ -394,7 +394,7 @@ void elections(char clearformess, char canseethings) {
                 refresh();
 
                 if(!disbanding)
-                    pause_ms(50);
+                    pause_ms(40);
                 else
                     pause_ms(20);
             }
@@ -822,9 +822,9 @@ void elections(char clearformess, char canseethings) {
             if(law[prop[p]]<vote && propdir[p]==1)yesvotes++;*/
 
             if(l == 999) {
-                if(yesvotes > 500)
+                if(yesvotes > 50)
                     yeswin = 1;
-                else if(yesvotes == 500) {
+                else if(yesvotes == 50) {
                     if(!LCSrandom(2))
                         yeswin = 1;
 
@@ -864,8 +864,7 @@ void elections(char clearformess, char canseethings) {
                 addstr("% No");
 
                 refresh();
-
-                pause_ms(20);
+                pause_ms(10);
                 getch();
             }
         }
@@ -1131,7 +1130,7 @@ void elections_senate(int senmod, char canseethings) {
 
             if(!disbanding) {
                 refresh();
-                pause_ms(50);
+                pause_ms(30);
             }
         }
     }
@@ -1393,7 +1392,7 @@ void elections_house(char canseethings) {
             if(!disbanding) {
                 refresh();
 
-                pause_ms(10);
+                pause_ms(5);
 
                 getch();
             }
@@ -1803,7 +1802,7 @@ void supremecourt(char clearformess, char canseethings) {
 
                 refresh();
 
-                pause_ms(120);
+                pause_ms(60);
 
                 getch();
             }
@@ -2426,7 +2425,7 @@ void congress(char clearformess, char canseethings) {
                 if(l % 5 == 0) {
                     refresh();
 
-                    pause_ms(10);
+                    pause_ms(5);
                 }
 
                 getch();

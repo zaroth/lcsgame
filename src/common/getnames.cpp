@@ -836,6 +836,10 @@ void getarmor(char *str, int type, int subtype) {
         strcpy(str, "Security Unif.");
         break;
 
+    case ARMOR_SERVANTUNIFORM:
+        strcpy(str, "Servant Unif.");
+        break;
+
     case ARMOR_POLICEUNIFORM:
         strcpy(str, "Police Uniform");
         break;
@@ -1148,16 +1152,53 @@ void getarmor(char *str, int type, int subtype) {
 
 void getarmorfull(char *str, int type, int subtype) {
     switch(type) {
-    //LIMIT --------------------------------------------------:
     case ARMOR_NONE:
         strcpy(str, "Naked");
         break;
 
     case ARMOR_CLOTHES:
         strcpy(str, "Clothes");
-        /*switch(subtype)         {            // Hippie         case CLOTHES_TIEDYE:       strcpy(str,"Tie-Dye Shirt");break;            // Liberal Rags         case CLOTHES_PUNKBLAZER:   strcpy(str,"Punk Blazer");break;         case CLOTHES_KUTTE:        strcpy(str,"Kutte Vest");break;         case CLOTHES_GOTHDRESS:    strcpy(str,"Gothic Dress");break;         case CLOTHES_GOTHSHIRT:    strcpy(str,"Gothic Shirt");break;         case CLOTHES_KILT:         strcpy(str,"Kilt");break;            // Mainstream         case CLOTHES_BLOUSE:       strcpy(str,"Blouse");break;         case CLOTHES_DRESSSHIRT:   strcpy(str,"Dress Shirt");break;         case CLOTHES_JERSEY:       strcpy(str,"Jersey");break;         case CLOTHES_SWEATER:      strcpy(str,"Sweater");break;         case CLOTHES_POLOSHIRT:    strcpy(str,"Polo Shirt");break;         case CLOTHES_TURTLENECK:   strcpy(str,"Turtleneck");break;         case CLOTHES_HOODIE:       strcpy(str,"Hoodie");break;         case CLOTHES_LEATHERJACKET:strcpy(str,"Leather Jacket");break;         case CLOTHES_VINTAGEJACKET:strcpy(str,"Vintage Jacket");break;            // Conservative Gear         case CLOTHES_CAMOSHIRT:    strcpy(str,"Camo Shirt");break;         case CLOTHES_BIKERJACKET:  strcpy(str,"Biker Jacket");break;         case CLOTHES_FURCOAT:      strcpy(str,"Fur-Lined Coat");break;         //LIMIT ---------------------------------------------:            // Weird stuff         case CLOTHES_MAOSUIT:      strcpy(str,"Zhongshan Suit");break;         case CLOTHES_DASHIKI:      strcpy(str,"Dashiki");break;         case CLOTHES_KIMONO:       strcpy(str,"Kimono");break;         case CLOTHES_STRAIGHTJACKET:strcpy(str,"Straightjacket");break;         case CLOTHES_ZOOTSUIT:     strcpy(str,"Zoot Suit");break;         //LIMIT ---------------------------------------------:         default:                   strcpy(str,"Clothes");         }*/
+        //LIMIT --------------------------------------------------:
+        /*switch(subtype)
+        {
+        // Hippie
+        case CLOTHES_TIEDYE:       strcpy(str,"Tie-Dye Shirt");break;
+
+        // Liberal Rags
+        case CLOTHES_PUNKBLAZER:   strcpy(str,"Punk Blazer");break;
+        case CLOTHES_KUTTE:        strcpy(str,"Kutte Vest");break;
+        case CLOTHES_GOTHDRESS:    strcpy(str,"Gothic Dress");break;
+        case CLOTHES_GOTHSHIRT:    strcpy(str,"Gothic Shirt");break;
+        case CLOTHES_KILT:         strcpy(str,"Kilt");break;
+
+        // Mainstream
+        case CLOTHES_BLOUSE:       strcpy(str,"Blouse");break;
+        case CLOTHES_DRESSSHIRT:   strcpy(str,"Dress Shirt");break;
+        case CLOTHES_JERSEY:       strcpy(str,"Jersey");break;
+        case CLOTHES_SWEATER:      strcpy(str,"Sweater");break;
+        case CLOTHES_POLOSHIRT:    strcpy(str,"Polo Shirt");break;
+        case CLOTHES_TURTLENECK:   strcpy(str,"Turtleneck");break;
+        case CLOTHES_HOODIE:       strcpy(str,"Hoodie");break;
+        case CLOTHES_LEATHERJACKET:strcpy(str,"Leather Jacket");break;
+        case CLOTHES_VINTAGEJACKET:strcpy(str,"Vintage Jacket");break;
+
+        // Conservative Gear
+        case CLOTHES_CAMOSHIRT:    strcpy(str,"Camo Shirt");break;
+        case CLOTHES_BIKERJACKET:  strcpy(str,"Biker Jacket");break;
+        case CLOTHES_FURCOAT:      strcpy(str,"Fur-Lined Coat");break;
+
+        // Weird stuff
+        case CLOTHES_MAOSUIT:      strcpy(str,"Zhongshan Suit");break;
+        case CLOTHES_DASHIKI:      strcpy(str,"Dashiki");break;
+        case CLOTHES_KIMONO:       strcpy(str,"Kimono");break;
+        case CLOTHES_STRAIGHTJACKET:strcpy(str,"Straightjacket");break;
+        case CLOTHES_ZOOTSUIT:     strcpy(str,"Zoot Suit");break;
+        default:                   strcpy(str,"Clothes");
+        }
+        */
         break;
 
+    //LIMIT --------------------------------------------------:
     case ARMOR_OVERALLS:
         strcpy(str, "Overalls");
         break;
@@ -1176,6 +1217,10 @@ void getarmorfull(char *str, int type, int subtype) {
 
     case ARMOR_SECURITYUNIFORM:
         strcpy(str, "Security Uniform");
+        break;
+
+    case ARMOR_SERVANTUNIFORM:
+        strcpy(str, "Servant Uniform");
         break;
 
     case ARMOR_POLICEUNIFORM:
@@ -1232,6 +1277,7 @@ void getarmorfull(char *str, int type, int subtype) {
 
     case ARMOR_MASK:
         switch(subtype) {
+        //LIMIT --------------------------------------------------:
         case MASK_ASHCROFT:
             strcpy(str, "John Ashcroft Mask");
             break;
@@ -1256,7 +1302,6 @@ void getarmorfull(char *str, int type, int subtype) {
             strcpy(str, "George W. Bush Mask");
             break;
 
-        //LIMIT --------------------------------------------------:
         case MASK_CARTER:
             strcpy(str, "Jimmy Carter Mask");
             break;
@@ -1369,7 +1414,6 @@ void getarmorfull(char *str, int type, int subtype) {
             strcpy(str, "Henry Waxman Mask");
             break;
 
-        //LIMIT --------------------------------------------------:
         case MASK_JESUS:
             strcpy(str, "Jesus Christ Mask");
             break;
@@ -1484,6 +1528,7 @@ void getarmorfull(char *str, int type, int subtype) {
     case ARMOR_DEATHSQUADUNIFORM:
         strcpy(str, "Death Squad Uniform");
         break;
+        //LIMIT --------------------------------------------------:
     }
 }
 
@@ -1717,153 +1762,6 @@ void getarmorfull(char *str, armorst &armor, char superfull) {
         strcat(str, "]");
     }
 }
-
-
-
-void getskill(char *str, int type) {
-    strcpy(str, "");
-
-    switch(type) {
-    case SKILL_HANDTOHAND:
-        strcpy(str, "Martial Arts");
-        break;
-
-    case SKILL_KNIFE:
-        strcpy(str, "Knife");
-        break;
-
-    case SKILL_SWORD:
-        strcpy(str, "Sword");
-        break;
-
-    case SKILL_THROWING:
-        strcpy(str, "Throwing");
-        break;
-
-    case SKILL_CLUB:
-        strcpy(str, "Club");
-        break;
-
-    case SKILL_AXE:
-        strcpy(str, "Axe");
-        break;
-
-    case SKILL_PISTOL:
-        strcpy(str, "Pistol");
-        break;
-
-    case SKILL_RIFLE:
-        strcpy(str, "Rifle");
-        break;
-
-    case SKILL_FLAMETHROWER:
-        strcpy(str, "Flamethrower");
-        break;
-
-    case SKILL_SHOTGUN:
-        strcpy(str, "Shotgun");
-        break;
-
-    case SKILL_SMG:
-        strcpy(str, "SMG");
-        break;
-
-    case SKILL_PERSUASION:
-        strcpy(str, "Persuasion");
-        break;
-
-    case SKILL_PSYCHOLOGY:
-        strcpy(str, "Psychology");
-        break;
-
-    case SKILL_SECURITY:
-        strcpy(str, "Security");
-        break;
-
-    case SKILL_DISGUISE:
-        strcpy(str, "Disguise");
-        break;
-
-    case SKILL_COMPUTERS:
-        strcpy(str, "Computers");
-        break;
-
-    case SKILL_LAW:
-        strcpy(str, "Law");
-        break;
-
-    case SKILL_TAILORING:
-        strcpy(str, "Tailoring");
-        break;
-
-    case SKILL_DRIVING:
-        strcpy(str, "Driving");
-        break;
-
-    case SKILL_WRITING:
-        strcpy(str, "Writing");
-        break;
-
-    case SKILL_COOKING:
-        strcpy(str, "Cooking");
-        break;
-
-    case SKILL_MUSIC:
-        strcpy(str, "Music");
-        break;
-
-    case SKILL_ART:
-        strcpy(str, "Art");
-        break;
-
-    case SKILL_RELIGION:
-        strcpy(str, "Religion");
-        break;
-
-    case SKILL_SCIENCE:
-        strcpy(str, "Science");
-        break;
-
-    case SKILL_BUSINESS:
-        strcpy(str, "Business");
-        break;
-
-    //case SKILL_SURVIVAL:strcpy(str,"Survival");break;
-    case SKILL_STEALTH:
-        strcpy(str, "Stealth");
-        break;
-
-    case SKILL_THEFT:
-        strcpy(str, "Theft");
-        break;
-
-    case SKILL_TEACHING:
-        strcpy(str, "Teaching");
-        break;
-
-    case SKILL_STREETSENSE:
-        strcpy(str, "Street Sense");
-        break;
-
-    case SKILL_SEDUCTION:
-        strcpy(str, "Seduction");
-        break;
-
-    case SKILL_LEADERSHIP:
-        strcpy(str, "Leadership");
-        break;
-
-    case SKILL_FIRSTAID:
-        strcpy(str, "First Aid");
-        break;
-
-    case SKILL_DODGE:
-        strcpy(str, "Dodge");
-        break;
-    }
-}
-
-
 
 void getclip(char *str, int clip) {
     strcpy(str, "");
@@ -3351,20 +3249,18 @@ void getlawflag(char *str, int type) {
         strcat(str, "Loitering");
         break;
 
-    case LAWFLAG_GUNCARRY:
-        strcat(str, "Using illegal weapons");
-        break;
-
-    case LAWFLAG_GUNUSE:
-        strcat(str, "Firing illegal weapons");
-        break;
-
+    //case LAWFLAG_GUNCARRY:strcat(str,"Using illegal weapons");break;
+    //case LAWFLAG_GUNUSE:strcat(str,"Firing illegal weapons");break;
     case LAWFLAG_ARSON:
         strcat(str, "Arson");
         break;
 
     case LAWFLAG_PUBLICNUDITY:
         strcat(str, "Public nudity");
+        break;
+
+    case LAWFLAG_EXTORTION:
+        strcat(str, "Extortion");
         break;
 
     default:

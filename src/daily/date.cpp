@@ -48,7 +48,8 @@ static int dateresult(int aroll, int troll, datest &d, int e, int p, int y) {
         refresh();
         getch();
 
-        if(signed(LCSrandom(d.date[e]->att[ATTRIBUTE_HEART] + (aroll - troll) / 2)) > d.date[e]->att[ATTRIBUTE_WISDOM]) {
+        if(signed(LCSrandom(d.date[e]->get_attribute(ATTRIBUTE_HEART, false) + (aroll - troll) / 2)) > d.date[e]->get_attribute(ATTRIBUTE_WISDOM,
+                false)) {
             if(loveslavesleft(*pool[p]) == 0) {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
 
@@ -120,11 +121,11 @@ static int dateresult(int aroll, int troll, datest &d, int e, int p, int y) {
 
             return DATERESULT_JOINED;
         } else {
-            if(d.date[e]->att[ATTRIBUTE_HEART] < pool[p]->att[ATTRIBUTE_HEART] - 4)
-                d.date[e]->att[ATTRIBUTE_HEART]++;
+            if(d.date[e]->get_attribute(ATTRIBUTE_HEART, false) < pool[p]->get_attribute(ATTRIBUTE_HEART, false) - 4)
+                d.date[e]->adjust_attribute(ATTRIBUTE_HEART, +1);
             else {
                 //Posibly date reveals map of location
-                if(location[d.date[e]->worklocation]->interrogated == 0 && !LCSrandom(d.date[e]->att[ATTRIBUTE_WISDOM])) {
+                if(location[d.date[e]->worklocation]->interrogated == 0 && !LCSrandom(d.date[e]->get_attribute(ATTRIBUTE_WISDOM, false))) {
                     y++;
                     move(y++, 0);
                     addstr(d.date[e]->name);
@@ -169,16 +170,16 @@ static int dateresult(int aroll, int troll, datest &d, int e, int p, int y) {
             addstr(" actually increases ");
             addstr(pool[p]->name);
             addstr("'s wisdom!!!");
-            pool[p]->att[ATTRIBUTE_WISDOM]++;
+            pool[p]->adjust_attribute(ATTRIBUTE_WISDOM, +1);
 
-            if(d.date[e]->skillval(SKILL_RELIGION) > pool[p]->skillval(SKILL_RELIGION))
-                pool[p]->train(SKILL_RELIGION, 10 * (d.date[e]->skillval(SKILL_RELIGION) - pool[p]->skillval(SKILL_RELIGION)));
+            if(d.date[e]->get_skill(SKILL_RELIGION) > pool[p]->get_skill(SKILL_RELIGION))
+                pool[p]->train(SKILL_RELIGION, 20 * (d.date[e]->get_skill(SKILL_RELIGION) - pool[p]->get_skill(SKILL_RELIGION)));
 
-            if(d.date[e]->skillval(SKILL_SCIENCE) > pool[p]->skillval(SKILL_SCIENCE))
-                pool[p]->train(SKILL_SCIENCE, 10 * (d.date[e]->skillval(SKILL_SCIENCE) - pool[p]->skillval(SKILL_SCIENCE)));
+            if(d.date[e]->get_skill(SKILL_SCIENCE) > pool[p]->get_skill(SKILL_SCIENCE))
+                pool[p]->train(SKILL_SCIENCE, 20 * (d.date[e]->get_skill(SKILL_SCIENCE) - pool[p]->get_skill(SKILL_SCIENCE)));
 
-            if(d.date[e]->skillval(SKILL_BUSINESS) > pool[p]->skillval(SKILL_BUSINESS))
-                pool[p]->train(SKILL_BUSINESS, 10 * (d.date[e]->skillval(SKILL_BUSINESS) - pool[p]->skillval(SKILL_BUSINESS)));
+            if(d.date[e]->get_skill(SKILL_BUSINESS) > pool[p]->get_skill(SKILL_BUSINESS))
+                pool[p]->train(SKILL_BUSINESS, 20 * (d.date[e]->get_skill(SKILL_BUSINESS) - pool[p]->get_skill(SKILL_BUSINESS)));
 
             refresh();
             getch();
@@ -274,36 +275,30 @@ char completevacation(datest &d, int p, char &clearformess) {
     addstr(pool[p]->name);
     addstr(" is back from vacation.");
 
-    short aroll = LCSrandom(51) + pool[p]->attval(ATTRIBUTE_CHARISMA) + pool[p]->skillval(SKILL_SEDUCTION) * 2;
-    short troll = LCSrandom(21 + d.date[e]->attval(ATTRIBUTE_CHARISMA) + d.date[e]->attval(ATTRIBUTE_WISDOM));
-    pool[p]->train(SKILL_SEDUCTION, LCSrandom(21) + 10);
+    short aroll = pool[p]->skill_roll(SKILL_SEDUCTION) * 2;
+    short troll = d.date[e]->attribute_roll(ATTRIBUTE_WISDOM);
+    pool[p]->train(SKILL_SEDUCTION, LCSrandom(11) + 15);
 
     pool[p]->train(SKILL_SCIENCE,
-                   max(d.date[e]->skillval(SKILL_SCIENCE) - pool[p]->skillval(SKILL_SCIENCE), 0));
+                   max(d.date[e]->get_skill(SKILL_SCIENCE) - pool[p]->get_skill(SKILL_SCIENCE), 0));
     pool[p]->train(SKILL_RELIGION,
-                   max(d.date[e]->skillval(SKILL_RELIGION) - pool[p]->skillval(SKILL_RELIGION), 0));
+                   max(d.date[e]->get_skill(SKILL_RELIGION) - pool[p]->get_skill(SKILL_RELIGION), 0));
     pool[p]->train(SKILL_BUSINESS,
-                   max(d.date[e]->skillval(SKILL_BUSINESS) - pool[p]->skillval(SKILL_BUSINESS), 0));
+                   max(d.date[e]->get_skill(SKILL_BUSINESS) - pool[p]->get_skill(SKILL_BUSINESS), 0));
 
-    if(d.date[e]->skillval(SKILL_BUSINESS)) {
-        troll += d.date[e]->skillval(SKILL_BUSINESS);
-
-        if(pool[p]->skillval(SKILL_BUSINESS))
-            aroll += pool[p]->skillval(SKILL_BUSINESS);
+    if(d.date[e]->skill_roll(SKILL_BUSINESS)) {
+        troll += d.date[e]->skill_roll(SKILL_BUSINESS);
+        aroll += pool[p]->skill_roll(SKILL_BUSINESS);
     }
 
-    if(d.date[e]->skillval(SKILL_RELIGION)) {
-        troll += d.date[e]->skillval(SKILL_RELIGION);
-
-        if(pool[p]->skillval(SKILL_RELIGION))
-            aroll += pool[p]->skillval(SKILL_RELIGION);
+    if(d.date[e]->skill_roll(SKILL_RELIGION)) {
+        troll += d.date[e]->skill_roll(SKILL_RELIGION);
+        aroll += pool[p]->skill_roll(SKILL_RELIGION);
     }
 
-    if(d.date[e]->skillval(SKILL_SCIENCE)) {
-        troll += d.date[e]->skillval(SKILL_SCIENCE);
-
-        if(pool[p]->skillval(SKILL_SCIENCE))
-            aroll += pool[p]->skillval(SKILL_SCIENCE);
+    if(d.date[e]->skill_roll(SKILL_SCIENCE)) {
+        troll += d.date[e]->skill_roll(SKILL_SCIENCE);
+        aroll += pool[p]->skill_roll(SKILL_SCIENCE);
     }
 
 
@@ -467,8 +462,8 @@ char completedate(datest &d, int p, char &clearformess) {
             int c = getch();
             translategetch(c);
 
-            short aroll = LCSrandom(21) + pool[p]->attval(ATTRIBUTE_CHARISMA) + pool[p]->skillval(SKILL_SEDUCTION) * 2;
-            short troll = LCSrandom(21) + d.date[e]->attval(ATTRIBUTE_CHARISMA) + d.date[e]->attval(ATTRIBUTE_WISDOM);
+            short aroll = pool[p]->skill_roll(SKILL_SEDUCTION);
+            short troll = d.date[e]->attribute_roll(ATTRIBUTE_WISDOM);
 
             if(d.date[e]->align == ALIGN_CONSERVATIVE)
                 troll += troll * (d.date[e]->juice / 100);
@@ -479,45 +474,39 @@ char completedate(datest &d, int p, char &clearformess) {
                 ledger.subtract_funds(100, EXPENSE_DATING);
                 aroll += LCSrandom(10);
                 test = 1;
-                pool[p]->train(SKILL_SEDUCTION, LCSrandom(8) + 3);
+                pool[p]->train(SKILL_SEDUCTION, LCSrandom(4) + 5);
                 pool[p]->train(SKILL_SCIENCE,
-                               max(d.date[e]->skillval(SKILL_SCIENCE) - pool[p]->skillval(SKILL_SCIENCE), 0));
+                               max(d.date[e]->get_skill(SKILL_SCIENCE) - pool[p]->get_skill(SKILL_SCIENCE), 0));
                 pool[p]->train(SKILL_RELIGION,
-                               max(d.date[e]->skillval(SKILL_RELIGION) - pool[p]->skillval(SKILL_RELIGION), 0));
+                               max(d.date[e]->get_skill(SKILL_RELIGION) - pool[p]->get_skill(SKILL_RELIGION), 0));
                 pool[p]->train(SKILL_BUSINESS,
-                               max(d.date[e]->skillval(SKILL_BUSINESS) - pool[p]->skillval(SKILL_BUSINESS), 0));
+                               max(d.date[e]->get_skill(SKILL_BUSINESS) - pool[p]->get_skill(SKILL_BUSINESS), 0));
             }
 
             if(c == 'b') {
                 test = 1;
-                pool[p]->train(SKILL_SEDUCTION, LCSrandom(8) + 3);
+                pool[p]->train(SKILL_SEDUCTION, LCSrandom(4) + 5);
                 pool[p]->train(SKILL_SCIENCE,
-                               max(d.date[e]->skillval(SKILL_SCIENCE) - pool[p]->skillval(SKILL_SCIENCE), 0));
+                               max(d.date[e]->get_skill(SKILL_SCIENCE) - pool[p]->get_skill(SKILL_SCIENCE), 0));
                 pool[p]->train(SKILL_RELIGION,
-                               max(d.date[e]->skillval(SKILL_RELIGION) - pool[p]->skillval(SKILL_RELIGION), 0));
+                               max(d.date[e]->get_skill(SKILL_RELIGION) - pool[p]->get_skill(SKILL_RELIGION), 0));
                 pool[p]->train(SKILL_BUSINESS,
-                               max(d.date[e]->skillval(SKILL_BUSINESS) - pool[p]->skillval(SKILL_BUSINESS), 0));
+                               max(d.date[e]->get_skill(SKILL_BUSINESS) - pool[p]->get_skill(SKILL_BUSINESS), 0));
             }
 
-            if(d.date[e]->skillval(SKILL_BUSINESS)) {
-                troll += d.date[e]->skillval(SKILL_BUSINESS);
-
-                if(pool[p]->skillval(SKILL_BUSINESS))
-                    aroll += pool[p]->skillval(SKILL_BUSINESS);
+            if(d.date[e]->get_skill(SKILL_BUSINESS)) {
+                troll += d.date[e]->skill_roll(SKILL_BUSINESS);
+                aroll += pool[p]->skill_roll(SKILL_BUSINESS);
             }
 
-            if(d.date[e]->skillval(SKILL_RELIGION)) {
-                troll += d.date[e]->skillval(SKILL_RELIGION);
-
-                if(pool[p]->skillval(SKILL_RELIGION))
-                    aroll += pool[p]->skillval(SKILL_RELIGION);
+            if(d.date[e]->get_skill(SKILL_RELIGION)) {
+                troll += d.date[e]->skill_roll(SKILL_RELIGION);
+                aroll += pool[p]->skill_roll(SKILL_RELIGION);
             }
 
-            if(d.date[e]->skillval(SKILL_SCIENCE)) {
-                troll += d.date[e]->skillval(SKILL_SCIENCE);
-
-                if(pool[p]->skillval(SKILL_SCIENCE))
-                    aroll += pool[p]->skillval(SKILL_SCIENCE);
+            if(d.date[e]->get_skill(SKILL_SCIENCE)) {
+                troll += d.date[e]->skill_roll(SKILL_SCIENCE);
+                aroll += pool[p]->skill_roll(SKILL_SCIENCE);
             }
 
             if(test) {
@@ -542,11 +531,11 @@ char completedate(datest &d, int p, char &clearformess) {
                 d.timeleft = 7;
                 pool[p]->train(SKILL_SEDUCTION, LCSrandom(40) + 15);
                 pool[p]->train(SKILL_SCIENCE,
-                               max((d.date[e]->skillval(SKILL_SCIENCE) - pool[p]->skillval(SKILL_SCIENCE)) * 4, 0));
+                               max((d.date[e]->get_skill(SKILL_SCIENCE) - pool[p]->get_skill(SKILL_SCIENCE)) * 4, 0));
                 pool[p]->train(SKILL_RELIGION,
-                               max((d.date[e]->skillval(SKILL_RELIGION) - pool[p]->skillval(SKILL_RELIGION)) * 4, 0));
+                               max((d.date[e]->get_skill(SKILL_RELIGION) - pool[p]->get_skill(SKILL_RELIGION)) * 4, 0));
                 pool[p]->train(SKILL_BUSINESS,
-                               max((d.date[e]->skillval(SKILL_BUSINESS) - pool[p]->skillval(SKILL_BUSINESS)) * 4, 0));
+                               max((d.date[e]->get_skill(SKILL_BUSINESS) - pool[p]->get_skill(SKILL_BUSINESS)) * 4, 0));
                 return 0;
             }
 
@@ -592,8 +581,7 @@ char completedate(datest &d, int p, char &clearformess) {
 
 
                 // *JDS* Kidnap succeeds if the conservative isn't very dangerous,
-                // but might fail (1 in 3 chance) if the conservative is
-                // tough stuff.
+                // but might fail if the conservative is tough stuff.
                 if((d.date[e]->type != CREATURE_AGENT &&
                         d.date[e]->type != CREATURE_COP &&
                         d.date[e]->type != CREATURE_SWAT &&

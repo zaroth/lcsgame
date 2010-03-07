@@ -184,9 +184,11 @@ void prepareencounter(short type, char sec) {
             else
                 creaturearray[CREATURE_BOUNCER] += 10;
 
+            if(sec)
+                creaturearray[CREATURE_GUARDDOG] += 25;
+
             creaturearray[CREATURE_SCIENTIST_EMINENT] += 1;
             creaturearray[CREATURE_CORPORATE_MANAGER] += 30;
-            creaturearray[CREATURE_CORPORATE_CEO] += 1;
             creaturearray[CREATURE_COP] = +5;
 
             if(law[LAW_DEATHPENALTY] == -2 &&
@@ -238,7 +240,6 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_SCIENTIST_LABTECH] += 10;
             creaturearray[CREATURE_SCIENTIST_EMINENT] += 1;
             creaturearray[CREATURE_CORPORATE_MANAGER] += 10;
-            creaturearray[CREATURE_CORPORATE_CEO] += 1;
             creaturearray[CREATURE_WORKER_JANITOR] += 5;
 
             if(law[LAW_LABOR] < 2)
@@ -634,6 +635,9 @@ void prepareencounter(short type, char sec) {
                     creaturearray[CREATURE_SECURITYGUARD] += 100;
                 else
                     creaturearray[CREATURE_SECURITYGUARD] += 10;
+
+                if(sec)
+                    creaturearray[CREATURE_GUARDDOG] += 50;
             }
 
             creaturearray[CREATURE_SCIENTIST_EMINENT] += 1;
@@ -723,6 +727,9 @@ void prepareencounter(short type, char sec) {
         }
 
         case SITE_LABORATORY_GENETIC: {
+            if(sec)
+                creaturearray[CREATURE_GUARDDOG] += 25;
+
             if(sec)
                 creaturearray[CREATURE_SECURITYGUARD] += 100;
             else
@@ -868,7 +875,6 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_SCIENTIST_LABTECH] = 1;
             creaturearray[CREATURE_SCIENTIST_EMINENT] = 1;
             creaturearray[CREATURE_CORPORATE_MANAGER] = 1;
-            creaturearray[CREATURE_CORPORATE_CEO] = 1;
             creaturearray[CREATURE_WORKER_JANITOR] = 50;
 
             if(law[LAW_LABOR] < 2)
@@ -1036,6 +1042,10 @@ void prepareencounter(short type, char sec) {
 
             creaturearray[CREATURE_WORKER_JANITOR] += 50;
             creaturearray[CREATURE_WORKER_SECRETARY] += 50;
+
+            if(sec)
+                creaturearray[CREATURE_GUARDDOG] += 450;
+
             creaturearray[CREATURE_GUARDDOG] += 50;
             creaturearray[CREATURE_MATHEMATICIAN] += 5;
             creaturearray[CREATURE_PROGRAMMER] += 5;
@@ -1050,9 +1060,9 @@ void prepareencounter(short type, char sec) {
 
         case SITE_INDUSTRY_SWEATSHOP: {
             if(sec)
-                creaturearray[CREATURE_SECURITYGUARD] += 2000;
+                creaturearray[CREATURE_SECURITYGUARD] += 1000;
             else
-                creaturearray[CREATURE_SECURITYGUARD] += 200;
+                creaturearray[CREATURE_SECURITYGUARD] += 100;
 
             creaturearray[CREATURE_CORPORATE_MANAGER] += 5;
             creaturearray[CREATURE_WORKER_SWEATSHOP] += 800;
@@ -1098,12 +1108,14 @@ void prepareencounter(short type, char sec) {
 
         case SITE_CORPORATE_HEADQUARTERS: {
             if(sec)
+                creaturearray[CREATURE_GUARDDOG] += 100;
+
+            if(sec)
                 creaturearray[CREATURE_SECURITYGUARD] = 400;
             else
                 creaturearray[CREATURE_SECURITYGUARD] = 40;
 
             creaturearray[CREATURE_CORPORATE_MANAGER] = 20;
-            creaturearray[CREATURE_CORPORATE_CEO] = 1;
             creaturearray[CREATURE_WORKER_JANITOR] = 20;
             creaturearray[CREATURE_WORKER_SECRETARY] = 40;
             creaturearray[CREATURE_JUDGE_CONSERVATIVE] = 1;
@@ -1124,12 +1136,15 @@ void prepareencounter(short type, char sec) {
             if(sec)
                 creaturearray[CREATURE_MERC] = 100;
 
-            creaturearray[CREATURE_CORPORATE_CEO] = 5;
+            if(sec)
+                creaturearray[CREATURE_GUARDDOG] = 50;
+            else
+                creaturearray[CREATURE_GUARDDOG] = 5;
+
             creaturearray[CREATURE_WORKER_SERVANT] = 30;
             creaturearray[CREATURE_WORKER_SECRETARY] = 5;
             creaturearray[CREATURE_TEENAGER] = 5;
             creaturearray[CREATURE_GENETIC] = 1;
-            creaturearray[CREATURE_GUARDDOG] = 10;
             creaturearray[CREATURE_LAWYER] = 5;
             creaturearray[CREATURE_PRIEST] = 1;
             creaturearray[CREATURE_PROSTITUTE] = 1;
