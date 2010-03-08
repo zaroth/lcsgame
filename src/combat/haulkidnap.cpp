@@ -180,6 +180,10 @@ void kidnapattempt(void) {
 
                     if(present) {
                         alienationcheck(1);
+
+                        if(!sitealarm)
+                            sitealarm = 1;
+
                         sitecrime += 5;
                         criminalizeparty(LAWFLAG_KIDNAPPING);
 

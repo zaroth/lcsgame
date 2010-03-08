@@ -165,39 +165,36 @@ void advanceday(char &clearformess, char canseethings) {
 
         //MAKE SURE MEMBERS DON'T ACT IF SQUAD DOES
 
-        /*if(squad[sq]->activity.type!=ACTIVITY_NONE)
-        {
-           for(int p=0;p<6;p++)
-           {
-              if(squad[sq]->squad[p]!=NULL)
-              {
-                 if(squad[sq]->squad[p]->activity.type!=ACTIVITY_NONE&&
-                    squad[sq]->squad[p]->activity.type!=ACTIVITY_VISIT)
-                 {
-                    if(clearformess)erase();
-                    else
-                    {
-                       makedelimiter(8,0);
-                    }
-                    set_color(COLOR_WHITE,COLOR_BLACK,1);
-                    move(8,1);
-                    addstr(squad[sq]->squad[p]->name);
-                    addstr(" acted with ");
-                    addstr(squad[sq]->name);
-                    addstr(" instead of ");
-                    char str[200];
-                    getactivity(str,squad[sq]->squad[p]->activity);
-                    addstr(str);
-                    addstr(".");
+        if(squad[sq]->activity.type != ACTIVITY_NONE) {
+            for(int p = 0; p < 6; p++) {
+                if(squad[sq]->squad[p] != NULL) {
+                    if(squad[sq]->squad[p]->activity.type != ACTIVITY_NONE &&
+                            squad[sq]->squad[p]->activity.type != ACTIVITY_VISIT) {
+                        if(clearformess)
+                            erase();
+                        else
+                            makedelimiter(8, 0);
 
-                    refresh();
-                    getch();
-                 }
-                 squad[sq]->squad[p]->activity.type=ACTIVITY_VISIT;
-                 squad[sq]->squad[p]->activity.arg=squad[sq]->activity.arg;
-              }
-           }
-        }*/
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(8, 1);
+                        addstr(squad[sq]->squad[p]->name);
+                        addstr(" acted with ");
+                        addstr(squad[sq]->name);
+                        addstr(" instead of ");
+                        char str[200];
+                        getactivity(str, squad[sq]->squad[p]->activity);
+                        addstr(str);
+                        addstr(".");
+
+                        refresh();
+                        getch();
+                    }
+
+                    squad[sq]->squad[p]->activity.type = ACTIVITY_VISIT;
+                    squad[sq]->squad[p]->activity.arg = squad[sq]->activity.arg;
+                }
+            }
+        }
 
         if(squad[sq]->activity.type == ACTIVITY_VISIT) {
             //TURN AWAY SQUADS FROM RECENTLY CLOSED OR SIEGED SITES
@@ -1760,7 +1757,7 @@ void initlocation(locationst &loc) {
         break;
 
     case SITE_BUSINESS_PAWNSHOP:
-        if(law[LAW_GUNCONTROL] == -2) {
+        if(law[LAW_GUNCONTROL] == ALIGN_ELITELIBERAL) {
             char str[80];
             lastname(str);
             strcpy(loc.name, str);
