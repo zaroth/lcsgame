@@ -1498,132 +1498,134 @@ void funds_and_trouble(char &clearformess) {
             hack_skill -= h;
         }
 
-        if(LCSrandom(150) <= hack_skill) {
-            if(truehack.size() > 1)
-                strcpy(msg, "Your Hackers have ");
-            else {
-                strcpy(msg, truehack[0]->name);
-                strcat(msg, " has ");
-            }
+        if(truehack.size()) {
+            if(LCSrandom(150) <= hack_skill) {
+                if(truehack.size() > 1)
+                    strcpy(msg, "Your Hackers have ");
+                else {
+                    strcpy(msg, truehack[0]->name);
+                    strcat(msg, " has ");
+                }
 
-            int trackdif = 0;
-            int short crime = 0;
+                int trackdif = 0;
+                int short crime = 0;
 
-            int juiceval = 0;
+                int juiceval = 0;
 
-            switch(LCSrandom(7)) {
-            case 0: {
-                strcat(msg, "pilfered files from a Corporate server.");
+                switch(LCSrandom(7)) {
+                case 0: {
+                    strcat(msg, "pilfered files from a Corporate server.");
 
-                itemst *it = new itemst;
-                it->type = ITEM_LOOT;
-                it->loottype = LOOT_CORPFILES;
-                location[hack[0]->location]->loot.push_back(it);
+                    itemst *it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_CORPFILES;
+                    location[hack[0]->location]->loot.push_back(it);
 
-                trackdif = 20;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 5;
-                break;
-            }
+                    trackdif = 20;
+                    crime = LAWFLAG_INFORMATION;
+                    juiceval = 5;
+                    break;
+                }
 
-            case 1: // *JDS* Penetrated government networks; don't get any loot, but do scare the info community
-                strcat(msg, "caused a scare by breaking into a CIA network.");
+                case 1: // *JDS* Penetrated government networks; don't get any loot, but do scare the info community
+                    strcat(msg, "caused a scare by breaking into a CIA network.");
 
-                trackdif = 30;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 20;
-                change_public_opinion(VIEW_INTELLIGENCE, 10, 0, 75);
-                break;
+                    trackdif = 30;
+                    crime = LAWFLAG_INFORMATION;
+                    juiceval = 20;
+                    change_public_opinion(VIEW_INTELLIGENCE, 10, 0, 75);
+                    break;
 
-            case 2:
-                strcat(msg, "sabotaged a genetics research company's network.");
+                case 2:
+                    strcat(msg, "sabotaged a genetics research company's network.");
 
-                trackdif = 20;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 5;
-                change_public_opinion(VIEW_GENETICS, 2, 0, 75);
-                break;
+                    trackdif = 20;
+                    crime = LAWFLAG_INFORMATION;
+                    juiceval = 5;
+                    change_public_opinion(VIEW_GENETICS, 2, 0, 75);
+                    break;
 
-            case 3: {
-                strcat(msg, "intercepted internal media emails.");
+                case 3: {
+                    strcat(msg, "intercepted internal media emails.");
 
-                itemst *it = new itemst;
-                it->type = ITEM_LOOT;
+                    itemst *it = new itemst;
+                    it->type = ITEM_LOOT;
 
-                if(LCSrandom(2))
-                    it->loottype = LOOT_CABLENEWSFILES;
-                else
-                    it->loottype = LOOT_AMRADIOFILES;
+                    if(LCSrandom(2))
+                        it->loottype = LOOT_CABLENEWSFILES;
+                    else
+                        it->loottype = LOOT_AMRADIOFILES;
 
-                location[hack[0]->location]->loot.push_back(it);
+                    location[hack[0]->location]->loot.push_back(it);
 
-                trackdif = 20;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 5;
-                break;
-            }
+                    trackdif = 20;
+                    crime = LAWFLAG_INFORMATION;
+                    juiceval = 5;
+                    break;
+                }
 
-            case 4:
-                strcat(msg, "broke into military networks leaving LCS slogans.");
+                case 4:
+                    strcat(msg, "broke into military networks leaving LCS slogans.");
 
-                trackdif = 30;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 5;
-                change_public_opinion(VIEW_LIBERALCRIMESQUAD, 5, 0, 75);
-                break;
+                    trackdif = 30;
+                    crime = LAWFLAG_INFORMATION;
+                    juiceval = 5;
+                    change_public_opinion(VIEW_LIBERALCRIMESQUAD, 5, 0, 75);
+                    break;
 
-            case 5: {
-                strcat(msg, "uncovered information on dangerous research.");
+                case 5: {
+                    strcat(msg, "uncovered information on dangerous research.");
 
-                itemst *it = new itemst;
-                it->type = ITEM_LOOT;
-                it->loottype = LOOT_RESEARCHFILES;
-                location[hack[0]->location]->loot.push_back(it);
+                    itemst *it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_RESEARCHFILES;
+                    location[hack[0]->location]->loot.push_back(it);
 
-                trackdif = 20;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 5;
-                break;
-            }
+                    trackdif = 20;
+                    crime = LAWFLAG_INFORMATION;
+                    juiceval = 5;
+                    break;
+                }
 
-            case 6: {
-                strcat(msg, "discovered evidence of judicial corruption.");
+                case 6: {
+                    strcat(msg, "discovered evidence of judicial corruption.");
 
-                itemst *it = new itemst;
-                it->type = ITEM_LOOT;
-                it->loottype = LOOT_JUDGEFILES;
-                location[hack[0]->location]->loot.push_back(it);
+                    itemst *it = new itemst;
+                    it->type = ITEM_LOOT;
+                    it->loottype = LOOT_JUDGEFILES;
+                    location[hack[0]->location]->loot.push_back(it);
 
-                trackdif = 20;
-                crime = LAWFLAG_INFORMATION;
-                juiceval = 5;
-                break;
-            }
-            }
+                    trackdif = 20;
+                    crime = LAWFLAG_INFORMATION;
+                    juiceval = 5;
+                    break;
+                }
+                }
 
-            if(trackdif > LCSrandom(hack_skill + 1)) {
+                if(trackdif > LCSrandom(hack_skill + 1)) {
+                    for(int h = 0; h < truehack.size(); h++)
+                        criminalize(*hack[h], crime);
+                }
+
                 for(int h = 0; h < truehack.size(); h++)
-                    criminalize(*hack[h], crime);
+                    addjuice(*truehack[h], juiceval, 50);
             }
 
-            for(int h = 0; h < truehack.size(); h++)
-                addjuice(*truehack[h], juiceval, 50);
-        }
+            if(msg[0]) {
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
 
-        if(msg[0]) {
-            if(clearformess)
-                erase();
-            else
-                makedelimiter(8, 0);
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                move(8, 1);
 
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            move(8, 1);
+                addstr(msg);
+                msg[0] = 0;
 
-            addstr(msg);
-            msg[0] = 0;
-
-            refresh();
-            getch();
+                refresh();
+                getch();
+            }
         }
 
         //CREDIT CARD FRAUD
