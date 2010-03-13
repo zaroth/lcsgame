@@ -822,9 +822,9 @@ void elections(char clearformess, char canseethings) {
             if(law[prop[p]]<vote && propdir[p]==1)yesvotes++;*/
 
             if(l == 999) {
-                if(yesvotes > 50)
+                if(yesvotes > 500)
                     yeswin = 1;
-                else if(yesvotes == 50) {
+                else if(yesvotes == 500) {
                     if(!LCSrandom(2))
                         yeswin = 1;
 
