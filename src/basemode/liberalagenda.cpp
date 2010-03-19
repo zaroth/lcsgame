@@ -585,13 +585,13 @@ char liberalagenda(char won) {
                     if(won == -1)
                         addstr("All forms of human experimentation on the poor are encouraged.");
                     else if(law[l] == ALIGN_ARCHCONSERVATIVE)
-                        addstr("Animals are things of inferior existence.");
+                        addstr("Animals are property that can be experimented upon freely.");
                     else if(law[l] == -1)
-                        addstr("Animal research is lightly regulated.");  // TODO: BORING! -- LK
+                        addstr("Animal testing must be classified by purpose and suffering caused.");
                     else if(law[l] == 0)
-                        addstr("Animal research is moderately regulated.");  // TODO: BORING! -- LK
+                        addstr("Animal research is regulated with a system of licenses and certificates.");
                     else if(law[l] == 1)
-                        addstr("Animal research is stiffly regulated.");  // TODO: BORING! -- LK
+                        addstr("Animal research is strictly regulated by purpose and suffering caused.");
                     else
                         addstr("Animals are people, too.");
 
@@ -603,11 +603,11 @@ char liberalagenda(char won) {
                     else if(law[l] == ALIGN_ARCHCONSERVATIVE)
                         addstr("Law enforcement is given free reign.");
                     else if(law[l] == -1)
-                        addstr("Law enforcement is lightly regulated.");  // TODO: BORING! -- LK
+                        addstr("Even the worst police misconduct only earns slap-on-the-wrist punishments.");
                     else if(law[l] == 0)
-                        addstr("Law enforcement is moderately regulated.");  // TODO: BORING! -- LK
+                        addstr("Law enforcement is regulated to prevent extreme misconduct.");
                     else if(law[l] == 1)
-                        addstr("Law enforcement is strictly controlled.");  // TODO: BORING! -- LK
+                        addstr("Law enforcement has heavy oversight and freedom-of-information requirements.");
                     else
                         addstr("All law enforcement positions are subject to election and recall.");
 
@@ -619,11 +619,11 @@ char liberalagenda(char won) {
                     else if(law[l] == ALIGN_ARCHCONSERVATIVE)
                         addstr("Any corporation requesting private information is granted access.");
                     else if(law[l] == -1)
-                        addstr("Privacy laws are weak.");  // TODO: BORING! -- LK
+                        addstr("Privacy laws are full of loopholes.");
                     else if(law[l] == 0)
-                        addstr("Privacy laws are moderate.");  // TODO: BORING! -- LK
+                        addstr("Basic safeguards for medical and financial privacy are in place.");
                     else if(law[l] == 1)
-                        addstr("Privacy laws are strong.");  // TODO: BORING! -- LK
+                        addstr("All areas of privacy are protected with strong safeguards.");
                     else
                         addstr("Individual privacy is sacred.");
 
@@ -689,7 +689,7 @@ char liberalagenda(char won) {
                     else if(law[l] == 1)
                         addstr("Workers are fairly compensated and have benefits.");
                     else
-                        addstr("There are universal workers' rights and high wages.");
+                        addstr("There are universal workers' rights and a high guaranteed minimum income.");
 
                     break;
 
