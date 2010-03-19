@@ -326,7 +326,7 @@ void activate_sleeper(Creature *cr) {
         if(c >= 'a' && c <= 'z')
             state = c;
 
-        if(c >= 'a' && c <= 'z' || c >= '1' && c <= '9') {
+        if((c >= 'a' && c <= 'z') || (c >= '1' && c <= '9')) {
             choice = c;
 
             switch(state) {

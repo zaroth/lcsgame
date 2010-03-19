@@ -575,8 +575,8 @@ void mode_base(void) {
             if(selectedsiege != -1) {
                 printlocation(selectedsiege);
 
-                if(location[selectedsiege]->type == SITE_INDUSTRY_WAREHOUSE ||
-                        location[selectedsiege]->type == SITE_BUSINESS_CRACKHOUSE &&
+                if((location[selectedsiege]->type == SITE_INDUSTRY_WAREHOUSE ||
+                        location[selectedsiege]->type == SITE_BUSINESS_CRACKHOUSE) &&
                         !location[selectedsiege]->siege.siege) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     move(8, 1);
