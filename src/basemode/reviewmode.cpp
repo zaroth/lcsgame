@@ -202,6 +202,8 @@ void review(void) {
 
 void review_mode(short mode) {
     vector<Creature *> temppool;
+    Creature *swap = NULL;
+    int swapPos = 0;
 
     for(int p = 0; p < pool.size(); p++) {
         switch(mode) {
@@ -544,7 +546,14 @@ void review_mode(short mode) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(22, 0);
-        addstr("Press a Letter to View Status.        Z - Reorder liberals");
+        addstr("Press a Letter to View Status.        Z - ");
+
+        if (swap) {
+            addstr ("Place ");
+            addstr (swap->name);
+        } else
+            addstr ("Reorder Liberals");
+
         move(23, 0);
         addpagestr();
 
@@ -869,19 +878,20 @@ void review_mode(short mode) {
         }
 
         // Reorder squad
-        if(c >= 'z') {
+        if(c == 'z') {
             if(temppool.size() <= 1)
                 break;
 
-            do {
-                move(22, 0);
-                addstr("                                                                               ");
-                move(23, 0);
-                addstr("                                                                               ");
+            move(22, 0);
+            addstr("                                                                               ");
+            move(23, 0);
+            addstr("                                                                               ");
 
-                move(22, 8);
-                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr("Choose squad member to replace ");
+            move(22, 8);
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            addstr("Choose squad member to replace ");
+
+            if (swap == NULL) {
                 refresh();
 
                 int c = getch();
@@ -896,26 +906,19 @@ void review_mode(short mode) {
                 }
 
                 // Get first member to swap
-                int oldPos = c;
-                Creature *swap1 = NULL;
+                int p = page * 19 + (int)(c - 'a');
 
-                if((int)(c - 'a') >= 0 && (int)(c - 'a') < temppool.size())
-                    swap1 = temppool[(int)(c - 'a')];
-
-                if(swap1 == NULL) {
-                    // Haven't found first member
-                    break;
+                if(p < temppool.size()) {
+                    swap = temppool[p];
+                    swapPos = p;
                 }
-
-                char num[20];
-                itoa((int)(c - 'a'), num, 10);
-                addstr(swap1->name);
+            } else { // non-null swap
+                addstr(swap->name);
                 addstr(" with");
 
                 c = getch();
                 translategetch(c);
 
-                // Get next member to swap to
                 if(c == 10)
                     break;
 
@@ -926,31 +929,31 @@ void review_mode(short mode) {
 
                 Creature *swap2 = NULL;
 
-                if((int)(c - 'a') >= 0 && (int)(c - 'a') < temppool.size())
-                    swap2 = temppool[(int)(c - 'a')];
+                int p = page * 19 + (int)(c - 'a');
 
-                if(swap2 == NULL) {
-                    // Haven't found a member
-                    break;
+                if(p < temppool.size() && temppool[p] != swap) {
+                    swap2 = temppool[p];
+
+                    for (int i = 0; i < pool.size(); i++) {
+                        if (pool[i]->id == swap->id) {
+                            pool.erase(pool.begin() + i);
+                            break;
+                        }
+                    }
+
+                    for (int i = 0; i < pool.size(); i++) {
+                        if (pool[i]->id == swap2->id) {
+                            pool.insert (pool.begin() + i + (swapPos < p ? 1 : 0), swap);
+                            break;
+                        }
+                    }
+
+                    temppool.erase (temppool.begin() + swapPos);
+                    temppool.insert (temppool.begin() + p, swap);
+
+                    swap = NULL;
                 }
-
-                // Swap members in main pool
-                for(int i = 0; i < pool.size(); i++) {
-                    if(pool[i]->id == swap1->id)
-                        pool[i] = swap2;
-                    else if(pool[i]->id == swap2->id)
-                        pool[i] = swap1;
-                }
-
-                // Swap temppool for this 'immediate' drawing window
-                if((int)(c - 'a') >= 0 && (int)(c - 'a') <= temppool.size()) {
-                    temppool[(int)(oldPos - 'a')] = temppool[(int)(c - 'a')];
-                    temppool[(int)(c - 'a')] = swap1;
-                }
-
-                // Swap sucessful.
-                break;
-            } while(true);
+            }
         }
 
         if(c == 10)
