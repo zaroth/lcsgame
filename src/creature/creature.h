@@ -315,7 +315,8 @@ class Creature {
     int clip[CLIPNUM];
 
     int money;
-    int juice;
+    short juice;
+    short income;
 
     unsigned char wound[BODYPARTNUM];
     short blood;
@@ -381,6 +382,7 @@ class Creature {
     bool dontname;
     /* finds the cap for a particular skill */
     int skill_cap(int skill, bool use_juice);
+    const char *heshe();
 };
 
 enum uniqueCreatureData {

@@ -583,6 +583,8 @@ void advanceday(char &clearformess, char canseethings) {
 
     //ACTIVITIES FOR INDIVIDUALS
     for(p = 0; p < pool.size(); p++) {
+        pool[p]->income = 0;
+
         if(disbanding)
             break;
 
@@ -597,6 +599,12 @@ void advanceday(char &clearformess, char canseethings) {
 
         if(pool[p]->hiding)
             continue;
+
+        if (pool[p]->location == -1) {
+//Had a crash bug on the siege check. Location was -1, probably set by 'partyrescue' and not reset during to messy violent chase.
+//This may prevent crashes.
+            pool[p]->location = pool[p]->base;
+        }
 
         //CLEAR ACTIONS FOR PEOPLE UNDER SIEGE
         if(location[pool[p]->location]->siege.siege)
@@ -1614,20 +1622,23 @@ char securityable(int type) {
     case SITE_BUSINESS_CIGARBAR:
     case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
     case SITE_LABORATORY_COSMETICS:
-    case SITE_INDUSTRY_NUCLEAR:
     case SITE_LABORATORY_GENETIC:
-    case SITE_GOVERNMENT_POLICESTATION:
-    case SITE_GOVERNMENT_COURTHOUSE:
-    case SITE_GOVERNMENT_PRISON:
-    case SITE_GOVERNMENT_INTELLIGENCEHQ:
     case SITE_GOVERNMENT_FIRESTATION:
     case SITE_INDUSTRY_SWEATSHOP:
     case SITE_INDUSTRY_POLLUTER:
     case SITE_CORPORATE_HEADQUARTERS:
-    case SITE_CORPORATE_HOUSE:
     case SITE_MEDIA_AMRADIO:
     case SITE_MEDIA_CABLENEWS:
         return 1;
+
+//These places have better quality locks.
+    case SITE_INDUSTRY_NUCLEAR:
+    case SITE_GOVERNMENT_POLICESTATION:
+    case SITE_GOVERNMENT_COURTHOUSE:
+    case SITE_GOVERNMENT_PRISON:
+    case SITE_GOVERNMENT_INTELLIGENCEHQ:
+    case SITE_CORPORATE_HOUSE:
+        return 2;
     }
 
     return 0;
@@ -1938,7 +1949,7 @@ void initlocation(locationst &loc) {
         strcat(loc.name, " ");
         lastname(str);
         strcat(loc.name, str);
-        strcat(loc.name, "'s Used Car Dealership");
+        strcat(loc.name, "'s Used Cars");
         strcpy(loc.shortname, "Dealership");
         break;
 

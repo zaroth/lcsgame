@@ -1097,3 +1097,13 @@ Creature &UniqueCreatures::CEO() {
 
     return CEO_;
 }
+
+const char *Creature::heshe() {
+    if(gender_liberal == GENDER_MALE)
+        return "he";
+
+    if(gender_liberal == GENDER_FEMALE)
+        return "she";
+
+    return "they";
+}

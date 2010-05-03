@@ -163,12 +163,31 @@ void getactivity(char *str, activityst &act) {
         break;
 
     case ACTIVITY_WRITE_LETTERS:
+        strcat(str, "Writing letters");
+        break;
+
     case ACTIVITY_WRITE_GUARDIAN:
-        strcat(str, "Writing");
+        strcat(str, "Writing news");
         break;
 
     case ACTIVITY_CLINIC:
         strcat(str, "Going to Free CLINIC");
+        break;
+
+    case ACTIVITY_STUDY_DEBATING:
+    case ACTIVITY_STUDY_LEADERSHIP:
+    case ACTIVITY_STUDY_TAILORING:
+    case ACTIVITY_STUDY_MARTIAL_ARTS:
+    case ACTIVITY_STUDY_DRIVING:
+    case ACTIVITY_STUDY_PSYCHOLOGY:
+    case ACTIVITY_STUDY_FIRST_AID:
+    case ACTIVITY_STUDY_LAW:
+    case ACTIVITY_STUDY_DISGUISE:
+    case ACTIVITY_STUDY_SCIENCE:
+    case ACTIVITY_STUDY_BUSINESS:
+    case ACTIVITY_STUDY_COOKING:
+    case ACTIVITY_STUDY_DODGEBALL:
+        strcat(str, "Attending Classes");
         break;
 
     case ACTIVITY_SLEEPER_LIBERAL:
@@ -861,7 +880,7 @@ void getarmor(char *str, int type, int subtype) {
         break;
 
     case ARMOR_EXPENSIVEDRESS:
-        strcpy(str, "Expensve Dress");
+        strcpy(str, "Expensive Dress");
         break;
 
     case ARMOR_BLACKDRESS:
@@ -1244,7 +1263,7 @@ void getarmorfull(char *str, int type, int subtype) {
         break;
 
     case ARMOR_EXPENSIVEDRESS:
-        strcpy(str, "Expensve Dress");
+        strcpy(str, "Expensive Dress");
         break;
 
     case ARMOR_BLACKDRESS:
@@ -2820,19 +2839,22 @@ void getcarfull(char *str, int type) {
 
 void getcarfull(char *str, vehiclest &car, char halffull) {
     char str2[80], num[20];
+    int words = 0;
 
-    if(car.heat)
+    if(car.heat) {
         strcpy(str, "Stolen ");
-    else
+        words++;
+    } else
         strcpy(str, "");
 
     if(car.color != naturalcarcolor(car.type)) {
         getcarcolor(str2, car.color);
         strcat(str, str2);
         strcat(str, " ");
+        words++;
     }
 
-    if(car.myear != -1) {
+    if(car.myear != -1 && words < 2) { //don't print year if that will make the name too long.
         itoa(car.myear, num, 10);
         strcat(str, num);
         strcat(str, " ");
@@ -3129,14 +3151,14 @@ void enter_name(char *name, int len, char *defname) {
     raw_output(FALSE);
     echo();
     curs_set(1);
-    getnstr(name, len);
+    getnstr(name, len - 1); //-1 because 'len' is normally the full space available and we need one for a terminator.
     curs_set(0);
     noecho();
     raw_output(TRUE);
     keypad(stdscr, TRUE);
 
-    if((defname != NULL) && (strncmp(name, "", len) == 0))
-        strncpy(name, defname, len);
+    if((defname != NULL) && (strncmp(name, "", len - 1) == 0))
+        strncpy(name, defname, len - 1);
 
     name[len - 1] = '\0';
 }

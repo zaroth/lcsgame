@@ -638,6 +638,15 @@ void prepareencounter(short type, char sec) {
 
                 if(sec)
                     creaturearray[CREATURE_GUARDDOG] += 50;
+            } else if(mode == GAMEMODE_SITE && sec) {
+                //inside someone's room when security is high. Might meet a policeman.
+                if(law[LAW_DEATHPENALTY] == -2 && law[LAW_POLICEBEHAVIOR] == -2)
+                    creaturearray[CREATURE_DEATHSQUAD] += 5;
+
+                if(law[LAW_POLICEBEHAVIOR] <= -1)
+                    creaturearray[CREATURE_GANGUNIT] += 10;
+
+                creaturearray[CREATURE_COP] += 15;
             }
 
             creaturearray[CREATURE_SCIENTIST_EMINENT] += 1;

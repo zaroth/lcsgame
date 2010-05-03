@@ -2588,8 +2588,26 @@ char wincheck(void) {
             return 0;
     }
 
-    for(int l = 0; l < LAWNUM; l++) {
-        if(law[l] < 2)
+    if (wincondition == WINCONDITION_ELITE) {
+        for(int l = 0; l < LAWNUM; l++) {
+            if(law[l] < 2)
+                return 0;
+        }
+    } else {
+        int liberalLaws = 0;
+        int eliteLaws = 0;
+
+        for(int l = 0; l < LAWNUM; l++) {
+            if(law[l] < 1)
+                return 0;
+
+            if(law[l] == 1)
+                liberalLaws++;
+            else
+                eliteLaws++;
+        }
+
+        if (eliteLaws < liberalLaws)
             return 0;
     }
 
@@ -2598,7 +2616,7 @@ char wincheck(void) {
     for(int h = 0; h < 435; h++)
         housemake[house[h] + 2]++;
 
-    if(housemake[4] + housemake[3] / 2 < 290)
+    if(housemake[4] + housemake[3] / 2 < ((wincondition == WINCONDITION_ELITE) ? 290 : 270))
         return 0;
 
     int senatemake[5] = {0, 0, 0, 0, 0};
@@ -2606,18 +2624,25 @@ char wincheck(void) {
     for(int s = 0; s < 100; s++)
         senatemake[senate[s] + 2]++;
 
-    if(senatemake[4] + senatemake[3] / 2 < 67)
+    if(senatemake[4] + senatemake[3] / 2 < ((wincondition == WINCONDITION_ELITE) ? 67 : 60))
         return 0;
 
     int elibjudge = 0;
+    int libjudge = 0;
 
     for(int c = 0; c < 9; c++) {
         if(court[c] >= 2)
             elibjudge++;
+
+        if(court[c] == 1)
+            libjudge++;
     }
 
-    if(elibjudge < 5)
-        return 0;
+    if (wincondition == WINCONDITION_ELITE)
+        if(elibjudge < 5)
+            return 0;
+        else if (elibjudge < 5 && elibjudge + libjudge / 2 < 6)
+            return 0;
 
     return 1;
 }
