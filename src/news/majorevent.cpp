@@ -374,7 +374,7 @@ void constructeventstory(char *story, short view, char positive) {
             strcat(story, dstr);
             strcat(story, "_and_the_");
 
-            switch(LCSrandom(6)) {
+            switch(LCSrandom(7)) {
             case 0:
                 strcat(story, "Mysterious");
                 break;
@@ -397,6 +397,10 @@ void constructeventstory(char *story, short view, char positive) {
 
             case 5:
                 strcat(story, "Amazing");
+                break;
+
+            case 6:
+                strcat(story, "Secret");
                 break;
             }
 
@@ -470,6 +474,10 @@ void constructeventstory(char *story, short view, char positive) {
             case 10:
                 strcat(story, "Columbian");
                 break;
+
+            default:
+                strcat(story, "Elbonian");
+                break; // Dilbert
             }
 
             strcat(story, " author ");
@@ -523,7 +531,7 @@ void constructeventstory(char *story, short view, char positive) {
 
             case 2:
                 strcat(story, "a child that pushed her older sister");
-                break;
+                break; // TODO: Add variety, (him/her) (older/younger/twin) (brother/sister)
             }
 
             strcat(story, " as key evidence of the dark nature of the book.");

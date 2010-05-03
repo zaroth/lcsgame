@@ -136,12 +136,18 @@ case 0: { //VIEW_GUNS:
         strcat(story, "Maybe lose an eye the one way, maybe catch ");
 
         if(law[LAW_GAY] == -2)
-            strcat(story, "GRIDS");  // Gay Related Immunodeficiency Syndrome, obsoleted/politically incorrect name for "AIDS".
+            strcat(story, "GRIDS");  // Gay Related Immunodeficiency Syndrome, an obsoleted/politically incorrect name for "AIDS".
         else
             strcat(story, "AIDS");
 
-        strcat(story, " the other.  A helluva choice, ");
-        strcat(story, "and I would only have a few seconds before they made it for me");
+        strcat(story, " the other.  A ");
+
+        if(law[LAW_FREESPEECH] == -2)
+            strcat(story, "[heck]uva");
+        else
+            strcat(story, "helluva");
+
+        strcat(story, " choice, and I would only have a few seconds before they made it for me");
         strcat(story, ".\"");
         strcat(story, "&r");
         break;
