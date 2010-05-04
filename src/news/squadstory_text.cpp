@@ -203,7 +203,7 @@ void squadstory_text_opening(newsstoryst &ns, bool liberalguardian, bool ccs, ch
             } else {
                 strcat(story, "A group of ");
 
-                switch(LCSrandom(3)) {
+                switch(LCSrandom(4)) {
                 case 0:
                     strcat(story, "pathetic, ");
                     break;
@@ -214,6 +214,10 @@ void squadstory_text_opening(newsstoryst &ns, bool liberalguardian, bool ccs, ch
 
                 case 2:
                     strcat(story, "disheveled, ");
+                    break;
+
+                case 3:
+                    strcat(story, "inbred, ");
                     break;
                 }
 

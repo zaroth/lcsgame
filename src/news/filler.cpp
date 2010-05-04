@@ -87,7 +87,7 @@ case 0: { //VIEW_GUNS:
 
         strcat(story, "_");
 
-        switch(LCSrandom(7)) {
+        switch(LCSrandom(8)) {
         case 0:
             strcat(story, "Packer");
             break;
@@ -123,10 +123,14 @@ case 0: { //VIEW_GUNS:
                 strcat(story, "Buttlord");
 
             break;
+
+        case 8:
+            strcat(story, "Shower");
+            break;
         }
 
         strcat(story, "_.&r");
-        strcat(story, "   Take this excerpt, \""); //TODO: Add more excerpts.
+        strcat(story, "   Take this excerpt, \""); //TODO: Add more excerpts, more variety.
 
         strcat(story, "The steel bars grated forward in their rails, ");
         strcat(story, "coming to a halt with a deafening clang that said it all -- ");
@@ -205,7 +209,10 @@ case 0: { //VIEW_GUNS:
 
         strcat(story, " was subsequently convicted of breaking the peace, vandalism, attempted murder "
                "and terrorism and sentenced to life in prison. The presiding judge was a childhood "
-               "friend of (continued: Nightmare, A6)");
+               "friend of (continued: Nightmare, ");
+        chooseLetterOrNumber(str, 1);
+        chooseLetterOrNumber(str, 2);
+        strcat(story, ")");
         strcat(story, "&r");
         break;
     }
@@ -270,7 +277,7 @@ case 0: { //VIEW_GUNS:
 
         strcat(story, " with the guard in a prison tower.  ");
         strcat(story, "Authorities locked down the prison and ");
-        strcat(story, "attempted to negotiate by phone for 13 days, ");
+        strcat(story, "attempted to negotiate by phone for 13 days, "); // TODO: 5-22 days.
         strcat(story, "but talks were cut short when ");
         strcat(story, dstr2);
         strcat(story, " reportedly screamed into the receiver \"");
@@ -300,7 +307,7 @@ case 0: { //VIEW_GUNS:
             if(law[LAW_FREESPEECH] == 2)
                 strcat(story, "Why the fuck am I talkin' to you?  I'd rather kill this pig.");
             else if(law[LAW_FREESPEECH] == -2)
-                strcat(story, "Why am I talkin' to you?  I'd rather [harm this police officer.]");
+                strcat(story, "Why [am I] talkin' to you?  I'd rather [harm this police officer.]");
             else
                 strcat(story, "Why the f*ck am I talkin' to you?  I'd rather kill this pig.");
 
@@ -317,7 +324,7 @@ case 0: { //VIEW_GUNS:
             strcat(story, "[harmed] the guard");
         else if(law[LAW_FREESPEECH] == -1)
             strcat(story, "killed the guard");
-        else switch(LCSrandom(3)) {
+        else switch(LCSrandom(3)) { // TODO: More variety.
             case 0:
                 strcat(story, "slit the guard's throat with a shank");
                 break;
@@ -398,7 +405,7 @@ case 0: { //VIEW_GUNS:
                "2 fully-fueled airliners and the dissolution of the United States of America. "
                "According to police sources, the raid became necessary after the kidnappers "
                "revealed they had been executing twenty people at the end of each day of "
-               "non-compliance with their demands.");
+               "non-compliance with their demands."); // XXX: Wait... We can do this? (Multiple lines with one strcat()) -- LK
         strcat(story, "&r");
         break;
     }
@@ -443,7 +450,7 @@ case 0: { //VIEW_GUNS:
         }
 
         strcat(story, ".  Over twenty children in the past two years have gone missing, ");
-        strcat(story, "only to turn up later dead and ");
+        strcat(story, "only to turn up later dead and "); // TODO: C+ freespeech = [with bad things done to them]
 
         switch(LCSrandom(5)) {
         case 0:
