@@ -812,8 +812,8 @@ char ratify(int level, int lawview, int view, char congress, char canseethings) 
                 break; // Idaho
 
             case 20:
-                smood += 25;
-                break; // Massachusetts
+                smood = 100;
+                break; // Massachusetts (Always L+, even though this is an unfair advantage, SEE: McGovern)
 
             case 23:
                 smood -= 10;

@@ -533,8 +533,9 @@ char radio_broadcast(void) {
 
     case VIEW_WOMEN:
         addstr("discusses abortion.");
-        break;//XXX: "performs an abortion live on the air." Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
+        break;// "Performs an abortion live on the air."
 
+    // Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
     case VIEW_CIVILRIGHTS:
         addstr("debates affirmative action.");
         break;
@@ -726,8 +727,9 @@ char radio_broadcast(void) {
 
                     case VIEW_WOMEN:
                         addstr("discuss abortion.");
-                        break;//XXX: "performs an abortion live on the air." Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
+                        break;// "Performs an abortion live on the air."
 
+                    // Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
                     case VIEW_CIVILRIGHTS:
                         addstr("debate affirmative action.");
                         break;
@@ -956,8 +958,9 @@ char news_broadcast(void) {
 
     case VIEW_WOMEN:
         addstr("discusses abortion.");
-        break;//XXX: "performs an abortion live on the air." Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
+        break;// "Performs an abortion live on the air."
 
+    // Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
     case VIEW_CIVILRIGHTS:
         addstr("debates affirmative action.");
         break;
@@ -1148,8 +1151,9 @@ char news_broadcast(void) {
 
                     case VIEW_WOMEN:
                         addstr("discuss abortion.");
-                        break;//XXX: "performs an abortion live on the air." Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
+                        break;// "Performs an abortion live on the air."
 
+                    // Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
                     case VIEW_CIVILRIGHTS:
                         addstr("debate affirmative action.");
                         break;
