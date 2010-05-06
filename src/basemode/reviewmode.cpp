@@ -59,7 +59,7 @@ void review(void) {
 
                 move(y, 31);
 
-                if(squad[p]->squad[0] != NULL)
+                if(squad[p]->squad[0] != NULL && squad[p]->squad[0]->location != -1)
                     addshortname(location[squad[p]->squad[0]->location]);
 
                 move(y, 51);

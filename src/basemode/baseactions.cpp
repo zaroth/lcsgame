@@ -890,14 +890,32 @@ void setvehicles(void) {
             int slot = c - 'A' + page * 18;
 
             if(slot >= 0 && slot < vehicle.size()) {
-                move(8, 20);
-                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr("Choose a Liberal squad member to drive it.");
+                bool choice = true;
 
-                refresh();
+                if (activesquad->squad[0]) {
+                    choice = false;
 
-                int c = getch();
-                translategetch(c);
+                    for (int c = 1; c < 6; c++) {
+                        if (activesquad->squad[c]) { //are these slots always filled in order?
+                            choice = true;
+                            break;
+                        }
+                    }
+                }
+
+                int c;
+
+                if (choice) {
+                    move(8, 20);
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    addstr("Choose a Liberal squad member to drive it.");
+
+                    refresh();
+
+                    c = getch();
+                    translategetch(c);
+                } else
+                    c = '1';
 
                 if(c >= '1' && c <= '6') {
                     if(activesquad->squad[c - '1'] != NULL) {
@@ -916,14 +934,32 @@ void setvehicles(void) {
             int slot = c - 'a' + page * 18;
 
             if(slot >= 0 && slot < vehicle.size()) {
-                move(8, 20);
-                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr("Choose a Liberal squad member be a passenger.");
+                bool choice = true;
 
-                refresh();
+                if (activesquad->squad[0]) {
+                    choice = false;
 
-                int c = getch();
-                translategetch(c);
+                    for (int c = 1; c < 6; c++) {
+                        if (activesquad->squad[c]) { //are these slots always filled in order?
+                            choice = true;
+                            break;
+                        }
+                    }
+                }
+
+                int c;
+
+                if (choice) {
+                    move(8, 20);
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    addstr("Choose a Liberal squad member to be a passenger.");
+
+                    refresh();
+
+                    c = getch();
+                    translategetch(c);
+                } else
+                    c = '1';
 
                 if(c >= '1' && c <= '6') {
                     if(activesquad->squad[c - '1'] != NULL) {

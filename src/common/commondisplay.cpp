@@ -173,7 +173,7 @@ void set_activity_color(long activity_type) {
 void locheader(void) {
     char num[20];
 
-    if(activesquad != NULL) {
+    if(activesquad != NULL && activesquad->squad[0]->location != -1) {
         if(location[activesquad->squad[0]->location]->siege.siege) {
             if(location[activesquad->squad[0]->location]->siege.underattack)
                 set_color(COLOR_RED, COLOR_BLACK, 1);
@@ -194,7 +194,7 @@ void locheader(void) {
 
     move(0, 0);
 
-    if(activesquad != NULL) {
+    if(activesquad != NULL && activesquad->squad[0]->location != -1) {
         addlocationname(location[activesquad->squad[0]->location]);
         addstr(", ");
     } else {

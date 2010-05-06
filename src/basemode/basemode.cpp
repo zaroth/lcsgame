@@ -493,7 +493,7 @@ void mode_base(void) {
         if(selectedsiege != -1)
             siege = &location[selectedsiege]->siege;
 
-        if(activesquad != NULL)
+        if (activesquad != NULL && activesquad->squad[0]->location != -1)
             siege = &location[activesquad->squad[0]->location]->siege;
 
         char sieged = 0;
@@ -513,7 +513,7 @@ void mode_base(void) {
         if(selectedsiege != -1)
             haveflag = location[selectedsiege]->haveflag;
 
-        if(activesquad != NULL)
+        if(activesquad != NULL && activesquad->squad[0]->location != -1)
             haveflag = location[activesquad->squad[0]->location]->haveflag;
 
         // Count people at each location
@@ -600,7 +600,7 @@ void mode_base(void) {
 
                     if(selectedsiege != -1)
                         stock = location[selectedsiege]->compound_stores;
-                    else if(activesquad != NULL)
+                    else if(activesquad != NULL && activesquad->squad[0]->location != -1)
                         stock = location[activesquad->squad[0]->location]->compound_stores;
 
                     if(!stock)
@@ -911,7 +911,7 @@ void mode_base(void) {
             }
         }
 
-        if(c == 'e' && partysize > 0 && !underattack) {
+        if(c == 'e' && partysize > 0 && !underattack && activesquad->squad[0]->location != -1) {
             party_status = -1;
             equip(location[activesquad->squad[0]->location]->loot, -1);
             /*if(location[activesquad->squad[0]->location]->renting>=0)

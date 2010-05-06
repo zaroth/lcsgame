@@ -417,7 +417,7 @@ void activate(Creature *cr) {
         if(selectedsiege != -1)
             siege = &location[selectedsiege]->siege;
 
-        if(activesquad != NULL)
+        if(activesquad != NULL && activesquad->squad[0]->location != -1)
             siege = &location[activesquad->squad[0]->location]->siege;
 
         char sieged = 0;
@@ -1035,7 +1035,7 @@ void activate(Creature *cr) {
                 cr->activity = oact;
         }
 
-        if (!sieged && c == 'e') {
+        if (!sieged && c == 'e' && activesquad->squad[0]->location != -1) {
             //create a temp squad containing just this liberal
             int oldsquadid = cr->squadid;
             squadst *oldactivesquad = activesquad;

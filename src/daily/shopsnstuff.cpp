@@ -666,7 +666,7 @@ void armsdealer(int loc) {
             if(c == 'g')
                 in_gunshop = 1;
 
-            if(c == 'e')
+            if(c == 'e' && activesquad->squad[0]->location != -1)
                 equip(location[activesquad->squad[0]->location]->loot, -1);
         }
 
@@ -1200,7 +1200,7 @@ void pawnshop(int loc) {
             if(c == 10)
                 in_fence = 0;
 
-            if(c == 'e')
+            if(c == 'e' && activesquad->squad[0]->location != -1)
                 equip(location[activesquad->squad[0]->location]->loot, -1);
 
             if(c == 'w' || c == 'a' || c == 'c') {
@@ -1632,7 +1632,7 @@ void pawnshop(int loc) {
             if(c == 'g' && law[LAW_GUNCONTROL] < 2)
                 in_gunshop = 1;
 
-            if(c == 'e')
+            if(c == 'e' && activesquad->squad[0]->location != -1)
                 equip(location[activesquad->squad[0]->location]->loot, -1);
 
             if(c == 's')
@@ -2237,7 +2237,7 @@ void deptstore(int loc) {
             }
         }
 
-        if(c == 'e')
+        if(c == 'e' && activesquad->squad[0]->location != -1)
             equip(location[activesquad->squad[0]->location]->loot, -1);
 
         if(c == 'b')
@@ -2670,7 +2670,7 @@ void halloweenstore(int loc) {
             }
         }
 
-        if(c == 'e')
+        if(c == 'e' && activesquad->squad[0]->location != -1)
             equip(location[activesquad->squad[0]->location]->loot, -1);
 
         if(c == 'b')

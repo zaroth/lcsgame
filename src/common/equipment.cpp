@@ -237,14 +237,33 @@ void equip(vector<itemst *> &loot, int loc) {
                 errmsg = "You can't equip that.";
                 continue;
             } else {
-                move(8, 20);
-                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr("Choose a Liberal squad member to receive it.");
+                bool choice = true;
 
-                refresh();
+                if (activesquad->squad[0]) {
+                    choice = false;
 
-                int c = getch();
-                translategetch(c);
+                    for (int c = 1; c < 6; c++) {
+                        if (activesquad->squad[c]) { //are these slots always filled in order?
+                            choice = true;
+                            break;
+                        }
+                    }
+                }
+
+                int c;
+
+                if (choice) {
+                    move(8, 20);
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    addstr("Choose a Liberal squad member to receive it.");
+
+                    refresh();
+
+                    c = getch();
+                    translategetch(c);
+                } else {
+                    c = '1'; //only one member so no need to choose.
+                }
 
                 if(c >= '1' && c <= '6') {
                     Creature *squaddie = activesquad->squad[c - '1'];
@@ -374,14 +393,33 @@ void equip(vector<itemst *> &loot, int loc) {
         }
 
         if(c == 's') {
-            move(8, 20);
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            addstr("Choose a Liberal squad member to strip down.");
+            bool choice = true;
 
-            refresh();
+            if (activesquad->squad[0]) {
+                choice = false;
 
-            int c = getch();
-            translategetch(c);
+                for (int c = 1; c < 6; c++) {
+                    if (activesquad->squad[c]) {
+                        choice = true;
+                        break;
+                    }
+                }
+            }
+
+            int c;
+
+            if (choice) {
+                move(8, 20);
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                addstr("Choose a Liberal squad member to strip down.");
+
+                refresh();
+
+                c = getch();
+                translategetch(c);
+            } else {
+                c = '1'; //only one member so no need to choose.
+            }
 
             if(c >= '1' && c <= '6') {
                 if(activesquad->squad[c - '1'] != NULL) {
