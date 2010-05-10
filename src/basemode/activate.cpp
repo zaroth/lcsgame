@@ -44,14 +44,15 @@ void activate(void) {
             if(location[pool[p]->location]->type != SITE_GOVERNMENT_POLICESTATION &&
                     location[pool[p]->location]->type != SITE_GOVERNMENT_COURTHOUSE &&
                     location[pool[p]->location]->type != SITE_GOVERNMENT_PRISON) {
-                /*if(pool[p]->squadid!=-1)
-                {
-                   sq=getsquad(pool[p]->squadid);
-                   if(sq!=-1)
-                   {
-                      if(squad[sq]->activity.type!=ACTIVITY_NONE)continue;
-                   }
-                }*/
+                if(pool[p]->squadid != -1) {
+                    sq = getsquad(pool[p]->squadid);
+
+                    if(sq != -1) {
+                        if(squad[sq]->activity.type != ACTIVITY_NONE)
+                            continue;
+                    }
+                }
+
                 temppool.push_back(pool[p]);
             }
         }
