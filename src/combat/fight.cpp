@@ -1682,7 +1682,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             if(severtype != -1 && damamount >= severamount)
                 target->wound[w] |= (char)severtype;
 
-            if(w != BODYPART_HEAD && w != BODYPART_BODY && t.blood - damamount <= 0 &&
+            if(w != BODYPART_HEAD && w != BODYPART_BODY && target->blood - damamount <= 0 &&
                     target->blood > 0) {
                 do {
                     if(a.weapon.type == WEAPON_MOLOTOV && !LCSrandom(3))

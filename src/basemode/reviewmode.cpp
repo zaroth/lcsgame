@@ -482,9 +482,9 @@ void review_mode(short mode) {
                 addstr(" ");
 
                 if(temppool[p]->clinic > 1)
-                    addstr("Weeks");
+                    addstr("Months");
                 else
-                    addstr("Week");
+                    addstr("Month");
 
                 break;
             }
