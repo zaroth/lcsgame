@@ -1981,7 +1981,7 @@ void initlocation(locationst &loc) {
             strcat(loc.name, " St. ");
 
             if (law[LAW_DRUGS] == 2) {
-                switch (LCSrandom (3)) {
+                switch (LCSrandom (5)) {
                 case 0:
                     strcat (loc.name, "Recreational Drugs Center");
                     strcpy (loc.shortname, "Drugs Center");
@@ -1996,9 +1996,19 @@ void initlocation(locationst &loc) {
                     strcat (loc.name, "Cannabis Lounge");
                     strcpy (loc.shortname, "Cannabis Lounge");
                     break;
+
+                case 3:
+                    strcat (loc.name, "Opium Lounge");
+                    strcpy (loc.shortname, "Opium Lounge");
+                    break;
+
+                case 4:
+                    strcat (loc.name, "Marijuana Dispensary");
+                    strcpy (loc.shortname, "Dispensary");
+                    break;
                 }
             } else {
-                switch (LCSrandom (3)) {
+                switch (LCSrandom (5)) {
                 case 0:
                     strcat (loc.name, "Crack House");
                     strcpy (loc.shortname, "Crack House");
@@ -2012,6 +2022,16 @@ void initlocation(locationst &loc) {
                 case 2:
                     strcat (loc.name, "Ghetto Block");
                     strcpy (loc.shortname, "Ghetto Block");
+                    break;
+
+                case 3:
+                    strcat (loc.name, "Housing Project");
+                    strcpy (loc.shortname, "Housing Project");
+                    break;
+
+                case 4:
+                    strcat (loc.name, "Squatter House");
+                    strcpy (loc.shortname, "Squatter House");
                     break;
                 }
             }
