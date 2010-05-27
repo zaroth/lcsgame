@@ -53,6 +53,9 @@ int armorst::interrogation_basepower() {
 
     case ARMOR_MASK:
         switch(subtype) {
+        case MASK_COLEMAN_GARY:
+            return 1;
+
         case MASK_ASHCROFT:
         case MASK_BARR:
         case MASK_BLAIR:
@@ -74,8 +77,6 @@ int armorst::interrogation_basepower() {
         case MASK_KISSINGER:
         case MASK_NIXON:
         case MASK_POWELL:
-        case MASK_REAGAN_NANCY:
-        case MASK_REAGAN_RONALD:
         case MASK_RICE:
         case MASK_ROBERTSON:
         case MASK_RUMSFELD:
@@ -83,7 +84,6 @@ int armorst::interrogation_basepower() {
         case MASK_THURMOND:
         case MASK_WASHINGTON:
         case MASK_WAXMAN:
-        case MASK_COLEMAN_GARY:
         case MASK_MADONNA:
         case MASK_SPEARS:
         case MASK_EMINEM:
@@ -99,6 +99,10 @@ int armorst::interrogation_basepower() {
         default:
             return 4;
 
+        case MASK_REAGAN_NANCY:
+            return 5;
+
+        case MASK_REAGAN_RONALD:
         case MASK_CHENEY:
         case MASK_GUY_FAWKES:
         case MASK_JASON:
