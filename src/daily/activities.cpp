@@ -1261,7 +1261,7 @@ void funds_and_trouble(char &clearformess) {
             if(!location[shelter]->siege.siege) {
                 pool[p]->activity.type = ACTIVITY_NONE;
                 pool[p]->flag &= ~CREATUREFLAG_SLEEPER;
-                pool[p]->location = shelter;
+                pool[p]->location = pool[p]->base = shelter;
             }
         }
     }
