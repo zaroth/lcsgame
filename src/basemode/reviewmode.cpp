@@ -280,6 +280,8 @@ void review_mode(short mode) {
     if(temppool.size() == 0)
         return;
 
+    sortliberals(temppool, activesortingchoice[reviewmodeenum_to_sortingchoiceenum(mode)]);
+
     int page = 0;
 
     char num[20];
@@ -563,6 +565,7 @@ void review_mode(short mode) {
 
         move(23, 0);
         addpagestr();
+        addstr(" T to sort people.");
 
         refresh();
 
@@ -884,6 +887,11 @@ void review_mode(short mode) {
             }
         }
 
+        if(c == 't') {
+            sorting_prompt(reviewmodeenum_to_sortingchoiceenum(mode));
+            sortliberals(temppool, activesortingchoice[reviewmodeenum_to_sortingchoiceenum(mode)], true);
+        }
+
         // Reorder squad
         if(c == 'z') {
             if(temppool.size() <= 1)
@@ -1004,6 +1012,8 @@ void assemblesquad(squadst *cursquad) {
         }
     }
 
+    sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ASSEMBLESQUAD]);
+
     //BUILD LIST OF BASES FOR EACH SQUAD IN CASE IT ENDS UP EMPTY
     //THEN WILL DROP ITS LOOT THERE
     vector<int> squadloc;
@@ -1116,7 +1126,8 @@ void assemblesquad(squadst *cursquad) {
         addstr("Press a Letter to add or remove a Liberal from the squad.");
         move(23, 0);
         addpagestr();
-        move(23, 40);
+        addstr(" T to sort people.");
+        move(23, 50);
         addstr("V - View a Liberal");
         move(24, 0);
 
@@ -1210,6 +1221,11 @@ void assemblesquad(squadst *cursquad) {
                     }
                 }
             }
+        }
+
+        if(c == 't') {
+            sorting_prompt(SORTINGCHOICE_ASSEMBLESQUAD);
+            sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ASSEMBLESQUAD], true);
         }
 
         if(c == 'v') {
@@ -1375,6 +1391,8 @@ void squadlessbaseassign(void) {
     if(temppool.size() == 0)
         return;
 
+    sortliberals(temppool, activesortingchoice[SORTINGCHOICE_BASEASSIGN]);
+
     vector<int> temploc;
 
     for(l = 0; l < location.size(); l++) {
@@ -1449,6 +1467,9 @@ void squadlessbaseassign(void) {
             addstr(",. to view other Base pages.");
         }
 
+        move(23, 35);
+        addstr("T to sort people.");
+
         refresh();
 
         int c = getch();
@@ -1482,6 +1503,11 @@ void squadlessbaseassign(void) {
 
             if(p < temploc.size())
                 selectedbase = p;
+        }
+
+        if(c == 't') {
+            sorting_prompt(SORTINGCHOICE_BASEASSIGN);
+            sortliberals(temppool, activesortingchoice[SORTINGCHOICE_BASEASSIGN], true);
         }
 
         if(c == 10)

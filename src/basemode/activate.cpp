@@ -61,6 +61,8 @@ void activate(void) {
     if(temppool.size() == 0)
         return;
 
+    sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ACTIVATE]);
+
     int page = 0;
 
     char str[80];
@@ -130,6 +132,7 @@ void activate(void) {
         addstr("Press a Letter to Assign an Activity.");
         move(23, 0);
         addpagestr();
+        addstr(" T to sort people.");
         move(24, 0);
         addstr("Press Z to assign simple tasks in bulk.");
 
@@ -151,6 +154,11 @@ void activate(void) {
 
             if(p < temppool.size())
                 activate(temppool[p]);
+        }
+
+        if(c == 't') {
+            sorting_prompt(SORTINGCHOICE_ACTIVATE);
+            sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ACTIVATE], true);
         }
 
         if(c == 'z')
