@@ -1082,6 +1082,10 @@ void sorting_prompt(short listforsorting) {
         addstr("available Liberals.");
         break;
 
+    case SORTINGCHOICE_BASEASSIGN:
+        addstr("squadless members.");
+        break;
+
     default:
         addstr("ERROR: INVALID VALUE FOR SORTINGCHOICE!");
         break;
