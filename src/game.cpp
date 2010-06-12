@@ -317,7 +317,7 @@ int main(int argc, char *argv[]) {
 
     //Initialize sorting choices.
     for(int s = 0; s < SORTINGCHOICENUM; s++)
-        activesortingchoice[s] = SORTING_DEFAULT;
+        activesortingchoice[s] = SORTING_NONE;
 
     for(int v = 0; v < VIEWNUM; v++) {
         attitude[v] = 30 + LCSrandom(25);

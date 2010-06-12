@@ -979,8 +979,8 @@ void sleeperize_prompt(Creature &converted, Creature &recruiter, int y) {
 }
 
 /* common - Sort a list of creatures.*/
-void sortliberals(std::vector<Creature *> &liberals, short sortingchoice, bool sortdefault) {
-    if(!sortdefault && sortingchoice == SORTING_DEFAULT)
+void sortliberals(std::vector<Creature *> &liberals, short sortingchoice, bool dosortnone) {
+    if(!dosortnone && sortingchoice == SORTING_NONE)
         return;
 
     bool nochange = false;
@@ -995,8 +995,21 @@ void sortliberals(std::vector<Creature *> &liberals, short sortingchoice, bool s
             swap = false;
 
             switch (sortingchoice) {
-            case SORTING_DEFAULT:
-                swap = liberals[i]->id > liberals[i + 1]->id; //I guess this is equivalent to the default. -blomkvist
+            case SORTING_NONE: //This will sort sorted back to unsorted.
+                swap = getpoolcreature(liberals[i]->id) > getpoolcreature(liberals[i + 1]->id);
+                /*for (unsigned j=0; j<pool.size(); ++j)
+                {
+                   if (pool[j] == liberals[i])
+                   {
+                      swap = false;
+                      break;
+                   }
+                   else if (pool[j] == liberals[i+1])
+                   {
+                      swap = true;
+                      break;
+                   }
+                }*/
                 break;
 
             case SORTING_NAME:
@@ -1010,14 +1023,26 @@ void sortliberals(std::vector<Creature *> &liberals, short sortingchoice, bool s
                 break;
 
             case SORTING_SQUAD_OR_NAME:
-                swap = ((liberals[i]->squadid == -1 && liberals[i + 1]->squadid != -1)
+                swap = ((liberals[i]->squadid == -1 && liberals[i + 1]->squadid != -1) //Put squad member above squadless.
                         || (liberals[i + 1]->squadid != -1
-                            && liberals[i]->squadid > liberals[i + 1]->squadid)
+                            && liberals[i]->squadid > liberals[i + 1]->squadid) //Put older squads above newer.
                         || (liberals[i]->squadid == -1
                             && liberals[i + 1]->squadid == -1
-                            && strcmp(liberals[i]->name, liberals[i + 1]->name) > 0)
-                        || (liberals[i]->squadid == liberals[i + 1]->squadid
-                            && strcmp(liberals[i]->name, liberals[i + 1]->name) > 0)); //This last one should rather compare their order in the squad. -blomkvist
+                            && strcmp(liberals[i]->name, liberals[i + 1]->name) > 0)); //Sort squadless by name.
+
+                if (liberals[i]->squadid != -1 &&
+                        liberals[i]->squadid == liberals[i + 1]->squadid) { //Sort members of same squad in the order they are in the squad.
+                    for (unsigned j = 0; j < 6; ++j) {
+                        if (squad[getsquad(liberals[i]->squadid)]->squad[j]->id == liberals[i]->id) {
+                            swap = false;
+                            break;
+                        } else if (squad[getsquad(liberals[i]->squadid)]->squad[j]->id == liberals[i + 1]->id) {
+                            swap = true;
+                            break;
+                        }
+                    }
+                }
+
                 break;
 
             default:
@@ -1105,7 +1130,7 @@ void sorting_prompt(short listforsorting) {
         translategetch(c);
 
         if(c == 'a') {
-            activesortingchoice[listforsorting] = SORTING_DEFAULT;
+            activesortingchoice[listforsorting] = SORTING_NONE;
             break;
         } else if(c == 'b') {
             activesortingchoice[listforsorting] = SORTING_NAME;
@@ -1116,7 +1141,8 @@ void sorting_prompt(short listforsorting) {
         } else if(c == 'd') {
             activesortingchoice[listforsorting] = SORTING_SQUAD_OR_NAME;
             break;
-        }
+        } else if(c == 10)
+            break;
     }
 }
 
