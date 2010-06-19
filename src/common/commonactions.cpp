@@ -28,6 +28,7 @@ This file is part of Liberal Crime Squad.                                       
 
 #include <includes.h>
 #include <math.h>
+#include <algorithm>
 #include <externs.h>
 
 
@@ -983,80 +984,65 @@ void sortliberals(std::vector<Creature *> &liberals, short sortingchoice, bool d
     if(!dosortnone && sortingchoice == SORTING_NONE)
         return;
 
-    bool nochange = false;
-    bool swap = false;
-    unsigned loopnr = 0;
+    switch (sortingchoice) {
+    case SORTING_NONE:
+        sort(liberals.begin(), liberals.end(), sort_none);
+        break;
 
-    while (!nochange) {
-        ++loopnr;
-        nochange = true;
+    case SORTING_NAME:
+        sort(liberals.begin(), liberals.end(), sort_name);
+        break;
 
-        for (unsigned i = 0; i < liberals.size() - loopnr; ++i) {
-            swap = false;
+    case SORTING_LOCATION_AND_NAME:
+        sort(liberals.begin(), liberals.end(), sort_locationandname);
+        break;
 
-            switch (sortingchoice) {
-            case SORTING_NONE: //This will sort sorted back to unsorted.
-                swap = getpoolcreature(liberals[i]->id) > getpoolcreature(liberals[i + 1]->id);
-                /*for (unsigned j=0; j<pool.size(); ++j)
-                {
-                   if (pool[j] == liberals[i])
-                   {
-                      swap = false;
-                      break;
-                   }
-                   else if (pool[j] == liberals[i+1])
-                   {
-                      swap = true;
-                      break;
-                   }
-                }*/
+    case SORTING_SQUAD_OR_NAME:
+        sort(liberals.begin(), liberals.end(), sort_squadorname);
+        break;
+    }
+}
+
+/* The following boolean functions will return true if first is supposed to be
+   before second in the list. */
+bool sort_none(Creature *first, Creature *second) { //This will sort sorted back to unsorted.
+    for (unsigned j = 0; j < pool.size(); ++j) {
+        if (pool[j] == first)
+            return true;
+        else if (pool[j] == second)
+            return false;
+    }
+
+    return false;
+}
+bool sort_name(Creature *first, Creature *second) {
+    return strcmp(first->name, second->name) < 0;
+}
+bool sort_locationandname(Creature *first, Creature *second) {
+    return (first->location < second->location
+            || (first->location == second->location
+                && strcmp(first->name, second->name) < 0));
+}
+bool sort_squadorname(Creature *first, Creature *second) {
+    bool a = ((first->squadid != -1 && second->squadid == -1) //Squad member should come before squadless.
+              || (first->squadid != -1
+                  && first->squadid < second->squadid) //Older squads above newer.
+              || (first->squadid == -1 && second->squadid == -1
+                  && strcmp(first->name, second->name) < 0)); //Sort squadless by name.
+
+    if (first->squadid != -1 && first->squadid == second->squadid) { //Sort members of same squad in the order they are in the squad.
+        for (unsigned j = 0; j < 6; ++j) {
+            if (squad[getsquad(first->squadid)]->squad[j]->id == first->id) {
+                a = true;
                 break;
-
-            case SORTING_NAME:
-                swap = strcmp(liberals[i]->name, liberals[i + 1]->name) > 0;
+            } else if (squad[getsquad(first->squadid)]->squad[j]->id == second->id) {
+                a = false;
                 break;
-
-            case SORTING_LOCATION_AND_NAME:
-                swap = (liberals[i]->location > liberals[i + 1]->location
-                        || (liberals[i]->location == liberals[i + 1]->location
-                            && strcmp(liberals[i]->name, liberals[i + 1]->name) > 0));
-                break;
-
-            case SORTING_SQUAD_OR_NAME:
-                swap = ((liberals[i]->squadid == -1 && liberals[i + 1]->squadid != -1) //Put squad member above squadless.
-                        || (liberals[i + 1]->squadid != -1
-                            && liberals[i]->squadid > liberals[i + 1]->squadid) //Put older squads above newer.
-                        || (liberals[i]->squadid == -1
-                            && liberals[i + 1]->squadid == -1
-                            && strcmp(liberals[i]->name, liberals[i + 1]->name) > 0)); //Sort squadless by name.
-
-                if (liberals[i]->squadid != -1 &&
-                        liberals[i]->squadid == liberals[i + 1]->squadid) { //Sort members of same squad in the order they are in the squad.
-                    for (unsigned j = 0; j < 6; ++j) {
-                        if (squad[getsquad(liberals[i]->squadid)]->squad[j]->id == liberals[i]->id) {
-                            swap = false;
-                            break;
-                        } else if (squad[getsquad(liberals[i]->squadid)]->squad[j]->id == liberals[i + 1]->id) {
-                            swap = true;
-                            break;
-                        }
-                    }
-                }
-
-                break;
-
-            default:
-                break;
-            }
-
-            if(swap) {
-                Creature *tmp = liberals[i];
-                liberals[i] = liberals[i + 1];
-                liberals[i + 1] = tmp;
-                nochange = false;
             }
         }
     }
+
+    return a;
 }
 
 /* common - Prompt to decide how to sort liberals.*/
