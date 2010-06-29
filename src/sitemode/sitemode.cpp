@@ -41,7 +41,7 @@ void fight_subdued(void) {
     for(int v = 0; v < chaseseq.friendcar.size(); v++) {
         for(int v2 = (int)vehicle.size() - 1; v2 >= 0; v2--) {
             if(vehicle[v2] == chaseseq.friendcar[v]) {
-                removecarprefs_pool(vehicle[v2]->id);
+                removecarprefs_pool(vehicle[v2]->id());
                 delete vehicle[v2];
                 vehicle.erase(vehicle.begin() + v2);
             }
@@ -666,7 +666,7 @@ void mode_site(void) {
                         long v = id_getcar(activesquad->squad[p]->carid);
 
                         if(v != -1) {
-                            removecarprefs_pool(vehicle[v]->id);
+                            removecarprefs_pool(vehicle[v]->id());
                             delete vehicle[v];
                             vehicle.erase(vehicle.begin() + v);
                         }

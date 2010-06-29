@@ -822,7 +822,7 @@ void setvehicles(void) {
                     continue;
 
                 if(activesquad->squad[p]->alive &&
-                        activesquad->squad[p]->pref_carid == vehicle[l]->id) {
+                        activesquad->squad[p]->pref_carid == vehicle[l]->id()) {
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
                     break;
                 }
@@ -830,7 +830,7 @@ void setvehicles(void) {
 
             for(p = 0; p < pool.size(); p++) {
                 if(pool[p]->squadid != -1 && pool[p]->alive &&
-                        pool[p]->pref_carid == vehicle[l]->id && pool[p]->squadid != activesquad->id) {
+                        pool[p]->pref_carid == vehicle[l]->id() && pool[p]->squadid != activesquad->id) {
                     set_color(COLOR_YELLOW, COLOR_BLACK, 1);
                     break;
                 }
@@ -919,7 +919,7 @@ void setvehicles(void) {
 
                 if(c >= '1' && c <= '6') {
                     if(activesquad->squad[c - '1'] != NULL) {
-                        activesquad->squad[c - '1']->pref_carid = vehicle[slot]->id;
+                        activesquad->squad[c - '1']->pref_carid = vehicle[slot]->id();
 
                         if(activesquad->squad[c - '1']->canwalk())
                             activesquad->squad[c - '1']->pref_is_driver = 1;
@@ -963,7 +963,7 @@ void setvehicles(void) {
 
                 if(c >= '1' && c <= '6') {
                     if(activesquad->squad[c - '1'] != NULL) {
-                        activesquad->squad[c - '1']->pref_carid = vehicle[slot]->id;
+                        activesquad->squad[c - '1']->pref_carid = vehicle[slot]->id();
                         activesquad->squad[c - '1']->pref_is_driver = 0;
                     }
                 }
@@ -978,8 +978,8 @@ void setvehicles(void) {
                 // 2. Are they in a vehicle? Someday we'll want to enforce car capacity
                 int vin = activesquad->squad[c - '1']->pref_carid;
 
-                if ( vin > 0) {
-                    activesquad->squad[c - '1']->pref_carid = 0;
+                if ( vin > -1) {
+                    activesquad->squad[c - '1']->pref_carid = -1;
                     activesquad->squad[c - '1']->pref_is_driver = 0;
                 }
             }

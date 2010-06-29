@@ -173,7 +173,8 @@ const int lowestloadscoreversion = 31203;
 #endif
 #endif
 
-
+#include <sstream> //Hopefully a good place to put it. -XML
+#include "cmarkup/Markup.h" //For XML. -XML
 
 using namespace std;
 #include "lcsio.h"
@@ -284,6 +285,8 @@ inline int raw_output(bool bf) {
 
 int r_num(void);
 int LCSrandom(int max);
+
+string tostring(long i);
 
 enum UnlockTypes {
     UNLOCK_DOOR,
@@ -861,6 +864,8 @@ class Ledger {
 };
 
 #include "creature/creature.h"
+#include "vehicle/vehicletype.h"
+#include "vehicle/vehicle.h"
 
 #define SITEBLOCK_EXIT BIT1
 #define SITEBLOCK_BLOCK BIT2
@@ -1042,48 +1047,6 @@ struct locationst {
     void update_heat_protection(void);
 };
 
-
-enum VehicleTypes {
-    VEHICLE_VAN,
-    VEHICLE_STATIONWAGON,
-    VEHICLE_SPORTSCAR,
-    VEHICLE_BUG,
-    VEHICLE_PICKUP,
-    VEHICLE_POLICECAR,
-    VEHICLE_TAXICAB,
-    VEHICLE_SUV,
-    VEHICLE_AGENTCAR,
-    VEHICLE_JEEP,
-    VEHICLENUM,
-};
-
-enum VehicleColors {
-    VEHICLECOLOR_RED,
-    VEHICLECOLOR_WHITE,
-    VEHICLECOLOR_BLUE,
-    VEHICLECOLOR_BEIGE,
-    VEHICLECOLOR_POLICE,
-    VEHICLECOLOR_TAXI,
-    VEHICLECOLOR_BLACK,
-    VEHICLECOLORNUM
-};
-
-
-struct vehiclest {
-    short type;
-    short color;
-    short heat;
-    long location;
-    int myear;
-    long id;
-    void init(int t);
-    void stop_riding_me();
-    ~vehiclest() {
-        stop_riding_me();
-    }
-};
-
-
 enum CarChaseObstacles {
     CARCHASE_OBSTACLE_FRUITSTAND,
     CARCHASE_OBSTACLE_TRUCKPULLSOUT,
@@ -1100,8 +1063,8 @@ enum CarChaseObstacles {
 //struct chaseseqst
 struct chaseseqst {
     long location;
-    vector<vehiclest *> friendcar;
-    vector<vehiclest *> enemycar;
+    vector<Vehicle *> friendcar;
+    vector<Vehicle *> enemycar;
     char canpullover;
 
     //public:
@@ -1589,6 +1552,10 @@ void sorting_prompt(short listforsorting);
 /* common - Returns appropriate sortingchoice enum value for a reviewmode enum value.
             (Is currently unnecessary unless the enums are changed.)*/
 short reviewmodeenum_to_sortingchoiceenum(short reviewmode);
+/* common - Display a list of options and return choice. */
+int choiceprompt(const string &firstline, const string &secondline,
+                 const vector<string> &option, const string &optiontypename,
+                 bool allowexitwochoice, const string &exitstring = "");
 
 
 /*
@@ -1619,11 +1586,7 @@ void gettitle(char *str, Creature &cr);
 void getview(char *str, short view);
 void getviewsmall(char *str, short view);
 void getlaw(char *str, int l);
-void getcarfull(char *str, vehiclest &car, char halffull = 0);
-void getcarfull(char *str, int type);
-void getcar(char *str, int type);
-void getcarcolor(char *str, int type);
-short naturalcarcolor(int type); /* support function for getcarcolor */
+void getcarfull(char *str, Vehicle &car, char halffull = 0);
 void cityname(char *story); /* random city name */
 /* Allow player to enter a name with an optional default name */
 void enter_name(char *name, int len, char *defname = NULL);
@@ -1637,6 +1600,10 @@ long getsquad(long id);
 int id_getcar(int id);
 /* transforms a creature id number into the index of that person in the pool */
 int getpoolcreature(long id);
+/* transforms a vehicle type id into the index of that vehicle type in the global vector */
+int getvehicletype(int id);
+/* transforms a vehicle type idname into the index of that vehicle type in the global vector */
+int getvehicletype(const string &idname);
 
 /*
  equipment.cpp
@@ -2002,7 +1969,7 @@ char chasesequence(void);
 char footchase(void);
 void evasivedrive(void);
 void evasiverun(void);
-int driveskill(Creature &cr, vehiclest *v);
+int driveskill(Creature &cr, Vehicle &v);
 char drivingupdate(short &obstacle);
 void makechasers(long sitetype, long sitecrime);
 char obstacledrive(short obstacle, char choice);
@@ -2012,7 +1979,7 @@ void crashenemycar(int v);
 void chase_giveup(void);
 /* the next two functions force a chase sequence with a specific liberal */
 char footchase(Creature &cr);
-char chasesequence(Creature &cr, vehiclest &v);
+char chasesequence(Creature &cr, Vehicle &v);
 
 /*
  haulkidnap.cpp
@@ -2069,10 +2036,7 @@ void survey(Creature *cr);
 void funds_and_trouble(char &clearformess);
 /* steal a car */
 char stealcar(Creature &cr, char &clearformess);
-int difficulty_carfind(int type);
 char carselect(Creature &cr, short &cartype);
-int sensealarmchance(int cartype);
-int touchalarmchance(int cartype);
 /* get a wheelchair */
 void getwheelchair(Creature &cr, char &clearformess);
 

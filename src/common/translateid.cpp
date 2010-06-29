@@ -42,7 +42,7 @@ long getsquad(long id) {
 /* transforms a car id number into the index of that car in the global vector */
 int id_getcar(int id) {
     for(int v = 0; v < vehicle.size(); v++) {
-        if(vehicle[v]->id == id)
+        if(vehicle[v]->id() == id)
             return v;
     }
 
@@ -54,6 +54,26 @@ int getpoolcreature(long id) {
     for(int pl = 0; pl < pool.size(); pl++) {
         if(pool[pl]->id == id)
             return pl;
+    }
+
+    return -1;
+}
+
+/* transforms a vehicle type id into the index of that vehicle type in the global vector */
+int getvehicletype(int id) {
+    for (unsigned i = 0; i < vehicletype.size(); ++i) {
+        if (id == vehicletype[i]->id())
+            return i;
+    }
+
+    return -1;
+}
+
+/* transforms a vehicle type idname into the index of that vehicle type in the global vector */
+int getvehicletype(const string &idname) {
+    for (unsigned i = 0; i < vehicletype.size(); ++i) {
+        if (idname == vehicletype[i]->idname())
+            return i;
     }
 
     return -1;

@@ -67,7 +67,7 @@ char chasesequence(void) {
 
             if(v != -1) {
                 for(v2 = 0; v2 < chaseseq.friendcar.size(); v2++) {
-                    if(chaseseq.friendcar[v2]->id == vehicle[v]->id)
+                    if(chaseseq.friendcar[v2]->id() == vehicle[v]->id())
                         break;
                 }
 
@@ -230,7 +230,7 @@ char chasesequence(void) {
                     long v = id_getcar(activesquad->squad[p]->carid);
 
                     if(v != -1) {
-                        removecarprefs_pool(vehicle[v]->id);
+                        removecarprefs_pool(vehicle[v]->id());
                         delete vehicle[v];
                         vehicle.erase(vehicle.begin() + v);
                     }
@@ -280,7 +280,7 @@ char chasesequence(void) {
                 for(int v = 0; v < chaseseq.friendcar.size(); v++) {
                     for(int v2 = (int)vehicle.size() - 1; v2 >= 0; v2--) {
                         if(vehicle[v2] == chaseseq.friendcar[v]) {
-                            removecarprefs_pool(vehicle[v2]->id);
+                            removecarprefs_pool(vehicle[v2]->id());
                             delete vehicle[v2];
                             vehicle.erase(vehicle.begin() + v2);
                         }
@@ -540,7 +540,7 @@ char footchase(void) {
                     long v = id_getcar(activesquad->squad[p]->carid);
 
                     if(v != -1) {
-                        removecarprefs_pool(vehicle[v]->id);
+                        removecarprefs_pool(vehicle[v]->id());
                         delete vehicle[v];
                         vehicle.erase(vehicle.begin() + v);
                     }
@@ -683,7 +683,7 @@ void evasivedrive(void) {
         if(activesquad->squad[p]->alive &&
                 activesquad->squad[p]->is_driver) {
             long v = id_getcar(activesquad->squad[p]->carid);
-            yourrolls.push_back(driveskill(*activesquad->squad[p], vehicle[v]) + LCSrandom(DRIVING_RANDOMNESS));
+            yourrolls.push_back(driveskill(*activesquad->squad[p], *(vehicle[v])) + LCSrandom(DRIVING_RANDOMNESS));
             activesquad->squad[p]->train(SKILL_DRIVING, LCSrandom(20));
 
             if(yourworst > yourrolls.back())
@@ -705,8 +705,8 @@ void evasivedrive(void) {
                 encounter[e].exists &&
                 encounter[e].is_driver) {
             for(int v = 0; v < chaseseq.enemycar.size(); v++) {
-                if(chaseseq.enemycar[v]->id == encounter[e].carid) {
-                    theirrolls.push_back(driveskill(encounter[e], chaseseq.enemycar[v]) + LCSrandom(DRIVING_RANDOMNESS));
+                if(chaseseq.enemycar[v]->id() == encounter[e].carid) {
+                    theirrolls.push_back(driveskill(encounter[e], *chaseseq.enemycar[v]) + LCSrandom(DRIVING_RANDOMNESS));
                     theirrolls_id.push_back(encounter[e].carid);
                     theirrolls_drv.push_back(encounter[e].id);
                 }
@@ -791,7 +791,7 @@ void evasivedrive(void) {
             }
 
             for(int v = 0; v < chaseseq.enemycar.size(); v++) {
-                if(chaseseq.enemycar[v]->id == theirrolls_id[i]) {
+                if(chaseseq.enemycar[v]->id() == theirrolls_id[i]) {
                     delete chaseseq.enemycar[v];
                     chaseseq.enemycar.erase(chaseseq.enemycar.begin() + v);
                     break;
@@ -1036,28 +1036,8 @@ void evasiverun(void) {
 
 
 
-int driveskill(Creature &cr, vehiclest *v) {
-    int vbonus = 0;
-
-    switch(v->type) {
-    case VEHICLE_PICKUP:
-    case VEHICLE_SUV:
-    case VEHICLE_TAXICAB:
-    case VEHICLE_JEEP:
-        vbonus = 1;
-        break;
-
-    case VEHICLE_POLICECAR:
-        vbonus = 2;
-        break;
-
-    case VEHICLE_SPORTSCAR:
-    case VEHICLE_AGENTCAR:
-        vbonus = 3;
-        break;
-    }
-
-    int driveskill = cr.skill_roll(SKILL_DRIVING) * (3 + vbonus);
+int driveskill(Creature &cr, Vehicle &v) {
+    int driveskill = cr.skill_roll(SKILL_DRIVING) * (3 + v.drivebonus());
     healthmodroll(driveskill, cr);
 
     if(driveskill < 0)
@@ -1084,7 +1064,7 @@ char drivingupdate(short &obstacle) {
             if(activesquad->squad[p] == NULL)
                 continue;
 
-            if(activesquad->squad[p]->carid == chaseseq.friendcar[v]->id) {
+            if(activesquad->squad[p]->carid == chaseseq.friendcar[v]->id()) {
                 if(activesquad->squad[p]->is_driver) {
                     if(activesquad->squad[p]->canwalk())
                         driver = p;
@@ -1102,13 +1082,13 @@ char drivingupdate(short &obstacle) {
             int max = 0;
 
             for(p = 0; p < passenger.size(); p++) {
-                if(driveskill(*activesquad->squad[passenger[p]], chaseseq.friendcar[v]) > max &&
+                if(driveskill(*activesquad->squad[passenger[p]], *chaseseq.friendcar[v]) > max &&
                         activesquad->squad[passenger[p]]->canwalk())
-                    max = driveskill(*activesquad->squad[passenger[p]], chaseseq.friendcar[v]);
+                    max = driveskill(*activesquad->squad[passenger[p]], *chaseseq.friendcar[v]);
             }
 
             for(p = 0; p < passenger.size(); p++) {
-                if(driveskill(*activesquad->squad[passenger[p]], chaseseq.friendcar[v]) == max &&
+                if(driveskill(*activesquad->squad[passenger[p]], *chaseseq.friendcar[v]) == max &&
                         activesquad->squad[passenger[p]]->canwalk())
                     goodp.push_back(passenger[p]);
             }
@@ -1144,7 +1124,7 @@ char drivingupdate(short &obstacle) {
             if(!encounter[p].exists)
                 continue;
 
-            if(encounter[p].carid == chaseseq.enemycar[v]->id) {
+            if(encounter[p].carid == chaseseq.enemycar[v]->id()) {
                 if(encounter[p].is_driver) {
                     if(encounter[p].canwalk())
                         driver = p;
@@ -1184,7 +1164,7 @@ void makechasers(long sitetype, long sitecrime) {
     short encslot = 0;
     int n;
 
-    long cartype = -1;
+    string cartype = ""; //Temporary (transitionally) solution. -XML
     long pnum;
 
     chaseseq.canpullover = 0;
@@ -1195,7 +1175,7 @@ void makechasers(long sitetype, long sitecrime) {
     if(endgamestate < ENDGAME_CCS_DEFEATED &&
             endgamestate >= ENDGAME_CCS_ATTACKS &&
             LCSrandom(2) && sitetype != -1) {
-        cartype = VEHICLE_SUV;
+        cartype = "SUV"; //A CCS property, not a vehicle property. Temporary solution -XML
         pnum = LCSrandom(sitecrime / 5 + 1) + 1;
 
         if(pnum > 12)
@@ -1208,7 +1188,7 @@ void makechasers(long sitetype, long sitecrime) {
     } else {
         switch(sitetype) {
         case SITE_GOVERNMENT_INTELLIGENCEHQ:
-            cartype = VEHICLE_AGENTCAR;
+            cartype = "AGENTCAR"; //Site property? Temporary solution. -XML
             pnum = LCSrandom(sitecrime / 5 + 1) + 1;
 
             if(pnum > 6)
@@ -1224,9 +1204,9 @@ void makechasers(long sitetype, long sitecrime) {
         case SITE_CORPORATE_HEADQUARTERS:
         case SITE_CORPORATE_HOUSE:
             if(LCSrandom(2))
-                cartype = VEHICLE_SUV;
+                cartype = "SUV";  //Site property? Temporary solution. -XML
             else
-                cartype = VEHICLE_JEEP;
+                cartype = "JEEP";  //Site property? Temporary solution. -XML
 
             pnum = LCSrandom(sitecrime / 5 + 1) + 1;
 
@@ -1242,7 +1222,7 @@ void makechasers(long sitetype, long sitecrime) {
 
         case SITE_MEDIA_AMRADIO:
         case SITE_MEDIA_CABLENEWS:
-            cartype = VEHICLE_PICKUP;
+            cartype = "PICKUP"; //Site property? Temporary solution. -XML
             pnum = LCSrandom(sitecrime / 3 + 1) + 1;
 
             if(pnum > 18)
@@ -1256,7 +1236,7 @@ void makechasers(long sitetype, long sitecrime) {
             break;
 
         case SITE_BUSINESS_CRACKHOUSE:
-            cartype = VEHICLE_STATIONWAGON;
+            cartype = "STATIONWAGON"; //Site property? Temporary solution. -XML
             pnum = LCSrandom(sitecrime / 3 + 1) + 1;
 
             if(pnum > 18)
@@ -1271,7 +1251,7 @@ void makechasers(long sitetype, long sitecrime) {
 
         default:
             chaseseq.canpullover = 1;
-            cartype = VEHICLE_POLICECAR;
+            cartype = "POLICECAR"; //Police property? Temporary solution. -XML
             pnum = LCSrandom(sitecrime / 5 + 1) + 1;
 
             if(pnum > 6)
@@ -1312,13 +1292,13 @@ void makechasers(long sitetype, long sitecrime) {
         carnum = 4;
 
     for(int c = 0; c < carnum; c++) {
-        vehiclest *v = new vehiclest;
-        v->init(cartype);
+        Vehicle *v = new Vehicle(*vehicletype[getvehicletype(
+                cartype)]); //If car type is unknown, due to change in xml file, the game will crash here. -XML
         chaseseq.enemycar.push_back(v);
 
         for(n = 0; n < pnum; n++) {
             if(encounter[n].carid == -1) {
-                encounter[n].carid = v->id;
+                encounter[n].carid = v->id();
                 encounter[n].is_driver = 1;
                 break;
             }
@@ -1333,7 +1313,7 @@ void makechasers(long sitetype, long sitecrime) {
 
             do {
                 v = LCSrandom(chaseseq.enemycar.size());
-                encounter[n].carid = chaseseq.enemycar[v]->id;
+                encounter[n].carid = chaseseq.enemycar[v]->id();
                 encounter[n].is_driver = 0;
             } while(load[v] >= 4);
 
@@ -1445,7 +1425,7 @@ char dodgedrive(void) {
             if(activesquad->squad[p] == NULL)
                 continue;
 
-            if(activesquad->squad[p]->carid == chaseseq.friendcar[v]->id) {
+            if(activesquad->squad[p]->carid == chaseseq.friendcar[v]->id()) {
                 if(activesquad->squad[p]->is_driver) {
                     driver = p;
                     break;
@@ -1469,7 +1449,7 @@ char dodgedrive(void) {
             if(!encounter[p].exists)
                 continue;
 
-            if(encounter[p].carid == chaseseq.enemycar[v]->id) {
+            if(encounter[p].carid == chaseseq.enemycar[v]->id()) {
                 if(encounter[p].is_driver) {
                     driver = p;
                     break;
@@ -1525,7 +1505,7 @@ void crashfriendlycar(int v) {
         if(activesquad->squad[p] == NULL)
             continue;
 
-        if(activesquad->squad[p]->carid == chaseseq.friendcar[v]->id) {
+        if(activesquad->squad[p]->carid == chaseseq.friendcar[v]->id()) {
             // Inflict injuries on Liberals
             for(int w = 0; w < BODYPARTNUM; w++) {
                 // If limb is intact
@@ -1730,7 +1710,7 @@ void crashfriendlycar(int v) {
     for(int v2 = 0; v2 < chaseseq.friendcar.size(); v2++) {
         for(int v3 = (int)vehicle.size() - 1; v3 >= 0; v3--) {
             if(vehicle[v3] == chaseseq.friendcar[v2]) {
-                removecarprefs_pool(vehicle[v3]->id);
+                removecarprefs_pool(vehicle[v3]->id());
                 delete vehicle[v3];
                 vehicle.erase(vehicle.begin() + v3);
             }
@@ -1759,7 +1739,7 @@ void crashenemycar(int v) {
         if(!encounter[p].exists)
             continue;
 
-        if(encounter[p].carid == chaseseq.enemycar[v]->id) {
+        if(encounter[p].carid == chaseseq.enemycar[v]->id()) {
             victimsum++;
             delenc(p, 0);
         }
@@ -1813,7 +1793,7 @@ void chase_giveup(void) {
     for(int v = 0; v < chaseseq.friendcar.size(); v++) {
         for(int v2 = (int)vehicle.size() - 1; v2 >= 0; v2--) {
             if(vehicle[v2] == chaseseq.friendcar[v]) {
-                removecarprefs_pool(vehicle[v2]->id);
+                removecarprefs_pool(vehicle[v2]->id());
                 delete vehicle[v2];
                 vehicle.erase(vehicle.begin() + v2);
             }
@@ -1918,7 +1898,7 @@ char footchase(Creature &cr) {
 
 
 
-char chasesequence(Creature &cr, vehiclest &v) {
+char chasesequence(Creature &cr, Vehicle &v) {
     long oldsqid = cr.squadid;
     squadst *sq = new squadst;
     sq->squad[0] = &cr;
@@ -1927,7 +1907,7 @@ char chasesequence(Creature &cr, vehiclest &v) {
     sq->id = cursquadid;
     cursquadid++;
     cr.squadid = sq->squad[0]->squadid;
-    cr.carid = v.id;
+    cr.carid = v.id();
     cr.is_driver = 1;
 
     squadst *oact = activesquad;

@@ -858,7 +858,7 @@ void printchaseencounter(void) {
         for(int e = 0; e < ENCMAX; e++) {
             if(encounter[e].exists) {
                 for(int v = 0; v < chaseseq.enemycar.size(); v++) {
-                    if(chaseseq.enemycar[v]->id == encounter[e].carid) {
+                    if(chaseseq.enemycar[v]->id() == encounter[e].carid) {
                         set_color(COLOR_RED, COLOR_BLACK, 1);
                         move(carsy[v], v * 20 + 1);
                         addstr(encounter[e].name);
