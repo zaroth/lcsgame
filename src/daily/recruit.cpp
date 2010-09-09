@@ -49,7 +49,7 @@ char recruitst::eagerness() {
     if(recruit->get_attribute(ATTRIBUTE_HEART, true) > 9)
         eagerness_temp++;
 
-    if(recruit->weapon.ranged())
+    if(recruit->get_weapon().is_ranged())
         eagerness_temp++;
 
     //Moderates are decidedly less interested
@@ -65,7 +65,7 @@ char recruitst::eagerness() {
 
 
 /* daily - recruit - recruit completes task */
-char completerecruittask(recruitst &r, int p, char &clearformess) {
+char completerecruittask(recruitst &r, int p, char &clearformess) { //Obsolete code? -XML
     if(clearformess)
         erase();
     else
@@ -106,8 +106,11 @@ char completerecruittask(recruitst &r, int p, char &clearformess) {
     addstr(" has ");
 
     switch(r.task) {
-    case TASK_BUYWEAPON:
+    case TASK_BUYWEAPON: {
         addstr("acquired a weapon.");
+
+        string weapon, clip;
+        int clips = 0;
 
         //Select a weapon to arm the recruit with
         if(r.recruit->money > 1500 &&
@@ -115,82 +118,91 @@ char completerecruittask(recruitst &r, int p, char &clearformess) {
                 (law[LAW_GUNCONTROL] == -2 || r.recruit->get_skill(SKILL_STREETSENSE))) {
             switch(LCSrandom(3)) {
             case 0:
-                r.recruit->weapon.type = WEAPON_CARBINE_M4;
+                weapon = "WEAPON_CARBINE_M4";
                 break;
 
             case 1:
-                r.recruit->weapon.type = WEAPON_AUTORIFLE_M16;
+                weapon = "WEAPON_AUTORIFLE_M16";
                 break;
 
             case 2:
-                r.recruit->weapon.type = WEAPON_AUTORIFLE_AK47;
+                weapon = "WEAPON_AUTORIFLE_AK47";
                 break;
             }
 
-            r.recruit->weapon.ammo = 30;
-            r.recruit->clip[CLIP_ASSAULT] = 4;
+            clips = 5;
+            clip = "CLIP_ASSAULT";
         } else if(r.recruit->money > 1200 &&
                   r.recruit->get_skill(SKILL_RIFLE) &&
                   (law[LAW_GUNCONTROL] == -2 || r.recruit->get_skill(SKILL_STREETSENSE))) {
-            r.recruit->weapon.type = WEAPON_SMG_MP5;
-            r.recruit->weapon.ammo = 15;
-            r.recruit->clip[CLIP_SMG] = 4;
+            weapon = "WEAPON_SMG_MP5";
+            clips = 5;
+            clip = "CLIP_SMG";
         } else if(r.recruit->money > 400 &&
                   r.recruit->get_skill(SKILL_SHOTGUN) &&
                   (law[LAW_GUNCONTROL] < 2 || r.recruit->get_skill(SKILL_STREETSENSE))) {
-            r.recruit->weapon.type = WEAPON_SEMIRIFLE_AR15;
-            r.recruit->weapon.ammo = 30;
-            r.recruit->clip[CLIP_ASSAULT] = 4;
+            weapon = "WEAPON_SEMIRIFLE_AR15";
+            clips = 5;
+            clip = "CLIP_ASSAULT";
         } else if(r.recruit->money > 350 &&
                   r.recruit->get_skill(SKILL_RIFLE) &&
                   (law[LAW_GUNCONTROL] <= -1 || r.recruit->get_skill(SKILL_STREETSENSE))) {
-            r.recruit->weapon.type = WEAPON_SEMIRIFLE_AR15;
-            r.recruit->weapon.ammo = 30;
-            r.recruit->clip[CLIP_ASSAULT] = 4;
+            weapon = "WEAPON_SEMIRIFLE_AR15";
+            clips = 5;
+            clip = "CLIP_ASSAULT";
         } else if(r.recruit->money > 300 &&
                   r.recruit->get_skill(SKILL_PISTOL) &&
                   (law[LAW_GUNCONTROL] < 1 || r.recruit->get_skill(SKILL_STREETSENSE))) {
             switch(LCSrandom(4)) {
             case 0:
-                r.recruit->weapon.type = WEAPON_SEMIPISTOL_9MM;
-                r.recruit->weapon.ammo = 15;
-                r.recruit->clip[CLIP_9] = 4;
+                weapon = "WEAPON_SEMIPISTOL_9MM";
+                clips = 5;
+                clip = "CLIP_9";
                 break;
 
             case 1:
-                r.recruit->weapon.type = WEAPON_SEMIPISTOL_45;
-                r.recruit->weapon.ammo = 15;
-                r.recruit->clip[CLIP_45] = 4;
+                weapon = "WEAPON_SEMIPISTOL_45";
+                clips = 5;
+                clip = "CLIP_45";
                 break;
 
             case 2:
-                r.recruit->weapon.type = WEAPON_REVOLVER_44;
-                r.recruit->weapon.ammo = 6;
-                r.recruit->clip[CLIP_44] = 4;
+                weapon = "WEAPON_REVOLVER_44";
+                clips = 5;
+                clip = "CLIP_44";
                 break;
             }
         } else if(r.recruit->get_skill(SKILL_SWORD)) {
             if(LCSrandom(5))
-                r.recruit->weapon.type = WEAPON_SWORD;
+                weapon = "WEAPON_SWORD";
             else
-                r.recruit->weapon.type = WEAPON_DAISHO;
+                weapon = "WEAPON_DAISHO";
         } else if(r.recruit->get_skill(SKILL_AXE))
-            r.recruit->weapon.type = WEAPON_AXE;
+            weapon = "WEAPON_AXE";
         else if(r.recruit->get_skill(SKILL_PISTOL)) {
-            r.recruit->weapon.type = WEAPON_REVOLVER_38;
-            r.recruit->weapon.ammo = 6;
-            r.recruit->clip[CLIP_38] = 4;
+            weapon = "WEAPON_REVOLVER_38";
+            clips = 5;
+            clip = "CLIP_38";
         } else if(r.recruit->get_skill(SKILL_CLUB) && !r.recruit->get_skill(SKILL_KNIFE)) {
             if(LCSrandom(2))
-                r.recruit->weapon.type = WEAPON_BASEBALLBAT;
+                weapon = "WEAPON_BASEBALLBAT";
             else
-                r.recruit->weapon.type = WEAPON_CROWBAR;
+                weapon = "WEAPON_CROWBAR";
         } else if(LCSrandom(2))
-            r.recruit->weapon.type = WEAPON_KNIFE;
+            weapon = "WEAPON_KNIFE";
         else
-            r.recruit->weapon.type = WEAPON_SHANK;
+            weapon = "WEAPON_SHANK";
 
-        break;
+        Weapon w(*weapontype[getweapontype(weapon)]);
+        r.recruit->give_weapon(w, NULL);
+
+        if (clips > 0) {
+            Clip c(*cliptype[getcliptype(clip)], clips);
+            r.recruit->take_clips(c, clips);
+            r.recruit->reload(false);
+        }
+    }
+    break;
 
     case TASK_COMMUNITYSERVICE:
         addstr("finished doing community service.");

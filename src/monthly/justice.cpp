@@ -1004,9 +1004,8 @@ void trial(Creature &g) {
         if(g.sentence != 0)
             imprison(g);
         else {
-            g.armor.type = ARMOR_CLOTHES;
-            g.armor.quality = '1';
-            g.armor.flag = 0;
+            Armor clothes(*armortype[getarmortype("ARMOR_CLOTHES")]);
+            g.give_armor(clothes, NULL);
         }
     }
     //GUILTY PLEA
@@ -1033,9 +1032,8 @@ void trial(Creature &g) {
         if(g.sentence != 0)
             imprison(g);
         else {
-            g.armor.type = ARMOR_CLOTHES;
-            g.armor.quality = '1';
-            g.armor.flag = 0;
+            Armor clothes(*armortype[getarmortype("ARMOR_CLOTHES")]);
+            g.give_armor(clothes, NULL);
         }
     }
 }
@@ -1460,9 +1458,8 @@ char prison(Creature &g) {
                 refresh();
                 getch();
 
-                g.armor.type = ARMOR_CLOTHES;
-                g.armor.quality = '1';
-                g.armor.flag = 0;
+                Armor clothes(*armortype[getarmortype("ARMOR_CLOTHES")]);
+                g.give_armor(clothes, NULL);
 
                 // If their old base is no longer under LCS control, wander back to the
                 // homeless shelter instead.

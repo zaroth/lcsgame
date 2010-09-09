@@ -1,6 +1,8 @@
 #include "includes.h"
 #include "externs.h"
 
+long Vehicle::curcarid = 0;
+
 string Vehicle::showXml () const {
     char buf[256];
 
@@ -62,7 +64,7 @@ Vehicle::Vehicle(const VehicleType &seed) {
 }
 
 Vehicle::Vehicle(const VehicleType &seed, const string &color, int myear) {
-    init(seed, color, year);
+    init(seed, color, myear);
 }
 
 void Vehicle::init(const VehicleType &seed, const string &color, int myear) {
@@ -84,6 +86,13 @@ void Vehicle::stop_riding_me() const {
     }
 }
 
+void Vehicle::stop_preferring_me() const {
+    for(int p = 0; p < pool.size(); p++) {
+        if(pool[p]->pref_carid == id_)
+            pool[p]->pref_carid = -1;
+    }
+}
+
 string Vehicle::fullname(bool halffull) const {
     string s;
     int words = 0;
@@ -91,8 +100,7 @@ string Vehicle::fullname(bool halffull) const {
     if (heat_ > 0) {
         s = "Stolen ";
         words++;
-    } else
-        s = "";
+    }
 
     if (displayscolor()) {
         s += color_ + " ";

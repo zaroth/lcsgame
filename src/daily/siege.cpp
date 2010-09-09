@@ -330,8 +330,7 @@ void siegecheck(char canseethings) {
                     location[l]->loot.clear();
 
                     for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
-                        if(vehicle[v]->location() == l) {
-                            removecarprefs_pool(vehicle[v]->id());
+                        if(vehicle[v]->get_location() == l) {
                             delete vehicle[v];
                             vehicle.erase(vehicle.begin() + v);
                         }
@@ -974,8 +973,7 @@ void siegeturn(char clearformess) {
                 location[l]->loot.clear();
 
                 for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
-                    if(vehicle[v]->location() == l) {
-                        removecarprefs_pool(vehicle[v]->id());
+                    if(vehicle[v]->get_location() == l) {
                         delete vehicle[v];
                         vehicle.erase(vehicle.begin() + v);
                     }
@@ -1797,12 +1795,7 @@ void giveup(void) {
                 }
             }
 
-            pool[p]->weapon.type = WEAPON_NONE;
-            pool[p]->weapon.ammo = 0;
-
-            // CLEAR CLIPS
-            for(int cl = 0; cl < CLIPNUM; cl++)
-                pool[p]->clip[cl] = 0;
+            pool[p]->drop_weapons_and_clips(NULL);
 
             if(iscriminal(*pool[p])) {
                 removesquadinfo(*pool[p]);
@@ -1868,8 +1861,7 @@ void giveup(void) {
     location[loc]->loot.clear();
 
     for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
-        if(vehicle[v]->location() == loc) {
-            removecarprefs_pool(vehicle[v]->id());
+        if(vehicle[v]->get_location() == loc) {
             delete vehicle[v];
             vehicle.erase(vehicle.begin() + v);
         }
@@ -2174,8 +2166,7 @@ void escapesiege(char won) {
         location[cursite]->loot.clear();
 
         for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
-            if(vehicle[v]->location() == cursite) {
-                removecarprefs_pool(vehicle[v]->id());
+            if(vehicle[v]->get_location() == cursite) {
                 delete vehicle[v];
                 vehicle.erase(vehicle.begin() + v);
             }

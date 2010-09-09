@@ -5,25 +5,32 @@
 
 class Vehicle {
   public:
-    Vehicle() {} //Used for loading save.
-    Vehicle(const VehicleType &seed);
+    explicit Vehicle(const VehicleType &seed);
     Vehicle(const VehicleType &seed, const string &color, int myear);
     ~Vehicle() {
         stop_riding_me();
+        stop_preferring_me();
     }
 
     string showXml () const;
-    Vehicle (const char *input);
+    Vehicle (const char *inputXml);
 
     void stop_riding_me() const;
+    void stop_preferring_me() const;//GETS RID OF CAR PREFERENCES FROM pool LIBERALS.
 
     string fullname(bool halffull = false) const;
 
-    short &heat() {
+    short get_heat() const {
         return heat_;
     }
-    long &location() {
+    void add_heat(short heat) {
+        heat_ += heat;
+    }
+    long get_location() const {
         return location_;
+    }
+    void set_location(long new_location) {
+        location_ = new_location;
     }
 
     const string &vtypeidname() const {
@@ -52,6 +59,8 @@ class Vehicle {
     int touchalarmchance() const;
     bool availableatshop() const;
     int price() const;
+
+    static long curcarid;
 
   private:
     void init(const VehicleType &seed, const string &color, int myear);

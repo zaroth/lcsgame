@@ -29,55 +29,7 @@ This file is part of Liberal Crime Squad.                                       
 //#include <includes.h>
 #include <externs.h>
 
-// Helper function for equip and moveloot.
-// Gets the full title of an item for display, without quantity.
-void get_equip_title(char *str2, itemst *item) {
-    switch (item->type) {
-    case ITEM_WEAPON:
-        getweaponfull(str2, item->weapon.type);
 
-        if(item->weapon.ammo > 0) {
-            char num[20];
-            itoa(item->weapon.ammo, num, 10);
-            strcat(str2, " (");
-            strcat(str2, num);
-            strcat(str2, ")");
-        }
-
-        break;
-
-    case ITEM_ARMOR:
-        getarmorfull(str2, item->armor, 0);
-        break;
-
-    case ITEM_CLIP:
-        getclip(str2, item->cliptype);
-        break;
-
-    case ITEM_LOOT:
-        getloot(str2, item->loottype);
-        break;
-
-    case ITEM_MONEY:
-        strcpy(str2, "$");
-        {
-            char num[20];
-            itoa(item->money, num, 10);
-            strcat(str2, num);
-        }
-        break;
-
-    default:
-        strcpy(str2, "(BUG #");
-        {
-            char num[20];
-            itoa(item->type, num, 10);
-            strcat(str2, num);
-        }
-        strcat(str2, ", report me!)");
-
-    }
-}
 
 // Helper function for equip and moveloot.
 // Prompts for how many items to equip / move.
@@ -118,7 +70,7 @@ long prompt_amount(long min, long max) {
 }
 
 /* review squad equipment */
-void equip(vector<itemst *> &loot, int loc) {
+void equip(vector<Item *> &loot, int loc) {
     if(activesquad == NULL)
         return;
 
@@ -151,20 +103,15 @@ void equip(vector<itemst *> &loot, int loc) {
         char str[200], str2[200];
 
         for(int l = page * 18; l < loot.size() && l < page * 18 + 18; l++) {
-            get_equip_title(str2, loot[l]);
+            string s = loot[l]->equip_title();
 
-            if(loot[l]->number > 1) {
-                char num[20];
-                itoa(loot[l]->number, num, 10);
-                strcat(str2, " ");
-                strcat(str2, "x");
-                strcat(str2, num);
-            }
+            if(loot[l]->get_number() > 1)
+                s += " x" + tostring(loot[l]->get_number());
 
             str[0] = l - page * 18 + 'A';
             str[1] = '\x0';
             strcat(str, " - ");
-            strcat(str, str2);
+            strcat(str, s.c_str());
 
             move(y, x);
             addstr(str);
@@ -227,8 +174,8 @@ void equip(vector<itemst *> &loot, int loc) {
 
         int c = getch();
         translategetch(c);
-        bool increaseammo = (c == KEY_RIGHT || c == KEY_UP);
-        bool decreaseammo = (c == KEY_LEFT || c == KEY_DOWN);
+        bool increaseammo = (c == KEY_UP);
+        bool decreaseammo = (c == KEY_DOWN);
 
         if((c >= 'a' && c <= 'r') || increaseammo || decreaseammo) {
             int slot = c - 'a' + page * 18;
@@ -239,9 +186,9 @@ void equip(vector<itemst *> &loot, int loc) {
                 if(slot < 0 || slot >= loot.size()) {
                     // Out of range.
                     continue;
-                } else if (loot[slot]->type != ITEM_WEAPON
-                           && loot[slot]->type != ITEM_ARMOR
-                           && loot[slot]->type != ITEM_CLIP) {
+                } else if (!loot[slot]->is_weapon()
+                           && !loot[slot]->is_armor()
+                           && !loot[slot]->is_clip()) {
                     errmsg = "You can't equip that.";
                     continue;
                 }
@@ -286,40 +233,25 @@ void equip(vector<itemst *> &loot, int loc) {
 
                 if(squaddie != NULL) {
                     if (decreaseammo) {
-                        int cl = ammotype(squaddie->weapon.type);
+                        if (!squaddie->clips.empty()) {
+                            loot.push_back(squaddie->clips.back()->split(1));
 
-                        if (cl == -1) {
+                            if (squaddie->clips.back()->empty())
+                                squaddie->clips.pop_back();
+                        } else if (!squaddie->get_weapon().uses_ammo()) {
                             errmsg = "No ammo to drop!";
                             continue;
-                        }
-
-                        if (squaddie->clip[cl] == 0) {
+                        } else {
                             errmsg = "No spare clips!";
                             continue;
                         }
 
-                        if(cl == CLIP_MOLOTOV) {
-                            itemst *newi = new itemst;
-                            newi->type = ITEM_WEAPON;
-                            newi->weapon.type = WEAPON_MOLOTOV;
-                            newi->weapon.ammo = 1;
-                            loot.push_back(newi);
-                        } else {
-                            itemst *newi = new itemst;
-                            newi->type = ITEM_CLIP;
-                            newi->cliptype = cl;
-                            loot.push_back(newi);
-                        }
-
-                        squaddie->clip[cl]--;
                         consolidateloot(loot);
                         continue;
                     }
 
                     if (increaseammo) {
-                        int cl = ammotype(squaddie->weapon.type);
-
-                        if (cl == -1) {
+                        if (!squaddie->is_armed() || !squaddie->get_weapon().uses_ammo()) {
                             errmsg = "No ammo required!";
                             continue;
                         }
@@ -327,10 +259,16 @@ void equip(vector<itemst *> &loot, int loc) {
                         slot = -1;
 
                         for (int sl = 0; sl < loot.size(); sl++) {
-                            if ((loot[sl]->type == ITEM_CLIP && loot[sl]->cliptype == cl) ||
-                                    (cl == CLIP_MOLOTOV && loot[sl]->type == ITEM_WEAPON && loot[sl]->weapon.type == WEAPON_MOLOTOV)) {
+                            if ((loot[sl]->is_clip() && squaddie->get_weapon().acceptable_ammo(*loot[sl]))) {
                                 slot = sl;
                                 break;
+                            } else if (loot[sl]->is_weapon() && loot[sl]->is_same_type(squaddie->get_weapon())) { //For throwing weapons. -XML
+                                Weapon *w = static_cast<Weapon *>(loot[sl]); //cast -XML
+
+                                if (w->is_throwable()) {
+                                    slot = sl;
+                                    break;
+                                }
                             }
                         }
 
@@ -356,85 +294,36 @@ void equip(vector<itemst *> &loot, int loc) {
                     if(squaddie->special[SPECIALWOUND_UPPERSPINE] != 1)
                         armok = 0;
 
-                    if(loot[slot]->type == ITEM_WEAPON && armok) {
-                        int testVal1 = squaddie->weapon.type;
-                        int testVal2 = loot[slot]->weapon.type;
+                    if(loot[slot]->is_weapon() && armok) {
+                        Weapon *w = static_cast<Weapon *>(loot[slot]); //cast -XML
+                        squaddie->give_weapon(*w, &loot);
 
-                        if(squaddie->weapon.type == WEAPON_MOLOTOV &&
-                                loot[slot]->weapon.type == WEAPON_MOLOTOV) {
-                            if(squaddie->weapon.ammo == 0)
-                                squaddie->weapon.ammo = 1;
-                            else
-                                squaddie->clip[CLIP_MOLOTOV]++;
-                        } else if(squaddie->weapon.type != WEAPON_NONE) {
-                            itemst *newloot = new itemst;
-                            newloot->type = ITEM_WEAPON;
-                            newloot->weapon = squaddie->weapon;
-                            loot.push_back(newloot);
-
-                            squaddie->weapon = loot[slot]->weapon;
-                        } else
-                            squaddie->weapon = loot[slot]->weapon;
-
-                        loot[slot]->number--;
-
-                        if(loot[slot]->number == 0) {
-                            delete loot[slot];
-                            loot.erase(loot.begin() + slot);
-                        }
-
-                        //DROP ALL CLIPS THAT DON'T WORK
-                        for(int cl = 0; cl < CLIPNUM; cl++) {
-                            if(cl == ammotype(squaddie->weapon.type))
-                                continue;
-
-                            for(int p2 = 0; p2 < squaddie->clip[cl]; p2++) {
-                                if(cl == CLIP_MOLOTOV) {
-                                    itemst *newi = new itemst;
-                                    newi->type = ITEM_WEAPON;
-                                    newi->weapon.type = WEAPON_MOLOTOV;
-                                    newi->weapon.ammo = 1;
-                                    loot.push_back(newi);
-                                } else {
-                                    itemst *newi = new itemst;
-                                    newi->type = ITEM_CLIP;
-                                    newi->cliptype = cl;
-                                    loot.push_back(newi);
-                                }
-                            }
-
-                            squaddie->clip[cl] = 0;
-                        }
-
-                        if(page * 18 >= loot.size() && page != 0)
-                            page--;
-                    } else if(loot[slot]->type == ITEM_ARMOR) {
-                        if(squaddie->armor.type != ARMOR_NONE) {
-                            itemst *newloot = new itemst;
-                            newloot->type = ITEM_ARMOR;
-                            newloot->armor = squaddie->armor;
-                            loot.push_back(newloot);
-                        }
-
-                        squaddie->armor = loot[slot]->armor;
-
-                        loot[slot]->number--;
-
-                        if(loot[slot]->number == 0) {
+                        if(loot[slot]->empty()) {
                             delete loot[slot];
                             loot.erase(loot.begin() + slot);
                         }
 
                         if(page * 18 >= loot.size() && page != 0)
                             page--;
-                    } else if(loot[slot]->type == ITEM_CLIP && armok) {
-                        short ammo_type = ammotype(squaddie->weapon.type);
-                        int space = 9 - squaddie->clip[ammo_type];
+                    } else if(loot[slot]->is_armor()) {
+                        Armor *a = static_cast<Armor *>(loot[slot]); //cast -XML
+                        squaddie->give_armor(*a, &loot);
 
-                        if (ammo_type != loot[slot]->cliptype) {
-                            errmsg = (ammo_type < 0 ?
-                                      "Can't carry ammo without a gun." :
-                                      "That ammo doesn't fit.");
+                        if(loot[slot]->empty()) {
+                            delete loot[slot];
+                            loot.erase(loot.begin() + slot);
+                        }
+
+                        if(page * 18 >= loot.size() && page != 0)
+                            page--;
+                    } else if(loot[slot]->is_clip() && armok) {
+                        int space = 9 - squaddie->count_clips();
+
+                        if (!squaddie->is_armed()) {
+                            errmsg = "Can't carry ammo without a gun.";
+                            continue;
+                        } else if (!squaddie->get_weapon().acceptable_ammo(*loot[slot])) {
+                            errmsg = "That ammo doesn't fit.";
                             continue;
                         } else if (space < 1) {
                             errmsg = "Can't carry any more ammo.";
@@ -442,19 +331,18 @@ void equip(vector<itemst *> &loot, int loc) {
                         } else {
                             int amount = 1;
 
-                            if (loot[slot]->number > 1) {
+                            if (loot[slot]->get_number() > 1) {
                                 if (increaseammo)
                                     amount = 1;
                                 else {
                                     amount = prompt_amount(0,
-                                                           MIN(loot[slot]->number, space));
+                                                           MIN(loot[slot]->get_number(), space));
                                 }
                             }
 
-                            squaddie->clip[ammo_type] += amount;
-                            loot[slot]->number -= amount;
+                            squaddie->take_clips(*loot[slot], amount);
 
-                            if(loot[slot]->number == 0) {
+                            if(loot[slot]->empty()) {
                                 delete loot[slot];
                                 loot.erase(loot.begin() + slot);
                             }
@@ -500,16 +388,8 @@ void equip(vector<itemst *> &loot, int loc) {
 
             if(c >= '1' && c <= '6') {
                 if(activesquad->squad[c - '1'] != NULL) {
-                    if(activesquad->squad[c - '1']->armor.type != ARMOR_NONE) {
-                        itemst *newi = new itemst;
-                        newi->type = ITEM_ARMOR;
-                        newi->armor = activesquad->squad[c - '1']->armor;
-                        loot.push_back(newi);
-
-                        activesquad->squad[c - '1']->armor.type = ARMOR_NONE;
-                        activesquad->squad[c - '1']->armor.quality = '1';
-                        activesquad->squad[c - '1']->armor.flag = 0;
-
+                    if(!activesquad->squad[c - '1']->is_naked()) {
+                        activesquad->squad[c - '1']->strip(&loot);
                         consolidateloot(loot);
                     }
                 }
@@ -531,35 +411,8 @@ void equip(vector<itemst *> &loot, int loc) {
             int p = c - '1';
 
             if(activesquad->squad[p] != NULL) {
-                if(activesquad->squad[p]->weapon.type != WEAPON_NONE) {
-                    itemst *i = new itemst;
-                    i->type = ITEM_WEAPON;
-                    i->weapon = activesquad->squad[p]->weapon;
-                    loot.push_back(i);
-
-                    activesquad->squad[p]->weapon.type = WEAPON_NONE;
-                    activesquad->squad[p]->weapon.ammo = 0;
-
-                    //DROP ALL CLIPS
-                    for(int c = 0; c < CLIPNUM; c++) {
-                        for(int p2 = 0; p2 < activesquad->squad[p]->clip[c]; p2++) {
-                            if(c == CLIP_MOLOTOV) {
-                                itemst *newi = new itemst;
-                                newi->type = ITEM_WEAPON;
-                                newi->weapon.type = WEAPON_MOLOTOV;
-                                newi->weapon.ammo = 1;
-                                loot.push_back(newi);
-                            } else {
-                                itemst *newi = new itemst;
-                                newi->type = ITEM_CLIP;
-                                newi->cliptype = c;
-                                loot.push_back(newi);
-                            }
-                        }
-
-                        activesquad->squad[p]->clip[c] = 0;
-                    }
-
+                if(activesquad->squad[p]->is_armed()) {
+                    activesquad->squad[p]->drop_weapons_and_clips(&loot);
                     consolidateloot(loot);
                 }
             }
@@ -579,14 +432,10 @@ void equip(vector<itemst *> &loot, int loc) {
 
 
 /* lets you pick stuff to stash/retrieve from one location to another */
-void moveloot(vector<itemst *> &dest, vector<itemst *> &source) {
+void moveloot(vector<Item *> &dest, vector<Item *> &source) {
     int page = 0;
 
-    vector<int> selected;
-    selected.resize(source.size());
-
-    for(int s = 0; s < selected.size(); s++)
-        selected[s] = 0;
+    vector<int> selected(source.size(), 0);
 
     do {
         erase();
@@ -606,27 +455,23 @@ void moveloot(vector<itemst *> &dest, vector<itemst *> &source) {
             else
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
-            get_equip_title(str2, source[l]);
+            string s = source[l]->equip_title();
 
-            if(source[l]->number > 1) {
-                char num[20];
-                strcat(str2, " ");
+            if(source[l]->get_number() > 1) {
+                s += " ";
 
-                if(selected[l] > 0) {
-                    itoa(selected[l], num, 10);
-                    strcat(str2, num);
-                    strcat(str2, "/");
-                } else
-                    strcat(str2, "x");
+                if(selected[l] > 0)
+                    s += tostring(selected[l]) + "/";
+                else
+                    s += "x";
 
-                itoa(source[l]->number, num, 10);
-                strcat(str2, num);
+                s += tostring(source[l]->get_number());
             }
 
             str[0] = l - page * 18 + 'A';
             str[1] = '\x0';
             strcat(str, " - ");
-            strcat(str, str2);
+            strcat(str, s.c_str());
 
             move(y, x);
             addstr(str);
@@ -671,8 +516,8 @@ void moveloot(vector<itemst *> &dest, vector<itemst *> &source) {
                 if(selected[slot])
                     selected[slot] = 0;
                 else {
-                    if(source[slot]->number > 1)
-                        selected[slot] = prompt_amount(0, source[slot]->number);
+                    if(source[slot]->get_number() > 1)
+                        selected[slot] = prompt_amount(0, source[slot]->get_number());
                     else
                         selected[slot] = 1;
                 }
@@ -694,16 +539,12 @@ void moveloot(vector<itemst *> &dest, vector<itemst *> &source) {
 
     for(int l = source.size() - 1; l >= 0; l--) {
         if(selected[l] > 0) {
-            itemst *newit = new itemst;
-            *newit = *source[l];
-            newit->number = selected[l];
-            dest.push_back(newit);
-
-            source[l]->number -= selected[l];
-
-            if(source[l]->number <= 0) {
-                delete source[l];
+            if(source[l]->get_number() <= selected[l]) {
+                dest.push_back(source[l]);
                 source.erase(source.begin() + l);
+            } else {
+                Item *newit = source[l]->split(selected[l]);
+                dest.push_back(newit);
             }
         }
     }
@@ -718,8 +559,8 @@ void moveloot(vector<itemst *> &dest, vector<itemst *> &source) {
 void equipmentbaseassign(void) {
     int p = 0;
     int l = 0;
-    vector<itemst *> temploot;
-    map<itemst *, locationst *> temploot2;
+    vector<Item *> temploot;
+    map<Item *, locationst *> temploot2;
 
     for(l = 0; l < location.size(); l++) {
         for(int l2 = 0; l2 < location[l]->loot.size(); l2++) {
@@ -767,8 +608,7 @@ void equipmentbaseassign(void) {
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
-            get_equip_title(str, temploot[p]);
-            addstr(str);
+            addstr(temploot[p]->equip_title().c_str());
 
             move(y, 25);
             addshortname(temploot2[temploot[p]]);
@@ -861,257 +701,52 @@ void equipmentbaseassign(void) {
 
 
 /* combines multiple items of the same type into stacks */
-void consolidateloot(vector<itemst *> &loot) {
+void consolidateloot(vector<Item *> &loot) {
     int l;
     int l2;
 
     //PUT THINGS TOGETHER
     for(l = loot.size() - 1; l >= 1; l--) {
         for(l2 = l - 1; l2 >= 0; l2--) {
-            if(loot[l]->type == loot[l2]->type) {
-                char conf = 0;
+            loot[l2]->merge(*loot[l]);
 
-                switch(loot[l]->type) {
-                case ITEM_WEAPON:
-                    if(loot[l]->weapon.type == loot[l2]->weapon.type &&
-                            loot[l]->weapon.ammo == loot[l2]->weapon.ammo)
-                        conf = 1;
-
-                    break;
-
-                case ITEM_ARMOR:
-                    if(loot[l]->armor.type == loot[l2]->armor.type &&
-                            loot[l]->armor.subtype == loot[l2]->armor.subtype &&
-                            loot[l]->armor.quality == loot[l2]->armor.quality &&
-                            loot[l]->armor.flag == loot[l2]->armor.flag)
-                        conf = 1;
-
-                    break;
-
-                case ITEM_CLIP:
-                    if(loot[l]->cliptype == loot[l2]->cliptype)
-                        conf = 1;
-
-                    break;
-
-                case ITEM_LOOT:
-                    if(loot[l]->loottype == loot[l2]->loottype &&
-                            loot[l]->loottype != LOOT_CEOPHOTOS &&
-                            loot[l]->loottype != LOOT_CEOLOVELETTERS &&
-                            loot[l]->loottype != LOOT_CEOTAXPAPERS &&
-                            loot[l]->loottype != LOOT_INTHQDISK &&
-                            loot[l]->loottype != LOOT_CORPFILES &&
-                            loot[l]->loottype != LOOT_JUDGEFILES &&
-                            loot[l]->loottype != LOOT_RESEARCHFILES &&
-                            loot[l]->loottype != LOOT_PRISONFILES &&
-                            loot[l]->loottype != LOOT_CABLENEWSFILES &&
-                            loot[l]->loottype != LOOT_AMRADIOFILES &&
-                            loot[l]->loottype != LOOT_SECRETDOCUMENTS &&
-                            loot[l]->loottype != LOOT_POLICERECORDS)
-                        conf = 1;
-
-                    break;
-
-                case ITEM_MONEY:
-                    conf = 1;
-                    break;
-                }
-
-                if(conf) {
-                    if(loot[l2]->type == ITEM_MONEY)
-                        loot[l2]->money += loot[l]->money;
-                    else
-                        loot[l2]->number += loot[l]->number;
-
-                    delete loot[l];
-                    loot.erase(loot.begin() + l);
-                    break;
-                }
-            }
-        }
-    }
-
-    //NOW DO A LAME-ASS SORT
-    itemst *pt;
-
-    for(l = loot.size() - 2; l >= 0; l--) {
-        for(l2 = l + 1; l2 < loot.size(); l2++) {
-            if(itemcompare(loot[l], loot[l2]) >= 0) {
-                pt = loot[l];
+            if (loot[l]->empty()) {
+                delete loot[l];
                 loot.erase(loot.begin() + l);
-                loot.insert(loot.begin() + l2 - 1, pt);
                 break;
             }
         }
-
-        if(l2 == loot.size()) {
-            pt = loot[l];
-            loot.erase(loot.begin() + l);
-            loot.push_back(pt);
-        }
-    }
-}
-
-
-
-/* compares two items, used in sorting gear */
-char itemcompare(itemst *a, itemst *b) {
-    if(a->type < b->type)
-        return 1;
-    else if(a->type > b->type)
-        return -1;
-    else {
-        switch(a->type) {
-        case ITEM_WEAPON:
-            if(a->weapon.type < b->weapon.type)
-                return 1;
-            else if(a->weapon.type > b->weapon.type)
-                return -1;
-            else {
-                if(a->weapon.ammo > b->weapon.ammo)
-                    return 1;
-                else if(a->weapon.ammo < b->weapon.ammo)
-                    return -1;
-            }
-
-            break;
-
-        case ITEM_ARMOR:
-            if(a->armor.type == b->armor.type) {
-                if(a->armor.subtype == b->armor.subtype) {
-                    if(a->armor.quality == b->armor.quality) {
-                        if(a->armor.flag < b->armor.flag)
-                            return 1;
-                        else if(a->armor.flag > b->armor.flag)
-                            return -1;
-                    } else if(a->armor.quality < b->armor.quality)
-                        return 1;
-                    else
-                        return -1;
-                } else if(a->armor.subtype < b->armor.subtype)
-                    return 1;
-                else
-                    return -1;
-            } else if(a->armor.type < b->armor.type)
-                return 1;
-            else
-                return -1;
-
-            break;
-
-        case ITEM_CLIP:
-            if(a->cliptype < b->cliptype)
-                return 1;
-            else
-                return -1;
-
-            break;
-
-        case ITEM_LOOT:
-            if(a->loottype < b->loottype)
-                return 1;
-            else
-                return -1;
-
-            break;
-        }
     }
 
-    return 0;
+    std::sort(loot.begin(), loot.end(), Item::sort_compare);
 }
-
-
-
-/* returns the type of ammo used by the given weapon, if any */
-short ammotype(int type) {
-    switch(type) {
-    case WEAPON_REVOLVER_38:
-        return CLIP_38;
-
-    case WEAPON_REVOLVER_44:
-        return CLIP_44;
-
-    case WEAPON_DESERT_EAGLE:
-        return CLIP_50AE;
-
-    case WEAPON_SMG_MP5:
-        return CLIP_SMG;
-
-    case WEAPON_SEMIPISTOL_9MM:
-        return CLIP_9;
-
-    case WEAPON_SEMIPISTOL_45:
-        return CLIP_45;
-
-    case WEAPON_CARBINE_M4:
-    case WEAPON_SEMIRIFLE_AR15:
-    case WEAPON_AUTORIFLE_M16:
-    case WEAPON_AUTORIFLE_AK47:
-        return CLIP_ASSAULT;
-
-    case WEAPON_SHOTGUN_PUMP:
-        return CLIP_BUCKSHOT;
-
-    case WEAPON_MOLOTOV:
-        return CLIP_MOLOTOV;
-
-    case WEAPON_FLAMETHROWER:
-        return CLIP_GASOLINE;
-    }
-
-    return -1;
-}
-
-
-
-/* check if a weapon is ranged */
-char rangedweapon(weaponst &w) {
-    switch(w.type) {
-    case WEAPON_REVOLVER_38:
-    case WEAPON_REVOLVER_44:
-    case WEAPON_DESERT_EAGLE:
-    case WEAPON_SEMIPISTOL_9MM:
-    case WEAPON_SEMIPISTOL_45:
-    case WEAPON_SEMIRIFLE_AR15:
-    case WEAPON_SMG_MP5:
-    case WEAPON_CARBINE_M4:
-    case WEAPON_AUTORIFLE_M16:
-    case WEAPON_AUTORIFLE_AK47:
-    case WEAPON_SHOTGUN_PUMP:
-    case WEAPON_MOLOTOV:
-    case WEAPON_FLAMETHROWER:
-        return 1;
-    }
-
-    return 0;
-}
-
 
 
 /* check if the squad has a certain weapon */
-char squadhasitem(squadst &sq, int type, int subtype) {
+char squadhasitem(squadst &sq, const string &type) {
     for(int p = 0; p < 6; p++) {
         if(sq.squad[p] != NULL) {
-            switch(type) {
-            case ITEM_WEAPON:
-                if(sq.squad[p]->weapon.type == subtype)
-                    return 1;
+            int index;
+            index = getweapontype(type);
 
-                break;
+            if (index != -1) {
+                if (sq.squad[p]->is_armed()
+                        && sq.squad[p]->get_weapon().get_itemtypename() == type)
+                    return 1;
             }
         }
     }
 
     for(int l = 0; l < sq.loot.size(); l++) {
-        if(sq.loot[l]->type != type)
+        if(sq.loot[l]->get_itemtypename() != type)
             continue;
 
-        switch(type) {
-        case ITEM_WEAPON:
-            if(sq.loot[l]->weapon.type == subtype)
-                return 1;
+        int index;
+        index = getweapontype(type);
 
-            break;
+        if (index != -1) {
+            if(sq.loot[l]->is_weapon() && sq.loot[l]->get_itemtypename() == type)
+                return 1;
         }
     }
 

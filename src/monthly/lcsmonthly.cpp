@@ -75,12 +75,10 @@ void guardianupdate(char size, char power) {
 int choosespecialedition(char &clearformess) {
     int page = 0;
 
-    char havetype[LOOTNUM];
-
-    for(int l = 0; l < LOOTNUM; l++)
-        havetype[l] = 0;
-
-    vector<int> loottype;
+    //char havetype[LOOTNUM];
+    //for(int l=0;l<LOOTNUM;l++)havetype[l]=0;
+    vector<bool> havetype(loottype.size(), false);
+    vector<int> loottypeindex;
 
     //FIND ALL LOOT TYPES
     for(int loc = 0; loc < location.size(); loc++) {
@@ -88,57 +86,58 @@ int choosespecialedition(char &clearformess) {
             continue;
 
         for(int l = 0; l < location[loc]->loot.size(); l++) {
-            if(location[loc]->loot[l]->type != ITEM_LOOT)
+            if(!location[loc]->loot[l]->is_loot())
                 continue;
 
-            if(location[loc]->loot[l]->loottype != LOOT_CEOPHOTOS &&
-                    location[loc]->loot[l]->loottype != LOOT_CEOLOVELETTERS &&
-                    location[loc]->loot[l]->loottype != LOOT_CEOTAXPAPERS &&
-                    location[loc]->loot[l]->loottype != LOOT_INTHQDISK &&
-                    location[loc]->loot[l]->loottype != LOOT_CORPFILES &&
-                    location[loc]->loot[l]->loottype != LOOT_JUDGEFILES &&
-                    location[loc]->loot[l]->loottype != LOOT_RESEARCHFILES &&
-                    location[loc]->loot[l]->loottype != LOOT_PRISONFILES &&
-                    location[loc]->loot[l]->loottype != LOOT_CABLENEWSFILES &&
-                    location[loc]->loot[l]->loottype != LOOT_AMRADIOFILES &&
-                    location[loc]->loot[l]->loottype != LOOT_SECRETDOCUMENTS &&
-                    location[loc]->loot[l]->loottype != LOOT_POLICERECORDS)
+            //Temporary, maybe put special edition definition into an xml file. -XML
+            if(location[loc]->loot[l]->get_itemtypename() != "LOOT_CEOPHOTOS" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_CEOLOVELETTERS" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_CEOTAXPAPERS" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_INTHQDISK" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_CORPFILES" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_JUDGEFILES" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_RESEARCHFILES" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_PRISONFILES" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_CABLENEWSFILES" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_AMRADIOFILES" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_SECRETDOCUMENTS" &&
+                    location[loc]->loot[l]->get_itemtypename() != "LOOT_POLICERECORDS")
                 continue;
 
-            if(!havetype[location[loc]->loot[l]->loottype]) {
-                loottype.push_back(location[loc]->loot[l]->loottype);
-                havetype[location[loc]->loot[l]->loottype] = 1;
+            if(!havetype[getloottype(location[loc]->loot[l]->get_itemtypename())]) {
+                loottypeindex.push_back(getloottype(location[loc]->loot[l]->get_itemtypename()));
+                havetype[getloottype(location[loc]->loot[l]->get_itemtypename())] = true;
             }
         }
     }
 
     for(int sq = 0; sq < squad.size(); sq++) {
         for(int l = 0; l < squad[sq]->loot.size(); l++) {
-            if(squad[sq]->loot[l]->type != ITEM_LOOT)
+            if(!squad[sq]->loot[l]->is_loot())
                 continue;
 
-            if(squad[sq]->loot[l]->loottype != LOOT_CEOPHOTOS &&
-                    squad[sq]->loot[l]->loottype != LOOT_CEOLOVELETTERS &&
-                    squad[sq]->loot[l]->loottype != LOOT_CEOTAXPAPERS &&
-                    squad[sq]->loot[l]->loottype != LOOT_INTHQDISK &&
-                    squad[sq]->loot[l]->loottype != LOOT_CORPFILES &&
-                    squad[sq]->loot[l]->loottype != LOOT_JUDGEFILES &&
-                    squad[sq]->loot[l]->loottype != LOOT_RESEARCHFILES &&
-                    squad[sq]->loot[l]->loottype != LOOT_PRISONFILES &&
-                    squad[sq]->loot[l]->loottype != LOOT_CABLENEWSFILES &&
-                    squad[sq]->loot[l]->loottype != LOOT_AMRADIOFILES &&
-                    squad[sq]->loot[l]->loottype != LOOT_SECRETDOCUMENTS &&
-                    squad[sq]->loot[l]->loottype != LOOT_POLICERECORDS)
+            if(squad[sq]->loot[l]->get_itemtypename() != "LOOT_CEOPHOTOS" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_CEOLOVELETTERS" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_CEOTAXPAPERS" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_INTHQDISK" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_CORPFILES" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_JUDGEFILES" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_RESEARCHFILES" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_PRISONFILES" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_CABLENEWSFILES" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_AMRADIOFILES" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_SECRETDOCUMENTS" &&
+                    squad[sq]->loot[l]->get_itemtypename() != "LOOT_POLICERECORDS")
                 continue;
 
-            if(!havetype[squad[sq]->loot[l]->loottype]) {
-                loottype.push_back(squad[sq]->loot[l]->loottype);
-                havetype[squad[sq]->loot[l]->loottype] = 1;
+            if(!havetype[getloottype(squad[sq]->loot[l]->get_itemtypename())]) {
+                loottypeindex.push_back(getloottype(squad[sq]->loot[l]->get_itemtypename()));
+                havetype[getloottype(squad[sq]->loot[l]->get_itemtypename())] = true;
             }
         }
     }
 
-    if(loottype.size() == 0)
+    if(loottypeindex.size() == 0)
         return -1;
 
     clearformess = 1;
@@ -154,12 +153,11 @@ int choosespecialedition(char &clearformess) {
         int x = 1, y = 10;
         char str[200], str2[200];
 
-        for(int l = page * 18; l < loottype.size() && l < page * 18 + 18; l++) {
-            getloot(str2, loottype[l]);
+        for(int l = page * 18; l < loottypeindex.size() && l < page * 18 + 18; l++) {
             str[0] = l - page * 18 + 'A';
             str[1] = '\x0';
             strcat(str, " - ");
-            strcat(str, str2);
+            strcat(str, loottype[loottypeindex[l]]->get_name().c_str());
 
             move(y, x);
             addstr(str);
@@ -195,39 +193,49 @@ int choosespecialedition(char &clearformess) {
         if(c >= 'a' && c <= 'r') {
             int slot = c - 'a' + page * 18;
 
-            if(slot >= 0 && slot < loottype.size()) {
+            if(slot >= 0 && slot < loottypeindex.size()) {
                 //DELETE THE ITEM
                 for(int loc = 0; loc < location.size(); loc++) {
                     if(location[loc]->renting == RENTING_NOCONTROL)
                         continue;
 
                     for(int l = 0; l < location[loc]->loot.size(); l++) {
-                        if(location[loc]->loot[l]->type != ITEM_LOOT)
+                        if(!location[loc]->loot[l]->is_loot())
                             continue;
 
-                        if(location[loc]->loot[l]->loottype == loottype[slot]) {
-                            delete location[loc]->loot[l];
-                            location[loc]->loot.erase(location[loc]->loot.begin() + l);
-                            return loottype[slot];
+                        if(getloottype(location[loc]->loot[l]->get_itemtypename()) == loottypeindex[slot]) {
+                            location[loc]->loot[l]->decrease_number(1);
+
+                            if(location[loc]->loot[l]->get_number() == 0) {
+                                delete location[loc]->loot[l];
+                                location[loc]->loot.erase(location[loc]->loot.begin() + l);
+                            }
+
+                            return loottypeindex[slot];
                         }
                     }
                 }
 
                 for(int sq = 0; sq < squad.size(); sq++) {
                     for(int l = 0; l < squad[sq]->loot.size(); l++) {
-                        if(squad[sq]->loot[l]->type != ITEM_LOOT)
+                        if(!squad[sq]->loot[l]->is_loot())
                             continue;
 
-                        if(squad[sq]->loot[l]->loottype == loottype[slot]) {
-                            delete squad[sq]->loot[l];
-                            squad[sq]->loot.erase(squad[sq]->loot.begin() + l);
-                            return loottype[slot];
+                        if(getloottype(squad[sq]->loot[l]->get_itemtypename()) == loottypeindex[slot]) {
+                            squad[sq]->loot[l]->decrease_number(1);
+
+                            if(squad[sq]->loot[l]->get_number() == 0) {
+                                delete squad[sq]->loot[l];
+                                squad[sq]->loot.erase(squad[sq]->loot.begin() + l);
+                            }
+
+                            return loottypeindex[slot];
                         }
                     }
                 }
 
                 //WHOOPS!
-                return loottype[slot];
+                return loottypeindex[slot];
             }
         }
 
@@ -250,15 +258,14 @@ int choosespecialedition(char &clearformess) {
 
 
 /* monthly - guardian - prints liberal guardian special editions */
-void printnews(short l, short newspaper) {
+void printnews(short li, short newspaper) {
     if(law[LAW_FREESPEECH] == -2)
         offended_firemen = 1;
 
     erase();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
-    switch(l) {
-    case LOOT_CEOPHOTOS:
+    if(loottype[li]->get_idname() == "LOOT_CEOPHOTOS") { // Tmp -XML
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring photos of a major CEO");
         move(7, 1);
@@ -321,9 +328,7 @@ void printnews(short l, short newspaper) {
         change_public_opinion(VIEW_CEOSALARY, 50);
         change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
-        break;
-
-    case LOOT_CEOLOVELETTERS:
+    } else if(loottype[li]->get_idname() == "LOOT_CEOLOVELETTERS") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring love letters from a major CEO");
         move(7, 1);
@@ -378,9 +383,7 @@ void printnews(short l, short newspaper) {
         change_public_opinion(VIEW_CEOSALARY, 50);
         change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
-        break;
-
-    case LOOT_CEOTAXPAPERS:
+    } else if(loottype[li]->get_idname() == "LOOT_CEOTAXPAPERS") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring a major CEO's tax papers");
         move(7, 1);
@@ -402,9 +405,7 @@ void printnews(short l, short newspaper) {
         change_public_opinion(VIEW_CEOSALARY, 50);
         change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
-        break;
-
-    case LOOT_CORPFILES:
+    } else if(loottype[li]->get_idname() == "LOOT_CORPFILES") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring Corporate files");
         move(7, 1);
@@ -447,10 +448,8 @@ void printnews(short l, short newspaper) {
         change_public_opinion(VIEW_CEOSALARY, 50);
         change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
-        break;
-
-    case LOOT_INTHQDISK:
-    case LOOT_SECRETDOCUMENTS:
+    } else if(loottype[li]->get_idname() == "LOOT_INTHQDISK"
+              || loottype[li]->get_idname() == "LOOT_SECRETDOCUMENTS") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring CIA and other intelligence files");
         move(7, 1);
@@ -495,9 +494,7 @@ void printnews(short l, short newspaper) {
 
         change_public_opinion(VIEW_INTELLIGENCE, 50);
         offended_cia = 1;
-        break;
-
-    case LOOT_POLICERECORDS:
+    } else if(loottype[li]->get_idname() == "LOOT_POLICERECORDS") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring police records");
         move(7, 1);
@@ -539,9 +536,7 @@ void printnews(short l, short newspaper) {
         addstr("The major networks and publications take it up and run it for weeks.");
 
         change_public_opinion(VIEW_POLICEBEHAVIOR, 50);
-        break;
-
-    case LOOT_JUDGEFILES:
+    } else if(loottype[li]->get_idname() == "LOOT_JUDGEFILES") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story with evidence of a Conservative judge");
         move(7, 1);
@@ -563,9 +558,7 @@ void printnews(short l, short newspaper) {
         addstr("The major networks and publications take it up and run it for weeks.");
 
         change_public_opinion(VIEW_JUSTICES, 50);
-        break;
-
-    case LOOT_RESEARCHFILES:
+    } else if(loottype[li]->get_idname() == "LOOT_RESEARCHFILES") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring research papers");
         move(7, 1);
@@ -597,9 +590,7 @@ void printnews(short l, short newspaper) {
 
         move(8, 1);
         addstr("The major networks and publications take it up and run it for weeks.");
-        break;
-
-    case LOOT_PRISONFILES:
+    } else if(loottype[li]->get_idname() == "LOOT_PRISONFILES") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring prison documents");
         move(7, 1);
@@ -629,9 +620,7 @@ void printnews(short l, short newspaper) {
         addstr("The major networks and publications take it up and run it for weeks.");
 
         change_public_opinion(VIEW_DEATHPENALTY, 50);
-        break;
-
-    case LOOT_CABLENEWSFILES:
+    } else if(loottype[li]->get_idname() == "LOOT_CABLENEWSFILES") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring cable news memos");
         move(7, 1);
@@ -664,9 +653,7 @@ void printnews(short l, short newspaper) {
 
         change_public_opinion(VIEW_CABLENEWS, 50);
         offended_cablenews = 1;
-        break;
-
-    case LOOT_AMRADIOFILES:
+    } else if(loottype[li]->get_idname() == "LOOT_AMRADIOFILES") {
         move(6, 1);
         addstr("The Liberal Guardian runs a story featuring AM radio plans");
         move(7, 1);
@@ -695,7 +682,6 @@ void printnews(short l, short newspaper) {
 
         change_public_opinion(VIEW_AMRADIO, 50);
         offended_cablenews = 1;
-        break;
     }
 
     refresh();

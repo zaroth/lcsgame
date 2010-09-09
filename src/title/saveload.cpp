@@ -86,7 +86,7 @@ void savegame(char *str) {
         numbytes = fwrite(&endgamestate, sizeof(char), 1, h);
         numbytes = fwrite(&ccs_kills, sizeof(char), 1, h);
 
-        numbytes = fwrite(&curcarid, sizeof(long), 1, h);
+        numbytes = fwrite(&Vehicle::curcarid, sizeof(long), 1, h);
         numbytes = fwrite(&showcarprefs, sizeof(char), 1, h);
         numbytes = fwrite(&curcreatureid, sizeof(long), 1, h);
         numbytes = fwrite(&cursquadid, sizeof(long), 1, h);
@@ -122,8 +122,13 @@ void savegame(char *str) {
             dummy = location[l]->loot.size();
             numbytes = fwrite(&dummy, sizeof(int), 1, h);
 
-            for(int l2 = 0; l2 < location[l]->loot.size(); l2++)
-                numbytes = fwrite(location[l]->loot[l2], sizeof(itemst), 1, h);
+            for(int l2 = 0; l2 < location[l]->loot.size(); l2++) {
+                std::string itemStr = location[l]->loot[l2]->showXml();
+                size_t itemSize = itemStr.size();
+
+                numbytes = fwrite(&itemSize, sizeof(itemSize), 1, h);
+                numbytes = fwrite(itemStr.c_str(), itemSize, 1, h);
+            }
 
             dummy = location[l]->changes.size();
             numbytes = fwrite(&dummy, sizeof(int), 1, h);
@@ -170,8 +175,13 @@ void savegame(char *str) {
         numbytes = fwrite(&dummy, sizeof(int), 1, h);
 
         for(int pl = 0; pl < pool.size(); pl++) {
-            numbytes = fwrite(pool[pl], sizeof(Creature), 1, h);
+            std::string creatureStr = pool[pl]->showXml();
+            size_t creatureSize = creatureStr.size();
 
+            numbytes = fwrite(&creatureSize, sizeof (creatureSize), 1, h);
+            numbytes = fwrite(creatureStr.c_str(), creatureSize, 1, h);
+
+            //numbytes=fwrite(pool[pl],sizeof(Creature),1,h);
             //write extra interrogation data if applicable
             if(pool[pl]->align == -1 && pool[pl]->alive) {
                 numbytes = fwrite(reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->techniques, sizeof(bool[6]), 1, h);
@@ -189,6 +199,55 @@ void savegame(char *str) {
                     numbytes = fwrite(&((*i).second), sizeof(float_zero), 1, h);
                 }
             }
+
+            /*
+            //write equipment
+            if(pool[pl]->is_armed())
+            {
+               std::string itemStr = pool[pl]->get_weapon().showXml();
+               size_t itemSize = itemStr.size();
+
+               numbytes=fwrite(&itemSize,sizeof(itemSize),1,h);
+               numbytes=fwrite(itemStr.c_str(),itemSize,1,h);
+            }
+            else
+            {
+               dummy = 0;
+               numbytes=fwrite(&dummy,sizeof(int),1,h);
+            }
+            dummy=pool[pl]->clips.size();
+            numbytes=fwrite(&dummy,sizeof(int),1,h);
+            for(int ci=0; ci<pool[pl]->clips.size(); ci++)
+            {
+               std::string itemStr = pool[pl]->clips[ci]->showXml();
+               size_t itemSize = itemStr.size();
+
+               numbytes=fwrite(&itemSize,sizeof(itemSize),1,h);
+               numbytes=fwrite(itemStr.c_str(),itemSize,1,h);
+            }
+            dummy=pool[pl]->extra_throwing_weapons.size();
+            numbytes=fwrite(&dummy,sizeof(int),1,h);
+            for(int ei=0; ei<pool[pl]->extra_throwing_weapons.size(); ei++)
+            {
+               std::string itemStr = pool[pl]->extra_throwing_weapons[ei]->showXml();
+               size_t itemSize = itemStr.size();
+
+               numbytes=fwrite(&itemSize,sizeof(itemSize),1,h);
+               numbytes=fwrite(itemStr.c_str(),itemSize,1,h);
+            }
+            if(!pool[pl]->is_naked())
+            {
+               std::string itemStr = pool[pl]->get_armor().showXml();
+               size_t itemSize = itemStr.size();
+
+               numbytes=fwrite(&itemSize,sizeof(itemSize),1,h);
+               numbytes=fwrite(itemStr.c_str(),itemSize,1,h);
+            }
+            else
+            {
+               dummy = 0;
+               numbytes=fwrite(&dummy,sizeof(int),1,h);
+            }*/
         }
 
         //Unique Creatures
@@ -218,8 +277,13 @@ void savegame(char *str) {
             dummy = squad[sq]->loot.size();
             numbytes = fwrite(&dummy, sizeof(int), 1, h);
 
-            for(int l2 = 0; l2 < squad[sq]->loot.size(); l2++)
-                numbytes = fwrite(squad[sq]->loot[l2], sizeof(itemst), 1, h);
+            for(int l2 = 0; l2 < squad[sq]->loot.size(); l2++) {
+                std::string itemStr = squad[sq]->loot[l2]->showXml();
+                size_t itemSize = itemStr.size();
+
+                numbytes = fwrite(&itemSize, sizeof(itemSize), 1, h);
+                numbytes = fwrite(itemStr.c_str(), itemSize, 1, h);
+            }
         }
 
         if(activesquad == NULL)
@@ -299,6 +363,28 @@ void savegame(char *str) {
 }
 
 
+/* Used by load() to create items of the correct class. */
+Item *create_item(const char *inputXml) {
+    Item *it = NULL;
+    CMarkup xml;
+    xml.SetDoc(inputXml);
+    xml.FindElem();
+    string itemclass = xml.GetTagName();
+
+    if (itemclass == "clip")
+        it = new Clip(inputXml);
+    else if (itemclass == "weapon")
+        it = new Weapon(inputXml);
+    else if (itemclass == "armor")
+        it = new Armor(inputXml);
+    else if (itemclass == "loot")
+        it = new Loot(inputXml);
+    else if (itemclass == "money")
+        it = new Money(inputXml);
+
+    return it;
+}
+
 /* loads the game from save.dat */
 char load(void) {
     //LOAD FILE
@@ -352,7 +438,7 @@ char load(void) {
         fread(&endgamestate, sizeof(char), 1, h);
         fread(&ccs_kills, sizeof(char), 1, h);
 
-        fread(&curcarid, sizeof(long), 1, h);
+        fread(&Vehicle::curcarid, sizeof(long), 1, h);
         fread(&showcarprefs, sizeof(char), 1, h);
         fread(&curcreatureid, sizeof(long), 1, h);
         fread(&cursquadid, sizeof(long), 1, h);
@@ -391,8 +477,38 @@ char load(void) {
             location[l]->loot.resize(dummy);
 
             for(int l2 = 0; l2 < location[l]->loot.size(); l2++) {
-                location[l]->loot[l2] = new itemst;
-                fread(location[l]->loot[l2], sizeof(itemst), 1, h);
+                size_t itemLen;
+                fread(&itemLen, sizeof(itemLen), 1, h);
+                vector<char> vec = vector<char>(itemLen + 1);
+                fread(&vec[0], itemLen, 1, h);
+                vec[itemLen] = '\0';
+
+                Item *it = create_item(&vec[0]);
+
+                if (it != NULL)
+                    location[l]->loot[l2] = it;
+            }
+
+            //Remove items of unknown type.
+            for(int l2 = location[l]->loot.size() - 1; l2 >= 0; l2--) {
+                bool del = false;
+
+                if(location[l]->loot[l2]->is_loot())
+                    del = (getloottype(location[l]->loot[l2]->get_itemtypename()) == -1);
+                else if(location[l]->loot[l2]->is_clip())
+                    del = (getcliptype(location[l]->loot[l2]->get_itemtypename()) == -1);
+                else if(location[l]->loot[l2]->is_weapon())
+                    del = (getweapontype(location[l]->loot[l2]->get_itemtypename()) == -1);
+                else if(location[l]->loot[l2]->is_armor())
+                    del = (getarmortype(location[l]->loot[l2]->get_itemtypename()) == -1);
+
+                if (del) {
+                    addstr("Item type ");
+                    addstr(location[l]->loot[l2]->get_itemtypename().c_str());
+                    addstr(" does not exist. Deleting item.");
+                    delete location[l]->loot[l2];
+                    location[l]->loot.erase(location[l]->loot.begin() + l2);
+                }
             }
 
             fread(&dummy, sizeof(int), 1, h);
@@ -441,9 +557,15 @@ char load(void) {
         pool.resize(dummy);
 
         for(int pl = 0; pl < pool.size(); pl++) {
-            pool[pl] = new Creature;
-            fread(pool[pl], sizeof(Creature), 1, h);
+            size_t creatureLen;
+            fread (&creatureLen, sizeof(creatureLen), 1, h);
+            vector<char> vec = vector<char> (creatureLen + 1);
+            fread (&vec[0], creatureLen, 1, h);
+            vec[creatureLen] = '\0';
+            pool[pl] = new Creature(&vec[0]);
 
+            //pool[pl]=new Creature;
+            //fread(pool[pl],sizeof(Creature),1,h);
             //read extra interrogation data if applicable
             if(pool[pl]->align == -1 && pool[pl]->alive) {
                 pool[pl]->activity.arg = reinterpret_cast<long>(new interrogation);
@@ -463,6 +585,63 @@ char load(void) {
                     reinterpret_cast<interrogation *>(pool[pl]->activity.arg)->rapport[id] = value;
                 }
             }
+
+            /*
+            //read equipment
+            vector<Item*> dump; //Used to catch invalid pointers from creature so they aren't deleted.
+            pool[pl]->drop_weapon(&dump);
+            pool[pl]->strip(&dump);
+            pool[pl]->clips = deque<Clip*>();
+            pool[pl]->extra_throwing_weapons = deque<Weapon*>();
+            size_t itemLen;
+            fread(&itemLen, sizeof(itemLen), 1, h);
+            if(itemLen != 0)
+            {
+               vector<char> vec = vector<char>(itemLen + 1);
+               fread(&vec[0], itemLen, 1, h);
+               vec[itemLen] = '\0';
+
+               Weapon w(&vec[0]);
+               if(getweapontype(w.get_itemtypename())!=-1) //Check it is a valid weapon type.
+                  pool[pl]->give_weapon(w,&dump);
+            }
+            //pool[pl]->clips.clear();
+            fread(&dummy,sizeof(int),1,h);
+            for(int nc=0; nc<dummy; nc++)
+            {
+               fread(&itemLen, sizeof(itemLen), 1, h);
+               vector<char> vec = vector<char>(itemLen + 1);
+               fread(&vec[0], itemLen, 1, h);
+               vec[itemLen] = '\0';
+
+               Clip c(&vec[0]);
+               if(getcliptype(c.get_itemtypename())!=-1) //Check it is a valid clip type.
+                  pool[pl]->take_clips(c,c.get_number());
+            }
+            //pool[pl]->extra_throwing_weapons.clear();
+            fread(&dummy,sizeof(int),1,h);
+            for(int ne=0; ne<dummy; ne++)
+            {
+               fread(&itemLen, sizeof(itemLen), 1, h);
+               vector<char> vec = vector<char>(itemLen + 1);
+               fread(&vec[0], itemLen, 1, h);
+               vec[itemLen] = '\0';
+
+               Weapon w(&vec[0]);
+               if(getweapontype(w.get_itemtypename())!=-1) //Check it is a valid weapon type.
+                  pool[pl]->give_weapon(w,NULL);
+            }
+            fread(&itemLen, sizeof(itemLen), 1, h);
+            if(itemLen != 0)
+            {
+               vector<char> vec = vector<char>(itemLen + 1);
+               fread(&vec[0], itemLen, 1, h);
+               vec[itemLen] = '\0';
+
+               Armor a(&vec[0]);
+               if(getarmortype(a.get_itemtypename())!=-1) //Check it is a valid armor type.
+                  pool[pl]->give_armor(a,&dump);
+            }*/
         }
 
         //Unique Creatures
@@ -500,8 +679,42 @@ char load(void) {
             squad[sq]->loot.resize(dummy);
 
             for(int l2 = 0; l2 < squad[sq]->loot.size(); l2++) {
-                squad[sq]->loot[l2] = new itemst;
-                fread(squad[sq]->loot[l2], sizeof(itemst), 1, h);
+                size_t itemLen;
+                fread(&itemLen, sizeof(itemLen), 1, h);
+                vector<char> vec = vector<char>(itemLen + 1);
+                fread(&vec[0], itemLen, 1, h);
+                vec[itemLen] = '\0';
+
+                Item *it = create_item(&vec[0]);
+                //if (it != NULL) //Assume save file is correct? -XML
+                squad[sq]->loot[l2] = it;
+                /*else
+                {
+                   squad[sq]->loot.erase(loot.begin()+l2);
+                   l2--;
+                }*/
+            }
+
+            //Remove items of unknown type.
+            for(int l2 = squad[sq]->loot.size() - 1; l2 >= 0; l2--) {
+                bool del = false;
+
+                if(squad[sq]->loot[l2]->is_loot())
+                    del = (getloottype(squad[sq]->loot[l2]->get_itemtypename()) == -1);
+                else if(squad[sq]->loot[l2]->is_clip())
+                    del = (getcliptype(squad[sq]->loot[l2]->get_itemtypename()) == -1);
+                else if(squad[sq]->loot[l2]->is_weapon())
+                    del = (getweapontype(squad[sq]->loot[l2]->get_itemtypename()) == -1);
+                else if(squad[sq]->loot[l2]->is_armor())
+                    del = (getarmortype(squad[sq]->loot[l2]->get_itemtypename()) == -1);
+
+                if (del) {
+                    addstr("Item type ");
+                    addstr(squad[sq]->loot[l2]->get_itemtypename().c_str());
+                    addstr(" does not exist. Deleting item.");
+                    delete squad[sq]->loot[l2];
+                    squad[sq]->loot.erase(squad[sq]->loot.begin() + l2);
+                }
             }
         }
 
@@ -598,9 +811,8 @@ char load(void) {
         // Check that vehicles are of existing types.
         for(int v = 0; v < vehicle.size(); ++v) {
             if(getvehicletype(vehicle[v]->vtypeidname()) == -1) {
-                //Remove vehicle of non-existing type. Maybe treat this some other way? -XML
+                //Remove vehicle of non-existing type.
                 addstr(("Vehicle type " + vehicle[v]->vtypeidname() + " does not exist. Deleting vehicle.").c_str());
-                removecarprefs_pool(vehicle[v]->id());
                 delete vehicle[v];
                 vehicle.erase(vehicle.begin() + v);
                 --v;

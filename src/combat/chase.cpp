@@ -230,7 +230,6 @@ char chasesequence(void) {
                     long v = id_getcar(activesquad->squad[p]->carid);
 
                     if(v != -1) {
-                        removecarprefs_pool(vehicle[v]->id());
                         delete vehicle[v];
                         vehicle.erase(vehicle.begin() + v);
                     }
@@ -280,7 +279,6 @@ char chasesequence(void) {
                 for(int v = 0; v < chaseseq.friendcar.size(); v++) {
                     for(int v2 = (int)vehicle.size() - 1; v2 >= 0; v2--) {
                         if(vehicle[v2] == chaseseq.friendcar[v]) {
-                            removecarprefs_pool(vehicle[v2]->id());
                             delete vehicle[v2];
                             vehicle.erase(vehicle.begin() + v2);
                         }
@@ -540,7 +538,6 @@ char footchase(void) {
                     long v = id_getcar(activesquad->squad[p]->carid);
 
                     if(v != -1) {
-                        removecarprefs_pool(vehicle[v]->id());
                         delete vehicle[v];
                         vehicle.erase(vehicle.begin() + v);
                     }
@@ -1164,7 +1161,7 @@ void makechasers(long sitetype, long sitecrime) {
     short encslot = 0;
     int n;
 
-    string cartype = ""; //Temporary (transitionally) solution. -XML
+    string cartype; //Temporary (transitionally) solution. -XML
     long pnum;
 
     chaseseq.canpullover = 0;
@@ -1471,15 +1468,12 @@ char dodgedrive(void) {
 
 
 void crashfriendlycar(int v) {
-    char str[80];
-    getcarfull(str, *chaseseq.friendcar[v]);
-
     //CRASH CAR
     clearmessagearea();
     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
     move(16, 1);
     addstr("Your ");
-    addstr(str);
+    addstr(chaseseq.friendcar[v]->fullname().c_str());
 
     switch(LCSrandom(3)) {
     case 0:
@@ -1651,10 +1645,9 @@ void crashfriendlycar(int v) {
                 case 0:
                     addstr(" grips the ");
 
-                    if(activesquad->squad[p]->weapon.type != WEAPON_NONE) {
-                        getweapon(str, activesquad->squad[p]->weapon.type);
-                        addstr(str);
-                    } else
+                    if(activesquad->squad[p]->is_armed())
+                        addstr(activesquad->squad[p]->get_weapon().get_shortname().c_str());
+                    else
                         addstr("car frame");
 
                     addstr(" and struggles to ");
@@ -1679,7 +1672,7 @@ void crashfriendlycar(int v) {
 
                 case 2:
                     addstr(" crawls free of the car, gasping in pain.");
-                    activesquad->squad[p]->weapon.type = WEAPON_NONE;
+                    activesquad->squad[p]->drop_weapon(NULL);
                     break;
                 }
 
@@ -1710,7 +1703,6 @@ void crashfriendlycar(int v) {
     for(int v2 = 0; v2 < chaseseq.friendcar.size(); v2++) {
         for(int v3 = (int)vehicle.size() - 1; v3 >= 0; v3--) {
             if(vehicle[v3] == chaseseq.friendcar[v2]) {
-                removecarprefs_pool(vehicle[v3]->id());
                 delete vehicle[v3];
                 vehicle.erase(vehicle.begin() + v3);
             }
@@ -1730,8 +1722,7 @@ void crashfriendlycar(int v) {
 
 
 void crashenemycar(int v) {
-    char str[80];
-    getcarfull(str, *chaseseq.enemycar[v]);
+    string str = chaseseq.enemycar[v]->fullname();
 
     int victimsum = 0;
 
@@ -1753,7 +1744,7 @@ void crashenemycar(int v) {
     set_color(COLOR_CYAN, COLOR_BLACK, 1);
     move(16, 1);
     addstr("The ");
-    addstr(str);
+    addstr(str.c_str());
 
     switch(LCSrandom(3)) {
     case 0:
@@ -1793,7 +1784,6 @@ void chase_giveup(void) {
     for(int v = 0; v < chaseseq.friendcar.size(); v++) {
         for(int v2 = (int)vehicle.size() - 1; v2 >= 0; v2--) {
             if(vehicle[v2] == chaseseq.friendcar[v]) {
-                removecarprefs_pool(vehicle[v2]->id());
                 delete vehicle[v2];
                 vehicle.erase(vehicle.begin() + v2);
             }
@@ -1810,8 +1800,7 @@ void chase_giveup(void) {
         activesquad->squad[p]->squadid = -1;
         activesquad->squad[p]->carid = -1;
         activesquad->squad[p]->location = ps;
-        activesquad->squad[p]->weapon.type = WEAPON_NONE;
-        activesquad->squad[p]->weapon.ammo = 0;
+        activesquad->squad[p]->drop_weapons_and_clips(NULL);
         activesquad->squad[p]->activity.type = ACTIVITY_NONE;
 
         if(activesquad->squad[p]->prisoner != NULL) {

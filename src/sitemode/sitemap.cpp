@@ -1403,49 +1403,49 @@ void configSiteUnique::build() {
 configSiteLoot::configSiteLoot(const std::string &value)
     : weight(0) {
     if(value == "FINECLOTH")
-        loot = LOOT_FINECLOTH;
+        loot = "LOOT_FINECLOTH";
     else if(value == "CHEMICAL")
-        loot = LOOT_CHEMICAL;
+        loot = "LOOT_CHEMICAL";
     else if(value == "PDA")
-        loot = LOOT_PDA;
+        loot = "LOOT_PDA";
     else if(value == "LABEQUIPMENT")
-        loot = LOOT_LABEQUIPMENT;
+        loot = "LOOT_LABEQUIPMENT";
     else if(value == "LAPTOP")
-        loot = LOOT_COMPUTER;
+        loot = "LOOT_COMPUTER";
     else if(value == "CHEAPJEWELERY")
-        loot = LOOT_CHEAPJEWELERY;
+        loot = "LOOT_CHEAPJEWELERY";
     else if(value == "SECRETDOCUMENTS")
-        loot = LOOT_SECRETDOCUMENTS;
+        loot = "LOOT_SECRETDOCUMENTS";
     else if(value == "CEOPHOTOS")
-        loot = LOOT_CEOPHOTOS;
+        loot = "LOOT_CEOPHOTOS";
     else if(value == "INTHQDISK")
-        loot = LOOT_INTHQDISK;
+        loot = "LOOT_INTHQDISK";
     else if(value == "CORPFILES")
-        loot = LOOT_CORPFILES;
+        loot = "LOOT_CORPFILES";
     else if(value == "JUDGEFILES")
-        loot = LOOT_JUDGEFILES;
+        loot = "LOOT_JUDGEFILES";
     else if(value == "RESEARCHFILES")
-        loot = LOOT_RESEARCHFILES;
+        loot = "LOOT_RESEARCHFILES";
     else if(value == "PRISONFILES")
-        loot = LOOT_PRISONFILES;
+        loot = "LOOT_PRISONFILES";
     else if(value == "CABLENEWSFILES")
-        loot = LOOT_CABLENEWSFILES;
+        loot = "LOOT_CABLENEWSFILES";
     else if(value == "AMRADIOFILES")
-        loot = LOOT_AMRADIOFILES;
+        loot = "LOOT_AMRADIOFILES";
     else if(value == "POLICERECORDS")
-        loot = LOOT_POLICERECORDS;
+        loot = "LOOT_POLICERECORDS";
     else if(value == "FINEJEWELERY")
-        loot = LOOT_EXPENSIVEJEWELERY;
+        loot = "LOOT_EXPENSIVEJEWELERY";
     else if(value == "CELLPHONE")
-        loot = LOOT_CELLPHONE;
+        loot = "LOOT_CELLPHONE";
     else if(value == "MICROPHONE")
-        loot = LOOT_MICROPHONE;
+        loot = "LOOT_MICROPHONE";
     else if(value == "WATCH")
-        loot = LOOT_WATCH;
+        loot = "LOOT_WATCH";
     else if(value == "SILVERWARE")
-        loot = LOOT_SILVERWARE;
+        loot = "LOOT_SILVERWARE";
     else if(value == "TRINKET")
-        loot = LOOT_TRINKET;
+        loot = "LOOT_TRINKET";
 }
 
 void configSiteLoot::configure(const std::string &command, const std::string &value) {

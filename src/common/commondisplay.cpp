@@ -377,7 +377,15 @@ void printparty(void) {
                 itoa(skill, num, 10);
                 addstr(num);
                 addstr("/");
-                int wsk = weaponskill(party[p]->weapon.type);
+                int wsk = SKILL_HANDTOHAND;
+
+                if(party[p]->get_weapon().has_musical_attack())
+                    wsk = SKILL_MUSIC;
+                else if (party[p]->has_thrown_weapon && !party[p]->extra_throwing_weapons.empty())
+                    wsk = party[p]->extra_throwing_weapons[0]->get_attack(false, false, false)->skill;
+                else
+                    wsk = party[p]->get_weapon().get_attack(false, false, false)->skill;
+
                 itoa(party[p]->get_skill(wsk), num, 10);
                 addstr(num);
 
@@ -386,7 +394,7 @@ void printparty(void) {
                 if(mode != GAMEMODE_SITE)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 else
-                    switch(weaponcheck(*party[p], sitetype)) {
+                    switch(weaponcheck(*party[p])) {
                     case -1:
                     case 0:
                         set_color(COLOR_GREEN, COLOR_BLACK, 1);
@@ -401,28 +409,40 @@ void printparty(void) {
                         break;
                     }
 
-                getweapon(str, party[p]->weapon.type);
-                addstr(str);
+                if(party[p]->has_thrown_weapon && !party[p]->extra_throwing_weapons.empty())
+                    addstr(party[p]->extra_throwing_weapons[0]->get_shortname(0).c_str());
+                else
+                    addstr(party[p]->get_weapon().get_shortname(0).c_str());
 
                 //set_color(COLOR_WHITE,COLOR_BLACK,0);
-                if(party[p]->weapon.ammo > 0) {
+                if(party[p]->get_weapon().get_ammoamount() > 0) {
                     //set_color(COLOR_WHITE,COLOR_BLACK,0);
                     char num[20];
-                    itoa(party[p]->weapon.ammo, num, 10);
+                    itoa(party[p]->get_weapon().get_ammoamount(), num, 10);
                     addstr(" (");
                     addstr(num);
                     addstr(")");
-                } else if(ammotype(party[p]->weapon.type) != -1) {
+                } else if(party[p]->get_weapon().uses_ammo()) {
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
-                    if(party[p]->clip[ammotype(party[p]->weapon.type)] > 0) {
+                    if(!party[p]->clips.empty()) {
                         char num[20];
-                        itoa(party[p]->clip[ammotype(party[p]->weapon.type)], num, 10);
+                        itoa(party[p]->count_clips(), num, 10);
                         addstr(" (");
                         addstr(num);
                         addstr(")");
                     } else
                         addstr(" (XX)");
+                } else if(party[p]->get_weapon().is_throwable() && !party[p]->has_thrown_weapon)
+                    addstr(" (1)");
+                else if(party[p]->has_thrown_weapon && !party[p]->extra_throwing_weapons.empty()) {
+                    set_color(COLOR_BLACK, COLOR_BLACK, 1);
+                    int no_weapons = party[p]->count_weapons() - party[p]->is_armed();
+                    char num[20];
+                    itoa(no_weapons, num, 10);
+                    addstr(" (");
+                    addstr(num);
+                    addstr(")");
                 }
 
                 if(mode != GAMEMODE_SITE)
@@ -444,8 +464,7 @@ void printparty(void) {
                 }
 
                 move(p + 2, 46);
-                getarmor(str, party[p]->armor.type, party[p]->armor.subtype);
-                addstr(str);
+                addstr(party[p]->get_armor().get_shortname().c_str());
 
                 printhealthstat(*party[p], p + 2, 61, TRUE);
 
@@ -809,7 +828,7 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
     if(mode != GAMEMODE_SITE)
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
     else
-        switch(weaponcheck(*cr, sitetype)) {
+        switch(weaponcheck(*cr)) {
         case -1:
         case 0:
             set_color(COLOR_GREEN, COLOR_BLACK, 1);
@@ -825,20 +844,8 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
         }
 
     addstr("Weapon: ");
-    getweaponfull(str, cr->weapon.type, 0);
-    addstr(str);
+    addstr(cr->get_weapon_string(1).c_str());
 
-    if(ammotype(cr->weapon.type) != -1) {
-        char num[20];
-        itoa(cr->weapon.ammo, num, 10);
-        addstr(" (");
-        addstr(num);
-        int at = ammotype(cr->weapon.type);
-        itoa(cr->clip[at], num, 10);
-        addstr("/");
-        addstr(num);
-        addstr(")");
-    }
 
     if(mode != GAMEMODE_SITE)
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -860,8 +867,7 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     move(7, 0);
     addstr("Clothes: ");
-    getarmorfull(str, cr->armor, 0);
-    addstr(str);
+    addstr(cr->get_armor_string(false).c_str());
 
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
@@ -1478,26 +1484,13 @@ void printliberalstats(Creature &cr) {
     // Add weapon
     move(13, 0);
     addstr("Weapon: ");
-    getweaponfull(str, cr.weapon.type, 0);
-    addstr(str);
-
-    if(ammotype(cr.weapon.type) != -1) {
-        char num[20];
-        itoa(cr.weapon.ammo, num, 10);
-        addstr(" (");
-        addstr(num);
-        int at = ammotype(cr.weapon.type);
-        itoa(cr.clip[at], num, 10);
-        addstr("/");
-        addstr(num);
-        addstr(")");
-    }
+    addstr(cr.get_weapon_string(0).c_str());
 
     // Add clothing
     move(14, 0);
     addstr("Clothes: ");
-    getarmorfull(str, cr.armor, 1);
-    addstr(str);
+    addstr(cr.get_armor_string(true).c_str());
+
 
     // Add vehicle
     move(15, 0);

@@ -264,6 +264,11 @@ void makecharacter(void) {
     firstname(first[1], GENDER_FEMALE);
     lastname(last);
 
+    {
+        Armor a(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        newcr->give_armor(a, NULL);
+    }
+
     bool choices = true;
 
     while(1) {
@@ -1116,15 +1121,16 @@ void makecharacter(void) {
 
         case 8:
             if(c == 'a') {
-                newcr->armor.type = ARMOR_SECURITYUNIFORM;
-                newcr->armor.quality = '1';
-                newcr->armor.flag = 0;
+                Armor newa(*armortype[getarmortype("ARMOR_SECURITYUNIFORM")]);
+                newcr->give_armor(newa, NULL);
+
             }
 
             if(c == 'b') {
-                newcr->weapon.type = WEAPON_AUTORIFLE_AK47;
-                newcr->weapon.ammo = 30;
-                newcr->clip[CLIP_ASSAULT] = 9;
+                Weapon neww(*weapontype[getweapontype("WEAPON_AUTORIFLE_AK47")]);
+                Clip newc(*cliptype[getcliptype("CLIP_ASSAULT")], 9);
+                newcr->give_weapon(neww, NULL);
+                newcr->take_clips(newc, 9);
             }
 
             if(c == 'c')
@@ -1652,12 +1658,14 @@ void makecharacter(void) {
                     Creature *recruit = new Creature;
                     makecreature(*recruit, CREATURE_GANGMEMBER);
 
-                    if(recruit->weapon.type == WEAPON_AUTORIFLE_AK47 ||
-                            recruit->weapon.type == WEAPON_SMG_MP5 ||
-                            recruit->weapon.type == WEAPON_NONE) {
-                        recruit->weapon.type = WEAPON_SEMIPISTOL_9MM;
-                        recruit->weapon.ammo = 15;
-                        recruit->clip[CLIP_9] = 3;
+                    if(recruit->get_weapon().get_itemtypename() == "WEAPON_AUTORIFLE_AK47" ||
+                            recruit->get_weapon().get_itemtypename() == "WEAPON_SMG_MP5" ||
+                            !recruit->is_armed()) {
+                        Weapon w(*weapontype[getweapontype("WEAPON_SEMIPISTOL_9MM")]);
+                        recruit->give_weapon(w, NULL);
+                        Clip c(*cliptype[getcliptype("CLIP_9")], 4);
+                        recruit->take_clips(c, 4);
+                        recruit->reload(false);
                     }
 
                     recruit->align = ALIGN_LIBERAL;
@@ -1685,12 +1693,8 @@ void makecharacter(void) {
 
 
             #ifdef GIVEBLOODYARMOR
-            itemst *newi = new itemst;
-            newi->type = ITEM_ARMOR;
-            newi->armor.flag = 1;
-            newi->armor.quality = '1';
-            newi->armor.type = ARMOR_CLOTHES;
-            newi->number = 1;
+            Armor *newa = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+            newa->set_bloody(true);
             location[l]->loot.push_back(newi);
             #endif
             break;

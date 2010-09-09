@@ -16,18 +16,24 @@
 /* Weapon assignment macros */
 #define GIVE_WEAPON_CIVILIAN                                   \
     if(law[LAW_GUNCONTROL]==-1 && !LCSrandom(30)) {       \
-        cr.weapon.type=WEAPON_REVOLVER_38;                 \
-        cr.weapon.ammo=6;                                  \
-        cr.clip[CLIP_38]=3;                                \
+        Weapon w=Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_38")]); \
+        cr.give_weapon(w,NULL);                            \
+        Clip c=Clip(*cliptype[getcliptype("CLIP_38")],4);  \
+        cr.take_clips(c,4);                                \
+        cr.reload(false);                                  \
     } else if(law[LAW_GUNCONTROL]==-2) {                  \
         if(!LCSrandom(10)) {                               \
-            cr.weapon.type=WEAPON_SEMIPISTOL_9MM;           \
-            cr.weapon.ammo=15;                              \
-            cr.clip[CLIP_9]=3;                              \
+            Weapon w=Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_9MM")]); \
+            cr.give_weapon(w,NULL);                         \
+            Clip c=Clip(*cliptype[getcliptype("CLIP_9")],4);\
+            cr.take_clips(c,4);                             \
+            cr.reload(false);                               \
         } else if(!LCSrandom(9)) {                         \
-            cr.weapon.type=WEAPON_SEMIPISTOL_45;            \
-            cr.weapon.ammo=15;                              \
-            cr.clip[CLIP_45]=3;                             \
+            Weapon w=Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_45")]); \
+            cr.give_weapon(w,NULL);                         \
+            Clip c=Clip(*cliptype[getcliptype("CLIP_45")],4); \
+            cr.take_clips(c,4);                             \
+            cr.reload(false);                               \
         }                                                  \
     }
 
@@ -49,7 +55,11 @@
     }
 
 /* rolls up a creature's stats and equipment */
-void makecreature(Creature &cr, short type) {
+void makecreature(Creature &cr, short type) { //Lots of temporary solution in this function. -XML
+    Weapon *weapon = NULL;
+    Armor *armor = NULL;
+    Clip *clips = NULL;
+
     int a = 0;
     cr.creatureinit();
 
@@ -58,7 +68,10 @@ void makecreature(Creature &cr, short type) {
     cr.type = type;
     cr.infiltration = 0;
     getrecruitcreature(cr.name, type);
-    cr.armor.type = ARMOR_CLOTHES;
+    {
+        Armor a = Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(a, NULL);
+    }
     cr.money = LCSrandom(21) + 20;
     {
         int mood = publicmood(-1);
@@ -86,7 +99,6 @@ void makecreature(Creature &cr, short type) {
     switch(type) {
     case CREATURE_BOUNCER:
         GIVE_GENDER_MALE;
-        cr.weapon.type = WEAPON_NONE;
 
         if(mode == GAMEMODE_SITE && location[cursite]->highsecurity) {
             strcpy(cr.name, "Enforcer");
@@ -94,21 +106,30 @@ void makecreature(Creature &cr, short type) {
         }
 
         if(law[LAW_GUNCONTROL] == -2) {
-            cr.weapon.type = WEAPON_SMG_MP5;
-            cr.weapon.ammo = 15;
-            cr.clip[CLIP_SMG] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_SMG")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(law[LAW_GUNCONTROL] == -1) {
-            cr.weapon.type = WEAPON_REVOLVER_44;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_44] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_44")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_44")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(law[LAW_GUNCONTROL] == 0) {
-            cr.weapon.type = WEAPON_REVOLVER_38;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_38] = 3;
-        } else
-            cr.weapon.type = WEAPON_NIGHTSTICK;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_38")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_38")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
+        } else {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_NIGHTSTICK")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_CHEAPSUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CHEAPSUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.set_skill(SKILL_HANDTOHAND, LCSrandom(3) + 1);
 
         if(disguisesite(sitetype)) {
@@ -128,17 +149,24 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
 
         if(law[LAW_GUNCONTROL] == -2) {
-            cr.weapon.type = WEAPON_SMG_MP5;
-            cr.weapon.ammo = 15;
-            cr.clip[CLIP_SMG] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_SMG")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(law[LAW_GUNCONTROL] != 2) {
-            cr.weapon.type = WEAPON_REVOLVER_38;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_38] = 3;
-        } else
-            cr.weapon.type = WEAPON_NIGHTSTICK;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_38")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_38")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
+        } else {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_NIGHTSTICK")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_SECURITYUNIFORM;
+        armor = new Armor(*armortype[getarmortype("ARMOR_SECURITYUNIFORM")]);
+        cr.give_armor(*armor, NULL);
         cr.set_skill(SKILL_PISTOL, LCSrandom(3) + 1);
         cr.align = -1;
         cr.infiltration = 0.1f * LCSrandom(3);
@@ -152,10 +180,13 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
 
-        if(cr.weapon.type == WEAPON_NONE && !LCSrandom(2))
-            cr.weapon.type = WEAPON_SYRINGE;
+        if(!cr.is_armed() && !LCSrandom(2)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SYRINGE")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_LABCOAT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_LABCOAT")]);
+        cr.give_armor(*armor, NULL);
         cr.align = -1;
         cr.infiltration = 0.1f * LCSrandom(4);
         cr.age = AGE_MATURE;
@@ -170,13 +201,18 @@ void makecreature(Creature &cr, short type) {
         strcpy(cr.name, "Hangin' Judge");
 
         if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-            cr.weapon.type = WEAPON_REVOLVER_44;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_44] = 3;
-        } else if(!LCSrandom(2))
-            cr.weapon.type = WEAPON_GAVEL;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_44")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_44")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
+        } else if(!LCSrandom(2)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_GAVEL")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_BLACKROBE;
+        armor = new Armor(*armortype[getarmortype("ARMOR_BLACKROBE")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(41) + 20;
         cr.align = -1;
         cr.infiltration = 0.5f + 0.1f * LCSrandom(4);
@@ -194,10 +230,13 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_JUDGE_LIBERAL:
         strcpy(cr.name, "Liberal Judge");
 
-        if(!LCSrandom(2))
-            cr.weapon.type = WEAPON_GAVEL;
+        if(!LCSrandom(2)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_GAVEL")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_BLACKROBE;
+        armor = new Armor(*armortype[getarmortype("ARMOR_BLACKROBE")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(41) + 20;
         cr.align = 1;
         cr.age = AGE_MIDDLEAGED;
@@ -213,10 +252,13 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
 
-        if(cr.weapon.type == WEAPON_NONE && !LCSrandom(2))
-            cr.weapon.type = WEAPON_SYRINGE;
+        if(!cr.is_armed() && !LCSrandom(2)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SYRINGE")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_LABCOAT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_LABCOAT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(41) + 20;
         cr.align = -1;
         cr.infiltration = 0.5f + 0.1f * LCSrandom(4);
@@ -232,7 +274,8 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_CORPORATE_MANAGER:
         GIVE_WEAPON_CIVILIAN;
-        cr.armor.type = ARMOR_CHEAPSUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CHEAPSUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(41) + 40;
         cr.align = -1;
         cr.infiltration = 0.1f * LCSrandom(6);
@@ -250,12 +293,15 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
 
         if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-            cr.weapon.type = WEAPON_REVOLVER_44;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_44] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_44")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_44")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         }
 
-        cr.armor.type = ARMOR_EXPENSIVESUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_EXPENSIVESUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(121) + 120;
         cr.align = -1;
         cr.infiltration = 1.0f;
@@ -283,7 +329,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_WORKER_SERVANT:
         cr.money = 0;
         cr.align = 1;
-        cr.armor.type = ARMOR_SERVANTUNIFORM;
+        armor = new Armor(*armortype[getarmortype("ARMOR_SERVANTUNIFORM")]);
+        cr.give_armor(*armor, NULL);
         cr.age = AGE_MATURE;
         break;
 
@@ -293,7 +340,7 @@ void makecreature(Creature &cr, short type) {
         break;
 
     case CREATURE_WORKER_SWEATSHOP:
-        cr.armor.type = ARMOR_NONE;
+        cr.strip(NULL);
         cr.align = 1;
         cr.age = AGE_MATURE;
         cr.juice = -20;
@@ -305,8 +352,10 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Nonunion Worker");
-        cr.weapon.type = WEAPON_CHAIN;
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_CHAIN")]);
+        cr.give_weapon(*weapon, NULL);
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
 
         if(cr.align == 1)
             cr.align = LCSrandom(2) - 1;
@@ -343,13 +392,16 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_LAWYER:
         if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-            cr.weapon.type = WEAPON_REVOLVER_38;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_38] = 0;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_38")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_38")], 1);
+            cr.take_clips(c, 1);
+            cr.reload(false);
         }
 
         strcpy(cr.name, "Lawyer");
-        cr.armor.type = ARMOR_CHEAPSUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CHEAPSUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(51) + 50;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_GRADUATE;
@@ -365,13 +417,16 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
 
         if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-            cr.weapon.type = WEAPON_REVOLVER_38;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_38] = 0;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_38")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_38")], 1);
+            cr.take_clips(c, 1);
+            cr.reload(false);
         }
 
         strcpy(cr.name, "Doctor");
-        cr.armor.type = ARMOR_LABCOAT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_LABCOAT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(21) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_GRADUATE;
@@ -385,17 +440,22 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
 
         if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-            cr.weapon.type = WEAPON_REVOLVER_38;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_38] = 0;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_38")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_38")], 1);
+            cr.take_clips(c, 1);
+            cr.reload(false);
         }
 
         strcpy(cr.name, "Psychologist");
 
-        if(cr.gender_liberal == GENDER_MALE || LCSrandom(2))
-            cr.armor.type = ARMOR_CHEAPSUIT;
-        else
-            cr.armor.type = ARMOR_CHEAPDRESS;
+        if(cr.gender_liberal == GENDER_MALE || LCSrandom(2)) {
+            Armor a = Armor(*armortype[getarmortype("ARMOR_CHEAPSUIT")]);
+            cr.give_armor(a, NULL);
+        } else {
+            Armor a = Armor(*armortype[getarmortype("ARMOR_CHEAPDRESS")]);
+            cr.give_armor(a, NULL);
+        }
 
         cr.money = LCSrandom(21) + 20;
         //cr.align=LCSrandom(3)-1;
@@ -411,13 +471,16 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_FEMALE;
 
         if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-            cr.weapon.type = WEAPON_REVOLVER_38;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_38] = 0;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_38")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_38")], 1);
+            cr.take_clips(c, 1);
+            cr.reload(false);
         }
 
         strcpy(cr.name, "Nurse");
-        cr.armor.type = ARMOR_LABCOAT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_LABCOAT")]);
+        cr.give_armor(*armor, NULL);
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_GRADUATE;
 
@@ -428,8 +491,10 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Union Worker");
-        cr.weapon.type = WEAPON_CHAIN;
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_CHAIN")]);
+        cr.give_weapon(*weapon, NULL);
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.align = 1;
         cr.age = AGE_MATURE;
 
@@ -439,7 +504,7 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_TANK:
         strcpy(cr.name, "Tank");
         cr.animalgloss = ANIMALGLOSS_TANK;
-        cr.armor.type = ARMOR_NONE;
+        cr.strip(NULL);
         cr.specialattack = ATTACK_CANNON;
         cr.align = -1;
         cr.set_skill(SKILL_HANDTOHAND, 20);
@@ -451,16 +516,21 @@ void makecreature(Creature &cr, short type) {
         strcpy(cr.name, "Mercenary");
 
         if(law[LAW_GUNCONTROL] == -2) {
-            cr.weapon.type = WEAPON_AUTORIFLE_M16;
-            cr.weapon.ammo = 30;
-            cr.clip[CLIP_ASSAULT] = 6;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_M16")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+            cr.take_clips(c, 7);
+            cr.reload(false);
         } else {
-            cr.weapon.type = WEAPON_SEMIRIFLE_AR15;
-            cr.clip[CLIP_ASSAULT] = 6;
-            cr.weapon.ammo = 30;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SEMIRIFLE_AR15")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+            cr.take_clips(c, 7);
+            cr.reload(false);
         }
 
-        cr.armor.type = ARMOR_CIVILLIANARMOR;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CIVILLIANARMOR")]);
+        cr.give_armor(*armor, NULL);
         cr.money = 0;
         cr.align = -1;
         cr.infiltration = 0.1f * LCSrandom(4);
@@ -499,18 +569,26 @@ void makecreature(Creature &cr, short type) {
         }
 
         if((law[LAW_GUNCONTROL] == -2 && !LCSrandom(2)) || !LCSrandom(10)) {
-            cr.weapon.type = WEAPON_SHOTGUN_PUMP;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_BUCKSHOT] = 3;
-        } else if(!LCSrandom(2))
-            cr.weapon.type = WEAPON_TORCH;
-        else
-            cr.weapon.type = WEAPON_PITCHFORK;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SHOTGUN_PUMP")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_BUCKSHOT")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
+        } else if(!LCSrandom(2)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_TORCH")]);
+            cr.give_weapon(w, NULL);
+        } else {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_PITCHFORK")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        if(!LCSrandom(2))
-            cr.armor.type = ARMOR_OVERALLS;
-        else
-            cr.armor.type = ARMOR_WIFEBEATER;
+        if(!LCSrandom(2)) {
+            Armor a = Armor(*armortype[getarmortype("ARMOR_OVERALLS")]);
+            cr.give_armor(a, NULL);
+        } else {
+            Armor a = Armor(*armortype[getarmortype("ARMOR_WIFEBEATER")]);
+            cr.give_armor(a, NULL);
+        }
 
         cr.gender_conservative = cr.gender_liberal = GENDER_MALE;
         cr.money = LCSrandom(6) + 6;
@@ -521,10 +599,13 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_SOLDIER:
         GIVE_GENDER_MALE;
         strcpy(cr.name, "Soldier");
-        cr.weapon.type = WEAPON_AUTORIFLE_M16;
-        cr.clip[CLIP_ASSAULT] = 6;
-        cr.weapon.ammo = 30;
-        cr.armor.type = ARMOR_ARMYARMOR;
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_M16")]);
+        cr.give_weapon(*weapon, NULL);
+        clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+        cr.take_clips(*clips, 7);
+        cr.reload(false);
+        armor = new Armor(*armortype[getarmortype("ARMOR_ARMYARMOR")]);
+        cr.give_armor(*armor, NULL);
         cr.money = 0;
         cr.align = -1;
         cr.infiltration = 0.1f * LCSrandom(4);
@@ -565,10 +646,13 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_HARDENED_VETERAN:
         GIVE_GENDER_MALE;
         strcpy(cr.name, "Hardened Veteran");
-        cr.weapon.type = WEAPON_AUTORIFLE_M16;
-        cr.clip[CLIP_ASSAULT] = 6;
-        cr.weapon.ammo = 30;
-        cr.armor.type = ARMOR_ARMYARMOR;
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_M16")]);
+        cr.give_weapon(*weapon, NULL);
+        clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+        cr.take_clips(*clips, 7);
+        cr.reload(false);
+        armor = new Armor(*armortype[getarmortype("ARMOR_ARMYARMOR")]);
+        cr.give_armor(*armor, NULL);
         cr.money = 0;
         cr.align = -1;
         cr.infiltration = 0.1f * LCSrandom(4);
@@ -592,8 +676,8 @@ void makecreature(Creature &cr, short type) {
             GIVE_GENDER_MALE;
             cr.align = ALIGN_MODERATE;
             strcpy(cr.name, "Police Negotiator");
-            cr.weapon.type = WEAPON_NONE;
-            cr.armor.type = ARMOR_POLICEARMOR;
+            Armor a = Armor(*armortype[getarmortype("ARMOR_POLICEARMOR")]);
+            cr.give_armor(a, NULL);
             cr.money = LCSrandom(21) + 20;
             cr.juice = 10 + LCSrandom(50);
             cr.age = AGE_MATURE;
@@ -611,21 +695,30 @@ void makecreature(Creature &cr, short type) {
             GIVE_GENDER_MALE;
 
             if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-                cr.weapon.type = WEAPON_SMG_MP5;
-                cr.weapon.ammo = 15;
-                cr.clip[CLIP_SMG] = 3;
+                Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+                cr.give_weapon(w, NULL);
+                Clip c = Clip(*cliptype[getcliptype("CLIP_SMG")], 4);
+                cr.take_clips(c, 4);
+                cr.reload(false);
             } else if(!LCSrandom(3)) {
-                cr.weapon.type = WEAPON_SEMIPISTOL_9MM;
-                cr.clip[CLIP_9] = 3;
-                cr.weapon.ammo = 15;
+                Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_9MM")]);
+                cr.give_weapon(w, NULL);
+                Clip c = Clip(*cliptype[getcliptype("CLIP_9")], 6);
+                cr.take_clips(c, 6);
+                cr.reload(false);
             } else if(!LCSrandom(2)) {
-                cr.weapon.type = WEAPON_SHOTGUN_PUMP;
-                cr.clip[CLIP_BUCKSHOT] = 3;
-                cr.weapon.ammo = 6;
-            } else
-                cr.weapon.type = WEAPON_NIGHTSTICK;
+                Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SHOTGUN_PUMP")]);
+                cr.give_weapon(w, NULL);
+                Clip c = Clip(*cliptype[getcliptype("CLIP_BUCKSHOT")], 4);
+                cr.take_clips(c, 4);
+                cr.reload(false);
+            } else {
+                Weapon w = Weapon(*weapontype[getweapontype("WEAPON_NIGHTSTICK")]);
+                cr.give_weapon(w, NULL);
+            }
 
-            cr.armor.type = ARMOR_POLICEARMOR;
+            armor = new Armor(*armortype[getarmortype("ARMOR_POLICEARMOR")]);
+            cr.give_armor(*armor, NULL);
             cr.money = LCSrandom(21) + 20;
             cr.align = -1;
             cr.infiltration = 0.3f + 0.1f * LCSrandom(4);
@@ -651,20 +744,27 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
 
         if(LCSrandom(3)) {
-            cr.weapon.type = WEAPON_SMG_MP5;
-            cr.clip[CLIP_SMG] = 3;
-            cr.weapon.ammo = 15;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_SMG")], 6);
+            cr.take_clips(c, 6);
+            cr.reload(false);
         } else if(!LCSrandom(2)) {
-            cr.weapon.type = WEAPON_SHOTGUN_PUMP;
-            cr.clip[CLIP_BUCKSHOT] = 3;
-            cr.weapon.ammo = 6;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SHOTGUN_PUMP")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_BUCKSHOT")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else {
-            cr.weapon.type = WEAPON_CARBINE_M4;
-            cr.clip[CLIP_ASSAULT] = 3;
-            cr.weapon.ammo = 30;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_CARBINE_M4")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         }
 
-        cr.armor.type = ARMOR_SWATARMOR;
+        armor = new Armor(*armortype[getarmortype("ARMOR_SWATARMOR")]);
+        cr.give_armor(*armor, NULL);
         cr.align = -1;
         cr.infiltration = 0.3f + 0.1f * LCSrandom(4);
         cr.juice = 40 + LCSrandom(50);
@@ -685,10 +785,13 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_DEATHSQUAD:
         GIVE_GENDER_MALE;
-        cr.weapon.type = WEAPON_AUTORIFLE_M16;
-        cr.clip[CLIP_ASSAULT] = 6;
-        cr.weapon.ammo = 30;
-        cr.armor.type = ARMOR_DEATHSQUADUNIFORM;
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_M16")]);
+        cr.give_weapon(*weapon, NULL);
+        clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+        cr.take_clips(*clips, 7);
+        cr.reload(false);
+        armor = new Armor(*armortype[getarmortype("ARMOR_DEATHSQUADUNIFORM")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(21) + 20;
         cr.align = -1;
         cr.infiltration = 0.5f + 0.1f * LCSrandom(4);
@@ -712,34 +815,41 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
 
         if(law[LAW_FREESPEECH] == -2) {
-            cr.weapon.type = WEAPON_FLAMETHROWER;
-            cr.weapon.ammo = 2;
-            cr.clip[CLIP_GASOLINE] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_FLAMETHROWER")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_GASOLINE")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
             cr.set_skill(SKILL_FLAMETHROWER, LCSrandom(3) + 2);
             strcpy(cr.name, "Fireman");
             cr.align = -1;
         } else {
-            cr.weapon.type = WEAPON_AXE;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_AXE")]);
+            cr.give_weapon(w, NULL);
             cr.set_skill(SKILL_AXE, LCSrandom(3) + 2);
             strcpy(cr.name, "Firefighter");
         }
 
         if(sitealarm) {
             // Respond to emergencies in bunker gear
-            cr.armor.type = ARMOR_BUNKERGEAR;
+            Armor a = Armor(*armortype[getarmortype("ARMOR_BUNKERGEAR")]);
+            cr.give_armor(a, NULL);
         } else {
             // Other situations have various clothes
             switch(LCSrandom(3)) {
             case 0:
-                cr.armor.type = ARMOR_OVERALLS;
+                armor = new Armor(*armortype[getarmortype("ARMOR_OVERALLS")]);
+                cr.give_armor(*armor, NULL);
                 break;
 
             case 1:
-                cr.armor.type = ARMOR_WORKCLOTHES;
+                armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+                cr.give_armor(*armor, NULL);
                 break;
 
             case 2:
-                cr.armor.type = ARMOR_BUNKERGEAR;
+                armor = new Armor(*armortype[getarmortype("ARMOR_BUNKERGEAR")]);
+                cr.give_armor(*armor, NULL);
             }
         }
 
@@ -753,10 +863,12 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_CCS_MOLOTOV: {
         GIVE_GENDER_MALE;
-        cr.armor.type = ARMOR_TRENCHCOAT;
-        cr.weapon.type = WEAPON_MOLOTOV;
-        cr.weapon.ammo = 1;
-        cr.clip[CLIP_MOLOTOV] = 4;
+        armor = new Armor(*armortype[getarmortype("ARMOR_TRENCHCOAT")]);
+        cr.give_armor(*armor, NULL);
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_MOLOTOV")], 5);
+
+        while (!weapon->empty())
+            cr.give_weapon(*weapon, NULL);
 
         cr.money = LCSrandom(21) + 20;
         cr.align = -1;
@@ -789,10 +901,13 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_CCS_SNIPER: {
         GIVE_GENDER_MALE;
-        cr.armor.type = ARMOR_TRENCHCOAT;
-        cr.weapon.type = WEAPON_SEMIRIFLE_AR15;
-        cr.clip[CLIP_ASSAULT] = 6;
-        cr.weapon.ammo = 30;
+        armor = new Armor(*armortype[getarmortype("ARMOR_TRENCHCOAT")]);
+        cr.give_armor(*armor, NULL);
+        Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SEMIRIFLE_AR15")]);
+        cr.give_weapon(w, NULL);
+        Clip c = Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+        cr.take_clips(c, 7);
+        cr.reload(false);
 
         cr.money = LCSrandom(21) + 20;
         cr.align = -1;
@@ -825,7 +940,8 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_CCS_VIGILANTE: {
         GIVE_GENDER_MALE;
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
 
         switch(LCSrandom(5) + endgamestate) {
         case 0:
@@ -833,42 +949,57 @@ void makecreature(Creature &cr, short type) {
             break;
 
         case 2:
-            cr.weapon.type = WEAPON_SEMIPISTOL_9MM;
-            cr.clip[CLIP_9] = 6;
-            cr.weapon.ammo = 15;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_9MM")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_9")], 7);
+            cr.take_clips(*clips, 7);
+            cr.reload(false);
             break;
 
         case 3:
-            cr.weapon.type = WEAPON_REVOLVER_44;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_44] = 6;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_44")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_44")], 7);
+            cr.take_clips(*clips, 7);
+            cr.reload(false);
             break;
 
         case 4:
-            cr.weapon.type = WEAPON_SHOTGUN_PUMP;
-            cr.clip[CLIP_BUCKSHOT] = 6;
-            cr.weapon.ammo = 6;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_SHOTGUN_PUMP")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_BUCKSHOT")], 7);
+            cr.take_clips(*clips, 7);
+            cr.reload(false);
             break;
 
         case 5:
-            cr.weapon.type = WEAPON_SEMIRIFLE_AR15;
-            cr.clip[CLIP_ASSAULT] = 6;
-            cr.weapon.ammo = 30;
-            cr.armor.type = ARMOR_CIVILLIANARMOR;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_SEMIRIFLE_AR15")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+            cr.take_clips(*clips, 7);
+            cr.reload(false);
+            armor = new Armor(*armortype[getarmortype("ARMOR_CIVILLIANARMOR")]);
+            cr.give_armor(*armor, NULL);
             break;
 
         case 6:
-            cr.weapon.type = WEAPON_SEMIRIFLE_AR15;
-            cr.clip[CLIP_ASSAULT] = 6;
-            cr.weapon.ammo = 30;
-            cr.armor.type = ARMOR_ARMYARMOR;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_SEMIRIFLE_AR15")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+            cr.take_clips(*clips, 7);
+            cr.reload(false);
+            armor = new Armor(*armortype[getarmortype("ARMOR_ARMYARMOR")]);
+            cr.give_armor(*armor, NULL);
             break;
 
         case 7:
-            cr.weapon.type = WEAPON_AUTORIFLE_M16;
-            cr.clip[CLIP_ASSAULT] = 6;
-            cr.weapon.ammo = 30;
-            cr.armor.type = ARMOR_ARMYARMOR;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_M16")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 7);
+            cr.take_clips(*clips, 7);
+            cr.reload(false);
+            armor = new Armor(*armortype[getarmortype("ARMOR_ARMYARMOR")]);
+            cr.give_armor(*armor, NULL);
             break;
         }
 
@@ -905,10 +1036,13 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_CCS_ARCHCONSERVATIVE:
         GIVE_GENDER_MALE;
-        cr.weapon.type = WEAPON_AUTORIFLE_M16;
-        cr.clip[CLIP_ASSAULT] = 9;
-        cr.weapon.ammo = 30;
-        cr.armor.type = ARMOR_HEAVYARMOR;
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_M16")]);
+        cr.give_weapon(*weapon, NULL);
+        clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 9);
+        cr.take_clips(*clips, 9);
+        cr.reload(false);
+        armor = new Armor(*armortype[getarmortype("ARMOR_HEAVYARMOR")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(51) + 150;
         cr.align = -1;
         cr.infiltration = 0.9f + 0.01f * LCSrandom(11);
@@ -943,20 +1077,27 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
 
         if(!LCSrandom(3)) {
-            cr.weapon.type = WEAPON_SMG_MP5;
-            cr.clip[CLIP_SMG] = 3;
-            cr.weapon.ammo = 15;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_SMG")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(LCSrandom(2)) {
-            cr.weapon.type = WEAPON_SHOTGUN_PUMP;
-            cr.clip[CLIP_BUCKSHOT] = 3;
-            cr.weapon.ammo = 6;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SHOTGUN_PUMP")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_BUCKSHOT")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else {
-            cr.weapon.type = WEAPON_SEMIPISTOL_9MM;
-            cr.clip[CLIP_9] = 3;
-            cr.weapon.ammo = 15;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_9MM")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_9")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         }
 
-        cr.armor.type = ARMOR_POLICEARMOR;
+        armor = new Armor(*armortype[getarmortype("ARMOR_POLICEARMOR")]);
+        cr.give_armor(*armor, NULL);
         cr.align = -1;
         cr.infiltration = 0.3f + 0.1f * LCSrandom(4);
         cr.juice = 40 + LCSrandom(50);
@@ -980,17 +1121,24 @@ void makecreature(Creature &cr, short type) {
         strcpy(cr.name, "Prison Guard");
 
         if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-            cr.weapon.type = WEAPON_SMG_MP5;
-            cr.weapon.ammo = 15;
-            cr.clip[CLIP_SMG] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_SMG")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(!LCSrandom(3)) {
-            cr.weapon.type = WEAPON_SHOTGUN_PUMP;
-            cr.clip[CLIP_BUCKSHOT] = 3;
-            cr.weapon.ammo = 6;
-        } else
-            cr.weapon.type = WEAPON_NIGHTSTICK;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SHOTGUN_PUMP")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_BUCKSHOT")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
+        } else {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_NIGHTSTICK")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_PRISONGUARD;
+        armor = new Armor(*armortype[getarmortype("ARMOR_PRISONGUARD")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(21) + 20;
         cr.align = -1;
         cr.infiltration = 0.1f * LCSrandom(4);
@@ -1011,17 +1159,24 @@ void makecreature(Creature &cr, short type) {
         strcpy(cr.name, "Educator");
 
         if(law[LAW_GUNCONTROL] == -2 && !LCSrandom(3)) {
-            cr.weapon.type = WEAPON_SMG_MP5;
-            cr.weapon.ammo = 15;
-            cr.clip[CLIP_SMG] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_SMG")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(!LCSrandom(3)) {
-            cr.weapon.type = WEAPON_SEMIPISTOL_9MM;
-            cr.clip[CLIP_9] = 3;
-            cr.weapon.ammo = 15;
-        } else
-            cr.weapon.type = WEAPON_SYRINGE;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_9MM")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_9")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
+        } else {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SYRINGE")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_LABCOAT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_LABCOAT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(21) + 20;
         cr.align = -1;
         cr.infiltration = 0.1f * LCSrandom(4);
@@ -1046,49 +1201,64 @@ void makecreature(Creature &cr, short type) {
 
         switch(LCSrandom(7)) {
         case 0:
-            cr.weapon.type = WEAPON_REVOLVER_44;
-            cr.clip[CLIP_44] = 3;
-            cr.weapon.ammo = 6;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_44")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_44")], 4);
+            cr.take_clips(*clips, 4);
+            cr.reload(false);
             break;
 
         case 1:
-            cr.weapon.type = WEAPON_SEMIPISTOL_9MM;
-            cr.clip[CLIP_9] = 3;
-            cr.weapon.ammo = 15;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_9MM")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_9")], 4);
+            cr.take_clips(*clips, 4);
+            cr.reload(false);
             break;
 
         case 2:
-            cr.weapon.type = WEAPON_AUTORIFLE_M16;
-            cr.clip[CLIP_ASSAULT] = 3;
-            cr.weapon.ammo = 30;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_M16")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 4);
+            cr.take_clips(*clips, 4);
+            cr.reload(false);
             break;
 
         case 3:
-            cr.weapon.type = WEAPON_AUTORIFLE_AK47;
-            cr.clip[CLIP_ASSAULT] = 3;
-            cr.weapon.ammo = 30;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_AK47")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 4);
+            cr.take_clips(*clips, 4);
+            cr.reload(false);
             break;
 
         case 4:
-            cr.weapon.type = WEAPON_SHOTGUN_PUMP;
-            cr.clip[CLIP_BUCKSHOT] = 3;
-            cr.weapon.ammo = 6;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_SHOTGUN_PUMP")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_BUCKSHOT")], 4);
+            cr.take_clips(*clips, 4);
+            cr.reload(false);
             break;
 
         case 5:
-            cr.weapon.type = WEAPON_CARBINE_M4;
-            cr.clip[CLIP_ASSAULT] = 3;
-            cr.weapon.ammo = 30;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_CARBINE_M4")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 4);
+            cr.take_clips(*clips, 4);
+            cr.reload(false);
             break;
 
         case 6:
-            cr.weapon.type = WEAPON_SMG_MP5;
-            cr.clip[CLIP_SMG] = 3;
-            cr.weapon.ammo = 15;
+            weapon = new Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+            cr.give_weapon(*weapon, NULL);
+            clips = new Clip(*cliptype[getcliptype("CLIP_SMG")], 4);
+            cr.take_clips(*clips, 4);
+            cr.reload(false);
             break;
         }
 
-        cr.armor.type = ARMOR_BLACKSUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_BLACKSUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.align = -1;
         cr.infiltration = 0.5f * LCSrandom(4);
         cr.juice = 200 + LCSrandom(150);
@@ -1113,7 +1283,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_RADIOPERSONALITY:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Radio Personality");
-        cr.armor.type = ARMOR_EXPENSIVESUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_EXPENSIVESUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(51) + 50;
         cr.align = -1;
         cr.infiltration = 0.6f + 0.1f * LCSrandom(4);
@@ -1129,7 +1300,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_NEWSANCHOR:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "News Anchor");
-        cr.armor.type = ARMOR_EXPENSIVESUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_EXPENSIVESUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(51) + 50;
 
         cr.set_attribute(ATTRIBUTE_CHARISMA, 10);
@@ -1197,7 +1369,7 @@ void makecreature(Creature &cr, short type) {
         }
 
         cr.animalgloss = ANIMALGLOSS_ANIMAL;
-        cr.armor.type = ARMOR_NONE;
+        cr.strip(NULL);
         cr.align = -1;
 
         if(location[cursite]->type == SITE_CORPORATE_HOUSE)
@@ -1216,7 +1388,7 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_GUARDDOG:
         strcpy(cr.name, "Guard Dog");
         cr.animalgloss = ANIMALGLOSS_ANIMAL;
-        cr.armor.type = ARMOR_NONE;
+        cr.strip(NULL);
         cr.align = -1;
         attcap[ATTRIBUTE_INTELLIGENCE] = 1;
         attcap[ATTRIBUTE_HEART] = 6;
@@ -1232,10 +1404,13 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         strcpy(cr.name, "Prisoner");
 
-        if(!LCSrandom(2))
-            cr.weapon.type = WEAPON_SHANK;
+        if(!LCSrandom(2)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SHANK")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_PRISONER;
+        armor = new Armor(*armortype[getarmortype("ARMOR_PRISONER")]);
+        cr.give_armor(*armor, NULL);
         cr.money = 0;
         cr.juice = -5;
 
@@ -1298,7 +1473,8 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_JUROR:
         strcpy(cr.name, "Angry Juror");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = 0;
         cr.align = -1;
         cr.age = AGE_MATURE;
@@ -1306,8 +1482,10 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_WORKER_FACTORY_CHILD:
         strcpy(cr.name, "Child Worker");
-        cr.weapon.type = WEAPON_CHAIN;
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_CHAIN")]);
+        cr.give_weapon(*weapon, NULL);
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = 0;
         cr.align = 1;
         cr.age = AGE_CHILD;
@@ -1319,7 +1497,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Sewer Worker");
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1328,7 +1507,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_COLLEGESTUDENT:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "College Student");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = 18 + LCSrandom(6); // no macro
@@ -1343,7 +1523,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_MUSICIAN:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Musician");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(11);
         cr.age = AGE_MATURE;
         cr.set_skill(SKILL_MUSIC, LCSrandom(4) + 2);
@@ -1354,7 +1535,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_MATHEMATICIAN:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Mathematician");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1369,7 +1551,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_FEMALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Teacher");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.set_skill(SKILL_TEACHING, LCSrandom(4) + 3);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
@@ -1379,7 +1562,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_HSDROPOUT:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Highschool Dropout");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_TEENAGER;
@@ -1389,10 +1573,13 @@ void makecreature(Creature &cr, short type) {
         strcpy(cr.name, "Transient");
         GIVE_WEAPON_CIVILIAN;
 
-        if(cr.weapon.type == WEAPON_NONE && !LCSrandom(5))
-            cr.weapon.type = WEAPON_KNIFE;
+        if(!cr.is_armed() && !LCSrandom(5)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_KNIFE")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
 
         if(cr.align == -1)
@@ -1405,10 +1592,13 @@ void makecreature(Creature &cr, short type) {
         strcpy(cr.name, "Mutant");
         GIVE_WEAPON_CIVILIAN;
 
-        if(cr.weapon.type == WEAPON_NONE && !LCSrandom(5))
-            cr.weapon.type = WEAPON_KNIFE;
+        if(!cr.is_armed() && !LCSrandom(5)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_KNIFE")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         cr.align = 1;
 
@@ -1424,32 +1614,45 @@ void makecreature(Creature &cr, short type) {
         strcpy(cr.name, "Gang Member");
 
         if(!LCSrandom(20) || (law[LAW_GUNCONTROL] == -2 && !LCSrandom(5))) {
-            cr.weapon.type = WEAPON_AUTORIFLE_AK47;
-            cr.weapon.ammo = 30;
-            cr.clip[CLIP_ASSAULT] = 2;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_AUTORIFLE_AK47")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_ASSAULT")], 3);
+            cr.take_clips(c, 3);
+            cr.reload(false);
         } else if(!LCSrandom(16) || (law[LAW_GUNCONTROL] == -2 && !LCSrandom(5))) {
-            cr.weapon.type = WEAPON_SMG_MP5;
-            cr.weapon.ammo = 15;
-            cr.clip[CLIP_SMG] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SMG_MP5")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_SMG")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(!LCSrandom(15)) {
-            cr.weapon.type = WEAPON_SEMIPISTOL_45;
-            cr.weapon.ammo = 15;
-            cr.clip[CLIP_45] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_45")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_45")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(!LCSrandom(10)) {
-            cr.weapon.type = WEAPON_SHOTGUN_PUMP;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_BUCKSHOT] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SHOTGUN_PUMP")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_BUCKSHOT")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(!LCSrandom(4)) {
-            cr.weapon.type = WEAPON_SEMIPISTOL_9MM;
-            cr.weapon.ammo = 15;
-            cr.clip[CLIP_9] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_SEMIPISTOL_9MM")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_9")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         } else if(!LCSrandom(2)) {
-            cr.weapon.type = WEAPON_REVOLVER_38;
-            cr.weapon.ammo = 6;
-            cr.clip[CLIP_38] = 3;
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_REVOLVER_38")]);
+            cr.give_weapon(w, NULL);
+            Clip c = Clip(*cliptype[getcliptype("CLIP_38")], 4);
+            cr.take_clips(c, 4);
+            cr.reload(false);
         }
 
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         cr.juice = -5;
 
@@ -1484,10 +1687,13 @@ void makecreature(Creature &cr, short type) {
         strcpy(cr.name, "Crack Head");
         GIVE_WEAPON_CIVILIAN;
 
-        if(!LCSrandom(5))
-            cr.weapon.type = WEAPON_KNIFE;
+        if(!LCSrandom(5)) {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_KNIFE")]);
+            cr.give_weapon(w, NULL);
+        }
 
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         cr.juice = -20;
 
@@ -1504,7 +1710,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_PRIEST:
         GIVE_GENDER_MALE;
         strcpy(cr.name, "Priest");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1515,7 +1722,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Engineer");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1527,7 +1735,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_FASTFOODWORKER:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Fast Food Worker");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.set_skill(SKILL_COOKING, LCSrandom(3));
         cr.money = LCSrandom(31) + 20;
 
@@ -1542,7 +1751,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_TELEMARKETER:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Telemarketer");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_YOUNGADULT;
@@ -1553,7 +1763,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_OFFICEWORKER:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Office Worker");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.set_skill(SKILL_BUSINESS, LCSrandom(3));
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
@@ -1564,7 +1775,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Football Coach");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.set_skill(SKILL_TEACHING, LCSrandom(3) + 1);
         cr.set_skill(SKILL_LEADERSHIP, LCSrandom(3) + 1);
         cr.money = LCSrandom(31) + 20;
@@ -1591,10 +1803,13 @@ void makecreature(Creature &cr, short type) {
 
         strcpy(cr.name, "Prostitute");
 
-        if(LCSrandom(2))
-            cr.armor.type = ARMOR_CHEAPDRESS;
-        else
-            cr.armor.type = ARMOR_CLOTHES;
+        if(LCSrandom(2)) {
+            Armor a = Armor(*armortype[getarmortype("ARMOR_CHEAPDRESS")]);
+            cr.give_armor(a, NULL);
+        } else {
+            Armor a = Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+            cr.give_armor(a, NULL);
+        }
 
         cr.money = LCSrandom(31) + 20;
         cr.juice = -5;
@@ -1615,7 +1830,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_MAILMAN:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Mail Carrier");
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1625,7 +1841,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Garbage Collector");
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1636,7 +1853,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Plumber");
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1647,7 +1865,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Chef");
         cr.set_skill(SKILL_COOKING, LCSrandom(5) + 3);
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1657,7 +1876,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Construction Worker");
-        cr.armor.type = ARMOR_WORKCLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1670,7 +1890,8 @@ void makecreature(Creature &cr, short type) {
     case CREATURE_AMATEURMAGICIAN:
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Amateur Magician");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1679,7 +1900,8 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_HIPPIE:
         strcpy(cr.name, "Hippie");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         cr.align = 1;
 
@@ -1701,7 +1923,8 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_AUTHOR:
         GIVE_WEAPON_CIVILIAN;
-        cr.armor.type = ARMOR_CHEAPSUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CHEAPSUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(131) + 100;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1712,7 +1935,8 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_JOURNALIST:
         GIVE_WEAPON_CIVILIAN;
-        cr.armor.type = ARMOR_CHEAPSUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CHEAPSUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(131) + 100;
         //cr.align=LCSrandom(3)-1;
         cr.juice = LCSrandom(25);
@@ -1724,7 +1948,8 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_CRITIC_ART:
         GIVE_WEAPON_CIVILIAN;
-        cr.armor.type = ARMOR_CHEAPSUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CHEAPSUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(131) + 100;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1736,7 +1961,8 @@ void makecreature(Creature &cr, short type) {
 
     case CREATURE_CRITIC_MUSIC:
         GIVE_WEAPON_CIVILIAN;
-        cr.armor.type = ARMOR_CHEAPSUIT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CHEAPSUIT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(131) + 100;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1750,10 +1976,13 @@ void makecreature(Creature &cr, short type) {
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Socialite");
 
-        if(LCSrandom(2))
-            cr.armor.type = ARMOR_EXPENSIVEDRESS;
-        else
-            cr.armor.type = ARMOR_EXPENSIVESUIT;
+        if(LCSrandom(2)) {
+            Armor a = Armor(*armortype[getarmortype("ARMOR_EXPENSIVEDRESS")]);
+            cr.give_armor(a, NULL);
+        } else {
+            Armor a = Armor(*armortype[getarmortype("ARMOR_EXPENSIVESUIT")]);
+            cr.give_armor(a, NULL);
+        }
 
         cr.money = LCSrandom(131) + 100;
         //cr.align=LCSrandom(3)-1;
@@ -1768,7 +1997,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Biker");
-        cr.armor.type = ARMOR_TRENCHCOAT;
+        armor = new Armor(*armortype[getarmortype("ARMOR_TRENCHCOAT")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         cr.align = -1;
         cr.age = AGE_MATURE;
@@ -1779,7 +2009,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Truck Driver");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1790,7 +2021,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Taxi Driver");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1801,7 +2033,8 @@ void makecreature(Creature &cr, short type) {
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Programmer");
-        cr.armor.type = ARMOR_CLOTHES;
+        armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
+        cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MATURE;
@@ -1959,6 +2192,10 @@ void makecreature(Creature &cr, short type) {
         cr.age = AGE_YOUNGADULT;
         break;
     }
+
+    delete weapon;
+    delete armor;
+    delete clips;
 
     if(cr.type == CREATURE_MUTANT)
         attnum = LCSrandom(60) + 7;

@@ -107,7 +107,7 @@ void special_bouncer_assess_squad() {
         for(int s = 0; s < 6; s++) {
             if(activesquad->squad[s]) {
                 // Wrong clothes? Gone
-                if(activesquad->squad[s]->armor.type == ARMOR_NONE && activesquad->squad[s]->animalgloss != ANIMALGLOSS_ANIMAL)
+                if(activesquad->squad[s]->is_naked() && activesquad->squad[s]->animalgloss != ANIMALGLOSS_ANIMAL)
                     if(rejected > REJECTED_NUDE)
                         rejected = REJECTED_NUDE;
 
@@ -116,20 +116,20 @@ void special_bouncer_assess_squad() {
                         rejected = REJECTED_DRESSCODE;
 
                 // Busted, cheap, bloody clothes? Gone
-                if(activesquad->squad[s]->armor.flag & ARMORFLAG_BLOODY)
+                if(activesquad->squad[s]->get_armor().is_bloody())
                     if(rejected > REJECTED_BLOODYCLOTHES)
                         rejected = REJECTED_BLOODYCLOTHES;
 
-                if(activesquad->squad[s]->armor.flag & ARMORFLAG_DAMAGED)
+                if(activesquad->squad[s]->get_armor().is_damaged())
                     if(rejected > REJECTED_DAMAGEDCLOTHES)
                         rejected = REJECTED_DAMAGEDCLOTHES;
 
-                if(activesquad->squad[s]->armor.quality != '1')
+                if(activesquad->squad[s]->get_armor().get_quality() != 1)
                     if(rejected > REJECTED_SECONDRATECLOTHES)
                         rejected = REJECTED_SECONDRATECLOTHES;
 
                 // Suspicious weapons? Gone
-                if(weaponcheck(*activesquad->squad[s], sitetype) > 0)
+                if(weaponcheck(*activesquad->squad[s]) > 0)
                     if(rejected > REJECTED_WEAPONS)
                         rejected = REJECTED_WEAPONS;
 
@@ -1197,9 +1197,7 @@ void special_intel_supercomputer(void) {
 
                 juiceparty(10);
 
-                itemst *it = new itemst;
-                it->type = ITEM_LOOT;
-                it->loottype = LOOT_INTHQDISK;
+                Item *it = new Loot(*loottype[getloottype("LOOT_INTHQDISK")]);
                 activesquad->loot.push_back(it);
 
                 refresh();
@@ -1397,7 +1395,7 @@ void special_house_photos(void) {
 
             if(unlock(UNLOCK_SAFE, actual)) {
                 bool empty = true;
-                itemst *it;
+                Item *it;
 
                 if(deagle == false) {
                     clearmessagearea();
@@ -1409,16 +1407,12 @@ void special_house_photos(void) {
                     refresh();
                     getch();
 
-                    itemst *it = new itemst;
-                    it->type = ITEM_WEAPON;
-                    it->weapon.type = WEAPON_DESERT_EAGLE;
-                    it->weapon.ammo = 7;
-                    activesquad->loot.push_back(it);
+                    Weapon *de = new Weapon(*weapontype[getweapontype("WEAPON_DESERT_EAGLE")]);
+                    Clip r(*cliptype[getcliptype("CLIP_50AE")]);
+                    de->reload(r);
+                    activesquad->loot.push_back(de);
 
-                    it = new itemst;
-                    it->type = ITEM_CLIP;
-                    it->cliptype = CLIP_50AE;
-                    it->number = 9;
+                    it = new Clip(*cliptype[getcliptype("CLIP_50AE")], 9);
                     activesquad->loot.push_back(it);
 
                     deagle = true;
@@ -1435,9 +1429,7 @@ void special_house_photos(void) {
                     refresh();
                     getch();
 
-                    it = new itemst;
-                    it->type = ITEM_MONEY;
-                    it->money = 1000 * (1 + LCSrandom(10));
+                    it = new Money(1000 * (1 + LCSrandom(10)));
                     activesquad->loot.push_back(it);
 
                     empty = false;
@@ -1455,10 +1447,7 @@ void special_house_photos(void) {
                     refresh();
                     getch();
 
-                    it = new itemst;
-                    it->type = ITEM_LOOT;
-                    it->loottype = LOOT_EXPENSIVEJEWELERY;
-                    it->number = 3;
+                    it = new Loot(*loottype[getloottype("LOOT_EXPENSIVEJEWELERY")], 3);
                     activesquad->loot.push_back(it);
 
                     empty = false;
@@ -1474,9 +1463,7 @@ void special_house_photos(void) {
                     refresh();
                     getch();
 
-                    it = new itemst;
-                    it->type = ITEM_LOOT;
-                    it->loottype = LOOT_CEOPHOTOS;
+                    it = new Loot(*loottype[getloottype("LOOT_CEOPHOTOS")]);
                     activesquad->loot.push_back(it);
 
                     empty = false;
@@ -1507,9 +1494,7 @@ void special_house_photos(void) {
                     refresh();
                     getch();
 
-                    it = new itemst;
-                    it->type = ITEM_LOOT;
-                    it->loottype = LOOT_CEOLOVELETTERS;
+                    it = new Loot(*loottype[getloottype("LOOT_CEOLOVELETTERS")]);
                     activesquad->loot.push_back(it);
 
                     empty = false;
@@ -1525,9 +1510,7 @@ void special_house_photos(void) {
                     refresh();
                     getch();
 
-                    it = new itemst;
-                    it->type = ITEM_LOOT;
-                    it->loottype = LOOT_CEOTAXPAPERS;
+                    it = new Loot(*loottype[getloottype("LOOT_CEOTAXPAPERS")]);
                     activesquad->loot.push_back(it);
 
                     empty = false;
@@ -1598,13 +1581,9 @@ void special_corporate_files(void) {
                 move(16, 1);
                 addstr("The Squad has found some very interesting files.");
 
-                itemst *it = new itemst;
-                it->type = ITEM_LOOT;
-                it->loottype = LOOT_CORPFILES;
+                Item *it = new Loot(*loottype[getloottype("LOOT_CORPFILES")]);
                 activesquad->loot.push_back(it);
-                it = new itemst;
-                it->type = ITEM_LOOT;
-                it->loottype = LOOT_CORPFILES;
+                it = new Loot(*loottype[getloottype("LOOT_CORPFILES")]);
                 activesquad->loot.push_back(it);
 
                 juiceparty(10);
