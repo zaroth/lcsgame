@@ -385,7 +385,7 @@ class Creature {
     Creature(const Creature &org);
     Creature &operator=(const Creature &rhs);
     ~Creature();
-    Creature(const char *inputXml);
+    explicit Creature(const char *inputXml);
     string showXml() const;
 
 
@@ -442,6 +442,8 @@ class UniqueCreatures {
   public:
     int CEO_state;
     UniqueCreatures() : CEO_ID(-1) {};
+    explicit UniqueCreatures(const char *inputXml);
+    string showXml() const;
 
     Creature &CEO();
 
