@@ -180,6 +180,9 @@ void Shop::browse_halfscreen(squadst &customers, int &buyer) const {
             }
         }
 
+        if (column == 2)
+            ++yline;
+
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(yline, 1);
         addstr("E - Look over Equipment");
@@ -223,6 +226,7 @@ void Shop::browse_halfscreen(squadst &customers, int &buyer) const {
         move(yline, 1);
         addstr("B - Choose a buyer");
 
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(yline, 40);
         addstr("Enter - ");
         addstr(exit_.c_str());
@@ -300,7 +304,7 @@ void Shop::browse_fullscreen(squadst &customers, int &buyer) const {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(22, 0);
-        addstr("Press a Letter to select an option"); //allow customize "option" -XML
+        addstr("Press a Letter to select an option"); //allow customize "option"? -XML
         move(23, 0);
         addpagestr();
         move(24, 0);
@@ -709,6 +713,7 @@ void Shop::choose_buyer(squadst &customers, int &buyer) const {
 }
 
 bool Shop::is_available() const {
+    //Disable shop (department) if it has nothing to sell.
     bool r = false;
 
     for (unsigned i = 0; i < options_.size() && !(r = options_[i]->display()); ++i);
@@ -717,9 +722,9 @@ bool Shop::is_available() const {
 }
 
 Shop::ShopItem::ShopItem(MCD_STR xmlstring, bool only_sell_legal,
-                         bool increase_prices_with_illegality)
+                         bool increase_price_with_illegality)
     : price_(0), only_sell_legal_(only_sell_legal),
-      increase_prices_with_illegality_(increase_prices_with_illegality),
+      increase_price_with_illegality_(increase_price_with_illegality),
       description_defined_(false) {
     CMarkup xml;
     xml.SetDoc(xmlstring);
@@ -729,7 +734,7 @@ Shop::ShopItem::ShopItem(MCD_STR xmlstring, bool only_sell_legal,
     while (xml.FindElem()) {
         std::string tag = xml.GetTagName();
 
-        if (tag == "class") { //Bad. -XML
+        if (tag == "class") {
             if (xml.GetData() == "WEAPON")
                 itemclass_ = WEAPON;
             else if (xml.GetData() == "CLIP")
@@ -876,7 +881,7 @@ bool Shop::ShopItem::valid_item() const {
 int Shop::ShopItem::adjusted_price() const {
     int p = price_;
 
-    if (increase_prices_with_illegality_ && itemclass_ == WEAPON && valid_item()) {
+    if (increase_price_with_illegality_ && itemclass_ == WEAPON && valid_item()) {
         for (int i = weapontype[getweapontype(itemtypename_)]->get_legality();
                 i < law[LAW_GUNCONTROL]; ++i)
             p *= 2;

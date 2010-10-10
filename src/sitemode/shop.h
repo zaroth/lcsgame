@@ -5,24 +5,22 @@
 
 
 class Shop;
-//class Shop::ShopItem;
 
 class ShopOption {
     friend class Shop;
-    //friend class Shop::ShopItem;
+
   public:
     ShopOption();
     virtual ~ShopOption() {}
 
-
-
-
   protected:
 
+    //Returns if the option should be displayed.
     virtual bool display() const {
         return true;
     }
 
+    //Returns if the option can be chosen.
     virtual bool is_available() const {
         return true;
     }
@@ -45,6 +43,8 @@ class Shop : public ShopOption {
   public:
     Shop(MCD_STR xmlstring);
     ~Shop();
+
+    //This function is used to start the shop interface.
     void enter(squadst &customers) const;
 
   protected:
@@ -68,14 +68,11 @@ class Shop : public ShopOption {
     std::vector<ShopOption *> options_;
     bool fullscreen_;
     std::string exit_;
-    //std::string selectiontype_;
-
-
 
     class ShopItem : public ShopOption {
       public:
         ShopItem(MCD_STR xmlstring, bool only_sell_legal,
-                 bool increase_prices_with_illegality);
+                 bool increase_price_with_illegality);
 
         virtual bool display() const;
 
@@ -90,7 +87,7 @@ class Shop : public ShopOption {
         bool legal() const;
         bool valid_item() const;
         std::string itemtypename_; //Have pointer to ItemType instead? -XML
-        enum itemclassenum {
+        enum itemclassenum { //Could be solved better without enum. -XML
             WEAPON,
             CLIP,
             ARMOR,
@@ -101,7 +98,7 @@ class Shop : public ShopOption {
         int price_;
         int adjusted_price() const;
         bool only_sell_legal_;
-        bool increase_prices_with_illegality_;
+        bool increase_price_with_illegality_;
         bool description_defined_;
         const std::string &get_description() const;
 
