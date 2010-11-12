@@ -291,8 +291,6 @@ void siegecheck(char canseethings) {
                             refresh();
                             getch();
 
-                            delete pool[p];
-
                             if(pool[p]->align == 1) {
                                 int boss = getpoolcreature(pool[p]->hireid);
 
@@ -306,6 +304,7 @@ void siegecheck(char canseethings) {
                                 }
                             }
 
+                            delete pool[p];
                             pool.erase(pool.begin() + p);
                             continue;
                         }
@@ -934,8 +933,6 @@ void siegeturn(char clearformess) {
                         refresh();
                         getch();
 
-                        delete pool[p];
-
                         if(pool[p]->align == 1) {
                             int boss = getpoolcreature(pool[p]->hireid);
 
@@ -949,6 +946,7 @@ void siegeturn(char clearformess) {
                             }
                         }
 
+                        delete pool[p];
                         pool.erase(pool.begin() + p);
                         continue;
                     }
@@ -1764,7 +1762,6 @@ void giveup(void) {
                 }
 
                 removesquadinfo(*pool[p]);
-                delete pool[p];
 
                 if(pool[p]->align == 1) {
                     int boss = getpoolcreature(pool[p]->hireid);
@@ -1779,6 +1776,7 @@ void giveup(void) {
                     }
                 }
 
+                delete pool[p];
                 pool.erase(pool.begin() + p);
                 continue;
             }
@@ -1847,9 +1845,10 @@ void giveup(void) {
         newsstory.push_back(ns);
 
         //MUST SET cursite TO SATISFY endcheck() CODE
+        int tmp = cursite;
         cursite = loc;
         endcheck();
-        cursite = -1;
+        cursite = tmp;
 
         location[loc]->siege.siege = 0;
     }
@@ -2020,6 +2019,7 @@ void escape_engage(void) { // FIXME: Wait... LCC? //Liberal Command Center. Prob
     // No squads at the location? Form a new one.
     if(activesquad == NULL) {
         squad.push_back(new squadst);
+        squad.back()->id = cursquadid++;
 
         if (location[selectedsiege]->front_business == -1)
             strcpy(squad.back()->name, location[selectedsiege]->shortname);
@@ -2030,7 +2030,8 @@ void escape_engage(void) { // FIXME: Wait... LCC? //Liberal Command Center. Prob
         int i = 0;
 
         for(int p = 0; p < pool.size(); p++) {
-            if(pool[p]->location == selectedsiege) {
+            if(pool[p]->location == selectedsiege &&
+                    pool[p]->alive && pool[p]->align == 1) {
                 squad.back()->squad[i] = pool[p];
                 pool[p]->squadid = squad.back()->id;
                 i++;
