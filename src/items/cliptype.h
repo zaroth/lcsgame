@@ -2,7 +2,6 @@
 #define CLIPTYPE_H
 
 #include "includes.h"
-//#include "externs.h"
 
 class ClipType : public ItemType {
   public:
