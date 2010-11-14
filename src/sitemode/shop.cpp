@@ -103,12 +103,10 @@ void Shop::browse_halfscreen(squadst &customers, int &buyer) const {
 
     std::vector<ShopOption *> available_options = options_;
 
-    for (std::vector<ShopOption *>::iterator it = available_options.begin();
-            it != available_options.end();
-            ++it) {
-        while (!(*it)->display())
-            it = available_options.erase(it);
-    }
+    available_options.erase (remove_if (available_options.begin(),
+                                        available_options.end(),
+                                        not1 (mem_fun (&ShopOption::display))),
+                             available_options.end());
 
     int partysize = 0;
 
@@ -268,14 +266,11 @@ void Shop::browse_halfscreen(squadst &customers, int &buyer) const {
 void Shop::browse_fullscreen(squadst &customers, int &buyer) const {
     unsigned page = 0;
 
-    std::vector<ShopOption *> available_options = options_;
+    available_options.erase (remove_if (available_options.begin(),
+                                        available_options.end(),
+                                        not1 (mem_fun (&ShopOption::display))),
+                             available_options.end());
 
-    for (std::vector<ShopOption *>::iterator it = available_options.begin();
-            it != available_options.end();
-            ++it) {
-        while (!(*it)->display())
-            it = available_options.erase(it);
-    }
 
     do {
         erase();
