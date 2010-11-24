@@ -1037,7 +1037,7 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
             ret >>= 1;
         else if(blood <= 75) {
             ret *= 3;
-            ret >>= 1;
+            ret >>= 2;
         }
     }
 
