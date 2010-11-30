@@ -1135,7 +1135,7 @@ void tendhostage(Creature *cr, char &clearformess) {
             if(!techniques[TECHNIQUE_RESTRAIN])
                 attack += 5;
 
-            attack += rapport[a->id] * 3;
+            attack += int(rapport[a->id] * 3);
 
             y += 1;
             move(y, 0);

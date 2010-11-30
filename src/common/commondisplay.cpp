@@ -1549,6 +1549,16 @@ void printliberalstats(Creature &cr) {
         addstr("Can't Recruit");
     }
 
+    // Any meetings with potential recruits scheduled?
+    int recruiting = scheduledmeetings(cr);
+
+    if(recruiting) {
+        move(18, 55);
+        itoa(recruiting, num, 10);
+        addstr("Scheduled Meetings: ");
+        addstr(num);
+    }
+
     // Add seduction stats
     move(19, 0);
     int lovers = loveslaves(cr);
@@ -1563,6 +1573,16 @@ void printliberalstats(Creature &cr) {
 
         if(lovers > 1)
             addstr("s");
+    }
+
+    // Any dates with potential love interests scheduled?
+    int wooing = scheduleddates(cr);
+
+    if(wooing) {
+        move(19, 55);
+        itoa(wooing, num, 10);
+        addstr("Scheduled Dates:    ");
+        addstr(num);
     }
 
     // Add wound status
