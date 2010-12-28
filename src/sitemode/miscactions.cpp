@@ -39,9 +39,9 @@ char unlock(short type, char &actual) {
         if(securityable(location[cursite]->type) == 1)
             difficulty = DIFFICULTY_CHALLENGING;
         else if(securityable(location[cursite]->type) > 1)
-            difficulty = DIFFICULTY_CHALLENGING;  //todo: make slightly harder than the above
+            difficulty = DIFFICULTY_HARD;
         else
-            difficulty = DIFFICULTY_AVERAGE;
+            difficulty = DIFFICULTY_EASY;
 
         break;
 
@@ -54,11 +54,11 @@ char unlock(short type, char &actual) {
         break;
 
     case UNLOCK_CELL:
-        difficulty = DIFFICULTY_HARD;
+        difficulty = DIFFICULTY_FORMIDABLE;
         break;
 
     case UNLOCK_SAFE:
-        difficulty = DIFFICULTY_FORMIDABLE;
+        difficulty = DIFFICULTY_HEROIC;
         break;
     }
 
@@ -90,10 +90,8 @@ char unlock(short type, char &actual) {
         //lock pick succeeded.
         if(activesquad->squad[p]->skill_check(SKILL_SECURITY, difficulty)) {
             //skill goes up in proportion to the chance of you failing.
-            //this used to always happen even if you failed - but that made it very fast to train by failing at
-            //impossibly difficult locks.
             if(maxattack <= difficulty)
-                activesquad->squad[p]->train(SKILL_SECURITY, 1 + (difficulty - maxattack) * 2);
+                activesquad->squad[p]->train(SKILL_SECURITY, 1 + (difficulty - maxattack));
 
             clearmessagearea(false);
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -140,19 +138,28 @@ char unlock(short type, char &actual) {
             actual = 1;
             return 1;
         } else {
+            clearmessagearea(false);
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            move(16, 1);
+
+            int i;
+
             //gain some experience for failing only if you could have succeeded.
-            for (int i = 0; i < 3; i++) {
+            for (i = 0; i < 3; i++) {
                 if(activesquad->squad[p]->skill_check(SKILL_SECURITY, difficulty)) {
-                    activesquad->squad[p]->train(SKILL_SECURITY, 1 + (difficulty - maxattack));
+                    activesquad->squad[p]->train(SKILL_SECURITY, 10);
+
+                    addstr(activesquad->squad[p]->name);
+                    addstr(" is close, but can't quite get the lock open.");
                     break;
                 }
             }
 
-            clearmessagearea(false);
-            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            move(16, 1);
-            addstr(activesquad->squad[p]->name);
-            addstr(" doesn't succeed.");
+            if (i == 3) {
+                addstr(activesquad->squad[p]->name);
+                addstr(" can't figure the lock out.");
+            }
+
             refresh();
             getch();
 
@@ -802,7 +809,7 @@ char radio_broadcast(void) {
     }
 
     //POST-SECURITY BLITZ IF IT SUCKED
-    if(segmentpower < 50) {
+    if(segmentpower < 90) {
         clearmessagearea();
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -1225,8 +1232,8 @@ char news_broadcast(void) {
         getch();
     }
 
-    //POST-SECURITY BLITZ IF IT SUCKED
-    if(segmentpower < 50) {
+    //POST - SECURITY BLITZ IF IT SUCKED
+    if(segmentpower < 85 && segmentpower >= 25) {
         clearmessagearea();
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -1256,7 +1263,7 @@ char news_broadcast(void) {
         move(16, 1);
         addstr("The show was so ");
 
-        if(segmentpower < 90)
+        if(segmentpower < 50)
             addstr("hilarious");
         else
             addstr("entertaining");

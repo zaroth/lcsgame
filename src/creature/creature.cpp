@@ -89,13 +89,13 @@ CreatureAttribute Skill::get_associated_attribute(int skill_type) {
 
     case SKILL_DISGUISE:
     case SKILL_SEDUCTION:
-    case SKILL_LEADERSHIP:
+    case SKILL_PERSUASION:
         return ATTRIBUTE_CHARISMA;
 
-    case SKILL_PERSUASION:
     case SKILL_ART:
     case SKILL_MUSIC:
     case SKILL_COOKING:
+    case SKILL_LEADERSHIP:
         return ATTRIBUTE_HEART;
 
     case SKILL_RELIGION:
@@ -1154,12 +1154,25 @@ int Creature::skill_roll(int skill) {
     int skill_value = skills[skill].value;
     // plus the skill's associate attribute
     int attribute_value = get_attribute(skills[skill].get_attribute(), true);
-    // most attributes get quartered when applied to skills, capped by relative skill level...
-    int adjusted_attribute_value = min(attribute_value / 2, (skill_value + 1) * 3);
 
-    // ...but some skills might support full attribute use
-    if(skill == SKILL_DISGUISE)
+    int adjusted_attribute_value;
+
+    switch(skill) {
+    // most attributes get halved when applied to skills, capped by relative skill level...
+    default:
+        adjusted_attribute_value = min(attribute_value / 2, skill_value + 3);
+        break;
+
+    // ...but some skills might support full attribute use...
+    case SKILL_DISGUISE:
         adjusted_attribute_value = attribute_value;
+        break;
+
+    // ...and some may be so specialized that they ignore attributes, instead counting skill double
+    case SKILL_SECURITY:
+        adjusted_attribute_value = skill_value;
+        break;
+    }
 
     // add the adjusted attribute and skill to get the adjusted skill total
     // that will be rolled on

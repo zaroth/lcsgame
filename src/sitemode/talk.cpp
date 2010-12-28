@@ -1015,15 +1015,15 @@ char talk(Creature &a, int t) {
                         break;
 
                     case LAW_WOMEN:
-                        addstr("\"Conservatives still hold the door for women!\"");
+                        addstr("\"We need more women!\"");
                         break;
 
                     case LAW_CIVILRIGHTS:
-                        addstr("\"Conservatives are all racist and stuff.\"");
+                        addstr("\"Conservatives are all racists!\"");
                         break;
 
                     case LAW_DRUGS:
-                        addstr("\"Drugs, man, the government won't let you do drugs.\"");
+                        addstr("\"Dude, the government won't let you do drugs.\"");
                         break;
 
                     case LAW_IMMIGRATION:
@@ -1230,17 +1230,17 @@ char talk(Creature &a, int t) {
                         break;
 
                     case LAW_CIVILRIGHTS:
-                        addstr("\"You might think we have all these civil rights laws on the books, but");
+                        addstr("\"Despite our progress, this society is still strangled by its continuing");
                         move(y, 1);
                         y++;
-                        addstr("we aren't enforcing them consistently.  We still have a long way to go.\"");
+                        addstr("legacy of racial discrimination and inequality.\"");
                         break;
 
                     case LAW_DRUGS:
                         addstr("\"The government's drug policy is a mess.  We need to stop filling");
                         move(y, 1);
                         y++;
-                        addstr("prisons with drug users, and focus on helping only those that need it.\"");
+                        addstr("prisons with drug users, and only intervene when people really need help.\"");
                         break;
 
                     case LAW_IMMIGRATION:
@@ -1276,22 +1276,22 @@ char talk(Creature &a, int t) {
                 refresh();
                 getch();
 
-                int difficulty = DIFFICULTY_AVERAGE;
+                int difficulty = DIFFICULTY_VERYEASY;
 
                 if(tk->align == ALIGN_CONSERVATIVE)
-                    difficulty += 3;
+                    difficulty += 7;
 
                 if(!(tk->talkreceptive()))
-                    difficulty += 3;
+                    difficulty += 7;
 
                 if(you_are_stupid)
-                    difficulty += 3;
+                    difficulty += 5;
 
                 if(issue_too_liberal)
-                    difficulty += 3;
+                    difficulty += 5;
 
                 if(a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL)
-                    difficulty += 3;
+                    difficulty += 5;
 
                 succeeded = a.skill_check(SKILL_PERSUASION, difficulty);
 
