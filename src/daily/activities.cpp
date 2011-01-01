@@ -1302,8 +1302,11 @@ void funds_and_trouble(char &clearformess) {
 
     ledger.add_funds(money, INCOME_DONATIONS);
 
-    for(s = 0; s < solicit.size(); s++)
-        solicit[s]->income = solicit[s]->income * money / originalmoney;
+    if(originalmoney != 0) {
+        for(s = 0; s < solicit.size(); s++) {
+            solicit[s]->income = solicit[s]->income * money / originalmoney; //Sum of solicit[s]->income may end up not equaling money. Fix?
+        }
+    }
 
     //TSHIRTS
     int mood = publicmood(-1);
