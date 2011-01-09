@@ -926,12 +926,12 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
             ret >>= 1;  // Strength is lowest at the beginning and end of life
         else if(age < 16)
             ret -= 1;
-        else if(age > 35)
-            ret -= 1;
-        else if(age > 52)
-            ret -= 3;
         else if(age > 70)
             ret -= 6;
+        else if(age > 52)
+            ret -= 3;
+        else if(age > 35)
+            ret -= 1;
 
         break;
 
@@ -946,12 +946,12 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
         else if(legok == 1)
             ret >>= 1;
 
-        if(age > 35)
-            ret -= 1;  // Agility is weakened with age
+        if(age > 70)
+            ret -= 6;  // Agility is weakened with age
         else if(age > 52)
             ret -= 3;
-        else if(age > 70)
-            ret -= 6;
+        else if(age > 35)
+            ret -= 1;
 
         break;
 
@@ -977,12 +977,12 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
             ret += 2;  // Lots of folks like kids
         else if(age < 16)
             ret -= 1;  // Teenagers have communication difficulties and image issues
-        else if(age > 35)
-            ret += 1;  // Authority and experience in life then enhance Charisma with age
+        else if(age > 70)
+            ret += 3;  // Authority and experience in life then enhance Charisma with age
         else if(age > 52)
             ret += 2;
-        else if(age > 70)
-            ret += 3;
+        else if(age > 35)
+            ret += 1;
 
         break;
 
@@ -991,12 +991,12 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
             ret -= 3;  // Experience enhances Intelligence with age
         else if(age < 16)
             ret -= 1;
-        else if(age > 35)
-            ret += 1;
-        else if(age > 52)
-            ret += 2;
         else if(age > 70)
             ret += 3;
+        else if(age > 52)
+            ret += 2;
+        else if(age > 35)
+            ret += 1;
 
         break;
 
@@ -1005,10 +1005,10 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
             ret -= 2;  // Experience grants Wisdom with age
         else if(age < 16)
             ret -= 1;
-        else if(age > 52)
-            ret += 1;
         else if(age > 70)
             ret += 2;
+        else if(age > 52)
+            ret += 1;
 
         break;
 
@@ -1017,10 +1017,10 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
             ret += 2;  // Experience saps Heart with age due to cynicism
         else if(age < 16)
             ret += 1;  // No wonder it's typically the young who are most Liberal...
-        else if(age > 52)
-            ret -= 1;
         else if(age > 70)
             ret -= 2;
+        else if(age > 52)
+            ret -= 1;
 
         break;
     }
