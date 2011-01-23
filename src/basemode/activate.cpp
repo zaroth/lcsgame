@@ -178,67 +178,73 @@ void listclasses(Creature *cr) {
     if (classlist == 0) {
         set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_DEBATING);
         move(12, 40);
-        addstr("1 - Debating");
+        addstr("1 - Public Policy");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_LEADERSHIP);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_BUSINESS);
         move(13, 40);
-        addstr("2 - Leadership");
+        addstr("2 - Economics");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_TAILORING);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_PSYCHOLOGY);
         move(14, 40);
-        addstr("3 - Tailoring");
+        addstr("3 - Psychology");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_MARTIAL_ARTS);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_LAW);
         move(15, 40);
-        addstr("4 - Kung fu");
+        addstr("4 - Criminal Law");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_DRIVING);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_SCIENCE);
         move(16, 40);
-        addstr("5 - Drivers ed.");
+        addstr("5 - Physics");
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(17, 40);
         addstr("6 - Other classes");
     } else if (classlist == 1) {
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_PSYCHOLOGY);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_DRIVING);
         move(12, 40);
-        addstr("1 - Psychology");
+        addstr("1 - Drivers Ed");
 
         set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_FIRST_AID);
         move(13, 40);
-        addstr("2 - First aid");
+        addstr("2 - First Aid");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_LAW);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_COOKING);
         move(14, 40);
-        addstr("3 - Law");
+        addstr("3 - Cooking");
 
         set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_DISGUISE);
         move(15, 40);
-        addstr("4 - Acting");
+        addstr("4 - Theatre");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_SCIENCE);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_MARTIAL_ARTS);
         move(16, 40);
-        addstr("5 - Nuclear physics");
+        addstr("5 - Kung Fu");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_TEACH_COVERT);
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(17, 40);
         addstr("6 - Other classes");
     } else if (classlist == 2) {
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_BUSINESS);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_GYMNASTICS);
         move(12, 40);
-        addstr("1 - Business & finance");
+        addstr("1 - Gymnastics");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_COOKING);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_WRITING);
         move(13, 40);
-        addstr("2 - Cooking");
+        addstr("2 - Writing");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_DODGEBALL);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_TEACHING);
         move(14, 40);
-        addstr("3 - Dodgeball");
+        addstr("3 - Education");
 
-//possible additions: music, seduction technique, teacher training, guns (if gun control is conservative), writing
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_MUSIC);
+        move(15, 40);
+        addstr("4 - Music");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_TEACH_COVERT);
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_ART);
+        move(16, 40);
+        addstr("5 - Painting");
+
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(17, 40);
         addstr("6 - Other classes");
     }
@@ -256,25 +262,25 @@ void updateclasschoice(Creature *cr, char choice) {
                 break;
 
             case '2':
-                cr->activity.type = ACTIVITY_STUDY_LEADERSHIP;
+                cr->activity.type = ACTIVITY_STUDY_BUSINESS;
                 break;
 
             case '3':
-                cr->activity.type = ACTIVITY_STUDY_TAILORING;
+                cr->activity.type = ACTIVITY_STUDY_PSYCHOLOGY;
                 break;
 
             case '4':
-                cr->activity.type = ACTIVITY_STUDY_MARTIAL_ARTS;
+                cr->activity.type = ACTIVITY_STUDY_LAW;
                 break;
 
             case '5':
-                cr->activity.type = ACTIVITY_STUDY_DRIVING;
+                cr->activity.type = ACTIVITY_STUDY_SCIENCE;
                 break;
             }
         } else if (classlist == 1) {
             switch(choice) {
             case '1':
-                cr->activity.type = ACTIVITY_STUDY_PSYCHOLOGY;
+                cr->activity.type = ACTIVITY_STUDY_DRIVING;
                 break;
 
             case '2':
@@ -282,7 +288,7 @@ void updateclasschoice(Creature *cr, char choice) {
                 break;
 
             case '3':
-                cr->activity.type = ACTIVITY_STUDY_LAW;
+                cr->activity.type = ACTIVITY_STUDY_COOKING;
                 break;
 
             case '4':
@@ -290,21 +296,29 @@ void updateclasschoice(Creature *cr, char choice) {
                 break;
 
             case '5':
-                cr->activity.type = ACTIVITY_STUDY_SCIENCE;
+                cr->activity.type = ACTIVITY_STUDY_MARTIAL_ARTS;
                 break;
             }
         } else if (classlist == 2) {
             switch(choice) {
             case '1':
-                cr->activity.type = ACTIVITY_STUDY_BUSINESS;
+                cr->activity.type = ACTIVITY_STUDY_GYMNASTICS;
                 break;
 
             case '2':
-                cr->activity.type = ACTIVITY_STUDY_COOKING;
+                cr->activity.type = ACTIVITY_STUDY_WRITING;
                 break;
 
             case '3':
-                cr->activity.type = ACTIVITY_STUDY_DODGEBALL;
+                cr->activity.type = ACTIVITY_STUDY_TEACHING;
+                break;
+
+            case '4':
+                cr->activity.type = ACTIVITY_STUDY_MUSIC;
+                break;
+
+            case '5':
+                cr->activity.type = ACTIVITY_STUDY_ART;
                 break;
             }
         }
@@ -757,8 +771,6 @@ void activate(Creature *cr) {
             break;
 
         case ACTIVITY_STUDY_DEBATING:
-        case ACTIVITY_STUDY_LEADERSHIP:
-        case ACTIVITY_STUDY_TAILORING:
         case ACTIVITY_STUDY_MARTIAL_ARTS:
         case ACTIVITY_STUDY_DRIVING:
         case ACTIVITY_STUDY_PSYCHOLOGY:
@@ -768,7 +780,11 @@ void activate(Creature *cr) {
         case ACTIVITY_STUDY_SCIENCE:
         case ACTIVITY_STUDY_BUSINESS:
         case ACTIVITY_STUDY_COOKING:
-        case ACTIVITY_STUDY_DODGEBALL:
+        case ACTIVITY_STUDY_GYMNASTICS:
+        case ACTIVITY_STUDY_WRITING:
+        case ACTIVITY_STUDY_ART:
+        case ACTIVITY_STUDY_MUSIC:
+        case ACTIVITY_STUDY_TEACHING:
             move(22, 3);
             addstr(cr->name);
             addstr(" will attend classes in the University District");

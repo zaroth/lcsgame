@@ -194,6 +194,10 @@ int Armor::get_professionalism() const {
     return armortype[getarmortype(itemtypename())]->get_professionalism();
 }
 
+int Armor::get_stealth_value() const {
+    return armortype[getarmortype(itemtypename())]->get_stealth_value();
+}
+
 int Armor::get_weaponsize_concealment() const {
     return armortype[getarmortype(itemtypename())]->get_weaponsize_concealment();
 }

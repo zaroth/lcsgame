@@ -40,12 +40,18 @@ void displaystoryheader(newsstoryst &ns, bool liberalguardian, int &y, int heade
 
     case NEWSSTORY_CCS_SITE:
     case NEWSSTORY_CCS_KILLED_SITE:
-        if(ns.positive)
-            displaycenterednewsfont("CCS STRIKES", 5);  //AGAIN?
-        else
-            displaycenterednewsfont("CCS RAMPAGE", 5);
+        if(newscherrybusted < 2) {
+            displaycenterednewsfont("CONSERVATIVE", 5);
+            displaycenterednewsfont("CRIME SQUAD", 13);
+        } else {
+            if(ns.positive)
+                displaycenterednewsfont("CCS STRIKES", 5);  //AGAIN?
+            else
+                displaycenterednewsfont("CCS RAMPAGE", 5);
 
-        y = 13;
+            y = 13;
+        }
+
         break;
 
     default:
@@ -53,9 +59,9 @@ void displaystoryheader(newsstoryst &ns, bool liberalguardian, int &y, int heade
             if(newscherrybusted || liberalguardian) {
 
                 if(!liberalguardian) {
-                    if(ns.priority > 150) {
-                        displaycenterednewsfont("LIBERAL CRIME", 5);
-                        displaycenterednewsfont("SQUAD STRIKES", 13);
+                    if(ns.priority > 250) {
+                        y = 13;
+                        displaycenterednewsfont("UNSTOPPABLE", 5);
                     } else {
                         y = 13;
                         displaycenterednewsfont("LCS STRIKES", 5);

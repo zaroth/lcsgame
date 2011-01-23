@@ -1201,7 +1201,7 @@ void funds_and_trouble(char &clearformess) {
         case ACTIVITY_COMMUNITYSERVICE:
             addjuice(*pool[p], 1, 0);
 
-            if(pool[p]->heat && !LCSrandom(10))
+            if(pool[p]->heat && !LCSrandom(3))
                 pool[p]->heat--;
 
             change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 1, 0, 80);
@@ -1242,8 +1242,6 @@ void funds_and_trouble(char &clearformess) {
             break;
 
         case ACTIVITY_STUDY_DEBATING:
-        case ACTIVITY_STUDY_LEADERSHIP:
-        case ACTIVITY_STUDY_TAILORING:
         case ACTIVITY_STUDY_MARTIAL_ARTS:
         case ACTIVITY_STUDY_DRIVING:
         case ACTIVITY_STUDY_PSYCHOLOGY:
@@ -1253,7 +1251,11 @@ void funds_and_trouble(char &clearformess) {
         case ACTIVITY_STUDY_SCIENCE:
         case ACTIVITY_STUDY_BUSINESS:
         case ACTIVITY_STUDY_COOKING:
-        case ACTIVITY_STUDY_DODGEBALL:
+        case ACTIVITY_STUDY_GYMNASTICS:
+        case ACTIVITY_STUDY_ART:
+        case ACTIVITY_STUDY_TEACHING:
+        case ACTIVITY_STUDY_MUSIC:
+        case ACTIVITY_STUDY_WRITING:
             students.push_back(pool[p]);
             break;
 
@@ -2048,20 +2050,6 @@ void funds_and_trouble(char &clearformess) {
         switch(students[s]->activity.type) {
         case ACTIVITY_STUDY_DEBATING:
             skill[0] = SKILL_PERSUASION;
-            effectiveness[0] = 16;
-            skill[1] = SKILL_SEDUCTION;
-            effectiveness[1] = 4;
-            break;
-
-        case ACTIVITY_STUDY_LEADERSHIP:
-            skill[0] = SKILL_LEADERSHIP;
-            effectiveness[0] = 12; //leadership goes up slower...
-            skill[1] = SKILL_SEDUCTION;
-            effectiveness[1] = 4;
-            break;
-
-        case ACTIVITY_STUDY_TAILORING:
-            skill[0] = SKILL_TAILORING;
             break;
 
         case ACTIVITY_STUDY_MARTIAL_ARTS:
@@ -2100,11 +2088,24 @@ void funds_and_trouble(char &clearformess) {
             skill[0] = SKILL_COOKING;
             break;
 
-        case ACTIVITY_STUDY_DODGEBALL:
+        case ACTIVITY_STUDY_GYMNASTICS:
             skill[0] = SKILL_DODGE;
-            skill[1] = SKILL_THROWING;
-            effectiveness[0] = 12;
-            effectiveness[1] = 12;
+            break;
+
+        case ACTIVITY_STUDY_MUSIC:
+            skill[0] = SKILL_MUSIC;
+            break;
+
+        case ACTIVITY_STUDY_ART:
+            skill[0] = SKILL_ART;
+            break;
+
+        case ACTIVITY_STUDY_TEACHING:
+            skill[0] = SKILL_TEACHING;
+            break;
+
+        case ACTIVITY_STUDY_WRITING:
+            skill[0] = SKILL_WRITING;
             break;
         }
 
@@ -2112,8 +2113,8 @@ void funds_and_trouble(char &clearformess) {
 
         for (int i = 0; i < 2; i++) {
             if (skill[i] != -1) {
-                //gradual decrease in effectiveness as your skill gets higher.
-                effectiveness[i] -= (students[s]->get_skill(skill[i]) * effectiveness[i]) / 15;
+                // rapid decrease in effectiveness as your skill gets higher.
+                effectiveness[i] /= (students[s]->get_skill(skill[i]) + 1);
 
                 if (effectiveness[i] < 1)
                     effectiveness[i] = 1;
@@ -2316,23 +2317,10 @@ void funds_and_trouble(char &clearformess) {
                     else
                         makedelimiter(8, 0);
 
-                    if(LCSrandom(2)) {
-                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        move(8, 1);
-                        addstr(trouble[t]->name);
-                        addstr(" has been arrested.");
-
-                        refresh();
-                        getch();
-
-                        removesquadinfo(*trouble[t]);
-                        trouble[t]->carid = -1;
-                        trouble[t]->location = ps;
-                        trouble[t]->drop_weapons_and_clips(NULL);
-                        trouble[t]->activity.type = ACTIVITY_NONE;
-                        criminalize(*trouble[t], crime);
-                    } else if(!trouble[t]->is_armed() &&
-                              trouble[t]->get_skill(SKILL_HANDTOHAND) == 0) {
+                    if(LCSrandom(2))
+                        attemptarrest(*trouble[t], "causing trouble", clearformess);
+                    else if(!trouble[t]->is_armed() &&
+                            trouble[t]->get_skill(SKILL_HANDTOHAND) == 0) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
                         addstr(trouble[t]->name);
@@ -3074,23 +3062,6 @@ char stealcar(Creature &cr, char &clearformess) {
 
             //HOTWIRE CAR
             if(method == 0) {
-                // This no longer works with the new skill check system
-                /*if(!LCSrandom(10))
-                {
-                   ignition_progress++;
-                   set_color(COLOR_CYAN,COLOR_BLACK,1);
-                   move(y,0);y++;
-                   addstr(cr.name);
-                   switch(LCSrandom(5))
-                   {
-                      case 0:addstr(" figures out some of the wiring in the console!");break;
-                      case 1:addstr(" makes some significant progress!");break;
-                      case 2:addstr(" remembers a key piece of information!");break;
-                      case 3:addstr(" remembers a wiring diagram that helps make sense of things!");break;
-                      case 4:addstr(" is closer to figuring out this ignition system!");break;
-                   }
-                }*/
-
                 if(cr.skill_check(SKILL_SECURITY, DIFFICULTY_CHALLENGING)) {
                     cr.train(SKILL_SECURITY, MAX(10 - cr.get_skill(SKILL_SECURITY), 0));
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -3144,31 +3115,37 @@ char stealcar(Creature &cr, char &clearformess) {
             //KEYS
             if(method == 1) {
                 int difficulty;
+                char *location;
 
-                switch(key_location) {
-                case 0:
-                    difficulty = DIFFICULTY_AUTOMATIC;
-                    break;
+                if(!keys_in_car) {
+                    difficulty = DIFFICULTY_IMPOSSIBLE;
+                    location   = "in SPACE. With ALIENS. Seriously.";
+                } else switch(key_location) {
+                    case 0:
+                        difficulty = DIFFICULTY_AUTOMATIC;
+                        location   = "in the ignition.  Damn.";
+                        break;
 
-                case 1:
-                    difficulty = DIFFICULTY_EASY;
-                    break;
+                    case 1:
+                        difficulty = DIFFICULTY_EASY;
+                        location   = "above the pull-down sunblock thingy!";
+                        break;
 
-                case 2:
-                    difficulty = DIFFICULTY_EASY;
-                    break;
+                    case 2:
+                        difficulty = DIFFICULTY_EASY;
+                        location   = "in the glove compartment!";
+                        break;
 
-                case 3:
-                    difficulty = DIFFICULTY_AVERAGE;
-                    break;
+                    case 3:
+                        difficulty = DIFFICULTY_AVERAGE;
+                        location   = "under the front seat!";
+                        break;
 
-                case 4:
-                    difficulty = DIFFICULTY_HARD;
-                    break;
-                }
-
-                if(!keys_in_car)
-                    difficulty = 99;
+                    case 4:
+                        difficulty = DIFFICULTY_HARD;
+                        location   = "under the back seat!";
+                        break;
+                    }
 
                 if(cr.attribute_check(ATTRIBUTE_INTELLIGENCE, difficulty)) {
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
@@ -3182,28 +3159,7 @@ char stealcar(Creature &cr, char &clearformess) {
 
                     addstr(cr.name);
                     addstr(" found the keys ");
-
-                    switch(key_location) {
-                    case 0:
-                        addstr("in the ignition.  Damn.");
-                        break;
-
-                    case 1:
-                        addstr("above the pull-down sunblock thingy!");
-                        break;
-
-                    case 2:
-                        addstr("in the glove compartment!");
-                        break;
-
-                    case 3:
-                        addstr("under the front seat!");
-                        break;
-
-                    case 4:
-                        addstr("under the back seat!");
-                        break;
-                    }
+                    addstr(location);
 
                     refresh();
                     getch();
