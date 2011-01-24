@@ -136,6 +136,10 @@ void printsitemap(int x, int y, int z) {
         strcpy(str, "Safe");
         break;
 
+    case SPECIAL_ARMYBASE_ARMORY:
+        strcpy(str, "Armory");
+        break;
+
     case SPECIAL_HOUSE_CEO:
         strcpy(str, "CEO's Study");
         break;
@@ -733,6 +737,10 @@ void printblock(int x, int y, int z, int px, int py) {
 
         case SPECIAL_HOUSE_PHOTOS:
             addstr("SAFE!");
+            break;
+
+        case SPECIAL_ARMYBASE_ARMORY:
+            addstr("ARMRY");
             break;
 
         case SPECIAL_HOUSE_CEO:

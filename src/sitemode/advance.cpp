@@ -139,6 +139,11 @@ void creatureadvance(void) {
                     postalarmtimer < 65 && sitealarm)
                 postalarmtimer = 65;
 
+            //Army Base -- They're drilled and ready to kick your ass
+            if(location[cursite]->type == SITE_GOVERNMENT_ARMYBASE &&
+                    postalarmtimer < 65 && sitealarm)
+                postalarmtimer = 65;
+
             //Courthouse -- Big police response, not far to come
             if(location[cursite]->type == SITE_GOVERNMENT_COURTHOUSE &&
                     postalarmtimer < 50 && sitealarm)

@@ -745,9 +745,9 @@ char talk(Creature &a, int t) {
                 if(encounter[e].exists && encounter[e].alive &&
                         encounter[e].enemy()) {
                     if(encounter[e].get_attribute(ATTRIBUTE_WISDOM, true) > 10)
-                        fooled = a.skill_check(SKILL_DISGUISE, DIFFICULTY_HARD);
-                    else
                         fooled = a.skill_check(SKILL_DISGUISE, DIFFICULTY_CHALLENGING);
+                    else
+                        fooled = a.skill_check(SKILL_DISGUISE, DIFFICULTY_AVERAGE);
 
                     if(fooled == false)
                         break;
@@ -2054,10 +2054,6 @@ char talk(Creature &a, int t) {
                     if(a.skill_check(SKILL_SEDUCTION, DIFFICULTY_HARD))
                         succeeded = true;
 
-                    if(!(tk->animalgloss == ANIMALGLOSS_ANIMAL && law[LAW_ANIMALRESEARCH] != 2) ||
-                            tk->animalgloss == ANIMALGLOSS_TANK)
-                        a.train(SKILL_SEDUCTION, LCSrandom(5) + 2);
-
                     if((tk->animalgloss == ANIMALGLOSS_ANIMAL && law[LAW_ANIMALRESEARCH] != 2) ||
                             tk->animalgloss == ANIMALGLOSS_TANK) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -2070,9 +2066,7 @@ char talk(Creature &a, int t) {
                             break;
 
                         case CREATURE_GUARDDOG:
-                            addstr(" sniffs ");
-                            addstr(a.name);
-                            addstr(".");
+                            addstr(" whines and backs away.");
                             break;
 
                         default:
@@ -2083,9 +2077,13 @@ char talk(Creature &a, int t) {
                         getch();
 
                         return 1;
-                    } else if((a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" //Police property on armor? -XML
-                               || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
-                              && tk->type == CREATURE_PROSTITUTE) {
+                    }
+
+                    a.train(SKILL_SEDUCTION, LCSrandom(5) + 2);
+
+                    if((a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" //Police property on armor? -XML
+                            || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
+                            && tk->type == CREATURE_PROSTITUTE) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(y, 1);
                         y++;

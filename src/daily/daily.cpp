@@ -1618,6 +1618,7 @@ char securityable(int type) {
     case SITE_GOVERNMENT_COURTHOUSE:
     case SITE_GOVERNMENT_PRISON:
     case SITE_GOVERNMENT_INTELLIGENCEHQ:
+    case SITE_GOVERNMENT_ARMYBASE:
     case SITE_CORPORATE_HOUSE:
         return 2;
     }
@@ -1742,6 +1743,13 @@ void initlocation(locationst &loc) {
             strcpy(loc.shortname, "Int. HQ");
         }
 
+        break;
+
+    case SITE_GOVERNMENT_ARMYBASE:
+        lastname(str);
+        strcpy(loc.name, str);
+        strcat(loc.name, " Army Base");
+        strcpy(loc.shortname, "Army Base");
         break;
 
     case SITE_CORPORATE_HEADQUARTERS:

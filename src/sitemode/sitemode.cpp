@@ -383,33 +383,37 @@ void mode_site(void) {
 
             if(postalarmtimer > 100) {
                 switch(location[cursite]->type) {
+                case SITE_GOVERNMENT_ARMYBASE:
+                    addstr(": SOLDIERS AND TANKS RESPONDING");
+                    break;
+
                 case SITE_GOVERNMENT_INTELLIGENCEHQ:
-                    addstr(": AGENTS");
+                    addstr(": AGENTS RESPONDING");
                     break;
 
                 case SITE_CORPORATE_HEADQUARTERS:
                 case SITE_CORPORATE_HOUSE:
-                    addstr(": MERCENARIES");
+                    addstr(": MERCENARIES RESPONDING");
                     break;
 
                 case SITE_MEDIA_AMRADIO:
                 case SITE_MEDIA_CABLENEWS:
-                    addstr(": ANGRY MOB");
+                    addstr(": ANGRY MOB RESPONDING");
                     break;
 
                 case SITE_BUSINESS_CRACKHOUSE:
-                    addstr(": GANG RESPONSE");
+                    addstr(": GANG MEMBERS RESPONDING");
                     break;
 
                 case SITE_GOVERNMENT_POLICESTATION:
                 default:
                     if(location[cursite]->renting == RENTING_CCS)
-                        addstr(": CCS VIGILANTES");
+                        addstr(": CCS VIGILANTIES RESPONDING");
                     else if(law[LAW_DEATHPENALTY] == -2 &&
                             law[LAW_POLICEBEHAVIOR] == -2)
-                        addstr(": DEATH SQUADS");
+                        addstr(": DEATH SQUADS RESPONDING");
                     else
-                        addstr(": POLICE");
+                        addstr(": POLICE RESPONDING");
 
                     break;
                 }
@@ -818,6 +822,10 @@ void mode_site(void) {
                         special_house_photos();
                         break;
 
+                    case SPECIAL_ARMYBASE_ARMORY:
+                        special_armybase_armory();
+                        break;
+
                     case SPECIAL_CORPORATE_FILES:
                         special_corporate_files();
                         break;
@@ -921,15 +929,15 @@ void mode_site(void) {
                                     addstr(" - ");
                                     addstr(activesquad->squad[p]->name);
                                     move(y, 50);
-                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_HEART, true) +
+                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) / 2 +
                                          activesquad->squad[p]->get_skill(SKILL_PERSUASION), num, 10);
                                     addstr(num);
                                     move(y, 60);
-                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) +
+                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) / 2 +
                                          activesquad->squad[p]->get_skill(SKILL_SEDUCTION), num, 10);
                                     addstr(num);
                                     move(y, 70);
-                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) +
+                                    itoa(activesquad->squad[p]->get_attribute(ATTRIBUTE_CHARISMA, true) / 2 +
                                          activesquad->squad[p]->get_skill(SKILL_DISGUISE), num, 10);
                                     addstr(num);
                                     y++;
@@ -1519,21 +1527,33 @@ void mode_site(void) {
 
                             break;
 
+                        case SITE_GOVERNMENT_ARMYBASE:
+                            if(!LCSrandom(3)) {
+                                string rndWeps[] = {"WEAPON_SEMIPISTOL_9MM", "WEAPON_CARBINE_M4", "WEAPON_AUTORIFLE_M16"};
+                                newWeaponType = rndWeps[LCSrandom(3)];
+                            } else if(!LCSrandom(2)) {
+                                string rndArmors[] = {"ARMOR_ARMYARMOR"};
+                                newArmorType = rndArmors[LCSrandom(1)];
+                            } else if(!LCSrandom(20))
+                                newLootType = "LOOT_SECRETDOCUMENTS";
+                            else if(!LCSrandom(3))
+                                newLootType = "LOOT_CELLPHONE";
+                            else if(!LCSrandom(2))
+                                newLootType = "LOOT_WATCH";
+                            else
+                                newLootType = "LOOT_TRINKET";
+
+                            break;
+
                         case SITE_GOVERNMENT_INTELLIGENCEHQ:
                             if(!LCSrandom(24)) {
-                                string rndWeps[] = {"WEAPON_DESERT_EAGLE", "WEAPON_FLAMETHROWER", "WEAPON_SEMIPISTOL_9MM", "WEAPON_SEMIPISTOL_45",
-                                                    "WEAPON_SMG_MP5", "WEAPON_CARBINE_M4", "WEAPON_AUTORIFLE_M16", "WEAPON_KNIFE"
+                                string rndWeps[] = {"WEAPON_FLAMETHROWER", "WEAPON_SEMIPISTOL_45",
+                                                    "WEAPON_SMG_MP5", "WEAPON_CARBINE_M4", "WEAPON_AUTORIFLE_M16"
                                                    };
-                                newWeaponType = rndWeps[LCSrandom(8)];
+                                newWeaponType = rndWeps[LCSrandom(5)];
                             } else if(!LCSrandom(30)) {
-                                //regulation black suits...
-                                string rndArmors[] = {"ARMOR_BLACKSUIT", "ARMOR_BLACKSUIT", "ARMOR_BLACKSUIT", "ARMOR_BLACKSUIT",
-                                                      //...and various types of experimental body armour...
-                                                      "ARMOR_SWATARMOR", "ARMOR_ARMYARMOR", "ARMOR_HEAVYARMOR", "ARMOR_DEATHSQUADUNIFORM",
-                                                      //...and various disguises.
-                                                      "ARMOR_POLICEUNIFORM", "ARMOR_CLOWNSUIT", "ARMOR_LABCOAT", "ARMOR_SECURITYUNIFORM"
-                                                     };
-                                newArmorType = rndArmors[LCSrandom(12)];
+                                string rndArmors[] = {"ARMOR_HEAVYARMOR"};
+                                newArmorType = rndArmors[LCSrandom(1)];
                             } else if(!LCSrandom(20))
                                 newLootType = "LOOT_SECRETDOCUMENTS";
                             else if(!LCSrandom(3))

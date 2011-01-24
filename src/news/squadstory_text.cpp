@@ -71,6 +71,14 @@ void squadstory_text_location(newsstoryst &ns, bool liberalguardian, bool ccs, c
             strcat(story, "Network News Station.  ");
             break;
 
+        case SITE_GOVERNMENT_ARMYBASE:
+            strcat(story, "Greenpeace Offices.  ");
+            break;
+
+        case SITE_GOVERNMENT_FIRESTATION:
+            strcat(story, "ACLU Branch Office.  ");
+            break;
+
         default:
             strcat(story, location[ns.loc]->name);
             strcat(story, ".  ");
@@ -111,6 +119,10 @@ void squadstory_text_location(newsstoryst &ns, bool liberalguardian, bool ccs, c
 
         case SITE_GOVERNMENT_INTELLIGENCEHQ:
             strcat(story, ", the Conservative headquarters of one of the biggest privacy violators in the world.  ");
+            break;
+
+        case SITE_GOVERNMENT_ARMYBASE:
+            strcat(story, ", pride of Conservative torturers and warmongers everywhere.  ");
             break;
 
         case SITE_INDUSTRY_SWEATSHOP:

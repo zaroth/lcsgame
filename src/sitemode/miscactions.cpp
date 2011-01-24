@@ -57,6 +57,10 @@ char unlock(short type, char &actual) {
         difficulty = DIFFICULTY_FORMIDABLE;
         break;
 
+    case UNLOCK_ARMORY:
+        difficulty = DIFFICULTY_HEROIC;
+        break;
+
     case UNLOCK_SAFE:
         difficulty = DIFFICULTY_HEROIC;
         break;
@@ -111,6 +115,10 @@ char unlock(short type, char &actual) {
 
             case UNLOCK_SAFE:
                 addstr("cracks the safe");
+                break;
+
+            case UNLOCK_ARMORY:
+                addstr("opens the armory");
                 break;
 
             case UNLOCK_CELL:
@@ -197,7 +205,7 @@ char bash(short type, char &actual) {
             difficulty = DIFFICULTY_CHALLENGING; // Respectable place
             crowable = 1;
         } else {
-            difficulty = DIFFICULTY_FORMIDABLE; // High security
+            difficulty = DIFFICULTY_FORMIDABLE; // Very high security
             crowable = 0;
         }
 

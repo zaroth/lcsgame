@@ -114,6 +114,10 @@ void initsite(locationst &loc) {
             build_site("GOVERNMENT_INTELLIGENCEHQ");
             break;
 
+        case SITE_GOVERNMENT_ARMYBASE:
+            build_site("GOVERNMENT_ARMYBASE");
+            break;
+
         case SITE_GOVERNMENT_FIRESTATION:
             build_site("GENERIC_LOBBY");
             break;
@@ -428,6 +432,7 @@ void initsite(locationst &loc) {
         case SITE_GOVERNMENT_COURTHOUSE:
         case SITE_GOVERNMENT_PRISON:
         case SITE_GOVERNMENT_INTELLIGENCEHQ:
+        case SITE_GOVERNMENT_ARMYBASE:
         case SITE_MEDIA_AMRADIO:
         case SITE_MEDIA_CABLENEWS:
             restricted = 1;
@@ -558,6 +563,10 @@ void initsite(locationst &loc) {
 
         case SITE_CORPORATE_HOUSE:
             levelmap[freex][freey][freez].special = SPECIAL_HOUSE_PHOTOS;
+            break;
+
+        case SITE_GOVERNMENT_ARMYBASE:
+            levelmap[freex][freey][freez].special = SPECIAL_ARMYBASE_ARMORY;
             break;
 
         case SITE_MEDIA_AMRADIO:
@@ -1178,6 +1187,8 @@ configSiteSpecial::configSiteSpecial(const std::string &value)
         special = SPECIAL_NUCLEAR_ONOFF;
     else if(value == "HOUSE_PHOTOS")
         special = SPECIAL_HOUSE_PHOTOS;
+    else if(value == "ARMYBASE_ARMORY")
+        special = SPECIAL_ARMYBASE_ARMORY;
     else if(value == "HOUSE_CEO")
         special = SPECIAL_HOUSE_CEO;
     else if(value == "CORPORATE_FILES")
@@ -1264,6 +1275,8 @@ configSiteUnique::configSiteUnique(const std::string &value)
         unique = SPECIAL_NUCLEAR_ONOFF;
     else if(value == "HOUSE_PHOTOS")
         unique = SPECIAL_HOUSE_PHOTOS;
+    else if(value == "ARMYBASE_ARMORY")
+        unique = SPECIAL_ARMYBASE_ARMORY;
     else if(value == "HOUSE_CEO")
         unique = SPECIAL_HOUSE_CEO;
     else if(value == "CORPORATE_FILES")
