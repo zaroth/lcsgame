@@ -651,7 +651,7 @@ char radio_broadcast(void) {
     //PRISONER PARTS
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
-            if(activesquad->squad[p]->prisoner != NULL) {
+            if(activesquad->squad[p]->prisoner != NULL && activesquad->squad[p]->prisoner->alive) {
                 if(activesquad->squad[p]->prisoner->type == CREATURE_RADIOPERSONALITY) {
                     viewhit = LCSrandom(VIEWNUM);
                     clearmessagearea();
@@ -1075,7 +1075,7 @@ char news_broadcast(void) {
     //PRISONER PARTS
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] != NULL) {
-            if(activesquad->squad[p]->prisoner != NULL) {
+            if(activesquad->squad[p]->prisoner != NULL && activesquad->squad[p]->prisoner->alive) {
                 if(activesquad->squad[p]->prisoner->type == CREATURE_NEWSANCHOR) {
                     viewhit = LCSrandom(VIEWNUM);
                     clearmessagearea();
