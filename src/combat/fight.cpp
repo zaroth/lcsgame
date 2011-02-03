@@ -102,7 +102,6 @@ void youattack(void) {
                 && activesquad->squad[p]->will_do_ranged_attack(mode == GAMEMODE_CHASECAR, false)) {
             target = non_enemies[LCSrandom(non_enemies.size())];
             mistake = 1;
-            addjuice(*activesquad->squad[p], -5);
         }
 
         char actual;
@@ -119,10 +118,9 @@ void youattack(void) {
                 alienationcheck(mistake);
                 sitestory->crime.push_back(CRIME_ATTACKED_MISTAKE);
                 sitecrime += 10;
-                addjuice(*(activesquad->squad[p]), -1);
             } else {
                 sitecrime += 3;
-                addjuice(*(activesquad->squad[p]), 2);
+                addjuice(*(activesquad->squad[p]), 1, 200);
             }
 
             sitestory->crime.push_back(CRIME_ATTACKED);
@@ -136,8 +134,21 @@ void youattack(void) {
             }
         }
 
-        if(!encounter[target].alive)
+        if(!encounter[target].alive) {
             delenc(target, 1);
+
+            if(!mistake) {
+                for(int p = 0; p < 6; p++) {
+                    if(activesquad->squad[p] == NULL)
+                        continue;
+
+                    if(!activesquad->squad[p]->alive)
+                        continue;
+
+                    addjuice(*(activesquad->squad[p]), 5, 500);
+                }
+            }
+        }
     }
 
     //COVER FIRE
@@ -205,7 +216,6 @@ void youattack(void) {
                             alienationcheck(mistake);
                             sitestory->crime.push_back(CRIME_ATTACKED_MISTAKE);
                             sitecrime += 10;
-                            addjuice(*(pool[p]), -10);
                         }
 
 
@@ -756,7 +766,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                     !(levelmap[locx][locy][locz].flag & SITEBLOCK_DEBRIS)) {
                 levelmap[locx][locy][locz].flag |= SITEBLOCK_FIRE_START;
                 sitecrime += 3;
-                addjuice(a, 3);
+                addjuice(a, 5, 500);
                 criminalizeparty(LAWFLAG_ARSON);
                 sitestory->crime.push_back(CRIME_ARSON);
             }
@@ -1174,7 +1184,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
                         addstr("!");
 
-                        addjuice(*target, 10); //Instant juice!! Way to take the bullet!!
+                        addjuice(*target, 10, 1000); //Instant juice!! Way to take the bullet!!
 
                         refresh();
                         getch();
@@ -1253,9 +1263,9 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                     target->die();
 
                     if(t.align == -a.align)
-                        addjuice(a, 5 + t.juice / 20);  // Instant juice
+                        addjuice(a, 5 + t.juice / 20, 1000);  // Instant juice
                     else
-                        addjuice(a, -(5 + t.juice / 20));
+                        addjuice(a, -(5 + t.juice / 20), 1000);
 
                     if(target->squadid != -1) {
                         if(target->align == 1)
@@ -2394,7 +2404,7 @@ void specialattack(Creature &a, Creature &t, char &actual) {
     } else if(a.enemy() && t.flag & CREATUREFLAG_BRAINWASHED) {
         move(17, 1);
         addstr(t.name);
-        addstr(" is not subject to Conservative thinking!");
+        addstr(" is immune to the attack!");
     } else if(attack > resist) {
         t.stunned += (attack - resist) / 4;
 
@@ -2403,7 +2413,7 @@ void specialattack(Creature &a, Creature &t, char &actual) {
                 move(17, 1);
                 addstr(t.name);
                 addstr(" loses juice!");
-                addjuice(t, -50);
+                addjuice(t, -50, 100);
             } else if(LCSrandom(15) > t.get_attribute(ATTRIBUTE_WISDOM, true) ||
                       t.get_attribute(ATTRIBUTE_WISDOM, true) < t.get_attribute(ATTRIBUTE_HEART, true)) {
                 move(17, 1);
@@ -2481,7 +2491,7 @@ void specialattack(Creature &a, Creature &t, char &actual) {
                 move(17, 1);
                 addstr(t.name);
                 addstr(" seems less badass!");
-                addjuice(t, -50);
+                addjuice(t, -50, 100);
             } else if(!t.attribute_check(ATTRIBUTE_HEART, DIFFICULTY_AVERAGE) ||
                       t.get_attribute(ATTRIBUTE_HEART, true) < t.get_attribute(ATTRIBUTE_WISDOM, true)) {
                 move(17, 1);

@@ -287,19 +287,6 @@ void siegecheck(char canseethings) {
                             refresh();
                             getch();
 
-                            if(pool[p]->align == 1) {
-                                int boss = getpoolcreature(pool[p]->hireid);
-
-                                if(boss != -1 && pool[boss]->juice > 50) {
-                                    int juice = pool[boss]->juice - 50;
-
-                                    if(juice > 10)
-                                        juice = 10;
-
-                                    addjuice(*pool[boss], -juice);
-                                }
-                            }
-
                             delete pool[p];
                             pool.erase(pool.begin() + p);
                             continue;
@@ -754,20 +741,6 @@ void siegecheck(char canseethings) {
                         getch();
 
                         delete pool[p];
-
-                        if(pool[p]->align == 1) {
-                            int boss = getpoolcreature(pool[p]->hireid);
-
-                            if(boss != -1 && pool[boss]->juice > 50) {
-                                int juice = pool[boss]->juice - 50;
-
-                                if(juice > 10)
-                                    juice = 10;
-
-                                addjuice(*pool[boss], -juice);
-                            }
-                        }
-
                         pool.erase(pool.begin() + p);
                         continue;
                     }
@@ -835,10 +808,9 @@ void siegeturn(char clearformess) {
             continue;  // Vacationers don't count
 
         liberalcount[pool[p]->location]++;
-
         //Get the best cooking skill for each location
-        if(food_prep[pool[p]->location] < pool[p]->get_skill(SKILL_COOKING))
-            food_prep[pool[p]->location] = pool[p]->get_skill(SKILL_COOKING);
+        //if(food_prep[pool[p]->location]<pool[p]->get_skill(SKILL_COOKING))
+        //   food_prep[pool[p]->location]=pool[p]->get_skill(SKILL_COOKING);
     }
 
     for(l = 0; l < location.size(); l++) {
@@ -929,19 +901,6 @@ void siegeturn(char clearformess) {
                         addstr("'s corpse has been recovered.");
                         refresh();
                         getch();
-
-                        if(pool[p]->align == 1) {
-                            int boss = getpoolcreature(pool[p]->hireid);
-
-                            if(boss != -1 && pool[boss]->juice > 50) {
-                                int juice = pool[boss]->juice - 50;
-
-                                if(juice > 10)
-                                    juice = 10;
-
-                                addjuice(*pool[boss], -juice);
-                            }
-                        }
 
                         delete pool[p];
                         pool.erase(pool.begin() + p);
@@ -1233,7 +1192,7 @@ void siegeturn(char clearformess) {
                     //NEED GOOD THINGS TO BALANCE THE BAD
 
                     // ELITE REPORTER SNEAKS IN
-                    if(!LCSrandom(50) && no_bad && liberalcount[l] > 0) {
+                    if(!LCSrandom(20) && no_bad && liberalcount[l] > 0) {
                         char repname[200];
                         generate_name(repname);
 
@@ -1387,9 +1346,8 @@ void siegeturn(char clearformess) {
                             sum = 0;
                             sum += pool[p]->get_attribute(ATTRIBUTE_INTELLIGENCE, true);
                             sum += pool[p]->get_attribute(ATTRIBUTE_HEART, true);
-                            sum += pool[p]->get_attribute(ATTRIBUTE_CHARISMA, true) * 2;
-                            sum += pool[p]->get_skill(SKILL_PERSUASION) * 3;
-                            sum += pool[p]->get_skill(SKILL_LEADERSHIP) * 5;
+                            sum += pool[p]->get_skill(SKILL_PERSUASION);
+                            sum += pool[p]->juice;
 
                             if(sum > bestvalue || best == -1) {
                                 best = p;
@@ -1408,11 +1366,18 @@ void siegeturn(char clearformess) {
                         refresh();
                         getch();
 
-                        int segmentpower = LCSrandom(bestvalue * 2 + 1);
+                        sum = 0;
+                        sum += pool[best]->attribute_roll(ATTRIBUTE_INTELLIGENCE);
+                        sum += pool[best]->attribute_roll(ATTRIBUTE_HEART);
+                        sum += pool[best]->skill_roll(SKILL_PERSUASION);
+                        sum += pool[best]->skill_roll(SKILL_PERSUASION);
+                        sum += pool[best]->skill_roll(SKILL_PERSUASION);
+
+                        int segmentpower = sum;
 
                         move(8, 1);
 
-                        if(segmentpower < 10) {
+                        if(segmentpower < 15) {
                             addstr(repname);
                             addstr(" cancelled the interview halfway through");
                             move(9, 1);
@@ -1514,21 +1479,25 @@ void siegeturn(char clearformess) {
                             }
 
                             addstr(".");
-                        } else if(segmentpower < 15) {
+                        } else if(segmentpower < 20) {
                             addstr("But the interview is so boring that ");
                             addstr(repname);
                             addstr(" falls asleep.");
-                        } else if(segmentpower < 20)
-                            addstr("But the interview sucked.");
-                        else if(segmentpower < 25)
-                            addstr("It was nothing special, though.");
-                        else if(segmentpower < 32)
-                            addstr("It went pretty well.");
-                        else if(segmentpower < 40)
+                        } else if(segmentpower < 25) {
+                            addstr("But ");
+                            addstr(pool[best]->name);
+                            addstr(" stutters nervously the whole time.");
+                        } else if(segmentpower < 30) {
+                            addstr(pool[best]->name);
+                            addstr("'s verbal finesse leaves something to be desired.");
+                        } else if(segmentpower < 45) {
+                            addstr(pool[best]->name);
+                            addstr(" represents the LCS well.");
+                        } else if(segmentpower < 60) {
                             addstr("The discussion was exciting and dynamic.");
-                        else if(segmentpower < 50)
-                            addstr("It was almost perfect.");
-                        else {
+                            move(9, 1);
+                            addstr("Even the Cable News and AM Radio spend days talking about it.");
+                        } else {
                             addstr(repname);
                             addstr(" later went on to win a Pulitzer for it.");
                             move(9, 1);
@@ -1765,20 +1734,6 @@ void giveup(void) {
                 }
 
                 removesquadinfo(*pool[p]);
-
-                if(pool[p]->align == 1) {
-                    int boss = getpoolcreature(pool[p]->hireid);
-
-                    if(boss != -1 && pool[boss]->juice > 50) {
-                        int juice = pool[boss]->juice - 50;
-
-                        if(juice > 10)
-                            juice = 10;
-
-                        addjuice(*pool[boss], -juice);
-                    }
-                }
-
                 delete pool[p];
                 pool.erase(pool.begin() + p);
                 continue;
@@ -2522,23 +2477,7 @@ void escapesiege(char won) {
                 continue;
 
             if(!pool[p]->alive) {
-                //XXX: is this safe? it seems like you ought to be deleting it AFTER
-                // doing stuff with it, unless I'm missing something. -Kurper
                 delete pool[p];
-
-                if(pool[p]->align == 1) {
-                    int boss = getpoolcreature(pool[p]->hireid);
-
-                    if(boss != -1 && pool[boss]->juice > 50) {
-                        int juice = pool[boss]->juice - 50;
-
-                        if(juice > 10)
-                            juice = 10;
-
-                        addjuice(*pool[boss], -juice);
-                    }
-                }
-
                 pool.erase(pool.begin() + p);
                 continue;
             }
@@ -2665,9 +2604,8 @@ void conquertextccs(void) {
         move(12, 5);
         addstr("+200 JUICE TO EVERYONE FOR ERADICATING THE CONSERVATIVE CRIME SQUAD");
 
-        for(int p = 0; p < pool.size(); p++) {
-            addjuice(*pool[p], 100); //addjuice doubles the amount, so it adds 200
-        }
+        for(int p = 0; p < pool.size(); p++)
+            addjuice(*pool[p], 200, 1000);
     }
 
     move(15, 19);

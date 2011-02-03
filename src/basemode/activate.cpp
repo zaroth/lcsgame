@@ -208,12 +208,13 @@ void listclasses(Creature *cr) {
         move(13, 40);
         addstr("2 - First Aid");
 
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_COOKING);
-        move(14, 40);
-        addstr("3 - Cooking");
+
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_ART);
+        move(13, 40);
+        addstr("3 - Painting");
 
         set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_DISGUISE);
-        move(15, 40);
+        move(14, 40);
         addstr("4 - Theatre");
 
         set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_MARTIAL_ARTS);
@@ -239,10 +240,6 @@ void listclasses(Creature *cr) {
         set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_MUSIC);
         move(15, 40);
         addstr("4 - Music");
-
-        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_ART);
-        move(16, 40);
-        addstr("5 - Painting");
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(17, 40);
@@ -288,7 +285,7 @@ void updateclasschoice(Creature *cr, char choice) {
                 break;
 
             case '3':
-                cr->activity.type = ACTIVITY_STUDY_COOKING;
+                cr->activity.type = ACTIVITY_STUDY_ART;
                 break;
 
             case '4':
@@ -315,10 +312,6 @@ void updateclasschoice(Creature *cr, char choice) {
 
             case '4':
                 cr->activity.type = ACTIVITY_STUDY_MUSIC;
-                break;
-
-            case '5':
-                cr->activity.type = ACTIVITY_STUDY_ART;
                 break;
             }
         }
@@ -493,23 +486,23 @@ void activate(Creature *cr) {
             move(13, 40);
             addstr("4 - Search Opinion Polls");
 
-            set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_DOS_ATTACKS);
-            move(14, 40);
-            addstr("5 - Harass Websites");
+            //set_color(COLOR_WHITE,COLOR_BLACK,cr->activity.type==ACTIVITY_DOS_ATTACKS);
+            //move(14,40);
+            //addstr("5 - Harass Websites");
 
             set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_HACKING);
-            move(15, 40);
-            addstr("6 - Hacking");
+            move(14, 40);
+            addstr("5 - Hacking");
 
             set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_WRITE_LETTERS);
-            move(16, 40);
-            addstr("7 - Write to Newspapers");
+            move(15, 40);
+            addstr("6 - Write to Newspapers");
 
             if(cr->location != -1 &&
                     location[cr->location]->compound_walls & COMPOUND_PRINTINGPRESS) {
                 set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_WRITE_GUARDIAN);
-                move(17, 40);
-                addstr("8 - Write for The Liberal Guardian");
+                move(16, 40);
+                addstr("7 - Write for The Liberal Guardian");
             }
 
             break;
@@ -641,9 +634,11 @@ void activate(Creature *cr) {
         case ACTIVITY_HACKING:
             move(22, 3);
             addstr(cr->name);
-            addstr(" will hack into private Conservative networks.");
+            addstr(" will harass websites and hack private networks.");
             move(23, 1);
-            addstr("  Computer skill and intelligence will give greater effect.");
+            addstr("  Computer skill and intelligence will give more frequent results.");
+            move(24, 1);
+            addstr("  Multiple hackers will increase chances of both success and detection.");
             break;
 
         case ACTIVITY_WRITE_LETTERS:
@@ -779,7 +774,8 @@ void activate(Creature *cr) {
         case ACTIVITY_STUDY_DISGUISE:
         case ACTIVITY_STUDY_SCIENCE:
         case ACTIVITY_STUDY_BUSINESS:
-        case ACTIVITY_STUDY_COOKING:
+
+        //case ACTIVITY_STUDY_COOKING:
         case ACTIVITY_STUDY_GYMNASTICS:
         case ACTIVITY_STUDY_WRITING:
         case ACTIVITY_STUDY_ART:
@@ -825,19 +821,16 @@ void activate(Creature *cr) {
                     cr->activity.type = ACTIVITY_POLLS;
                     break;
 
+                //case '5':cr->activity.type=ACTIVITY_DOS_ATTACKS;break;
                 case '5':
-                    cr->activity.type = ACTIVITY_DOS_ATTACKS;
-                    break;
-
-                case '6':
                     cr->activity.type = ACTIVITY_HACKING;
                     break;
 
-                case '7':
+                case '6':
                     cr->activity.type = ACTIVITY_WRITE_LETTERS;
                     break;
 
-                case '8':
+                case '7':
                     if(cr->location != -1 &&
                             location[cr->location]->compound_walls & COMPOUND_PRINTINGPRESS) {
                         cr->activity.type = ACTIVITY_WRITE_GUARDIAN;
@@ -852,8 +845,8 @@ void activate(Creature *cr) {
                         cr->activity.type = ACTIVITY_TROUBLE;
                         choice = '2';
                     } else {
-                        if(cr->get_skill(SKILL_COMPUTERS) > 1) {
-                            cr->activity.type = ACTIVITY_DOS_ATTACKS;
+                        if(cr->get_skill(SKILL_COMPUTERS) > 2) {
+                            cr->activity.type = ACTIVITY_HACKING;
                             choice = '5';
                         } else if(cr->get_skill(SKILL_ART) > 1) {
                             cr->activity.type = ACTIVITY_GRAFFITI;
@@ -1279,8 +1272,8 @@ void activatebulk(void) {
                     else if(temppool[p]->get_attribute(ATTRIBUTE_WISDOM, true) > 4)
                         temppool[p]->activity.type = ACTIVITY_TROUBLE;
                     else {
-                        if(temppool[p]->get_skill(SKILL_COMPUTERS) > 1)
-                            temppool[p]->activity.type = ACTIVITY_DOS_ATTACKS;
+                        if(temppool[p]->get_skill(SKILL_COMPUTERS) > 2)
+                            temppool[p]->activity.type = ACTIVITY_HACKING;
                         else if(temppool[p]->get_skill(SKILL_ART) > 1) {
                             temppool[p]->activity.type = ACTIVITY_GRAFFITI;
                             temppool[p]->activity.arg = -1;

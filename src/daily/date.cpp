@@ -434,7 +434,7 @@ char completedate(datest &d, int p, char &clearformess) {
             break;
         }
 
-        addjuice(*pool[p], -5);
+        addjuice(*pool[p], -5, -50);
         refresh();
         getch();
 
@@ -615,6 +615,7 @@ char completedate(datest &d, int p, char &clearformess) {
 
                     delete d.date[e2];
                     d.date.erase(d.date.begin() + e2);
+                    e = 0;
                 }
 
                 d.timeleft = 7;

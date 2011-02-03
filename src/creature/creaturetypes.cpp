@@ -820,7 +820,7 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
             Clip c = Clip(*cliptype[getcliptype("CLIP_GASOLINE")], 4);
             cr.take_clips(c, 4);
             cr.reload(false);
-            cr.set_skill(SKILL_FLAMETHROWER, LCSrandom(3) + 2);
+            cr.set_skill(SKILL_HEAVYWEAPONS, LCSrandom(3) + 2);
             strcpy(cr.name, "Fireman");
             cr.align = -1;
         } else {
@@ -1649,6 +1649,9 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
             Clip c = Clip(*cliptype[getcliptype("CLIP_38")], 4);
             cr.take_clips(c, 4);
             cr.reload(false);
+        } else {
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_KNIFE")]);
+            cr.give_weapon(w, NULL);
         }
 
         armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
@@ -1656,8 +1659,9 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
         cr.money = LCSrandom(31) + 20;
         cr.juice = -5;
 
-        if(cr.align == -1)
-            cr.align = LCSrandom(2);
+        // We'll make the crack house a bit dicey
+        if(location[cursite]->type == SITE_BUSINESS_CRACKHOUSE)
+            cr.align = -1;
 
         cr.age = AGE_YOUNGADULT;
 
@@ -1737,7 +1741,7 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
         strcpy(cr.name, "Fast Food Worker");
         armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
         cr.give_armor(*armor, NULL);
-        cr.set_skill(SKILL_COOKING, LCSrandom(3));
+        //cr.set_skill(SKILL_COOKING,LCSrandom(3));
         cr.money = LCSrandom(31) + 20;
 
         //cr.align=LCSrandom(3)-1;
@@ -1777,8 +1781,7 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
         strcpy(cr.name, "Football Coach");
         armor = new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]);
         cr.give_armor(*armor, NULL);
-        cr.set_skill(SKILL_TEACHING, LCSrandom(3) + 1);
-        cr.set_skill(SKILL_LEADERSHIP, LCSrandom(3) + 1);
+        cr.set_skill(SKILL_TEACHING, LCSrandom(3) + 2);
         cr.money = LCSrandom(31) + 20;
         //cr.align=LCSrandom(3)-1;
         cr.age = AGE_MIDDLEAGED;
@@ -1864,7 +1867,7 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
         GIVE_GENDER_MALE;
         GIVE_WEAPON_CIVILIAN;
         strcpy(cr.name, "Chef");
-        cr.set_skill(SKILL_COOKING, LCSrandom(5) + 3);
+        //cr.set_skill(SKILL_COOKING,LCSrandom(5)+3);
         armor = new Armor(*armortype[getarmortype("ARMOR_WORKCLOTHES")]);
         cr.give_armor(*armor, NULL);
         cr.money = LCSrandom(31) + 20;
@@ -1909,7 +1912,7 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
         attcap[ATTRIBUTE_HEART] = 15;
         attcap[ATTRIBUTE_WISDOM] = 1;
         attnum -= 5;
-        cr.set_skill(SKILL_COOKING, LCSrandom(2));
+        //cr.set_skill(SKILL_COOKING,LCSrandom(2));
         cr.set_skill(SKILL_MUSIC, LCSrandom(2));
         cr.set_skill(SKILL_ART, LCSrandom(2));
         cr.set_skill(SKILL_TAILORING, LCSrandom(2));
@@ -2254,7 +2257,7 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
 
         // 95% chance of not allowing some skills for anybody...
         if(LCSrandom(20)) {
-            if(randomskill == SKILL_FLAMETHROWER)
+            if(randomskill == SKILL_HEAVYWEAPONS)
                 continue;
 
             if(randomskill == SKILL_SMG)
