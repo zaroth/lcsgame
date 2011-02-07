@@ -389,7 +389,7 @@ void siegecheck(char canseethings) {
                 location[l]->siege.timeuntilcorps = -1;  // Silently call off foiled corp raids
 
             //CONSERVATIVE CRIME SQUAD
-            bool ccs_active = endgamestate >= ENDGAME_CCS_APPEARANCE && endgamestate <= ENDGAME_CCS_DEFEATED;
+            bool ccs_active = endgamestate >= ENDGAME_CCS_APPEARANCE && endgamestate < ENDGAME_CCS_DEFEATED;
             bool target_interesting = endgamestate >= ENDGAME_CCS_SIEGES || location[l]->compound_walls & COMPOUND_PRINTINGPRESS;
 
             if(ccs_active && target_interesting) {
@@ -715,6 +715,7 @@ void siegecheck(char canseethings) {
                 location[l]->siege.cameras_off = 0;
                 offended_firemen = 0;
             } else if(location[l]->siege.timeuntilfiremen == 0) {
+                location[l]->siege.timeuntilfiremen = -1;
                 erase();
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
