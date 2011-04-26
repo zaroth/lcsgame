@@ -79,45 +79,18 @@ void activate_sleepers(void) {
             move(y + 1, 6);
             addstr("Effectiveness: ");
 
-            /*move(y+1,28);
-            set_color(COLOR_GREEN,COLOR_BLACK,0);
-            addstr("-");
-            set_color(COLOR_WHITE,COLOR_BLACK,0);
-            addstr("-");
-            set_color(COLOR_WHITE,COLOR_BLACK,1);
-            addstr("-");
-            set_color(COLOR_YELLOW,COLOR_BLACK,1);
-            addstr("-");
-            set_color(COLOR_MAGENTA,COLOR_BLACK,1);
-            addstr("-");
-            set_color(COLOR_RED,COLOR_BLACK,1);
-            addstr("-"); */
-
-            if(temppool[p]->infiltration > 0.8f) {
+            if(temppool[p]->infiltration > 0.8f)
                 set_color(COLOR_RED, COLOR_BLACK, 1);
-                //move(y+1,33); addch('*');
-                //move(y+1,37); addstr("Stalwart Arch-Conservative");
-            } else if(temppool[p]->infiltration > 0.6f) {
+            else if(temppool[p]->infiltration > 0.6f)
                 set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-                //move(y+1,32); addch('*');
-                //move(y+1,37); addstr("Trusted Conservative");
-            } else if(temppool[p]->infiltration > 0.4f) {
+            else if(temppool[p]->infiltration > 0.4f)
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-                //move(y+1,31); addch('*');
-                //move(y+1,37); addstr("Known Conservative");
-            } else if(temppool[p]->infiltration > 0.2f) {
+            else if(temppool[p]->infiltration > 0.2f)
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                //move(y+1,30); addch('*');
-                //move(y+1,37); addstr("Respected");
-            } else if(temppool[p]->infiltration > 0.1f) {
+            else if(temppool[p]->infiltration > 0.1f)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                //move(y+1,29); addch('*');
-                //move(y+1,37); addstr("Ineffective");
-            } else {
+            else
                 set_color(COLOR_GREEN, COLOR_BLACK, 0);
-                //move(y+1,28); addch('*');
-                //move(y+1,37); addstr("Known Liberal");
-            }
 
             char num[10];
             itoa(static_cast<int>(temppool[p]->infiltration * 100), num, 10);
@@ -205,13 +178,9 @@ void activate_sleeper(Creature *cr) {
         move(11, 1);
         addstr("B - Espionage");
 
-        set_color(COLOR_BLACK, COLOR_BLACK, 1); // Disabled
-        move(12, 1);
-        addstr("C - Sabotage and Direct Action");
-
         set_color(COLOR_WHITE, COLOR_BLACK, state == 'd');
-        move(13, 1);
-        addstr("D - Join the Active LCS");
+        move(12, 1);
+        addstr("C - Join the Active LCS");
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(20, 40);
@@ -226,10 +195,6 @@ void activate_sleeper(Creature *cr) {
             set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_SLEEPER_LIBERAL);
             move(11, 40);
             addstr("2 - Advocate Liberalism");
-
-            /*set_color(COLOR_WHITE,COLOR_BLACK,cr->activity.type==ACTIVITY_SLEEPER_CONSERVATIVE);
-            move(12,40);
-            addstr("3 - Build Conservative Credibility");*/
 
             move(12, 40);
 
@@ -260,13 +225,6 @@ void activate_sleeper(Creature *cr) {
             move(12, 40);
             addstr("3 - Steal Equipment");
             break;
-
-        case 'c':
-            // Currently disabled
-            /*set_color(COLOR_BLACK,COLOR_BLACK,1);
-            move(10,40);
-            addstr("1 - Fabricate Scandal");*/
-            break;
         }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -284,13 +242,6 @@ void activate_sleeper(Creature *cr) {
             addstr(" will build support for Liberal causes.");
             break;
 
-        /*case ACTIVITY_SLEEPER_CONSERVATIVE:
-           move(22,3);
-           addstr(cr->name);
-           addstr(" will publicly condemn Liberals and the LCS, in exchange");
-           move(23,3);
-           addstr("for increased credibility with the good old boy network.");
-           break;*/
         case ACTIVITY_SLEEPER_RECRUIT:
             if(subordinatesleft(*cr)) {
                 move(22, 3);
@@ -316,12 +267,6 @@ void activate_sleeper(Creature *cr) {
             move(22, 3);
             addstr(cr->name);
             addstr(" will steal equipment and send it to the Shelter.");
-            break;
-
-        case ACTIVITY_SLEEPER_SCANDAL:
-            //move(22,3);
-            //addstr(cr->name);
-            //addstr(" will get creative and do something outrageous.");
             break;
         }
 
@@ -349,7 +294,6 @@ void activate_sleeper(Creature *cr) {
                     cr->activity.type = ACTIVITY_SLEEPER_LIBERAL;
                     break;
 
-                //case '3':cr->activity.type=ACTIVITY_SLEEPER_CONSERVATIVE;break;
                 case '3':
                     if(subordinatesleft(*cr))
                         cr->activity.type = ACTIVITY_SLEEPER_RECRUIT;
@@ -376,18 +320,10 @@ void activate_sleeper(Creature *cr) {
                 }
 
                 break;
-
-            case 'c':
-                switch(choice) {
-                case '1':
-                    break;//cr->activity.type=ACTIVITY_SLEEPER_SCANDAL;break;
-                }
-
-                break;
             }
         }
 
-        if(state == 'd') {
+        if(state == 'c') {
             activityst oact = cr->activity;
             cr->activity.type = ACTIVITY_SLEEPER_JOINLCS;
         }

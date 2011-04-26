@@ -50,6 +50,7 @@ void sleepereffect(Creature &cr, char &clearformess, char canseethings, int *lib
     switch(cr.activity.type) {
     case ACTIVITY_SLEEPER_LIBERAL:
         sleeper_influence(cr, clearformess, canseethings, libpower);
+        cr.infiltration -= 0.02f;
         break;
 
     case ACTIVITY_SLEEPER_EMBEZZLE:
@@ -73,15 +74,18 @@ void sleepereffect(Creature &cr, char &clearformess, char canseethings, int *lib
         break;
 
     case ACTIVITY_NONE:
-        cr.infiltration += 0.02f;
-
-        if(cr.infiltration >= 1)
-            cr.infiltration = 1;
-
     case ACTIVITY_SLEEPER_JOINLCS:
     default:
         break;
     }
+
+    cr.infiltration += LCSrandom(8) * 0.01f - 0.02f;
+
+    if(cr.infiltration >= 1)
+        cr.infiltration = 1;
+
+    if(cr.infiltration <= 0)
+        cr.infiltration = 0;
 }
 
 
@@ -366,7 +370,7 @@ void sleeper_spy(Creature &cr, char &clearformess, char canseethings, int *libpo
 
     // Improves juice, as confidence improves
     if(cr.juice < 100) {
-        cr.juice += 3;
+        cr.juice += 10;
 
         if(cr.juice > 100)
             cr.juice = 100;
@@ -605,7 +609,7 @@ void sleeper_embezzle(Creature &cr, char &clearformess, char canseethings, int *
 
     // Improves juice, as confidence improves
     if(cr.juice < 100) {
-        cr.juice += 3;
+        cr.juice += 10;
 
         if(cr.juice > 100)
             cr.juice = 100;
@@ -627,7 +631,7 @@ void sleeper_embezzle(Creature &cr, char &clearformess, char canseethings, int *
         break;
 
     default:
-        income = static_cast<int>(1000 * cr.infiltration);
+        income = static_cast<int>(500 * cr.infiltration);
         break;
     }
 
@@ -670,7 +674,7 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
 
     // Improves juice, as confidence improves
     if(cr.juice < 100) {
-        cr.juice += 3;
+        cr.juice += 10;
 
         if(cr.juice > 100)
             cr.juice = 100;

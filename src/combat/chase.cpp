@@ -312,6 +312,7 @@ char chasesequence(void) {
 
                     evasivedrive();
                     enemyattack();
+                    youattack();
                     creatureadvance();
 
                     if(drivingupdate(obstacle))
@@ -898,12 +899,42 @@ void evasiverun(void) {
         if(theirworst > chaser)
             theirworst = chaser;
 
-        if(chaser < yourworst) {
+        if(encounter[e].type == CREATURE_TANK && LCSrandom(10)) {
+            clearmessagearea();
+            set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+            move(16, 1);
+            addstr(encounter[e].name);
+
+            switch(LCSrandom(4)) {
+            case 0:
+                addstr(" plows through a brick wall like it was nothing!");
+                break;
+
+            case 1:
+                addstr(" charges down an alley, smashing both side walls out!");
+                break;
+
+            case 2:
+                addstr(" smashes straight through traffic, demolishing cars!");
+                break;
+
+            case 3:
+                addstr(" destroys everything in its path, closing the distance!");
+                break;
+            }
+
+            refresh();
+            getch();
+        } else if(chaser < yourworst) {
             clearmessagearea();
             set_color(COLOR_CYAN, COLOR_BLACK, 1);
             move(16, 1);
             addstr(encounter[e].name);
-            addstr(" can't keep up!");
+
+            if(encounter[e].type == CREATURE_TANK)
+                addstr(" tips into a pool. The tank is trapped!");
+            else
+                addstr(" can't keep up!");
 
             delenc(e, 0);
             e--;
@@ -936,7 +967,7 @@ void evasiverun(void) {
             continue;
 
         if(activesquad->squad[p]->alive) {
-            if(yourspeed[p] > theirbest + 5) {
+            if(yourspeed[p] > theirbest) {
                 if(p == 0 && othersleft == 0)
                     break;
 
@@ -974,10 +1005,11 @@ void evasiverun(void) {
                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
                 move(16, 1);
                 addstr(activesquad->squad[p]->name);
-                addstr(" is seized, ");
 
                 switch(encounter[0].type) {
                 case CREATURE_COP:
+                    addstr(" is seized, ");
+
                     if(law[LAW_POLICEBEHAVIOR] >= ALIGN_LIBERAL)
                         addstr("pushed to the ground, and handcuffed!");
                     else {
@@ -992,11 +1024,19 @@ void evasiverun(void) {
                     break;
 
                 case CREATURE_DEATHSQUAD:
+                    addstr(" is seized, ");
                     addstr("thrown to the ground, and shot in the head!");
                     activesquad->squad[p]->blood = 0;
                     break;
 
+                case CREATURE_TANK:
+                    addstr(" crushed beneath the tank's treads!");
+                    activesquad->squad[p]->blood = 0;
+                    break;
+
                 default:
+                    addstr(" is seized, ");
+
                     if(activesquad->squad[p]->blood < 60)
                         addstr("thrown to the ground, and beaten to death!");
                     else
@@ -1490,15 +1530,15 @@ void crashfriendlycar(int v) {
 
     switch(LCSrandom(3)) {
     case 0:
-        addstr(" slams into a building.");
+        addstr(" slams into a building!");
         break;
 
     case 1:
-        addstr(" spins out and crashes.");
+        addstr(" skids out and crashes!");
         break;
 
     case 2:
-        addstr(" hits a parked car and flips over.");
+        addstr(" hits a parked car and flips over!");
         break;
     }
 
@@ -1662,11 +1702,11 @@ void crashfriendlycar(int v) {
                     break;
 
                 case 1:
-                    addstr(" gasps in pain, but still lives, for now.");
+                    addstr(" gasps in pain, but lives, for now.");
                     break;
 
                 case 2:
-                    addstr(" crawls free of the car, gasping in pain.");
+                    addstr(" crawls free of the car, shivering with pain.");
                     activesquad->squad[p]->drop_weapon(NULL);
                     break;
                 }

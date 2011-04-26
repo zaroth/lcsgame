@@ -105,16 +105,8 @@ void getactivity(char *str, activityst &act) {
         strcat(str, "Selling Art");
         break;
 
-    case ACTIVITY_TEACH_GENERALED:
-        strcat(str, "Teaching General ED");
-        break;
-
     case ACTIVITY_TEACH_POLITICS:
         strcat(str, "Teaching Politics");
-        break;
-
-    case ACTIVITY_TEACH_SURVIVAL:
-        strcat(str, "Teaching Survival");
         break;
 
     case ACTIVITY_TEACH_FIGHTING:
@@ -597,7 +589,7 @@ void getrecruitcreature(char *str, int type) {
         break;
 
     case CREATURE_TANK:
-        strcat(str, "Armored Tank");
+        strcat(str, "M1 Abrams Tank");
         break;
 
     case CREATURE_CCS_MOLOTOV:

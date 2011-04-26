@@ -90,9 +90,10 @@ void trial(Creature &g) {
                     sleeperjudge = pool[p];
             }
 
-            if(pool[p]->type == CREATURE_LAWYER &&
-                    (pool[p]->infiltration * 100 >= LCSrandom(100) ||
-                     (pool[p]->flag & CREATUREFLAG_LOVESLAVE && pool[p]->hireid == g.id))) {
+            if(pool[p]->type == CREATURE_LAWYER)/*&&
+            (pool[p]->infiltration*100>=LCSrandom(100)||
+            (pool[p]->flag & CREATUREFLAG_LOVESLAVE&&pool[p]->hireid==g.id)))*/
+            {
                 if(pool[p]->get_skill(SKILL_LAW) + pool[p]->get_skill(SKILL_PERSUASION) >= maxsleeperskill) {
                     sleeperlawyer = pool[p];
                     maxsleeperskill = pool[p]->get_skill(SKILL_LAW) + sleeperlawyer->get_skill(SKILL_PERSUASION);

@@ -137,6 +137,7 @@ void mode_site(short loc) {
 
         location[loc]->siege.attacktime = 0;
         location[loc]->siege.kills = 0;
+        location[loc]->siege.tanks = 0;
 
         //PLACE YOU
         int maxy = 0;
@@ -144,7 +145,7 @@ void mode_site(short loc) {
         for(int x = 0; x < MAPX; x++) {
             for(int y = 0; y < MAPY; y++) {
                 for(int z = 0; z < MAPZ; z++) {
-                    if(!location[loc]->siege.lights_off)
+                    if(!(location[loc]->siege.lights_off))
                         levelmap[x][y][z].flag |= SITEBLOCK_KNOWN;
 
                     levelmap[x][y][z].flag &= ~SITEBLOCK_LOCKED;
@@ -173,12 +174,13 @@ void mode_site(short loc) {
         }
 
         do {
-            locx = LCSrandom(MAPX);
-            locy = maxy - LCSrandom(3);
-
-            if(locy < 3)
-                locy = 3;
-
+            // Some bugs with degenarate spawn outside the map are occurring
+            // Unknown why, but hard-coding limits to spawn location should help
+            //locx=LCSrandom(MAPX);
+            //locy=maxy-LCSrandom(3);
+            locx = MAPX / 2 + LCSrandom(25) - 12;
+            locy = 15 - LCSrandom(3);
+            //if(locy<3)locy=3;
             locz = 0;
         } while(levelmap[locx][locy][locz].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR |
                 SITEBLOCK_FIRE_START | SITEBLOCK_FIRE_PEAK | SITEBLOCK_FIRE_END));
@@ -217,7 +219,7 @@ void mode_site(short loc) {
         }
 
         //PLACE UNITS
-        int unitnum = 10;
+        int unitnum = 6;
         int count = 50000;
 
         for(int t = 0; t < unitnum; t++) {
@@ -238,23 +240,8 @@ void mode_site(short loc) {
         if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS) &&
                 location[loc]->siege.siegetype == SIEGE_POLICE &&
                 location[loc]->siege.escalationstate >= 2) {
-            count = 50000;
-            int hunitnum = 3;
-
-            for(int t = 0; t < hunitnum; t++) {
-                do {
-                    lx = LCSrandom(11) + (MAPX / 2) - 5;
-                    ly = LCSrandom(8);
-                    lz = 0;
-                    count--;
-
-                    if(count == 0)
-                        break;
-                } while((levelmap[lx][ly][lz].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR | SITEBLOCK_EXIT)) ||
-                        (levelmap[lx][ly][lz].siegeflag & (SIEGEFLAG_UNIT | SIEGEFLAG_HEAVYUNIT | SIEGEFLAG_TRAP)));
-
-                levelmap[lx][ly][lz].siegeflag |= SIEGEFLAG_HEAVYUNIT;
-            }
+            levelmap[MAPX / 2][1][0].siegeflag |= SIEGEFLAG_HEAVYUNIT;
+            location[loc]->siege.tanks = 1;
         }
     }
 
@@ -2336,89 +2323,93 @@ void mode_site(void) {
                     unity.clear();
                     unitz.clear();
 
-                    //MOVE HEAVY UNITS
-                    for(x = 0; x < MAPX; x++) {
-                        for(int y = 0; y < MAPY; y++) {
-                            for(int z = 0; z < MAPZ; z++) {
-                                if(levelmap[x][y][z].siegeflag & SIEGEFLAG_HEAVYUNIT) {
-                                    unitx.push_back(x);
-                                    unity.push_back(y);
-                                    unitz.push_back(z);
-                                }
-                            }
-                        }
+                    /*
+                       //MOVE HEAVY UNITS
+                    for(x=0;x<MAPX;x++)
+                    {
+                       for(int y=0;y<MAPY;y++)
+                       {
+                          for(int z=0;z<MAPZ;z++)
+                          {
+                             if(levelmap[x][y][z].siegeflag & SIEGEFLAG_HEAVYUNIT)
+                             {
+                                unitx.push_back(x);
+                                unity.push_back(y);
+                                unitz.push_back(z);
+                             }
+                          }
+                       }
                     }
 
-                    for(u = 0; u < unitx.size(); u++) {
-                        sz = 0;
+                    for(u=0;u<unitx.size();u++)
+                    {
+                       sz=0;
+                       switch(LCSrandom(4))
+                       {
+                          case 0:sx=-1;sy=0;
+                             break;
+                          case 1:sx=1;sy=0;
+                             break;
+                          case 2:sx=0;sy=1;
+                             break;
+                          case 3:sx=0;sy=-1;
+                             break;
+                       }
+                       sx=unitx[u]+sx;
+                       sy=unity[u]+sy;
+                       sz=unitz[u]+sz;
 
-                        switch(LCSrandom(4)) {
-                        case 0:
-                            sx = -1;
-                            sy = 0;
-                            break;
+                       if(sx>=0&&sx<MAPX&&sy>=0&&sy<MAPY&&sz>=0&&sz<MAPZ)
+                       {
+                          if(!(levelmap[sx][sy][sz].flag & SITEBLOCK_BLOCK))
+                          {
+                             if((levelmap[sx][sy][sz].flag & SITEBLOCK_DOOR))
+                             {
+                                levelmap[sx][sy][sz].flag&=~SITEBLOCK_DOOR;
+                                levelmap[sx][sy][sz].flag&=~SITEBLOCK_LOCKED;
+                                levelmap[sx][sy][sz].flag&=~SITEBLOCK_KLOCK;
+                                levelmap[sx][sy][sz].flag&=~SITEBLOCK_CLOCK;
+                             }
+                             else
+                             {
+                                char conf=1;
 
-                        case 1:
-                            sx = 1;
-                            sy = 0;
-                            break;
+                                //BLOCK PASSAGE
+                                if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_UNIT)conf=0;
+                                if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_HEAVYUNIT)conf=0;
 
-                        case 2:
-                            sx = 0;
-                            sy = 1;
-                            break;
+                                if(conf)
+                                {
+                                   levelmap[unitx[u]][unity[u]][unitz[u]].siegeflag&=~SIEGEFLAG_HEAVYUNIT;
+                                   levelmap[sx][sy][sz].siegeflag|=SIEGEFLAG_HEAVYUNIT;
 
-                        case 3:
-                            sx = 0;
-                            sy = -1;
-                            break;
-                        }
-
-                        sx = unitx[u] + sx;
-                        sy = unity[u] + sy;
-                        sz = unitz[u] + sz;
-
-                        if(sx >= 0 && sx < MAPX && sy >= 0 && sy < MAPY && sz >= 0 && sz < MAPZ) {
-                            if(!(levelmap[sx][sy][sz].flag & SITEBLOCK_BLOCK)) {
-                                if((levelmap[sx][sy][sz].flag & SITEBLOCK_DOOR)) {
-                                    levelmap[sx][sy][sz].flag &= ~SITEBLOCK_DOOR;
-                                    levelmap[sx][sy][sz].flag &= ~SITEBLOCK_LOCKED;
-                                    levelmap[sx][sy][sz].flag &= ~SITEBLOCK_KLOCK;
-                                    levelmap[sx][sy][sz].flag &= ~SITEBLOCK_CLOCK;
-                                } else {
-                                    char conf = 1;
-
-                                    //BLOCK PASSAGE
-                                    if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_UNIT)
-                                        conf = 0;
-
-                                    if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_HEAVYUNIT)
-                                        conf = 0;
-
-                                    if(conf) {
-                                        levelmap[unitx[u]][unity[u]][unitz[u]].siegeflag &= ~SIEGEFLAG_HEAVYUNIT;
-                                        levelmap[sx][sy][sz].siegeflag |= SIEGEFLAG_HEAVYUNIT;
-
-                                        //BLOW (DIFFUSE) TRAPS
-                                        if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_TRAP)
-                                            levelmap[sx][sy][sz].siegeflag &= ~SIEGEFLAG_TRAP;
-                                    }
+                                   //BLOW (DIFFUSE) TRAPS
+                                   if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_TRAP)
+                                   {
+                                      levelmap[sx][sy][sz].siegeflag&=~SIEGEFLAG_TRAP;
+                                   }
                                 }
-                            } else {
-                                //BREAK WALLS
-                                if(sy >= 3 && sx > 0 && sx < MAPX - 1 && sy < MAPY - 1) {
-                                    sitechangest change(sx, sy, sz, SITEBLOCK_DEBRIS);
-                                    location[cursite]->changes.push_back(change);
-                                    levelmap[sx][sy][sz].flag &= ~SITEBLOCK_BLOCK;
-                                    levelmap[sx][sy][sz].flag |= SITEBLOCK_DEBRIS;
-                                }
-                            }
-                        }
+                             }
+                          }
+                          else
+                          {
+                             //BREAK WALLS
+                             if(sy>=3&&sx>0&&sx<MAPX-1&&sy<MAPY-1)
+                             {
+                                sitechangest change(sx,sy,sz,SITEBLOCK_DEBRIS);
+                                location[cursite]->changes.push_back(change);
+                                levelmap[sx][sy][sz].flag&=~SITEBLOCK_BLOCK;
+                                levelmap[sx][sy][sz].flag|=SITEBLOCK_DEBRIS;
+                             }
+                          }
+                       }
                     }
 
                     unitx.clear();
                     unity.clear();
                     unitz.clear();
+                    // End Heavy Units
+                    */
 
                     for(u = 0; u < unitx.size(); u++) {
                         sz = 0;
@@ -2566,7 +2557,9 @@ void mode_site(void) {
                     }
 
                     //BAIL UPON VICTORY
-                    if(location[cursite]->siege.kills >= 10 && location[cursite]->siege.siege) {
+                    if(location[cursite]->siege.kills >= 10 &&
+                            location[cursite]->siege.tanks == 0 &&
+                            location[cursite]->siege.siege) {
                         if(location[cursite]->siege.underattack)
                             sitestory->type = NEWSSTORY_SQUAD_DEFENDED;
                         else

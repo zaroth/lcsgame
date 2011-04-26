@@ -391,6 +391,9 @@ void advancecreature(Creature &cr) {
                 if(location[cursite]->siege.siege)
                     location[cursite]->siege.kills++;
 
+                if(location[cursite]->siege.siege && cr.animalgloss == ANIMALGLOSS_TANK)
+                    location[cursite]->siege.tanks--;
+
                 if(location[cursite]->renting == RENTING_CCS)
                     ccs_siege_kills++;
             }
@@ -442,6 +445,9 @@ void advancecreature(Creature &cr) {
 
                 if(location[cursite]->siege.siege)
                     location[cursite]->siege.kills++;
+
+                if(location[cursite]->siege.siege && cr.animalgloss == ANIMALGLOSS_TANK)
+                    location[cursite]->siege.tanks--;
 
                 if(location[cursite]->renting == RENTING_CCS)
                     ccs_siege_kills++;
