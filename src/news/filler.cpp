@@ -326,7 +326,7 @@ case 0: { //VIEW_GUNS:
             strcat(story, "[harmed] the guard");
         else if(law[LAW_FREESPEECH] == -1)
             strcat(story, "killed the guard");
-        else switch(LCSrandom(3)) { // TODO: More variety.
+        else switch(LCSrandom(4)) { // TODO: More variety.
             case 0:
                 strcat(story, "slit the guard's throat with a shank");
                 break;
@@ -337,6 +337,10 @@ case 0: { //VIEW_GUNS:
 
             case 2:
                 strcat(story, "chewed out the guard's throat");
+                break;
+
+            case 3:
+                strcat(story, "smashed the guard's skull with the toilet seat from his cell");
                 break;
             }
 

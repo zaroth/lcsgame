@@ -631,7 +631,7 @@ void constructeventstory(char *story, short view, char positive) {
             strcat(story, dstr2);
 
             if(law[LAW_FREESPEECH] == -2)
-                strcat(story, " has resigned in disgrace after being caught with a [civil servant.]");
+                strcat(story, " has resigned in disgrace after being caught with a [civil servant].");
             else
                 strcat(story, " has resigned in disgrace after being caught with a prostitute.");
 
@@ -668,7 +668,7 @@ void constructeventstory(char *story, short view, char positive) {
 
             case 1:
                 if(law[LAW_FREESPEECH] == -2)
-                    strcat(story, "the judge [going to the bathroom near] the [civil servant.]");
+                    strcat(story, "the judge [going to the bathroom in the vicinity of] the [civil servant].");
                 else if(law[LAW_FREESPEECH] == 2)
                     strcat(story, "the judge pissing on the prostitute.");
                 else
@@ -1386,7 +1386,7 @@ void constructeventstory(char *story, short view, char positive) {
             else switch(LCSrandom(3)) {
                 case 0:
                     strcat(story, "horseshit");
-                    break; // Mccain
+                    break; // McCain
 
                 case 1:
                     strcat(story, "bullshit");

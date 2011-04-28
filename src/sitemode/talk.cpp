@@ -1217,7 +1217,11 @@ char talk(Creature &a, int t) {
                         break;
 
                     case LAW_POLICEBEHAVIOR:
-                        addstr("\"The cops suck!\"");
+                        if(law[LAW_FREESPEECH] == ALIGN_ARCHCONSERVATIVE)
+                            addstr("\"[The police are not doing their job very well!]\"");
+                        else
+                            addstr("\"The cops suck!\"");
+
                         break;
 
                     case LAW_PRIVACY:
@@ -1743,7 +1747,7 @@ char talk(Creature &a, int t) {
                                 break;
 
                             case LAW_GAY:
-                                addstr("\"Homosexuality is disgusting.\"");
+                                addstr("\"Homosexuality is a sin.\"");
                                 break;
 
                             case LAW_CORPORATE:
@@ -2352,7 +2356,7 @@ char talk(Creature &a, int t) {
 
                     a.train(SKILL_SEDUCTION, LCSrandom(5) + 2);
 
-                    if((a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" //Police property on armor? -XML
+                    if((a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" // Police property on armor? -XML
                             || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
                             && tk->type == CREATURE_PROSTITUTE) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);

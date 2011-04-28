@@ -233,7 +233,7 @@ void squadstory_text_opening(newsstoryst &ns, bool liberalguardian, bool ccs, ch
                     break;
                 }
 
-                switch(LCSrandom(3)) {
+                switch(LCSrandom(4)) {
                 case 0:
                     strcat(story, "violent, ");
                     break;
@@ -243,6 +243,10 @@ void squadstory_text_opening(newsstoryst &ns, bool liberalguardian, bool ccs, ch
                     break;
 
                 case 2:
+                    strcat(story, "savage, ");
+                    break;
+
+                case 3:
                     strcat(story, "");
                     break;
                 }

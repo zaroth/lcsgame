@@ -695,7 +695,7 @@ char liberalagenda(char won) {
 
                 case LAW_GAY:
                     if(won == -1)
-                        addstr("Homosexuals are executed regularly.");
+                        addstr("Homosexuals are executed regularly for \"promoting the Gay Agenda\".");
                     else if(law[l] == ALIGN_ARCHCONSERVATIVE)
                         addstr("Homosexuals are routinely persecuted with no recourse.");
                     else if(law[l] == -1)
@@ -865,11 +865,10 @@ char liberalagenda(char won) {
 
 
 /* base - liberal agenda - disband */
-char confirmdisband(void) { // XXX The (current) issue that the masses are most
-    // XXX        concerned should be (slightly) more
-    char word[80];         // XXX        likely to be the phrase.
-    // XXX        (Issue, not the CCS, etc.)
-    int pos = 0;                // XXX                        -- LK
+char confirmdisband(void) { // The (current) issue that the masses are most
+    //        concerned should be (slightly) more likely
+    char word[80];         //        to be the phrase. (Issue, not the CCS, etc.)
+    int pos = 0;           //                        -- LK
 
     switch(LCSrandom(22)) { // or more... (preferably 44)
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

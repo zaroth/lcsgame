@@ -846,7 +846,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     case 4:
                         addstr("George W. Bush");
-                        break;// Dubya? //Disambiguated. -Fox
+                        break;
 
                     case 5:
                         addstr("ExxonMobil");

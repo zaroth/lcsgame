@@ -649,8 +649,8 @@ void trial(Creature &g) {
                 break;
 
             case 2:
-                addstr("Four of the jurors are closet Socialists.");
-                break;//XXX: A Few?
+                addstr("A few of the jurors are closet Socialists.");
+                break;
 
             case 3:
                 addstr("One of the jurors flashes a SECRET LIBERAL HAND SIGNAL when no one is looking.");
@@ -675,8 +675,8 @@ void trial(Creature &g) {
                 break;
 
             case 2:
-                addstr("Three of the jurors are members of the KKK.");
-                break;//XXX: A Few?
+                addstr("A few of the jurors are members of the KKK.");
+                break;
 
             case 3:
                 addstr("The jury is frighteningly Conservative.");
@@ -775,7 +775,9 @@ void trial(Creature &g) {
                     sleeperlawyer->train(SKILL_PERSUASION, prosecution / 4);
                 }
 
-                if(defensepower <= 15)
+                if(defensepower <= 5)
+                    addstr("The defense attorney rarely showed up.");
+                else if(defensepower <= 15)
                     addstr("The defense attorney accidentally said \"My client is GUILTY!\" during closing.");
                 else if(defensepower <= 25)
                     addstr("The defense is totally lame.");
@@ -980,7 +982,8 @@ void trial(Creature &g) {
         }
     }
     //GUILTY PLEA
-    // XXX: How about "nolo" (Nolo contendere) -- LK
+    // How about "nolo" (Nolo contendere) -- LK
+    //  I would imagine this would disregard the strength of the defense. -- LK
     else {
         erase();
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -1510,8 +1513,7 @@ void reeducation(Creature &g) {
             addstr(g.name);
             addstr(" becomes Wiser!");
             g.adjust_attribute(ATTRIBUTE_WISDOM, +1);
-        } else if(g.align == ALIGN_LIBERAL && g.flag & CREATUREFLAG_LOVESLAVE
-                  && LCSrandom(4)) {
+        } else if(g.align == ALIGN_LIBERAL && g.flag & CREATUREFLAG_LOVESLAVE && LCSrandom(4)) {
             addstr(g.name);
             addstr(" only resists by thinking of ");
             addstr(pool[g.hireid]->name);
