@@ -382,29 +382,29 @@ void HelpActivities(int activityType) {
         move(5, 0);
         addstr(" if successful, the car will be added to your garage. ");
         move(7, 0);
-        addstr(" Street sense determines the chances of finding a specific type of car, ";
-               move(8, 0);
-               addstr(" security determines the successfulness of any attempt to break into or hotwire ");
-               move(9, 0);
-               addstr(" the car. ");
-               move(11, 0);
-               addstr(" Strength determines the chances of effectively breaking a car window, intelligence ");
-               move(12, 0);
-               addstr(" determines the ease of which the car keys are found. ");
-               break;
+        addstr(" Street sense determines the chances of finding a specific type of car, ");
+        move(8, 0);
+        addstr(" security determines the successfulness of any attempt to break into or hotwire ");
+        move(9, 0);
+        addstr(" the car. ");
+        move(11, 0);
+        addstr(" Strength determines the chances of effectively breaking a car window, intelligence ");
+        move(12, 0);
+        addstr(" determines the ease of which the car keys are found. ");
+        break;
 
 // }}}
 // {{{ default
-           default:
-                   move(2, 0);
-                   addstr("===THE GREAT UNKNOWN===");
-                   move(4, 0);
-                   addstr("There is no help on this topic yet, as the help system is quite new.");
-                   move(5, 0);
-                   addstr("However, if you want to help us, you could write one, and send it to us!");
-                   break;
+    default:
+        move(2, 0);
+        addstr("===THE GREAT UNKNOWN===");
+        move(4, 0);
+        addstr("There is no help on this topic yet, as the help system is quite new.");
+        move(5, 0);
+        addstr("However, if you want to help us, you could write one, and send it to us!");
+        break;
 // }}}
-        }
+    }
 
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(23, 0);
