@@ -2816,7 +2816,7 @@ char stealcar(Creature &cr, char &clearformess) {
         if(LCSrandom(100) < v->touchalarmchance())
             touchalarm = 1;
 
-        char windowdamage = 08;
+        char windowdamage = 0;
 
         do {
             erase();
