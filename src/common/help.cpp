@@ -271,7 +271,7 @@ void HelpActivities(int activityType) {
         move(2, 0);
         addstr("===Sell Shirts===");
         move(4, 0);
-        addstr(" The cost of shirt supplies is $4/day. Income depends on tailoring and ");
+        addstr(" Income depends on tailoring and ");
         move(5, 0);
         addstr(" business skills. Income is lower if the country is very conservative.");
         move(7, 0);
@@ -284,9 +284,10 @@ void HelpActivities(int activityType) {
         move(2, 0);
         addstr("===Sell Portrait Sketches===");
         move(4, 0);
-        addstr(" The cost of art supplies is $1/day. Income depends on art skill. ");
+        addstr(" Income depends on art skill. ");
         move(6, 0);
         addstr(" This activity trains art. Income is lower if the country is very conservative.");
+        break;
 
 // }}}
 // {{{ ACTIVITY_SELL_MUSIC
