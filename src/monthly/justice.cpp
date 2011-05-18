@@ -472,7 +472,7 @@ void trial(Creature &g) {
         getch();
     }
 
-    if(g.confessions) {
+    if(g.confessions && !sleeperjudge) {     //Made sleeper judge prevent these lunatics from testifying
         move(y += 2, 1);
 
         if(g.confessions > 1) {
