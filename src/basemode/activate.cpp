@@ -924,11 +924,11 @@ void activate(Creature *cr) {
                     break;
 
                 case '2':
-                    cr->activity.type = ACTIVITY_TEACH_FIGHTING;
+                    cr->activity.type = ACTIVITY_TEACH_COVERT;
                     break;
 
                 case '3':
-                    cr->activity.type = ACTIVITY_TEACH_COVERT;
+                    cr->activity.type = ACTIVITY_TEACH_FIGHTING;
                     break;
 
                 default:
