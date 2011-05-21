@@ -1584,7 +1584,7 @@ void funds_and_trouble(char &clearformess) {
                 strcat(msg, " has ");
             }
 
-            switch(LCSrandom(5)) {
+            switch(LCSrandom(4)) {
             case 0:
                 strcat(msg, "defaced");
                 crime = LAWFLAG_INFORMATION;
