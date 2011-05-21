@@ -117,6 +117,9 @@ void printsitemap(int x, int y, int z) {
         break;
 
     case SPECIAL_PRISON_CONTROL:
+    case SPECIAL_PRISON_CONTROL_LOW:
+    case SPECIAL_PRISON_CONTROL_MEDIUM:
+    case SPECIAL_PRISON_CONTROL_HIGH:
         strcpy(str, "Prison Control Room");
         break;
 
@@ -587,6 +590,7 @@ void printblock(int x, int y, int z, int px, int py) {
         set_color(COLOR_RED, backcolor, 1, blink);
         move(py + 0, px + 1);
         addch(':');
+
         set_color(COLOR_YELLOW, backcolor, 1, blink);
         move(py + 0, px + 4);
         addch('$');
@@ -720,6 +724,9 @@ void printblock(int x, int y, int z, int px, int py) {
             break;
 
         case SPECIAL_PRISON_CONTROL:
+        case SPECIAL_PRISON_CONTROL_LOW:
+        case SPECIAL_PRISON_CONTROL_MEDIUM:
+        case SPECIAL_PRISON_CONTROL_HIGH:
             addstr("CTROL");
             break;
 

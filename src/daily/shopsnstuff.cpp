@@ -29,6 +29,8 @@ This file is part of Liberal Crime Squad.                                       
 //#include <includes.h>
 #include <externs.h>
 
+#define MAX_PATH_SIZE 2048
+extern char artdir[MAX_PATH_SIZE];
 
 
 /* supporting function -- gives "standard" prices on guns */
@@ -221,7 +223,7 @@ char gunselect(Creature &cr, int &gunindex, bool legal = 1) {
 void armsdealer(int loc) {
     locatesquad(activesquad, loc);
     CMarkup xml; // -XML
-    xml.Load("art/armsdealer.xml");
+    xml.Load(string(artdir) + "armsdealer.xml");
     Shop armsdealer(xml.GetDoc());
     armsdealer.enter(*activesquad);
     /*short buyer=0;
@@ -451,7 +453,7 @@ void armsdealer(int loc) {
 void pawnshop(int loc) {
     locatesquad(activesquad, loc);
     CMarkup xml; // -XML
-    xml.Load("art/pawnshop.xml");
+    xml.Load(string(artdir) + "pawnshop.xml");
     Shop pawnshop(xml.GetDoc());
     pawnshop.enter(*activesquad);
     /*short buyer=0;
@@ -1267,7 +1269,7 @@ void dealership(int loc) {
 void deptstore(int loc) {
     locatesquad(activesquad, loc);
     CMarkup xml; // -XML
-    xml.Load("art/deptstore.xml");
+    xml.Load(string(artdir) + "deptstore.xml");
     Shop deptstore(xml.GetDoc());
     deptstore.enter(*activesquad);
     /*short buyer=0;

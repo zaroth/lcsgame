@@ -790,7 +790,10 @@ void mode_site(void) {
                         break;
 
                     case SPECIAL_PRISON_CONTROL:
-                        special_prison_control();
+                    case SPECIAL_PRISON_CONTROL_LOW:
+                    case SPECIAL_PRISON_CONTROL_MEDIUM:
+                    case SPECIAL_PRISON_CONTROL_HIGH:
+                        special_prison_control(levelmap[locx][locy][locz].special);
                         break;
 
                     case SPECIAL_INTEL_SUPERCOMPUTER:

@@ -913,7 +913,7 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
                 else if(!LCSrandom(2))
                     item = "LOOT_CHEMICAL";
                 else
-                    item = "LOOT_SILVERWEAR";
+                    item = "LOOT_SILVERWARE";
 
                 shelter->loot.push_back(new Loot(*loottype[getloottype(item)]));
             }
