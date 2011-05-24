@@ -672,7 +672,7 @@ void tendhostage(Creature *cr, char &clearformess) {
             if(!(a->attribute_check(ATTRIBUTE_HEART, DIFFICULTY_EASY)) && techniques[TECHNIQUE_PROPS]) {
                 tortured = true;
                 //Torture more devastating than normal beating
-                forceroll *= 2;
+                forceroll *= 5;
                 //Extremely bad for rapport with lead interrogator
                 rapport[a->id] -= 3;
 
@@ -702,7 +702,6 @@ void tendhostage(Creature *cr, char &clearformess) {
                 case 5:
                     addstr(" beats the hostage with a belt");
                     break;
-//            case 6:addstr(" ");break;
                 }
 
                 addstr(",");
@@ -731,7 +730,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     case 4:
                         addstr("Don't fuck with me");
-                        break;//NOTE: Don't censor profanity in interrogations, even if C+ free speech
+                        break;
 
                     case 5:
                         addstr("This is Liberalism");
@@ -781,22 +780,30 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 addstr(" the Automaton");
 
-                if(techniques[TECHNIQUE_PROPS]) { //props
-                    switch(LCSrandom(5)) {
+                if(techniques[TECHNIQUE_PROPS]) {
+                    switch(LCSrandom(6)) {
                     case 0:
-                        addstr(" with a flagpole");
+                        addstr(" with a giant stuffed elephant");
                         break;
 
                     case 1:
-                        addstr(" with a flag");
+                        addstr(" while draped in a Confederate flag");
+                        break;
+
+                    case 2:
+                        addstr(" with a cardboard cutout of Reagan");
                         break;
 
                     case 3:
-                        addstr(" with a dildo");
+                        addstr(" with a King James Bible");
                         break;
 
                     case 4:
-                        addstr(" with a book");
+                        addstr(" with fists full of money");
+                        break;
+
+                    case 5:
+                        addstr(" with Conservative propaganda on the walls");
                         break;
                     }
                 }
@@ -894,7 +901,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     case 16:
                         addstr("Deregulation");
-                        break; //Cut a few that weren't names Conservatives use (or things they might like) -Fox
+                        break;
 
                     case 17:
                         addstr("Police");
@@ -918,9 +925,6 @@ void tendhostage(Creature *cr, char &clearformess) {
             }
 
             y++;
-
-            if(techniques[TECHNIQUE_PROPS])
-                forceroll *= 2;
 
             cr->blood -= (5 + LCSrandom(5)) * (1 + techniques[TECHNIQUE_PROPS]);
 
@@ -1167,7 +1171,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 case 5:
                     addstr(" plays the anime film Bible Black for ");
-                    break;// Wasn't this basically a porno? //Yes. -Fox
+                    break;// Yes, this is a porno.
 
                 case 6:
                     addstr(" watches a documentary about Emmett Till with ");
@@ -1272,9 +1276,9 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     case 3:
                         addstr(cr->name);
-                        addstr(" salutes ");
+                        addstr(" begs ");
                         addstr(a->name);
-                        addstr(" as the Knight Guardian of Humanity.");
+                        addstr(" to let the colors stay forever.");
                         break;
                     }
                 } else if((rapport[a->id] < -1 && LCSrandom(3)) || !LCSrandom(5)) {
@@ -1283,41 +1287,49 @@ void tendhostage(Creature *cr, char &clearformess) {
                     switch(LCSrandom(4)) {
                     case 0:
                         addstr(cr->name);
-                        addstr(" shouts in numb terror at the sight of ");
+                        addstr(" screams in horror as ");
                         addstr(a->name);
-                        addstr(".");
+                        addstr(" turns into an alien.");
                         break;
 
                     case 1:
                         addstr(cr->name);
 
                         if(!techniques[TECHNIQUE_RESTRAIN])
-                            addstr(" curls into a ball and");
+                            addstr(" curls up and");
 
-                        addstr(" squeals in fear.");
+                        addstr(" begs for the nightmare to end.");
                         break;
 
                     case 2:
                         addstr(cr->name);
                         addstr(" watches ");
                         addstr(a->name);
-                        addstr(" shift from one monstrous form to another.");
+                        addstr(" shift from one demonic form to another.");
                         break;
 
                     case 3:
-                        addstr(cr->name);
-                        addstr(" begs Hitler to tell them where ");
-                        addstr(a->name);
-                        addstr(" went.");
+                        if(rapport[a->id] < -3) {
+                            addstr(cr->name);
+                            addstr(" begs Hitler to stay and kill ");
+                            addstr(a->name);
+                            addstr(".");
+                        } else {
+                            addstr(cr->name);
+                            addstr(" screams for ");
+                            addstr(a->name);
+                            addstr(" to stop looking like Hitler.");
+                        }
+
                         break;
                     }
                 } else {
                     switch(LCSrandom(4)) {
                     case 0:
                         addstr(cr->name);
-                        addstr(" comments on the shimmering clothing ");
+                        addstr(" comments on the swirling light ");
                         addstr(a->name);
-                        addstr(" is wearing.");
+                        addstr(" is radiating.");
                         break;
 
                     case 1:
@@ -1327,14 +1339,14 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     case 2:
                         addstr(cr->name);
-                        addstr(" laughs hysterically at the sight of ");
+                        addstr(" laughs hysterically at ");
                         addstr(a->name);
-                        addstr(".");
+                        addstr("'s altered appearance.");
                         break;
 
                     case 3:
                         addstr(cr->name);
-                        addstr(" barks like a dog.");
+                        addstr(" barks and woofs like a dog.");
                         break;
                     }
                 }
@@ -1411,7 +1423,7 @@ void tendhostage(Creature *cr, char &clearformess) {
                     break;
                 }
 
-                if(a->skill_check(SKILL_SEDUCTION, static_cast<int>((-rapport_temp) * 2))) {
+                if(a->skill_check(SKILL_SEDUCTION, DIFFICULTY_CHALLENGING)) {
                     //show_interrogation_sidebar(cr,a);
                     getch();
                     move(++y, 0);
@@ -1554,7 +1566,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 case 1:
                     addstr(cr->name);
-                    addstr(" is pretty sure LCS actions hurt businesses.");
+                    addstr(" wishes a big company would just buy the LCS and shut it down.");
                     break;
 
                 case 2:
@@ -1814,7 +1826,7 @@ void tendhostage(Creature *cr, char &clearformess) {
                     move(y, 0);
                     y++;
 
-                    switch(LCSrandom(3)) {
+                    switch(LCSrandom(4)) {
                     case 0:
                         addstr("throws up in a trash can.");
                         break;
@@ -1825,6 +1837,10 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     case 2:
                         addstr("curls up in a ball, crying softly.");
+                        break;
+
+                    case 3:
+                        addstr("shoots up and collapses in a heap on the floor.");
                         break;
                     }
                 } else if(!LCSrandom(3)) {

@@ -332,7 +332,6 @@ char completedate(datest &d, int p, char &clearformess) {
     addstr(pool[p]->name);
     addstr(" has ");
 
-//if(!pool[p]->alive) { die } or something
     if(d.date.size() == 1) {
         if(pool[p]->clinic)
             addstr("a \"hot\" date with ");
@@ -400,7 +399,7 @@ char completedate(datest &d, int p, char &clearformess) {
             addstr(pool[p]->name);
 
             if (d.date.size() > 2) {
-                sprintf(datestr, " realizes %s has commited to eating %d meals at once.", pool[p]->heshe(), d.date.size()); // what
+                sprintf(datestr, " realizes %s has commited to eating %d meals at once.", pool[p]->heshe(), d.date.size());
                 addstr(datestr);
             } else {
                 addstr(" mixes up the names of ");
@@ -419,16 +418,16 @@ char completedate(datest &d, int p, char &clearformess) {
         move(5, 0);
         addstr(pool[p]->name);
 
-        //addstr(" has failed the Liberal Crime Squad."); //in combination with the word 'ambush', this made it sound like getting beaten to death.
         switch (LCSrandom(3)) {
         case 0:
-            addstr(" is publically humiliated.");
+            addstr(" is publicly humiliated.");
             break;
 
         case 1:
             addstr(" runs away.");
             break;
 
+        case 2:
         default:
             addstr(" escapes through the bathroom window.");
             break;
@@ -539,7 +538,7 @@ char completedate(datest &d, int p, char &clearformess) {
 
         for(int s = 0; s < SKILLNUM; s++) {
             if(d.date[e]->get_skill(s) >= 1 && pool[p]->get_skill(s) >= 1) {
-//Has a skill that is between double and half the same skill of the other person on the date.
+                //Has a skill that is between double and half the same skill of the other person on the date.
                 if (d.date[e]->get_skill(s) <= pool[p]->get_skill(s) * 2 && d.date[e]->get_skill(s) * 2 >= pool[p]->get_skill(s))
                     thingsincommon++;
             }
@@ -562,43 +561,34 @@ char completedate(datest &d, int p, char &clearformess) {
             if(c == 'a' && ledger.get_funds() >= 100 && !pool[p]->clinic) {
                 ledger.subtract_funds(100, EXPENSE_DATING);
                 aroll += LCSrandom(10);
-                test = 1;
-                pool[p]->train(SKILL_SEDUCTION, LCSrandom(4) + 5);
-                pool[p]->train(SKILL_SCIENCE,
-                               max(d.date[e]->get_skill(SKILL_SCIENCE) - pool[p]->get_skill(SKILL_SCIENCE), 0));
-                pool[p]->train(SKILL_RELIGION,
-                               max(d.date[e]->get_skill(SKILL_RELIGION) - pool[p]->get_skill(SKILL_RELIGION), 0));
-                pool[p]->train(SKILL_BUSINESS,
-                               max(d.date[e]->get_skill(SKILL_BUSINESS) - pool[p]->get_skill(SKILL_BUSINESS), 0));
-            }
-
-            if(c == 'b') {
-                test = 1;
-                pool[p]->train(SKILL_SEDUCTION, LCSrandom(4) + 5);
-                pool[p]->train(SKILL_SCIENCE,
-                               max(d.date[e]->get_skill(SKILL_SCIENCE) - pool[p]->get_skill(SKILL_SCIENCE), 0));
-                pool[p]->train(SKILL_RELIGION,
-                               max(d.date[e]->get_skill(SKILL_RELIGION) - pool[p]->get_skill(SKILL_RELIGION), 0));
-                pool[p]->train(SKILL_BUSINESS,
-                               max(d.date[e]->get_skill(SKILL_BUSINESS) - pool[p]->get_skill(SKILL_BUSINESS), 0));
-            }
-
-            if(d.date[e]->get_skill(SKILL_BUSINESS)) {
-                troll += d.date[e]->skill_roll(SKILL_BUSINESS);
-                aroll += pool[p]->skill_roll(SKILL_BUSINESS);
-            }
-
-            if(d.date[e]->get_skill(SKILL_RELIGION)) {
-                troll += d.date[e]->skill_roll(SKILL_RELIGION);
-                aroll += pool[p]->skill_roll(SKILL_RELIGION);
-            }
-
-            if(d.date[e]->get_skill(SKILL_SCIENCE)) {
-                troll += d.date[e]->skill_roll(SKILL_SCIENCE);
-                aroll += pool[p]->skill_roll(SKILL_SCIENCE);
-            }
+                test = true;
+            } else if(c == 'b')
+                test = true;
 
             if(test) {
+                pool[p]->train(SKILL_SEDUCTION, LCSrandom(4) + 5);
+                pool[p]->train(SKILL_SCIENCE,
+                               max(d.date[e]->get_skill(SKILL_SCIENCE) - pool[p]->get_skill(SKILL_SCIENCE), 0));
+                pool[p]->train(SKILL_RELIGION,
+                               max(d.date[e]->get_skill(SKILL_RELIGION) - pool[p]->get_skill(SKILL_RELIGION), 0));
+                pool[p]->train(SKILL_BUSINESS,
+                               max(d.date[e]->get_skill(SKILL_BUSINESS) - pool[p]->get_skill(SKILL_BUSINESS), 0));
+
+                if(d.date[e]->get_skill(SKILL_BUSINESS)) {
+                    troll += d.date[e]->skill_roll(SKILL_BUSINESS);
+                    aroll += pool[p]->skill_roll(SKILL_BUSINESS);
+                }
+
+                if(d.date[e]->get_skill(SKILL_RELIGION)) {
+                    troll += d.date[e]->skill_roll(SKILL_RELIGION);
+                    aroll += pool[p]->skill_roll(SKILL_RELIGION);
+                }
+
+                if(d.date[e]->get_skill(SKILL_SCIENCE)) {
+                    troll += d.date[e]->skill_roll(SKILL_SCIENCE);
+                    aroll += pool[p]->skill_roll(SKILL_SCIENCE);
+                }
+
                 int y = 17;
                 int result = dateresult(aroll, troll, d, e, p, y);
 
@@ -657,9 +647,11 @@ char completedate(datest &d, int p, char &clearformess) {
                 } else {
                     addstr(" seizes the Conservative swine from behind and warns it");
                     move(18, 0);
-                    //if(law[LAW_FREESPEECH]!=-2)
-                    addstr("not to fuck around!");
-                    //else addstr("not to [resist]!");
+
+                    if(law[LAW_FREESPEECH] != -2)
+                        addstr("not to fuck around!");
+                    else
+                        addstr("not to [resist]!");
                 }
 
                 refresh();
