@@ -2567,11 +2567,11 @@ void congress(char clearformess, char canseethings) {
         }
     }
 
-    if(housemake[4] + housemake[3] / 2 >= 290 && senatemake[4] + senatemake[3] / 2 >= 67 && tossj)
+    if(housemake[4] + housemake[3] / 2 >= 290 && senatemake[4] + senatemake[3] / 2 >= 67 && tossj && !nocourtpurge)
         tossjustices(canseethings);
 
     // Purge Congress, implement term limits, and hold new elections?
-    if((housemake[4] + housemake[3] / 2 < 290 || senatemake[4] + senatemake[3] / 2 < 67) && publicmood(-1) > 80)
+    if((housemake[4] + housemake[3] / 2 < 290 || senatemake[4] + senatemake[3] / 2 < 67) && publicmood(-1) > 80 && !notermlimit)
         amendment_termlimits(canseethings);
 
     // REPEAL THE CONSTITUTION AND LOSE THE GAME?
