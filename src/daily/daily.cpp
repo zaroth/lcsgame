@@ -2173,8 +2173,15 @@ void initlocation(locationst &loc) {
         lastname(str);
         strcpy(loc.name, "The ");
         strcat(loc.name, str);
-        strcat(loc.name, " Gentlemen's Club");
-        strcpy(loc.shortname, "Cigar Bar");
+
+        if (law[LAW_DRUGS] == 2) {
+            strcat(loc.name, " Tobbaco-Free Gentlemen's Club");
+            strcpy(loc.shortname, "Drug-Free Bar");
+        } else {
+            strcat(loc.name, " Gentlemen's Club");
+            strcpy(loc.shortname, "Cigar Bar");
+        }
+
         break;
 
     case SITE_BUSINESS_LATTESTAND:
