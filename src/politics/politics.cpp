@@ -2307,7 +2307,7 @@ void congress(char clearformess, char canseethings) {
         for(int l = 0; l < 435; l++) {
             vote = house[l];
 
-            if(vote = -1) {
+            if(vote == -1) {
                 if (LCSrandom(10) >= 5) {
                     vote = 0;
 
@@ -2325,7 +2325,7 @@ void congress(char clearformess, char canseethings) {
 
                     vote -= 2;
                 }
-            } else if(vote = 1) {
+            } else if(vote == 1) {
                 if (LCSrandom(10) >= 5) {
                     vote = 0;
 
@@ -2343,7 +2343,7 @@ void congress(char clearformess, char canseethings) {
 
                     vote -= 2;
                 }
-            } else if(vote = 0) {
+            } else if(vote == 0) {
                 if (LCSrandom(10) >= 8) {
                     vote = 0;
 
