@@ -2308,7 +2308,7 @@ void congress(char clearformess, char canseethings) {
             vote = house[l];
 
             if(vote == -1) {
-                if (LCSrandom(10) >= 5) {
+                if (LCSrandom(2)) {
                     vote = 0;
 
                     if (LCSrandom(100) < mood)
@@ -2326,7 +2326,7 @@ void congress(char clearformess, char canseethings) {
                     vote -= 2;
                 }
             } else if(vote == 1) {
-                if (LCSrandom(10) >= 5) {
+                if (LCSrandom(2)) {
                     vote = 0;
 
                     if(LCSrandom(100) < mood)
@@ -2344,7 +2344,7 @@ void congress(char clearformess, char canseethings) {
                     vote -= 2;
                 }
             } else if(vote == 0) {
-                if (LCSrandom(10) >= 8) {
+                if (LCSrandom(10) <= 4) {
                     vote = 0;
 
                     if (LCSrandom(100) < mood)
