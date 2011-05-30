@@ -2300,6 +2300,7 @@ void congress(char clearformess, char canseethings) {
         int yesvotes_h = 0;
         int yesvotes_s = 0;
 
+        int mood = publicmood(bill[c]);    //A bubblygummy fix that may just work, at least compiles now --KViiri
         int vote;
         int s = -1;
 
@@ -2307,19 +2308,19 @@ void congress(char clearformess, char canseethings) {
             vote = house[l];
 
             if(vote = -1) {
-                if lcsrandom(10) >= 5 {
+                if (LCSrandom(10) >= 5) {
                     vote = 0;
 
-                    if(LCSrandom(100) < mood)
+                    if (LCSrandom(100) < mood)
                         vote++;
 
-                    if(LCSrandom(100) < mood)
+                    if (LCSrandom(100) < mood)
                         vote++;
 
-                    if(LCSrandom(100) < mood)
+                    if (LCSrandom(100) < mood)
                         vote++;
 
-                    if(LCSrandom(100) < mood)
+                    if (LCSrandom(100) < mood)
                         vote++;
 
                     vote -= 2;
@@ -2327,7 +2328,7 @@ void congress(char clearformess, char canseethings) {
             }
 
             if(vote = 1) {
-                if lcsrandom(10) >= 5 {
+                if (LCSrandom(10) >= 5) {
                     vote = 0;
 
                     if(LCSrandom(100) < mood)
@@ -2347,7 +2348,7 @@ void congress(char clearformess, char canseethings) {
             }
 
             if(vote = 0) {
-                if lcsrandom(10) >= 8 {
+                if (LCSrandom(10) >= 8) {
                     vote = 0;
 
                     if(LCSrandom(100) < mood)
