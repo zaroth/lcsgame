@@ -269,8 +269,7 @@ void repairarmor(Creature &cr, char &clearformess) {
     Item *pile = NULL;
     vector<Item *> *pilelist = NULL;
 
-    if(!cr.is_naked() &&
-            (cr.get_armor().is_bloody() || cr.get_armor().is_damaged()))
+    if(cr.get_armor().is_bloody() || cr.get_armor().is_damaged())
         armor = &cr.get_armor();
     else if(cr.squadid != -1) {
         int sq = getsquad(cr.squadid);
@@ -2256,8 +2255,7 @@ void funds_and_trouble(char &clearformess) {
 
                     if(!LCSrandom(4))
                         attemptarrest(*trouble[t], "causing trouble", clearformess);
-                    else if(!trouble[t]->is_armed() &&
-                            trouble[t]->get_skill(SKILL_HANDTOHAND) < 4) {
+                    else if(trouble[t]->get_skill(SKILL_HANDTOHAND) < 4) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
                         addstr(trouble[t]->name);
@@ -2268,7 +2266,7 @@ void funds_and_trouble(char &clearformess) {
 
                         bool wonfight = false;
 
-                        if(trouble[t]->is_armed() && trouble[t]->get_weapon().is_threatening()) {
+                        if(trouble[t]->get_weapon().is_threatening()) {
                             if(clearformess)
                                 erase();
                             else

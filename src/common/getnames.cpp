@@ -580,6 +580,10 @@ void getrecruitcreature(char *str, int type) {
         strcat(str, "Nurse");
         break;
 
+    case CREATURE_LOCKSMITH:
+        strcat(str, "Locksmith");
+        break;
+
     case CREATURE_GUARDDOG:
         strcat(str, "Canine Hero");
         break;

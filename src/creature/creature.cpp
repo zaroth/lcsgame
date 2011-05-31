@@ -1873,10 +1873,8 @@ void Creature::strip(vector<Item *> *lootpile) {
 bool Creature::weapon_is_concealed() const {
     bool concealed = false;
 
-    //if (is_armed() && is_naked())
-    //   concealed = false;
-    if (is_armed() && !is_naked())
-        concealed = armor->conceals_weapon(*weapon);
+    if (is_armed())
+        concealed = get_armor().conceals_weapon(*weapon);
 
     return concealed;
 }
@@ -1902,12 +1900,5 @@ string Creature::get_weapon_string(int subtype) const {
 }
 
 string Creature::get_armor_string(bool fullname) const {
-    string r;
-
-    if(is_naked())
-        r = "Naked";
-    else
-        r = armor->equip_title(fullname);
-
-    return r;
+    return get_armor().equip_title(fullname);
 }

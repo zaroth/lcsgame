@@ -605,7 +605,7 @@ void mode_site(void) {
                 if(activesquad->squad[p] != NULL) {
                     //If they're unarmed and dragging someone
                     if(activesquad->squad[p]->prisoner != NULL &&
-                            !activesquad->squad[p]->is_armed()) {
+                            !activesquad->squad[p]->get_weapon().can_threaten_hostages()) {
                         //And that someone is not an LCS member
                         if(activesquad->squad[p]->prisoner->squadid == -1) {
                             //They scream for help -- flag them kidnapped, cause alarm
