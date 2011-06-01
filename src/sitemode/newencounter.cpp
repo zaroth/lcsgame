@@ -43,6 +43,7 @@ void prepareencounter(short type, char sec) {
         switch(sitetype) {
         case SITE_GOVERNMENT_ARMYBASE:
             creaturearray[CREATURE_SOLDIER] = 1000;
+            creaturearray[CREATURE_MILITARYPOLICE] = 200;
             creaturearray[CREATURE_GUARDDOG] = 100;
             creaturearray[CREATURE_TANK] = 100;
             break;
@@ -1089,6 +1090,11 @@ void prepareencounter(short type, char sec) {
                 creaturearray[CREATURE_GUARDDOG] += 230;
 
             creaturearray[CREATURE_GUARDDOG] += 20;
+            creaturearray[CREATURE_MILITARYPOLICE] += 100;
+
+            if(sec)
+                creaturearray[CREATURE_MILITARYPOLICE] += 100;
+
 
             for(int n = 0; n < LCSrandom(6) + 1; n++) {
                 makecreature(encounter[encslot], getrandomcreaturetype(creaturearray));
@@ -1277,8 +1283,12 @@ char addsiegeencounter(char type) {
                 case SIEGE_POLICE:
                     if(location[cursite]->siege.escalationstate == 0)
                         makecreature(encounter[e], CREATURE_SWAT);
-                    else
-                        makecreature(encounter[e], CREATURE_SOLDIER);
+                    else {
+                        if(LCSrandom(5))        //About 1 unit in 5 should be MPs
+                            makecreature(encounter[e], CREATURE_SOLDIER);
+                        else
+                            makecreature(encounter[e], CREATURE_MILITARYPOLICE);
+                    }
 
                     break;
 
