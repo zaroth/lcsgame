@@ -90,7 +90,6 @@ void savegame(char *str) {
         numbytes = fwrite(&ccs_kills, sizeof(char), 1, h);
 
         numbytes = fwrite(&Vehicle::curcarid, sizeof(long), 1, h);
-        numbytes = fwrite(&showcarprefs, sizeof(char), 1, h);
         numbytes = fwrite(&curcreatureid, sizeof(long), 1, h);
         numbytes = fwrite(&cursquadid, sizeof(long), 1, h);
         numbytes = fwrite(&police_heat, sizeof(int), 1, h);
@@ -415,7 +414,6 @@ char load(void) {
         fread(&ccs_kills, sizeof(char), 1, h);
 
         fread(&Vehicle::curcarid, sizeof(long), 1, h);
-        fread(&showcarprefs, sizeof(char), 1, h);
         fread(&curcreatureid, sizeof(long), 1, h);
         fread(&cursquadid, sizeof(long), 1, h);
         fread(&police_heat, sizeof(int), 1, h);
