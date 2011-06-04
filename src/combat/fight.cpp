@@ -2434,7 +2434,7 @@ void specialattack(Creature &a, Creature &t, char &actual) {
                       t.get_attribute(ATTRIBUTE_WISDOM, true) < t.get_attribute(ATTRIBUTE_HEART, true)) {
                 move(17, 1);
                 addstr(t.name);
-                addstr(" becomes Wiser!");
+                addstr(" is tainted with Wisdom!");
                 t.adjust_attribute(ATTRIBUTE_WISDOM, +1);
             } else if(t.align == ALIGN_LIBERAL && t.flag & CREATUREFLAG_LOVESLAVE) {
                 move(17, 1);

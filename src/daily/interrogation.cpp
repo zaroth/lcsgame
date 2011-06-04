@@ -1725,7 +1725,7 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 move(y, 0);
                 addstr(a->name);
-                addstr(" has gained wisdom!");
+                addstr(" has been tainted with wisdom!");
                 y++;
             }
 
