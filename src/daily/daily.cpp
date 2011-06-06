@@ -1713,6 +1713,33 @@ void initlocation(locationst &loc) {
 
             strcat(loc.name, " Re-education Camp");
             strcpy(loc.shortname, "Re-ed Camp");
+        }
+
+        if(law[LAW_DEATHPENALTY] == 2) {
+            switch(LCSrandom(5)) {
+            case 0:
+                strcpy(loc.name, "George McGovern");
+                break;
+
+            case 1:
+                strcpy(loc.name, "Adlai Stevenson");
+                break;
+
+            case 2:
+                strcpy(loc.name, "Walter Mondale");
+                break;
+
+            case 3:
+                strcpy(loc.name, "Micheal Dukakis");
+                break;
+
+            case 4:
+                strcpy(loc.name, "Hubert Humphrey");
+                break;
+            }
+
+            strcat(loc.name, " Prison Complex for the Rehabilition of Conservative Criminals");
+            strcpy(loc.shortname, "Re-hab Complex");
         } else {
             lastname(str);
             strcpy(loc.name, str);
@@ -1932,13 +1959,24 @@ void initlocation(locationst &loc) {
     case SITE_LABORATORY_GENETIC:
         lastname(str);
         strcpy(loc.name, str);
-        strcat(loc.name, " Genetics");
+
+        if (law[LAW_ANIMALRIGHTS] == 2)
+            strcat(loc.name, " Black Market of Genetics");
+        else {
+            strcpy(loc.name, str);
+            strcat(loc.name, " Genetics");
+        }
+
         strcpy(loc.shortname, "Genetics Lab");
         break;
 
     case SITE_LABORATORY_COSMETICS:
         lastname(str);
         strcpy(loc.name, str);
+
+        if (law[LAW_ANIMALRIGHTS] == 2)
+            strcat(loc.name, " Dark Alley of Cosmetics");
+
         strcat(loc.name, " Cosmetics");
         strcpy(loc.shortname, "Cosmetics Lab");
         break;
