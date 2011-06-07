@@ -2376,6 +2376,10 @@ void elections(char clearformess, char canseethings) {
                    if (LCSrandom(100) < mood)vote++;
                    vote -= 2;
                }
+                   if ((vote >= 0)
+               {
+                   vote==0
+               }
                }
                    else if(vote==1)
                {
@@ -2387,6 +2391,10 @@ void elections(char clearformess, char canseethings) {
                    if(LCSrandom(100)<mood)vote++;
                    if(LCSrandom(100)<mood)vote++;
                    vote-=2;
+               }
+                   if ((vote <= 0)
+               {
+                   vote==0
                }
                }
                    else if(vote==0)
@@ -2432,10 +2440,53 @@ void elections(char clearformess, char canseethings) {
 
                    if(l%4==0&&s<99)
                {
-                   s++;
-
+                   for(int s=0;s<9;s++)
+               {
                    vote=senate[s];
-                   if(vote>=-1&&vote<=1)vote+=LCSrandom(3)-1;
+                   if(vote==-1)
+               {
+                   if (LCSrandom(2))
+               {
+                   vote=0;
+                   if (LCSrandom(100) < mood)vote++;
+                   if (LCSrandom(100) < mood)vote++;
+                   if (LCSrandom(100) < mood)vote++;
+                   if (LCSrandom(100) < mood)vote++;
+                   vote -= 2;
+                   if ((vote >= 0)
+               {
+                   vote==0
+               }
+               }
+               }
+                   else if(vote==1)
+               {
+                   if (LCSrandom(2))
+               {
+                   vote=0;
+                   if(LCSrandom(100)<mood)vote++;
+                   if(LCSrandom(100)<mood)vote++;
+                   if(LCSrandom(100)<mood)vote++;
+                   if(LCSrandom(100)<mood)vote++;
+                   vote-=2;
+                   if ((vote <= 0)
+               {
+                   vote==0
+               }
+               }
+               }
+                   else if(vote==0)
+               {
+                   if (LCSrandom(10) <= 4)
+               {
+                   vote = 0;
+                   if (LCSrandom(100) < mood)vote++;
+                   if (LCSrandom(100) < mood)vote++;
+                   if (LCSrandom(100) < mood)vote++;
+                   if (LCSrandom(100) < mood)vote++;
+                   vote -= 2;
+               }
+               }
 
                    if(law[bill[c]]>vote && billdir[c]==-1)yesvotes_s++;
                    if(law[bill[c]]<vote && billdir[c]==1)yesvotes_s++;
