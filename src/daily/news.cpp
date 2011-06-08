@@ -852,13 +852,12 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
                                 strcat(story, "tampering with lab animals");
                                 } else
                                     strcat(story, "liberating abused animals");
-                                    else
-                                        strcat(story, "liberated abused animals");
 
-                                        if(typesum >= 3)strcat(story, ", ");
-                                        else if(typesum == 2)strcat(story, " and ");
-                                            typesum--;
-                                        }
+
+                                    if(typesum >= 3)strcat(story, ", ");
+                                    else if(typesum == 2)strcat(story, " and ");
+                                        typesum--;
+                                    }
 
                         if(crime[CRIME_BREAK_SWEATSHOP] || crime[CRIME_BREAK_FACTORY]) {
                                 if(!liberalguardian || ccs)
