@@ -469,9 +469,8 @@ void Creature::creatureinit(void) {
     for(int w = 0; w < BODYPARTNUM; w++)
         wound[w] = 0;
 
-    weapon = NULL;
-    has_thrown_weapon = false;
-    armor = NULL; //new Armor(*armortype[getarmortype("ARMOR_CLOTHES")]); //Causes crash for global uniqueCreature -XML
+    drop_weapons_and_clips(NULL);  // Get rid of any old equipment.
+    strip(NULL);                  //
 
     for(int a = 0; a < ATTNUM; a++) {
         //attributes[a].set_type(a);
