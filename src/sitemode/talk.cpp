@@ -1370,7 +1370,7 @@ char talk(Creature &a, int t) {
                         break;
 
                     case LAW_ELECTIONS:
-                        addstr("\"Politicians sometimes lie about their political views in hopes of winning elections.\"");
+                        addstr("\"Some of these politicians rub me the wrong way.\"");
                         break;
 
                     case LAW_MILITARY:
@@ -1738,7 +1738,7 @@ char talk(Creature &a, int t) {
                                 break;
 
                             case LAW_POLLUTION:
-                                addstr("\"Pollution regulations cost American jobs.\"");
+                                addstr("\"It's not that bad.\"");
                                 break;
 
                             case LAW_LABOR:
@@ -1800,104 +1800,270 @@ char talk(Creature &a, int t) {
                         } else {
                             move(y, 1);
                             y++;
-
-                            switch(LCSrandom(3)) {
-                            case 0:
-                                addstr("\"Whatever.\"");
-                                break;
-
-                            case 1:
-                                addstr("\"I don't care about politics.\"");
-                                break;
-
-                            case 2:
-                                addstr("\"It's not that bad.\"");
-                                break;
-                            }
+                            addstr("\"Whatever.\"");
                         }
-
-                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        addstr(" <turns away>");
-                        refresh();
-                        getch();
-
-                        encounter[t].cantbluff = 1;
-                        return 1;
                     }
 
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    addstr(" <turns away>");
+                    refresh();
+                    getch();
+
+                    encounter[t].cantbluff = 1;
+                    return 1;
+                }
+
+                break;
+            }
+
+            case TALKMODE_RENTING: {
+                int rent = 200;
+
+                switch(location[cursite]->type) {
+                case SITE_RESIDENTIAL_APARTMENT:
+                    rent = 650;
+                    break;
+
+                case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
+                    rent = 1500;
                     break;
                 }
 
-                case TALKMODE_RENTING: {
-                    int rent = 200;
+                if(c == 'a' && ledger.get_funds() >= rent) {
+                    clearcommandarea();
+                    clearmessagearea();
+                    clearmaparea();
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(9, 1);
+                    addstr(a.name);
+                    addstr(" says,");
+                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                    move(10, 1);
+                    addstr("\"I'll take it.\"");
+                    refresh();
+                    getch();
 
-                    switch(location[cursite]->type) {
-                    case SITE_RESIDENTIAL_APARTMENT:
-                        rent = 650;
-                        break;
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(12, 1);
+                    addstr(tk->name);
+                    addstr(" responds,");
+                    set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                    move(13, 1);
+                    addstr("\"Rent is due by the third of every month.");
+                    move(14, 1);
+                    addstr("We'll start next month.\"");
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    addstr(" <turns away>");
+                    refresh();
+                    getch();
 
-                    case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
-                        rent = 1500;
-                        break;
+                    ledger.subtract_funds(rent, EXPENSE_RENT);
+                    location[cursite]->renting = rent;
+                    location[cursite]->newrental = 1;
+
+                    basesquad(activesquad, cursite);
+                    return 1;
+                }
+
+                if(c == 'b') {
+                    clearcommandarea();
+                    clearmessagearea();
+                    clearmaparea();
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(9, 1);
+                    addstr(a.name);
+                    addstr(" says,");
+                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                    move(10, 1);
+                    addstr("\"Whoa, I was looking for something cheaper.\"");
+                    refresh();
+                    getch();
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(12, 1);
+                    addstr(tk->name);
+                    addstr(" responds,");
+                    set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                    move(13, 1);
+                    addstr("\"Not my problem...\"");
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    addstr(" <turns away>");
+                    refresh();
+                    getch();
+
+                    return 1;
+                }
+
+                if(c == 'c') {
+                    clearcommandarea();
+                    clearmessagearea();
+                    clearmaparea();
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    Creature *armed_liberal = NULL;
+
+                    for(int i = 0; i < 6; i++) {
+                        if(activesquad->squad[i] &&
+                                activesquad->squad[i]->get_weapon().is_threatening()) {
+                            armed_liberal = activesquad->squad[i];
+                            break;
+                        }
                     }
 
-                    if(c == 'a' && ledger.get_funds() >= rent) {
-                        clearcommandarea();
-                        clearmessagearea();
-                        clearmaparea();
-                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    if(armed_liberal) {
                         move(9, 1);
-                        addstr(a.name);
-                        addstr(" says,");
-                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                        move(10, 1);
-                        addstr("\"I'll take it.\"");
+                        addstr(armed_liberal->name);
+                        addstr(" brandishes the ");
+                        addstr(armed_liberal->get_weapon().get_shortname(0).c_str());
+                        addstr(".");
                         refresh();
                         getch();
+                        clearmessagearea();
+                    }
 
+                    move(9, 1);
+                    addstr(a.name);
+                    addstr(" says,");
+                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                    move(10, 1);
+                    addstr("\"What's the price for the Liberal Crime Squad?\"");
+                    refresh();
+                    getch();
+
+                    int roll       = a.skill_roll(SKILL_PERSUASION);
+                    int difficulty = DIFFICULTY_FORMIDABLE;
+
+                    if(newscherrybusted == false)
+                        difficulty += 6;
+
+                    if(armed_liberal == NULL)
+                        difficulty += 6;
+
+                    if(roll < difficulty - 1) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(12, 1);
                         addstr(tk->name);
                         addstr(" responds,");
                         set_color(COLOR_BLUE, COLOR_BLACK, 1);
                         move(13, 1);
-                        addstr("\"Rent is due by the third of every month.");
-                        move(14, 1);
-                        addstr("We'll start next month.\"");
+                        addstr("\"I think you'd better leave.\"");
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        addstr(" <turns away>");
+                        addstr(" <crosses arms>");
+                        refresh();
+                        getch();
+                        tk->cantbluff = 1;
+                        return 1;
+                    } else {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(12, 1);
+                        addstr(tk->name);
+                        addstr(" responds,");
+                        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                        move(13, 1);
+                        addstr("\"Jesus... it's yours...\"");
                         refresh();
                         getch();
 
-                        ledger.subtract_funds(rent, EXPENSE_RENT);
+                        int rent;
+
+                        // Either he calls the cops...
+                        if(roll < difficulty) {
+                            for(int i = 0; i < 6; i++) {
+                                if(activesquad->squad[i])
+                                    criminalize(*(activesquad->squad[i]), LAWFLAG_EXTORTION);
+                            }
+
+                            location[cursite]->siege.timeuntillocated = 2;
+                            rent = 10000000; // Yeah he's kicking you out next month
+                        }
+                        // ...or it's yours for free
+                        else
+                            rent = 0;
+
                         location[cursite]->renting = rent;
-                        location[cursite]->newrental = 1;
+                        location[cursite]->newrental = true;
 
                         basesquad(activesquad, cursite);
                         return 1;
                     }
+                }
 
-                    if(c == 'b') {
-                        clearcommandarea();
-                        clearmessagearea();
-                        clearmaparea();
+                break;
+            }
+
+            case TALKMODE_START:
+                if(c == 'a') {
+                    clearcommandarea();
+                    clearmessagearea();
+                    clearmaparea();
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(9, 1);
+                    addstr(a.name);
+                    addstr(" says,");
+
+                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                    move(10, 1);
+                    addstr("\"Do you want to hear something disturbing?\"");
+                    refresh();
+                    getch();
+
+                    bool interested = tk->talkreceptive();
+
+                    if(!interested && a.skill_check(SKILL_PERSUASION, DIFFICULTY_AVERAGE))
+                        interested = true;
+
+                    if((tk->animalgloss == ANIMALGLOSS_ANIMAL && tk->align != ALIGN_LIBERAL) ||
+                            tk->animalgloss == ANIMALGLOSS_TANK) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        move(9, 1);
-                        addstr(a.name);
-                        addstr(" says,");
-                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                        move(10, 1);
-                        addstr("\"Whoa, I was looking for something cheaper.\"");
+                        move(12, 1);
+                        addstr(tk->name);
+
+                        switch(tk->type) {
+                        case CREATURE_TANK:
+                            addstr(" rumbles disinterestedly.");
+                            break;
+
+                        case CREATURE_GUARDDOG:
+                            addstr(" barks.");
+                            break;
+
+                        default:
+                            addstr(" doesn't understand.");
+                        }
+
                         refresh();
                         getch();
 
+                        return 1;
+                    } else if(tk->type != CREATURE_PRISONER && interested) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(12, 1);
                         addstr(tk->name);
                         addstr(" responds,");
                         set_color(COLOR_BLUE, COLOR_BLACK, 1);
                         move(13, 1);
-                        addstr("\"Not my problem...\"");
+                        addstr("\"What?\"");
+                        refresh();
+                        getch();
+
+                        talkmode = TALKMODE_ISSUES;
+                        break;
+                    } else {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(12, 1);
+                        addstr(tk->name);
+                        addstr(" responds,");
+                        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                        move(13, 1);
+
+                        if(tk->type == CREATURE_PRISONER) {
+                            if(tk->align == ALIGN_LIBERAL)
+                                addstr("\"Now's not the time!\"");
+                            else
+                                addstr("\"Leave me alone.\"");
+                        } else
+                            addstr("\"No.\"");
+
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         addstr(" <turns away>");
                         refresh();
@@ -1905,1062 +2071,882 @@ char talk(Creature &a, int t) {
 
                         return 1;
                     }
-
-                    if(c == 'c') {
-                        clearcommandarea();
-                        clearmessagearea();
-                        clearmaparea();
-                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        Creature *armed_liberal = NULL;
-
-                        for(int i = 0; i < 6; i++) {
-                            if(activesquad->squad[i] &&
-                                    activesquad->squad[i]->get_weapon().is_threatening()) {
-                                armed_liberal = activesquad->squad[i];
-                                break;
-                            }
-                        }
-
-                        if(armed_liberal) {
-                            move(9, 1);
-                            addstr(armed_liberal->name);
-                            addstr(" brandishes the ");
-                            addstr(armed_liberal->get_weapon().get_shortname(0).c_str());
-                            addstr(".");
-                            refresh();
-                            getch();
-                            clearmessagearea();
-                        }
-
-                        move(9, 1);
-                        addstr(a.name);
-                        addstr(" says,");
-                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                        move(10, 1);
-                        addstr("\"What's the price for the Liberal Crime Squad?\"");
-                        refresh();
-                        getch();
-
-                        int roll       = a.skill_roll(SKILL_PERSUASION);
-                        int difficulty = DIFFICULTY_FORMIDABLE;
-
-                        if(newscherrybusted == false)
-                            difficulty += 6;
-
-                        if(armed_liberal == NULL)
-                            difficulty += 6;
-
-                        if(roll < difficulty - 1) {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(12, 1);
-                            addstr(tk->name);
-                            addstr(" responds,");
-                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                            move(13, 1);
-                            addstr("\"I think you'd better leave.\"");
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            addstr(" <crosses arms>");
-                            refresh();
-                            getch();
-                            tk->cantbluff = 1;
-                            return 1;
-                        } else {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(12, 1);
-                            addstr(tk->name);
-                            addstr(" responds,");
-                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                            move(13, 1);
-                            addstr("\"Jesus... it's yours...\"");
-                            refresh();
-                            getch();
-
-                            int rent;
-
-                            // Either he calls the cops...
-                            if(roll < difficulty) {
-                                for(int i = 0; i < 6; i++) {
-                                    if(activesquad->squad[i])
-                                        criminalize(*(activesquad->squad[i]), LAWFLAG_EXTORTION);
-                                }
-
-                                location[cursite]->siege.timeuntillocated = 2;
-                                rent = 10000000; // Yeah he's kicking you out next month
-                            }
-                            // ...or it's yours for free
-                            else
-                                rent = 0;
-
-                            location[cursite]->renting = rent;
-                            location[cursite]->newrental = true;
-
-                            basesquad(activesquad, cursite);
-                            return 1;
-                        }
-                    }
-
-                    break;
                 }
 
-                case TALKMODE_START:
-                    if(c == 'a') {
-                        clearcommandarea();
-                        clearmessagearea();
-                        clearmaparea();
+                if(c == 'b' && tk->can_date(a)) {
+                    int y = 12;
+                    clearcommandarea();
+                    clearmessagearea();
+                    clearmaparea();
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(9, 1);
+                    addstr(a.name);
+                    addstr(" says,");
+                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                    move(10, 1);
+                    int line;
 
-                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        move(9, 1);
-                        addstr(a.name);
-                        addstr(" says,");
+                    if(law[LAW_FREESPEECH] == -2) {
+                        line = LCSrandom(3);
 
-                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                        move(10, 1);
-                        addstr("\"Do you want to hear something disturbing?\"");
-                        refresh();
-                        getch();
-
-                        bool interested = tk->talkreceptive();
-
-                        if(!interested && a.skill_check(SKILL_PERSUASION, DIFFICULTY_AVERAGE))
-                            interested = true;
-
-                        if((tk->animalgloss == ANIMALGLOSS_ANIMAL && tk->align != ALIGN_LIBERAL) ||
-                                tk->animalgloss == ANIMALGLOSS_TANK) {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(12, 1);
-                            addstr(tk->name);
-
-                            switch(tk->type) {
-                            case CREATURE_TANK:
-                                addstr(" rumbles disinterestedly.");
-                                break;
-
-                            case CREATURE_GUARDDOG:
-                                addstr(" barks.");
-                                break;
-
-                            default:
-                                addstr(" doesn't understand.");
-                            }
-
-                            refresh();
-                            getch();
-
-                            return 1;
-                        } else if(tk->type != CREATURE_PRISONER && interested) {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(12, 1);
-                            addstr(tk->name);
-                            addstr(" responds,");
-                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                            move(13, 1);
-                            addstr("\"What?\"");
-                            refresh();
-                            getch();
-
-                            talkmode = TALKMODE_ISSUES;
+                        switch(line) {
+                        case 0:
+                            addstr("\"[What church do you go to?]\"");
                             break;
-                        } else {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(12, 1);
-                            addstr(tk->name);
-                            addstr(" responds,");
-                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                            move(13, 1);
 
-                            if(tk->type == CREATURE_PRISONER) {
-                                if(tk->align == ALIGN_LIBERAL)
-                                    addstr("\"Now's not the time!\"");
-                                else
-                                    addstr("\"Leave me alone.\"");
-                            } else
-                                addstr("\"No.\"");
+                        case 1:
+                            addstr("\"[Will you marry me?]\"");
+                            break;
 
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            addstr(" <turns away>");
-                            refresh();
-                            getch();
+                        case 2:
+                            addstr("\"[Do you believe in abstinence education?]\"");
+                            break;
+                        }
+                    } else {
+                        line = LCSrandom(44);
 
-                            return 1;
+                        switch(line) {
+                        case 0:
+                            addstr("\"Hey baby, you're kinda ugly.  I like that.\"");
+                            break;
+
+                        case 1:
+                            addstr("\"I lost my phone number.  Could I have yours?\"");
+                            break;
+
+                        case 2:
+                            addstr("\"Hey, you wanna go rub one off?\"");
+                            break;
+
+                        case 3:
+                            addstr("\"Hot damn.  You're built like a brick shithouse, honey.\"");
+                            break;
+
+                        case 4:
+                            addstr("\"I know I've seen you on the back of a milk carton,");
+                            move(11, 1);
+                            y++;
+                            addstr("cuz you've been missing from my life.\"");
+                            break;
+
+                        case 5:
+                            addstr("\"I'm big where it counts.\"");
+                            break;
+
+                        case 6:
+                            addstr("\"Daaaaaamn girl, I want to wrap your legs around my face and");
+                            move(11, 1);
+                            y++;
+                            addstr("wear you like a feed bag!\""); // Bill Hicks
+                            break;
+
+                        case 7:
+                            addstr("\"Let's play squirrel.  I'll bust a nut in your hole.\"");
+                            break;
+
+                        case 8:
+                            addstr("\"You know, if I were you, I'd have sex with me.\"");
+                            break;
+
+                        case 9:
+                            addstr("\"You don't sweat much for a fat chick.\"");
+                            break;
+
+                        case 10:
+                            addstr("\"Fuck me if I'm wrong but you want to kiss me, right?\"");
+                            break;
+
+                        case 11:
+                            addstr("\"Your parents must be retarded, because you are special.\"");
+                            break;
+
+                        case 12:
+                            addstr("\"Let's play trains...  you can sit on my face and I will chew chew chew.\"");
+                            break;
+
+                        case 13:
+                            addstr("\"Is it hot in here or is it just you?\"");
+                            break;
+
+                        case 14:
+                            addstr("\"I may not be Fred Flintstone, but I can make your bed rock!\"");
+                            break;
+
+                        case 15:
+                            addstr("\"What do you say we go behind a rock and get a little boulder?\"");
+                            break;
+
+                        case 16:
+                            addstr("\"Do you have stars on your panties?  Your ass is outta this world!\"");
+                            break;
+
+                        case 17:
+                            addstr("\"Those pants would look great on the floor of my bedroom.\"");
+                            break;
+
+                        case 18:
+                            addstr("\"If I said you had a nice body, would you hold it against me?\"");
+                            break;
+
+                        case 19:
+                            addstr("\"Are you tired?  You've been running around in my thoughts all day.\"");
+                            break;
+
+                        case 20:
+                            addstr("\"If I could change the alphabet baby, I would put the U and I together!\"");
+                            break;
+
+                        case 21:
+                            addstr("\"Your lips look sweet.  Can I taste them?\"");
+                            break;
+
+                        case 22:
+                            addstr("\"Nice shoes.  Wanna fuck?\"");
+                            break;
+
+                        case 23:
+                            addstr("\"Your sexuality makes me nervous and this frustrates me.\"");
+                            break;
+
+                        case 24:
+                            addstr("\"Are you Jamaican?  Cuz Jamaican me horny.\"");
+                            break;
+
+                        case 25:
+                            addstr("\"Hey pop tart, fancy coming in my toaster of love?\"");
+                            break;
+
+                        case 26:
+                            addstr("\"Wanna play army?  You lie down and I'll blow you away.\"");
+                            break;
+
+                        case 27:
+                            addstr("\"Can I lick your forehead?\"");
+                            break;
+
+                        case 28:
+                            addstr("\"I have a genital rash.  Will you rub this ointment on me?\"");
+                            break;
+
+                        case 29:
+                            addstr("\"What's your sign?\"");
+                            break;
+
+                        case 30:
+                            addstr("\"Do you work for the post office?");
+                            move(11, 1);
+                            y++;
+                            addstr("Because I could have sworn you were checking out my package.\"");
+                            break;
+
+                        case 31:
+                            addstr("\"I'm not the most attractive person in here,");
+                            move(11, 1);
+                            y++;
+                            addstr("but I'm the only one talking to you.\"");
+                            break;
+
+                        case 32:
+                            addstr("\"Hi.  I suffer from amnesia.  Do I come here often?\"");
+                            break;
+
+                        case 33:
+                            addstr("\"I'm new in town.  Could you give me directions to your apartment?\"");
+                            break;
+
+                        case 34:
+                            addstr("\"Stand still so I can pick you up!\"");
+                            break;
+
+                        case 35:
+                            addstr("\"Your daddy must have been a baker, cuz you've got a nice set of buns.\"");
+                            break;
+
+                        case 36:
+                            addstr("\"If you were a laser, you'd be set on 'stunning'.\"");
+                            break;
+
+                        case 37:
+                            addstr("\"Is that a keg in your pants?  Cuz I'd love to tap that ass.\"");
+                            break;
+
+                        case 38:
+                            addstr("\"If I could be anything, I'd love to be your bathwater.\"");
+                            break;
+
+                        case 39:
+                            addstr("\"Stop, drop and roll, baby.  You are on fire.\"");
+                            break;
+
+                        case 40:
+                            addstr("\"Do you want to see something swell?\"");
+                            break;
+
+                        case 41:
+                            addstr("\"Excuse me.  Do you want to fuck or should I apologize?\"");
+                            break;
+
+                        case 42:
+                            addstr("\"Say, did we go to different schools together?\"");
+                            break;
+
+                        case 43:
+                            addstr("\"You smell...  Let's go take a shower.\"");
+                            break;
                         }
                     }
 
-                    if(c == 'b' && tk->can_date(a)) {
-                        int y = 12;
-                        clearcommandarea();
-                        clearmessagearea();
-                        clearmaparea();
+                    refresh();
+                    getch();
+
+                    bool succeeded = false;
+
+                    int difficulty = DIFFICULTY_HARD;
+
+                    if(tk->type == CREATURE_CORPORATE_CEO)
+                        difficulty = DIFFICULTY_HEROIC;
+
+                    if(a.skill_check(SKILL_SEDUCTION, difficulty))
+                        succeeded = true;
+
+                    if((tk->animalgloss == ANIMALGLOSS_ANIMAL && law[LAW_ANIMALRESEARCH] != 2) ||
+                            tk->animalgloss == ANIMALGLOSS_TANK) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        move(9, 1);
-                        addstr(a.name);
-                        addstr(" says,");
-                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                        move(10, 1);
-                        int line;
+                        move(12, 1);
+                        addstr(tk->name);
 
-                        if(law[LAW_FREESPEECH] == -2) {
-                            line = LCSrandom(3);
+                        switch(tk->type) {
+                        case CREATURE_TANK:
+                            addstr(" shakes its turret a firm 'no'.");
+                            break;
 
-                            switch(line) {
+                        case CREATURE_GUARDDOG:
+                            addstr(" says, ");
+                            move(13, 1);
+                            set_color(COLOR_RED, COLOR_BLACK, 1);
+
+                            switch(LCSrandom(3)) {
                             case 0:
-                                addstr("\"[What church do you go to?]\"");
+                                addstr("\"No! Wrong! I'm a dog!! Jesus.\"");
                                 break;
 
                             case 1:
-                                addstr("\"[Will you marry me?]\"");
+                                addstr("\"What?! Ugh, I'm going to toss my kibble.\"");
                                 break;
 
                             case 2:
-                                addstr("\"[Do you believe in abstinence education?]\"");
+                                addstr("\"Okay, you need to stop petting me now.\"");
                                 break;
                             }
-                        } else {
-                            line = LCSrandom(44);
 
-                            switch(line) {
-                            case 0:
-                                addstr("\"Hey baby, you're kinda ugly.  I like that.\"");
-                                break;
+                            tk->align = ALIGN_CONSERVATIVE;
+                            tk->cantbluff = 1;
+                            break;
 
-                            case 1:
-                                addstr("\"I lost my phone number.  Could I have yours?\"");
-                                break;
-
-                            case 2:
-                                addstr("\"Hey, you wanna go rub one off?\"");
-                                break;
-
-                            case 3:
-                                addstr("\"Hot damn.  You're built like a brick shithouse, honey.\"");
-                                break;
-
-                            case 4:
-                                addstr("\"I know I've seen you on the back of a milk carton,");
-                                move(11, 1);
-                                y++;
-                                addstr("cuz you've been missing from my life.\"");
-                                break;
-
-                            case 5:
-                                addstr("\"I'm big where it counts.\"");
-                                break;
-
-                            case 6:
-                                addstr("\"Daaaaaamn girl, I want to wrap your legs around my face and");
-                                move(11, 1);
-                                y++;
-                                addstr("wear you like a feed bag!\""); // Bill Hicks
-                                break;
-
-                            case 7:
-                                addstr("\"Let's play squirrel.  I'll bust a nut in your hole.\"");
-                                break;
-
-                            case 8:
-                                addstr("\"You know, if I were you, I'd have sex with me.\"");
-                                break;
-
-                            case 9:
-                                addstr("\"You don't sweat much for a fat chick.\"");
-                                break;
-
-                            case 10:
-                                addstr("\"Fuck me if I'm wrong but you want to kiss me, right?\"");
-                                break;
-
-                            case 11:
-                                addstr("\"Your parents must be retarded, because you are special.\"");
-                                break;
-
-                            case 12:
-                                addstr("\"Let's play trains...  you can sit on my face and I will chew chew chew.\"");
-                                break;
-
-                            case 13:
-                                addstr("\"Is it hot in here or is it just you?\"");
-                                break;
-
-                            case 14:
-                                addstr("\"I may not be Fred Flintstone, but I can make your bed rock!\"");
-                                break;
-
-                            case 15:
-                                addstr("\"What do you say we go behind a rock and get a little boulder?\"");
-                                break;
-
-                            case 16:
-                                addstr("\"Do you have stars on your panties?  Your ass is outta this world!\"");
-                                break;
-
-                            case 17:
-                                addstr("\"Those pants would look great on the floor of my bedroom.\"");
-                                break;
-
-                            case 18:
-                                addstr("\"If I said you had a nice body, would you hold it against me?\"");
-                                break;
-
-                            case 19:
-                                addstr("\"Are you tired?  You've been running around in my thoughts all day.\"");
-                                break;
-
-                            case 20:
-                                addstr("\"If I could change the alphabet baby, I would put the U and I together!\"");
-                                break;
-
-                            case 21:
-                                addstr("\"Your lips look sweet.  Can I taste them?\"");
-                                break;
-
-                            case 22:
-                                addstr("\"Nice shoes.  Wanna fuck?\"");
-                                break;
-
-                            case 23:
-                                addstr("\"Your sexuality makes me nervous and this frustrates me.\"");
-                                break;
-
-                            case 24:
-                                addstr("\"Are you Jamaican?  Cuz Jamaican me horny.\"");
-                                break;
-
-                            case 25:
-                                addstr("\"Hey pop tart, fancy coming in my toaster of love?\"");
-                                break;
-
-                            case 26:
-                                addstr("\"Wanna play army?  You lie down and I'll blow you away.\"");
-                                break;
-
-                            case 27:
-                                addstr("\"Can I lick your forehead?\"");
-                                break;
-
-                            case 28:
-                                addstr("\"I have a genital rash.  Will you rub this ointment on me?\"");
-                                break;
-
-                            case 29:
-                                addstr("\"What's your sign?\"");
-                                break;
-
-                            case 30:
-                                addstr("\"Do you work for the post office?");
-                                move(11, 1);
-                                y++;
-                                addstr("Because I could have sworn you were checking out my package.\"");
-                                break;
-
-                            case 31:
-                                addstr("\"I'm not the most attractive person in here,");
-                                move(11, 1);
-                                y++;
-                                addstr("but I'm the only one talking to you.\"");
-                                break;
-
-                            case 32:
-                                addstr("\"Hi.  I suffer from amnesia.  Do I come here often?\"");
-                                break;
-
-                            case 33:
-                                addstr("\"I'm new in town.  Could you give me directions to your apartment?\"");
-                                break;
-
-                            case 34:
-                                addstr("\"Stand still so I can pick you up!\"");
-                                break;
-
-                            case 35:
-                                addstr("\"Your daddy must have been a baker, cuz you've got a nice set of buns.\"");
-                                break;
-
-                            case 36:
-                                addstr("\"If you were a laser, you'd be set on 'stunning'.\"");
-                                break;
-
-                            case 37:
-                                addstr("\"Is that a keg in your pants?  Cuz I'd love to tap that ass.\"");
-                                break;
-
-                            case 38:
-                                addstr("\"If I could be anything, I'd love to be your bathwater.\"");
-                                break;
-
-                            case 39:
-                                addstr("\"Stop, drop and roll, baby.  You are on fire.\"");
-                                break;
-
-                            case 40:
-                                addstr("\"Do you want to see something swell?\"");
-                                break;
-
-                            case 41:
-                                addstr("\"Excuse me.  Do you want to fuck or should I apologize?\"");
-                                break;
-
-                            case 42:
-                                addstr("\"Say, did we go to different schools together?\"");
-                                break;
-
-                            case 43:
-                                addstr("\"You smell...  Let's go take a shower.\"");
-                                break;
-                            }
+                        default:
+                            addstr(" doesn't quite pick up on the subtext.");
                         }
 
                         refresh();
                         getch();
-
-                        bool succeeded = false;
-
-                        int difficulty = DIFFICULTY_HARD;
-
-                        if(tk->type == CREATURE_CORPORATE_CEO)
-                            difficulty = DIFFICULTY_HEROIC;
-
-                        if(a.skill_check(SKILL_SEDUCTION, difficulty))
-                            succeeded = true;
-
-                        if((tk->animalgloss == ANIMALGLOSS_ANIMAL && law[LAW_ANIMALRESEARCH] != 2) ||
-                                tk->animalgloss == ANIMALGLOSS_TANK) {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(12, 1);
-                            addstr(tk->name);
-
-                            switch(tk->type) {
-                            case CREATURE_TANK:
-                                addstr(" shakes its turret a firm 'no'.");
-                                break;
-
-                            case CREATURE_GUARDDOG:
-                                addstr(" says, ");
-                                move(13, 1);
-                                set_color(COLOR_RED, COLOR_BLACK, 1);
-
-                                switch(LCSrandom(3)) {
-                                case 0:
-                                    addstr("\"No! Wrong! I'm a dog!! Jesus.\"");
-                                    break;
-
-                                case 1:
-                                    addstr("\"What?! Ugh, I'm going to toss my kibble.\"");
-                                    break;
-
-                                case 2:
-                                    addstr("\"Okay, you need to stop petting me now.\"");
-                                    break;
-                                }
-
-                                tk->align = ALIGN_CONSERVATIVE;
-                                tk->cantbluff = 1;
-                                break;
-
-                            default:
-                                addstr(" doesn't quite pick up on the subtext.");
-                            }
-
-                            refresh();
-                            getch();
-
-                            return 1;
-                        }
-
-                        a.train(SKILL_SEDUCTION, LCSrandom(5) + 2);
-
-                        if((a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" // Police property on armor? -XML
-                                || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
-                                && tk->type == CREATURE_PROSTITUTE) {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(y, 1);
-                            y++;
-                            addstr(tk->name);
-                            addstr(" responds,");
-                            set_color(COLOR_RED, COLOR_BLACK, 1);
-                            move(y, 1);
-                            y++;
-
-                            addstr("Dirty. You know that's illegal, officer.");
-
-                            refresh();
-                            getch();
-
-                            encounter[t].cantbluff = 1;
-                        } else if(succeeded) {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(y, 1);
-                            y++;
-                            addstr(tk->name);
-                            addstr(" responds,");
-                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                            move(y, 1);
-                            y++;
-
-                            if(law[LAW_FREESPEECH] == -2) {
-                                switch(line) {
-                                case 0:
-                                    addstr("\"[I go to your church.]\"");
-                                    break;
-
-                                case 1:
-                                    addstr("\"[Yes.]\"");
-                                    break;
-
-                                case 2:
-                                    addstr("\"[Yes.  Yes, I do.]\"");
-                                    break;
-                                }
-                            } else {
-                                switch(line) {
-                                //LIMIT             :-----------------------------------------------------------------------------:
-                                case 0:
-                                    addstr("\"You're not so cute yourself.  Wanna get a room?\"");
-                                    break;
-
-                                case 1:
-                                    addstr("\"How sweet!  You can call me tonight...\"");
-                                    break;
-
-                                case 2:
-                                    addstr("\"You bet, baby.\"");
-                                    break;
-
-                                case 3:
-                                    addstr("\"He he, I'll let that one slide.  Besides, I like country folk...\"");
-                                    break;
-
-                                case 4:
-                                    addstr("\"That's sick.  I can do sick tonight.\"");
-                                    break;
-
-                                case 5:
-                                    addstr("\"Oooo, let me see!\"");
-                                    break;
-
-                                case 6:
-                                    addstr("\"Wow, looks like I'm going to have to reward creativity tonight!\"");
-                                    break;
-
-                                case 7:
-                                    addstr("\"Winter's coming.  You'd better bust more than one.\"");
-                                    break;
-
-                                case 8:
-                                    addstr("\"But you're not, so the pleasure's all mine.\"");
-                                    break;
-
-                                case 9:
-                                    addstr("\"Just wait until tonight, baby.\"");
-                                    break;
-
-                                case 10:
-                                    addstr("\"You're wrong.\"");
-                                    break;
-
-                                case 11:
-                                    addstr("\"I can drool on you if you like it that way.\"");
-                                    break;
-
-                                case 12:
-                                    addstr("\"Oooo, all aboard baby!\"");
-                                    break;
-
-                                case 13:
-                                    addstr("\"Not as hot as we'll be tonight you slut.\"");
-                                    break;
-
-                                case 14:
-                                    addstr("\"Goober.  You wanna hook up tonight?\"");
-                                    break;
-
-                                case 15:
-                                    addstr("\"Oooo, we should get stoned too!  He he.\"");
-                                    break;
-
-                                case 16:
-                                    addstr("\"You'll have to whip out your rocket to get some.  Let's do it.\"");
-                                    break;
-
-                                case 17:
-                                    addstr("\"So would my underwear.\"");
-                                    break;
-
-                                case 18:
-                                    addstr("\"Yeah, and you're going to repay me tonight.\"");
-                                    break;
-
-                                case 19:
-                                    addstr("\"Then stop *thinking* about it and come over tonight.\"");
-                                    break;
-
-                                case 20:
-                                    addstr("\"As long as you put a condom between them, I'm all for it.\"");
-                                    break;
-
-                                case 21:
-                                    addstr("\"Sure, but you can't use your mouth.\"");
-                                    break;
-
-                                case 22:
-                                    addstr("\"I hope you don't have a foot fetish, but I'm game.\"");
-                                    break;
-
-                                case 23:
-                                    addstr("\"My sex could do even more.\"");
-                                    break;
-
-                                case 24:
-                                    addstr("\"Let me invite you to visit my island paradise.  Tonight.\"");
-                                    break;
-
-                                case 25:
-                                    addstr("\"Oh, man...  just don't tell anybody I'm seeing you.\"");
-                                    break;
-
-                                case 26:
-                                    addstr("\"I hope we're shooting blanks, soldier.  I'm out of condoms.\"");
-                                    break;
-
-                                case 27:
-                                    addstr("\"You can lick all my decals off, baby.\"");
-                                    break;
-
-                                case 28:
-                                    addstr("\"Only if I'm not allowed to use my hands.\"");
-                                    break;
-
-                                case 29:
-                                    addstr("\"The one that says 'Open All Night'.\"");
-                                    break;
-
-                                case 30:
-                                    addstr("\"It looks like a letter bomb to me.  Let me blow it up.\"");
-                                    break;
-
-                                case 31:
-                                    addstr("\"Hey, I could do better.  But I'm feeling cheap tonight.\"");
-                                    break;
-
-                                case 32:
-                                    addstr("\"Yeah.  I hope you remember the lube this time.\"");
-                                    break;
-
-                                case 33:
-                                    addstr("\"But if we use a hotel, you won't get shot by an angry spouse tonight.\"");
-                                    break;
-
-                                case 34:
-                                    addstr("\"I think you'll appreciate the way I move after tonight.\"");
-                                    break;
-
-                                case 35:
-                                    addstr("\"They make a yummy bedtime snack.\"");
-                                    break;
-
-                                case 36:
-                                    addstr("\"Oh..  oh, God.  I can't believe I'm going to date a Trekkie.\"");
-                                    break;
-
-                                case 37:
-                                    addstr("\"Oh, it isn't safe for you to drive like that.  You'd better stay the night.\"");
-                                    break;
-
-                                case 38:
-                                    addstr("\"Come over tonight and I can show you what it's like.\"");
-                                    break;
-
-                                case 39:
-                                    addstr("\"I'll stop, drop and roll if you do it with me.\"");
-                                    break;
-
-                                case 40:
-                                    addstr("\"I'd rather feel something swell.\"");
-                                    break;
-
-                                case 41:
-                                    addstr("\"You can apologize later if it isn't any good.\"");
-                                    break;
-
-                                case 42:
-                                    addstr("\"Yeah, and we tonight can try different positions together.\"");
-                                    break;
-
-                                case 43:
-                                    addstr("\"Don't you like it dirty?\"");
-                                    break;
-                                }
-                            }
-
-                            refresh();
-                            getch();
-
-                            y++;
-                            move(y, 1);
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(y, 1);
-                            y++;
-                            addstr(a.name);
-                            addstr(" and ");
-                            addstr(tk->name);
-                            addstr(" make plans for tonight");
-
-                            if(tk->type == CREATURE_PRISONER) {
-                                addstr(", and ");
-                                move(y, 1);
-                                y++;
-                                addstr(tk->name);
-                                addstr(" breaks for the exit");
-                                criminalize(*tk, LAWFLAG_ESCAPED);
-                            }
-
-                            addstr(".  ");
-                            refresh();
-                            getch();
-
-                            int olddate = 0;
-                            datest *newd = NULL;
-
-                            for(int d = 0; d < date.size(); d++) {
-                                if(date[d]->mac_id == a.id) {
-                                    newd = date[d];
-                                    break;
-                                }
-                            }
-
-                            if(newd == NULL) {
-                                newd = new datest;
-                                newd->mac_id = a.id;
-
-                                date.push_back(newd);
-                            }
-
-                            Creature *newcr = new Creature;
-                            *newcr = *tk;
-
-                            newcr->location = a.location;
-                            newcr->base = a.base;
-
-                            newd->date.push_back(newcr);
-
-                            delenc(t, 0);
-                        } else {
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(y, 1);
-                            y++;
-                            addstr(tk->name);
-                            addstr(" responds,");
-                            set_color(COLOR_RED, COLOR_BLACK, 1);
-                            move(y, 1);
-                            y++;
-
-                            if(tk->type == CREATURE_CORPORATE_CEO) {
-                                if(a.gender_liberal != GENDER_MALE)
-                                    addstr("\"I'm a happily married man, sweetie.\"");
-                                else
-                                    addstr("\"This ain't Brokeback Mountain, son.\"");
-                            } else {
-                                switch(LCSrandom(9)) {
-                                case 0:
-                                    addstr("\"Jesus...\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <turns away>");
-                                    break;
-
-                                case 1:
-                                    addstr("\"Touch me and you'll regret it.\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <crosses arms>");
-                                    break;
-
-                                case 2:
-                                    addstr("\"I'm.. uh.. waiting for someone.\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <turns away>");
-                                    break;
-
-                                case 3:
-                                    addstr("\"Hey, look, a UFO!\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <ducks away>");
-                                    break;
-
-                                case 4:
-                                    addstr("\"You're not my type. I like sane people.\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <turns away>");
-                                    break;
-
-                                case 5:
-                                    addstr("\"Hahahahaha!\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <shakes head>");
-                                    break;
-
-                                case 6:
-                                    addstr("\"You're disgusting.\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <turns away>");
-                                    break;
-
-                                case 7:
-                                    addstr("\"Are you serious?\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <turns away>");
-                                    break;
-
-                                case 8:
-                                    addstr("\"You're a pig.\"");
-                                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                    addstr(" <turns away>");
-                                    break;
-                                }
-                            }
-
-                            refresh();
-                            getch();
-
-                            encounter[t].cantbluff = 1;
-                        }
 
                         return 1;
                     }
 
-                    if(c == 'c')
-                        return 0;
+                    a.train(SKILL_SEDUCTION, LCSrandom(5) + 2);
 
-                    if(encounter[t].type == CREATURE_LANDLORD &&
-                            location[cursite]->renting == -1) {
-                        if(c == 'd') {
-                            clearcommandarea();
-                            clearmessagearea();
-                            clearmaparea();
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(9, 1);
-                            addstr(a.name);
-                            addstr(" says,");
-                            set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                            move(10, 1);
-                            addstr("\"I'd like to rent a room.\"");
-                            refresh();
-                            getch();
+                    if((a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" // Police property on armor? -XML
+                            || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
+                            && tk->type == CREATURE_PROSTITUTE) {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
+                        addstr(tk->name);
+                        addstr(" responds,");
+                        set_color(COLOR_RED, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
 
-                            if(a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
-                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                move(12, 1);
-                                addstr(tk->name);
-                                addstr(" responds,");
-                                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                                move(13, 1);
-                                addstr("\"Put some clothes on before I call the cops.\"");
-                                refresh();
-                                getch();
-                                return 1;
-                            }
+                        addstr("Dirty. You know that's illegal, officer.");
 
-                            int rent = 200;
+                        refresh();
+                        getch();
 
-                            switch(location[cursite]->type) {
-                            case SITE_RESIDENTIAL_APARTMENT:
-                                rent = 650;
+                        encounter[t].cantbluff = 1;
+                    } else if(succeeded) {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
+                        addstr(tk->name);
+                        addstr(" responds,");
+                        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
+
+                        if(law[LAW_FREESPEECH] == -2) {
+                            switch(line) {
+                            case 0:
+                                addstr("\"[I go to your church.]\"");
                                 break;
 
-                            case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
-                                rent = 1500;
+                            case 1:
+                                addstr("\"[Yes.]\"");
+                                break;
+
+                            case 2:
+                                addstr("\"[Yes.  Yes, I do.]\"");
                                 break;
                             }
+                        } else {
+                            switch(line) {
+                            //LIMIT             :-----------------------------------------------------------------------------:
+                            case 0:
+                                addstr("\"You're not so cute yourself.  Wanna get a room?\"");
+                                break;
 
-                            char num[20];
-                            itoa(rent, num, 10);
+                            case 1:
+                                addstr("\"How sweet!  You can call me tonight...\"");
+                                break;
 
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(12, 1);
-                            addstr(tk->name);
-                            addstr(" responds,");
-                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                            move(13, 1);
-                            addstr("\"It'll be $");
-                            addstr(num);
-                            addstr(" a month.");
-                            move(14, 1);
-                            addstr("I'll need $");
-                            addstr(num);
-                            addstr(" now as a security deposit.\"");
-                            refresh();
-                            getch();
+                            case 2:
+                                addstr("\"You bet, baby.\"");
+                                break;
 
-                            talkmode = TALKMODE_RENTING;
+                            case 3:
+                                addstr("\"He he, I'll let that one slide.  Besides, I like country folk...\"");
+                                break;
+
+                            case 4:
+                                addstr("\"That's sick.  I can do sick tonight.\"");
+                                break;
+
+                            case 5:
+                                addstr("\"Oooo, let me see!\"");
+                                break;
+
+                            case 6:
+                                addstr("\"Wow, looks like I'm going to have to reward creativity tonight!\"");
+                                break;
+
+                            case 7:
+                                addstr("\"Winter's coming.  You'd better bust more than one.\"");
+                                break;
+
+                            case 8:
+                                addstr("\"But you're not, so the pleasure's all mine.\"");
+                                break;
+
+                            case 9:
+                                addstr("\"Just wait until tonight, baby.\"");
+                                break;
+
+                            case 10:
+                                addstr("\"You're wrong.\"");
+                                break;
+
+                            case 11:
+                                addstr("\"I can drool on you if you like it that way.\"");
+                                break;
+
+                            case 12:
+                                addstr("\"Oooo, all aboard baby!\"");
+                                break;
+
+                            case 13:
+                                addstr("\"Not as hot as we'll be tonight you slut.\"");
+                                break;
+
+                            case 14:
+                                addstr("\"Goober.  You wanna hook up tonight?\"");
+                                break;
+
+                            case 15:
+                                addstr("\"Oooo, we should get stoned too!  He he.\"");
+                                break;
+
+                            case 16:
+                                addstr("\"You'll have to whip out your rocket to get some.  Let's do it.\"");
+                                break;
+
+                            case 17:
+                                addstr("\"So would my underwear.\"");
+                                break;
+
+                            case 18:
+                                addstr("\"Yeah, and you're going to repay me tonight.\"");
+                                break;
+
+                            case 19:
+                                addstr("\"Then stop *thinking* about it and come over tonight.\"");
+                                break;
+
+                            case 20:
+                                addstr("\"As long as you put a condom between them, I'm all for it.\"");
+                                break;
+
+                            case 21:
+                                addstr("\"Sure, but you can't use your mouth.\"");
+                                break;
+
+                            case 22:
+                                addstr("\"I hope you don't have a foot fetish, but I'm game.\"");
+                                break;
+
+                            case 23:
+                                addstr("\"My sex could do even more.\"");
+                                break;
+
+                            case 24:
+                                addstr("\"Let me invite you to visit my island paradise.  Tonight.\"");
+                                break;
+
+                            case 25:
+                                addstr("\"Oh, man...  just don't tell anybody I'm seeing you.\"");
+                                break;
+
+                            case 26:
+                                addstr("\"I hope we're shooting blanks, soldier.  I'm out of condoms.\"");
+                                break;
+
+                            case 27:
+                                addstr("\"You can lick all my decals off, baby.\"");
+                                break;
+
+                            case 28:
+                                addstr("\"Only if I'm not allowed to use my hands.\"");
+                                break;
+
+                            case 29:
+                                addstr("\"The one that says 'Open All Night'.\"");
+                                break;
+
+                            case 30:
+                                addstr("\"It looks like a letter bomb to me.  Let me blow it up.\"");
+                                break;
+
+                            case 31:
+                                addstr("\"Hey, I could do better.  But I'm feeling cheap tonight.\"");
+                                break;
+
+                            case 32:
+                                addstr("\"Yeah.  I hope you remember the lube this time.\"");
+                                break;
+
+                            case 33:
+                                addstr("\"But if we use a hotel, you won't get shot by an angry spouse tonight.\"");
+                                break;
+
+                            case 34:
+                                addstr("\"I think you'll appreciate the way I move after tonight.\"");
+                                break;
+
+                            case 35:
+                                addstr("\"They make a yummy bedtime snack.\"");
+                                break;
+
+                            case 36:
+                                addstr("\"Oh..  oh, God.  I can't believe I'm going to date a Trekkie.\"");
+                                break;
+
+                            case 37:
+                                addstr("\"Oh, it isn't safe for you to drive like that.  You'd better stay the night.\"");
+                                break;
+
+                            case 38:
+                                addstr("\"Come over tonight and I can show you what it's like.\"");
+                                break;
+
+                            case 39:
+                                addstr("\"I'll stop, drop and roll if you do it with me.\"");
+                                break;
+
+                            case 40:
+                                addstr("\"I'd rather feel something swell.\"");
+                                break;
+
+                            case 41:
+                                addstr("\"You can apologize later if it isn't any good.\"");
+                                break;
+
+                            case 42:
+                                addstr("\"Yeah, and we tonight can try different positions together.\"");
+                                break;
+
+                            case 43:
+                                addstr("\"Don't you like it dirty?\"");
+                                break;
+                            }
                         }
-                    } else if (encounter[t].type == CREATURE_LANDLORD && location[cursite]->renting > 0) {
-                        if (c == 'd') {
-                            clearcommandarea();
-                            clearmessagearea();
-                            clearmaparea();
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(9, 1);
-                            addstr(a.name);
-                            addstr(" says,");
-                            set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                            move(10, 1);
-                            addstr("\"I'd like cancel my room.\"");
-                            refresh();
-                            getch();
 
-                            if (a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
-                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                move(12, 1);
-                                addstr(tk->name);
-                                addstr(" responds,");
-                                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                                move(13, 1);
-                                addstr("\"Put some clothes on before I call the cops.\"");
-                                refresh();
-                                getch();
-                                return 1;
+                        refresh();
+                        getch();
+
+                        y++;
+                        move(y, 1);
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
+                        addstr(a.name);
+                        addstr(" and ");
+                        addstr(tk->name);
+                        addstr(" make plans for tonight");
+
+                        if(tk->type == CREATURE_PRISONER) {
+                            addstr(", and ");
+                            move(y, 1);
+                            y++;
+                            addstr(tk->name);
+                            addstr(" breaks for the exit");
+                            criminalize(*tk, LAWFLAG_ESCAPED);
+                        }
+
+                        addstr(".  ");
+                        refresh();
+                        getch();
+
+                        int olddate = 0;
+                        datest *newd = NULL;
+
+                        for(int d = 0; d < date.size(); d++) {
+                            if(date[d]->mac_id == a.id) {
+                                newd = date[d];
+                                break;
                             }
+                        }
 
+                        if(newd == NULL) {
+                            newd = new datest;
+                            newd->mac_id = a.id;
+
+                            date.push_back(newd);
+                        }
+
+                        Creature *newcr = new Creature;
+                        *newcr = *tk;
+
+                        newcr->location = a.location;
+                        newcr->base = a.base;
+
+                        newd->date.push_back(newcr);
+
+                        delenc(t, 0);
+                    } else {
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
+                        addstr(tk->name);
+                        addstr(" responds,");
+                        set_color(COLOR_RED, COLOR_BLACK, 1);
+                        move(y, 1);
+                        y++;
+
+                        if(tk->type == CREATURE_CORPORATE_CEO) {
+                            if(a.gender_liberal != GENDER_MALE)
+                                addstr("\"I'm a happily married man, sweetie.\"");
+                            else
+                                addstr("\"This ain't Brokeback Mountain, son.\"");
+                        } else {
+                            switch(LCSrandom(9)) {
+                            case 0:
+                                addstr("\"Jesus...\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <turns away>");
+                                break;
+
+                            case 1:
+                                addstr("\"Touch me and you'll regret it.\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <crosses arms>");
+                                break;
+
+                            case 2:
+                                addstr("\"I'm.. uh.. waiting for someone.\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <turns away>");
+                                break;
+
+                            case 3:
+                                addstr("\"Hey, look, a UFO!\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <ducks away>");
+                                break;
+
+                            case 4:
+                                addstr("\"You're not my type. I like sane people.\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <turns away>");
+                                break;
+
+                            case 5:
+                                addstr("\"Hahahahaha!\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <shakes head>");
+                                break;
+
+                            case 6:
+                                addstr("\"You're disgusting.\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <turns away>");
+                                break;
+
+                            case 7:
+                                addstr("\"Are you serious?\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <turns away>");
+                                break;
+
+                            case 8:
+                                addstr("\"You're a pig.\"");
+                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                                addstr(" <turns away>");
+                                break;
+                            }
+                        }
+
+                        refresh();
+                        getch();
+
+                        encounter[t].cantbluff = 1;
+                    }
+
+                    return 1;
+                }
+
+                if(c == 'c')
+                    return 0;
+
+                if(encounter[t].type == CREATURE_LANDLORD &&
+                        location[cursite]->renting == -1) {
+                    if(c == 'd') {
+                        clearcommandarea();
+                        clearmessagearea();
+                        clearmaparea();
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(9, 1);
+                        addstr(a.name);
+                        addstr(" says,");
+                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                        move(10, 1);
+                        addstr("\"I'd like to rent a room.\"");
+                        refresh();
+                        getch();
+
+                        if(a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(12, 1);
                             addstr(tk->name);
                             addstr(" responds,");
                             set_color(COLOR_BLUE, COLOR_BLACK, 1);
                             move(13, 1);
-                            addstr("\"Alright. Please clear out your room.\"");
+                            addstr("\"Put some clothes on before I call the cops.\"");
                             refresh();
                             getch();
-
-                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(15, 1);
-                            addstr("<Your possessions at this location have been moved to the shelter.>");
-                            refresh();
-                            getch();
-
-                            location[cursite]->renting = RENTING_NOCONTROL;
-
-                            //MOVE ALL ITEMS AND SQUAD MEMBERS
-                            int hs = 0;
-
-                            for(int l2 = 0; l2 < location.size(); l2++) {
-                                if(location[l2]->type == SITE_RESIDENTIAL_SHELTER) {
-                                    hs = l2;
-                                    break;
-                                }
-                            }
-
-                            for(int p = 0; p < pool.size(); p++) {
-                                if(pool[p]->location == cursite)
-                                    pool[p]->location = hs;
-
-                                if(pool[p]->base == cursite)
-                                    pool[p]->base = hs;
-                            }
-
-                            for(int l2 = 0; l2 < location[cursite]->loot.size(); l2++)
-                                location[hs]->loot.push_back(location[cursite]->loot[l2]);
-
-                            location[cursite]->loot.clear();
-
-                            location[cursite]->compound_walls = 0;
-                            location[cursite]->compound_stores = 0;
-                            location[cursite]->front_business = -1;
-
                             return 1;
                         }
-                    }
 
-                    if((encounter[t].type == CREATURE_GANGMEMBER || encounter[t].type == CREATURE_MERC)) {
-                        if(c == 'd') {
-                            clearcommandarea();
-                            clearmessagearea();
-                            clearmaparea();
+                        int rent = 200;
+
+                        switch(location[cursite]->type) {
+                        case SITE_RESIDENTIAL_APARTMENT:
+                            rent = 650;
+                            break;
+
+                        case SITE_RESIDENTIAL_APARTMENT_UPSCALE:
+                            rent = 1500;
+                            break;
+                        }
+
+                        char num[20];
+                        itoa(rent, num, 10);
+
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(12, 1);
+                        addstr(tk->name);
+                        addstr(" responds,");
+                        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                        move(13, 1);
+                        addstr("\"It'll be $");
+                        addstr(num);
+                        addstr(" a month.");
+                        move(14, 1);
+                        addstr("I'll need $");
+                        addstr(num);
+                        addstr(" now as a security deposit.\"");
+                        refresh();
+                        getch();
+
+                        talkmode = TALKMODE_RENTING;
+                    }
+                } else if (encounter[t].type == CREATURE_LANDLORD && location[cursite]->renting > 0) {
+                    if (c == 'd') {
+                        clearcommandarea();
+                        clearmessagearea();
+                        clearmaparea();
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(9, 1);
+                        addstr(a.name);
+                        addstr(" says,");
+                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                        move(10, 1);
+                        addstr("\"I'd like cancel my room.\"");
+                        refresh();
+                        getch();
+
+                        if (a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                            move(9, 1);
-                            addstr(a.name);
-                            addstr(" says,");
-                            set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                            move(10, 1);
-                            addstr("\"Hey, I need a gun.\"");
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"Put some clothes on before I call the cops.\"");
                             refresh();
                             getch();
-
-                            if(a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
-                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                move(12, 1);
-                                addstr(tk->name);
-                                addstr(" responds,");
-                                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                                move(13, 1);
-                                addstr("\"Jesus...\"");
-                                refresh();
-                                getch();
-                                return 1;
-                            }
-
-                            if(a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM"
-                                    || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR") {
-                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                move(12, 1);
-                                addstr(tk->name);
-                                addstr(" responds,");
-                                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                                move(13, 1);
-                                addstr("\"I don't sell guns, officer.\"");
-                                refresh();
-                                getch();
-                                return 1;
-                            }
-
-                            if(sitealarm != 0) {
-                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                move(12, 1);
-                                addstr(tk->name);
-                                addstr(" responds,");
-                                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                                move(13, 1);
-                                addstr("\"We can talk when things are calm.\"");
-                                refresh();
-                                getch();
-                                return 1;
-                            }
-
-                            switch(location[cursite]->type) {
-                            case SITE_OUTDOOR_BUNKER:
-                            case SITE_BUSINESS_CRACKHOUSE:
-                            case SITE_BUSINESS_BARANDGRILL:
-                            case SITE_BUSINESS_ARMSDEALER:
-                            case SITE_RESIDENTIAL_TENEMENT:
-                            case SITE_RESIDENTIAL_BOMBSHELTER:
-                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                move(12, 1);
-                                addstr(tk->name);
-                                addstr(" responds,");
-                                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                                move(13, 1);
-                                addstr("\"What exactly do you need?\"");
-                                refresh();
-                                getch();
-                                break;
-
-                            default:
-                                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                                move(12, 1);
-                                addstr(tk->name);
-                                addstr(" responds,");
-                                set_color(COLOR_BLUE, COLOR_BLACK, 1);
-                                move(13, 1);
-                                addstr("\"Uhhh... not a good place for this.\"");
-                                refresh();
-                                getch();
-                                return 1;
-                            }
-
-                            armsdealer(cursite);
+                            return 1;
                         }
-                    }
 
-                    break;
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(12, 1);
+                        addstr(tk->name);
+                        addstr(" responds,");
+                        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                        move(13, 1);
+                        addstr("\"Alright. Please clear out your room.\"");
+                        refresh();
+                        getch();
+
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(15, 1);
+                        addstr("<Your possessions at this location have been moved to the shelter.>");
+                        refresh();
+                        getch();
+
+                        location[cursite]->renting = RENTING_NOCONTROL;
+
+                        //MOVE ALL ITEMS AND SQUAD MEMBERS
+                        int hs = 0;
+
+                        for(int l2 = 0; l2 < location.size(); l2++) {
+                            if(location[l2]->type == SITE_RESIDENTIAL_SHELTER) {
+                                hs = l2;
+                                break;
+                            }
+                        }
+
+                        for(int p = 0; p < pool.size(); p++) {
+                            if(pool[p]->location == cursite)
+                                pool[p]->location = hs;
+
+                            if(pool[p]->base == cursite)
+                                pool[p]->base = hs;
+                        }
+
+                        for(int l2 = 0; l2 < location[cursite]->loot.size(); l2++)
+                            location[hs]->loot.push_back(location[cursite]->loot[l2]);
+
+                        location[cursite]->loot.clear();
+
+                        location[cursite]->compound_walls = 0;
+                        location[cursite]->compound_stores = 0;
+                        location[cursite]->front_business = -1;
+
+                        return 1;
+                    }
                 }
+
+                if((encounter[t].type == CREATURE_GANGMEMBER || encounter[t].type == CREATURE_MERC)) {
+                    if(c == 'd') {
+                        clearcommandarea();
+                        clearmessagearea();
+                        clearmaparea();
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(9, 1);
+                        addstr(a.name);
+                        addstr(" says,");
+                        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                        move(10, 1);
+                        addstr("\"Hey, I need a gun.\"");
+                        refresh();
+                        getch();
+
+                        if(a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"Jesus...\"");
+                            refresh();
+                            getch();
+                            return 1;
+                        }
+
+                        if(a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM"
+                                || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR") {
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"I don't sell guns, officer.\"");
+                            refresh();
+                            getch();
+                            return 1;
+                        }
+
+                        if(sitealarm != 0) {
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"We can talk when things are calm.\"");
+                            refresh();
+                            getch();
+                            return 1;
+                        }
+
+                        switch(location[cursite]->type) {
+                        case SITE_OUTDOOR_BUNKER:
+                        case SITE_BUSINESS_CRACKHOUSE:
+                        case SITE_BUSINESS_BARANDGRILL:
+                        case SITE_BUSINESS_ARMSDEALER:
+                        case SITE_RESIDENTIAL_TENEMENT:
+                        case SITE_RESIDENTIAL_BOMBSHELTER:
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"What exactly do you need?\"");
+                            refresh();
+                            getch();
+                            break;
+
+                        default:
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(12, 1);
+                            addstr(tk->name);
+                            addstr(" responds,");
+                            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                            move(13, 1);
+                            addstr("\"Uhhh... not a good place for this.\"");
+                            refresh();
+                            getch();
+                            return 1;
+                        }
+
+                        armsdealer(cursite);
+                    }
+                }
+
+                break;
             }
         }
-
-        while(1);
-    }
+    } while(1);
+}
 
