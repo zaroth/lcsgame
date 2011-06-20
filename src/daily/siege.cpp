@@ -218,8 +218,15 @@ void siegecheck(char canseethings) {
                         addstr("Planes will bomb the compound during the siege.");
                     }
 
+                    move (15, 1);
+                    addstr("Press X to ponder the situation...");
                     refresh();
-                    getch();
+                    int c;
+
+                    do {
+                        c = getch();
+                        translategetch(c);
+                    } while(c != 'x');
                 }
             }
 
