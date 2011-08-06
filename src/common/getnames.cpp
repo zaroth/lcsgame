@@ -424,6 +424,14 @@ void getrecruitcreature(char *str, int type) {
         strcat(str, "Telemarketer");
         break;
 
+    case CREATURE_CARSALESMAN:
+        if(law[LAW_WOMEN] == -2)
+            strcpy(str, "Car Salesman");
+        else
+            strcat(str, "Car Salesperson");
+
+        break;
+
     case CREATURE_OFFICEWORKER:
         strcat(str, "Office Worker");
         break;

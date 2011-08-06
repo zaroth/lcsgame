@@ -152,6 +152,7 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_ENGINEER] += 1;
             creaturearray[CREATURE_FASTFOODWORKER] += 1;
             creaturearray[CREATURE_TELEMARKETER] += 1;
+            creaturearray[CREATURE_CARSALESMAN] += 1;
             creaturearray[CREATURE_OFFICEWORKER] += 1;
             creaturearray[CREATURE_MAILMAN] += 1;
             creaturearray[CREATURE_CHEF] += 1;
@@ -308,6 +309,7 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_ENGINEER] += 5;
             creaturearray[CREATURE_FASTFOODWORKER] += 5;
             creaturearray[CREATURE_TELEMARKETER] += 5;
+            creaturearray[CREATURE_CARSALESMAN] += 3;
             creaturearray[CREATURE_OFFICEWORKER] += 10;
             creaturearray[CREATURE_FOOTBALLCOACH] += 1;
             creaturearray[CREATURE_PROSTITUTE] += 1;
@@ -413,6 +415,7 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_TEACHER] += 5;
             creaturearray[CREATURE_ENGINEER] += 15;
             creaturearray[CREATURE_DOCTOR] += 1;
+            creaturearray[CREATURE_CARSALESMAN] += 3;
             creaturearray[CREATURE_OFFICEWORKER] += 15;
             creaturearray[CREATURE_WORKER_SECRETARY] += 5;
             creaturearray[CREATURE_HIPPIE] += 1;
@@ -510,6 +513,7 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_CRACKHEAD] += 3;
             creaturearray[CREATURE_FASTFOODWORKER] += 1;
             creaturearray[CREATURE_TELEMARKETER] += 1;
+            creaturearray[CREATURE_CARSALESMAN] += 1;
             creaturearray[CREATURE_OFFICEWORKER] += 1;
             creaturearray[CREATURE_PROSTITUTE] += 3;
             creaturearray[CREATURE_MAILMAN] += 1;
@@ -588,6 +592,7 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_ENGINEER] = 1;
             creaturearray[CREATURE_FASTFOODWORKER] = 1;
             creaturearray[CREATURE_TELEMARKETER] = 1;
+            creaturearray[CREATURE_CARSALESMAN] = 1;
             creaturearray[CREATURE_OFFICEWORKER] = 1;
             creaturearray[CREATURE_FOOTBALLCOACH] = 1;
             creaturearray[CREATURE_MAILMAN] = 1;
@@ -836,6 +841,7 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_ENGINEER] = 1;
             creaturearray[CREATURE_FASTFOODWORKER] = 1;
             creaturearray[CREATURE_TELEMARKETER] = 1;
+            creaturearray[CREATURE_CARSALESMAN] = 1;
             creaturearray[CREATURE_OFFICEWORKER] = 1;
             creaturearray[CREATURE_FOOTBALLCOACH] = 1;
             creaturearray[CREATURE_PROSTITUTE] = 10;
@@ -950,6 +956,7 @@ void prepareencounter(short type, char sec) {
             creaturearray[CREATURE_ENGINEER] = 1;
             creaturearray[CREATURE_FASTFOODWORKER] = 1;
             creaturearray[CREATURE_TELEMARKETER] = 1;
+            creaturearray[CREATURE_CARSALESMAN] = 2;
             creaturearray[CREATURE_OFFICEWORKER] = 50;
             creaturearray[CREATURE_FOOTBALLCOACH] = 1;
             creaturearray[CREATURE_PROSTITUTE] = 1;
