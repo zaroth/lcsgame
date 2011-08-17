@@ -596,6 +596,14 @@ void getrecruitcreature(char *str, int type) {
         strcat(str, "Military Police");
         break;
 
+    case CREATURE_MILITARYOFFICER:
+        strcat(str, "Military Officer");
+        break;
+
+    case CREATURE_SEAL:
+        strcat(str, "Navy SEAL");
+        break;
+
     case CREATURE_GUARDDOG:
         strcat(str, "Canine Hero");
         break;

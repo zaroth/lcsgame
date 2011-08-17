@@ -65,7 +65,8 @@ char talk(Creature &a, int t) {
         if(encounter[t].type == CREATURE_COP ||
                 encounter[t].type == CREATURE_GANGUNIT ||
                 encounter[t].type == CREATURE_SWAT ||
-                encounter[t].type == CREATURE_SECURITYGUARD)
+                encounter[t].type == CREATURE_SECURITYGUARD ||
+                encounter[t].type == CREATURE_MILITARYPOLICE)
             cop = 1;
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
