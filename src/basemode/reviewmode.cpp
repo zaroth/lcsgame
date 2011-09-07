@@ -1408,7 +1408,11 @@ void squadlessbaseassign(void) {
         int y = 2;
 
         for(p = page_lib * 19; p < temppool.size() && p < page_lib * 19 + 19; p++) {
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            if (location[temppool[p]->location]->siege.siege)
+                set_color(COLOR_RED, COLOR_BLACK, 0);
+            else
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
@@ -1424,7 +1428,12 @@ void squadlessbaseassign(void) {
 
         for(p = page_loc * 9; p < temploc.size() && p < page_loc * 9 + 9; p++) {
             if(p == selectedbase)
-                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                if (location[p]->siege.siege)
+                    set_color(COLOR_RED, COLOR_BLACK, 1);
+                else
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            else if (location[p]->siege.siege)
+                set_color(COLOR_RED, COLOR_BLACK, 0);
             else
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
@@ -1478,14 +1487,14 @@ void squadlessbaseassign(void) {
         if(c >= 'a' && c <= 's') {
             int p = page_lib * 19 + (int)(c - 'a');
 
-            if(p < temppool.size())
+            if(p < temppool.size() &&  (!location[temppool[p]->location]->siege.siege))
                 temppool[p]->base = temploc[selectedbase];
         }
 
         if(c >= '1' && c <= '9') {
             int p = page_loc * 9 + (int)(c - '1');
 
-            if(p < temploc.size())
+            if(p < temploc.size() && !(location[temploc[selectedbase]]->siege.siege))
                 selectedbase = p;
         }
 
