@@ -47,6 +47,8 @@ void sleepereffect(Creature &cr, char &clearformess, char canseethings, int *lib
     if(disbanding)
         cr.activity.type = ACTIVITY_SLEEPER_LIBERAL;
 
+    int infiltrate = 1;
+
     switch(cr.activity.type) {
     case ACTIVITY_SLEEPER_LIBERAL:
         sleeper_influence(cr, clearformess, canseethings, libpower);
@@ -59,6 +61,7 @@ void sleepereffect(Creature &cr, char &clearformess, char canseethings, int *lib
 
     case ACTIVITY_SLEEPER_STEAL:
         sleeper_steal(cr, clearformess, canseethings, libpower);
+        infiltrate = 0;
         break;
 
     case ACTIVITY_SLEEPER_RECRUIT:
@@ -79,7 +82,8 @@ void sleepereffect(Creature &cr, char &clearformess, char canseethings, int *lib
         break;
     }
 
-    cr.infiltration += LCSrandom(8) * 0.01f - 0.02f;
+    if (infiltrate)
+        cr.infiltration += LCSrandom(8) * 0.01f - 0.02f;
 
     if(cr.infiltration >= 1)
         cr.infiltration = 1;
@@ -685,6 +689,9 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
         if(cr.juice > 100)
             cr.juice = 100;
     }
+
+    cr.infiltration -= LCSrandom(10) * 0.01f - 0.02f; //No effectiveness drop before? -Niel
+
 
     //Item *item;
     string item;

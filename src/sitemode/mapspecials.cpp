@@ -227,7 +227,7 @@ void special_bouncer_assess_squad() {
         case REJECTED_NUDE:
             set_color(COLOR_RED, COLOR_BLACK, 1);
 
-            switch(LCSrandom(3)) {
+            switch(LCSrandom(4)) {
             case 0:
                 addstr("\"No shirt, no underpants, no service.\"");
                 break;
@@ -238,6 +238,10 @@ void special_bouncer_assess_squad() {
 
             case 2:
                 addstr("\"No! No, you can't come in naked! God!!\"");
+                break;
+
+            case 3:
+                addstr("\"No shoes, no shirt and you don't get service\"");
                 break;
             }
 
@@ -629,6 +633,7 @@ void special_nuclear_onoff(void) {
                     getch();
 
                     juiceparty(40, 1000); // Instant juice!
+                    sitecrime += 25; //Shutdown Site
 
                     sitestory->crime.push_back(CRIME_SHUTDOWNREACTOR);
 
@@ -640,6 +645,7 @@ void special_nuclear_onoff(void) {
                     getch();
 
                     juiceparty(100, 1000); // Instant juice!
+                    sitecrime += 25; //Shutdown Site
 
                     sitestory->crime.push_back(CRIME_SHUTDOWNREACTOR);
                 }
