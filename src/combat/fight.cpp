@@ -2463,7 +2463,7 @@ void specialattack(Creature &a, Creature &t, char &actual) {
         t.stunned += (attack - resist) / 4;
 
         if(a.enemy()) {
-            if(t.juice >= 100) {
+            if(t.juice > 100) {
                 move(17, 1);
                 addstr(t.name);
                 addstr(" loses juice!");

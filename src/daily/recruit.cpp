@@ -38,6 +38,10 @@ recruitst::recruitst() : task(0), timeleft(0), level(0), eagerness1(0) {
 
 }
 
+recruitst::~recruitst() {
+    delete recruit;
+}
+
 char recruitst::eagerness() {
     char eagerness_temp = eagerness1;
 
@@ -289,6 +293,7 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
             pool[p]->train(SKILL_PERSUASION, 25);
 
             pool.push_back(r.recruit);
+            r.recruit = NULL;
             stat_recruits++;
 
             return 1;
@@ -372,8 +377,13 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
             if(pool[p]->skill_check(SKILL_PERSUASION, difficulty)) {
                 success = 1;
                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
-                r.level++;
-                r.eagerness1++;
+
+                if(r.level < 127)
+                    r.level++;
+
+                if(r.eagerness1 < 127)
+                    r.eagerness1++;
+
                 move(y++, 0);
                 addstr(r.recruit->name);
                 addstr(" found ");
@@ -382,8 +392,12 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
                 move(y++, 0);
                 addstr("They'll definitely meet again tomorrow.");
             } else if(pool[p]->skill_check(SKILL_PERSUASION, difficulty)) { // Second chance to not fail horribly
-                r.level++;
-                r.eagerness1--;
+                if(r.level < 127)
+                    r.level++;
+
+                if(r.level > -128)
+                    r.eagerness1--;
+
                 move(y++, 0);
                 addstr(r.recruit->name);
                 addstr(" is skeptical about some of ");
