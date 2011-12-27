@@ -395,7 +395,7 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
                 if(r.level < 127)
                     r.level++;
 
-                if(r.level > -128)
+                if(r.eagerness1 > -128)
                     r.eagerness1--;
 
                 move(y++, 0);
