@@ -151,4 +151,6 @@ bool Vehicle::availableatshop() const {
 int Vehicle::price() const {
     return vehicletype[getvehicletype(vtypeidname_)]->price();
 }
-
+int Vehicle::sleeperprice() const {
+    return vehicletype[getvehicletype(vtypeidname_)]->sleeperprice();
+}

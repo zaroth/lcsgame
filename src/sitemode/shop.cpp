@@ -859,6 +859,8 @@ Shop::ShopItem::ShopItem(MCD_STR xmlstring, bool only_sell_legal,
             description_defined_ = true;
         } else if (tag == "price")
             price_ = atoi(xml.GetData().c_str());
+        else if (tag == "sleeperprice")
+            sleeperprice_ = atoi(xml.GetData().c_str());
         else if (tag == "letter") {
             letter_ = xml.GetData()[0];
 

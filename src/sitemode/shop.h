@@ -105,6 +105,7 @@ class Shop : public ShopOption {
 
         int price_;
         int adjusted_price() const;
+        int sleeperprice_;
         bool only_sell_legal_;
         bool increase_price_with_illegality_;
         bool description_defined_;
