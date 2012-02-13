@@ -196,7 +196,7 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
         change_public_opinion(VIEW_AMRADIO, 1);
 
         for(int i = 0; i < VIEWNUM - 3; i++)
-            libpower[i] += power * attitude[VIEW_AMRADIO] / 100;
+            libpower[i] += power * (100 - attitude[VIEW_AMRADIO]) / 100;
 
         break;
 
@@ -204,7 +204,7 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
         change_public_opinion(VIEW_CABLENEWS, 1);
 
         for(int i = 0; i < VIEWNUM - 3; i++)
-            libpower[i] += power * attitude[VIEW_CABLENEWS] / 100;
+            libpower[i] += power * (100 - attitude[VIEW_CABLENEWS]) / 100;
 
         break;
 

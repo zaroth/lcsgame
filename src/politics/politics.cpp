@@ -150,8 +150,8 @@ void elections(char clearformess, char canseethings) {
         //Primaries
         int approvepres = 0; // presidential approval within own party
         int approveveep = 0; // vice-presidential approval within own party
-        int libvotes[3];   // liberal party's candidates votes recieved
-        int consvotes[3];  // conservative party's candidates votes recieved
+        int libvotes[3] = {0, 0, 0}; // liberal party's candidates votes recieved
+        int consvotes[3] = {0, 0, 0}; // conservative party's candidates votes recieved
 
         // run primaries for 100 voters
         for(int i = 0; i < 100; i++) {
@@ -165,13 +165,13 @@ void elections(char clearformess, char canseethings) {
             // so we need to know what their inter-party approval rating is.
 
             // check if this voter supports the president (1/2 chance if closely aligned)
-            if(voters[presparty] == abs(exec[EXEC_PRESIDENT]) ||
-                    (abs(exec[EXEC_PRESIDENT] - abs(voters[presparty])) == 1 && !LCSrandom(2)))
+            if(voters[presparty] == exec[EXEC_PRESIDENT] + presparty * 2 ||
+                    (abs((exec[EXEC_PRESIDENT] + presparty * 2) - voters[presparty]) == 1 && !LCSrandom(2)))
                 approvepres++;
 
             // check if this voter supports the vice-president (1/3 chance if closely aligned)
-            if(voters[presparty] == abs(exec[EXEC_VP]) ||
-                    (abs(exec[EXEC_VP] - abs(voters[presparty])) == 1 && !LCSrandom(3)))
+            if(voters[presparty] == exec[EXEC_VP] + presparty * 2 ||
+                    (abs((exec[EXEC_VP] + presparty * 2) - voters[presparty]) == 1 && !LCSrandom(3)))
                 approveveep++;
 
             // count ballots
@@ -202,14 +202,14 @@ void elections(char clearformess, char canseethings) {
             candidate[0][0] = 2;
 
         // name the candidates
-        if(candidate[0][0] == -2)
-            generate_name(candidate[0] + 1, GENDER_WHITEMALEPATRIARCH);
-        else if(candidate[0][0] == -1)
-            generate_name(candidate[0] + 1, GENDER_MALE);
+        if(candidate[1][0] == -2)
+            generate_name(candidate[1] + 1, GENDER_WHITEMALEPATRIARCH);
+        else if(candidate[1][0] == -1)
+            generate_name(candidate[1] + 1, GENDER_MALE);
         else
-            generate_name(candidate[0] + 1);
+            generate_name(candidate[1] + 1);
 
-        generate_name(candidate[1] + 1);
+        generate_name(candidate[0] + 1);
 
         // Special Incumbency Rules: If the incumbent president or vice president
         // has approval of over 50% in their party, they win their primary
@@ -228,10 +228,12 @@ void elections(char clearformess, char canseethings) {
                 execterm = 2; // Boom! Incumbent president was defeated in their
                 // own party. New candidate works with a clean slate.
             }
-        } else if(approveveep >= 50) { // Vice-President running for President
+        } else if(approveveep >= 50 && // Vice-President running for President
+                  ((presparty == 0 && exec[EXEC_VP] != -1) || // We don't want conservative liberals
+                   (presparty == 1 && exec[EXEC_VP] != 1))) { // or liberal conservatives.
             if(approvepres >= 50) {
-                candidate[presparty][0] = exec[EXEC_PRESIDENT];
-                strcpy(candidate[presparty] + 1, execname[EXEC_PRESIDENT]);
+                candidate[presparty][0] = exec[EXEC_VP];
+                strcpy(candidate[presparty] + 1, execname[EXEC_VP]);
             }
         }
 

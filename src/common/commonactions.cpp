@@ -561,7 +561,7 @@ void change_public_opinion(int v, int power, char affect, char cap) {
         //Only half the country will ever hear about the LCS at one time,
         //and people will only grudgingly lose fear of it
         if(effpower < -5)
-            effpower = 5;
+            effpower = -5;
 
         if(effpower > 50)
             effpower = 50;

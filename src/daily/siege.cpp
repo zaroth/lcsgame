@@ -70,6 +70,9 @@ void siegecheck(char canseethings) {
             pool[p]->crimes_suspected[LAWFLAG_SPEECH] = 0;
     }
 
+    if(law[LAW_FREESPEECH] > -2)
+        offended_firemen = 0;
+
     //FIRST, THE COPS
     int numpres;
 
