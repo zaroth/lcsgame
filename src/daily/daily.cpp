@@ -68,60 +68,62 @@ void advanceday(char &clearformess, char canseethings) {
     for(p = 0; p < pool.size(); p++) {
         pool[p]->stunned = 0; // For lack of a better place, make stunning expire here
 
-        if(!pool[p]->alive || pool[p]->animalgloss)
+        if(!pool[p]->alive)
             continue;
 
         // animals, tanks don't have age effects at the moment
 //TODO: Start aging effects for animals at age 12, take into account if they are genetic monsters or not.
-        if(pool[p]->age > 60) {
-            int decrement = 0;
+        if(!pool[p]->animalgloss) {
+            if(pool[p]->age > 60) {
+                int decrement = 0;
 
-            while(pool[p]->age - decrement > 60) {
-                if(LCSrandom(365 * 10) == 0) {
-                    pool[p]->adjust_attribute(ATTRIBUTE_HEALTH, -1);
+                while(pool[p]->age - decrement > 60) {
+                    if(LCSrandom(365 * 10) == 0) {
+                        pool[p]->adjust_attribute(ATTRIBUTE_HEALTH, -1);
 
-                    if(pool[p]->get_attribute(ATTRIBUTE_HEALTH, false) <= 0 &&
-                            pool[p]->get_attribute(ATTRIBUTE_HEALTH, true) <= 1) {
-                        pool[p]->die();
+                        if(pool[p]->get_attribute(ATTRIBUTE_HEALTH, false) <= 0 &&
+                                pool[p]->get_attribute(ATTRIBUTE_HEALTH, true) <= 1) {
+                            pool[p]->die();
 
-                        if(clearformess)
-                            erase();
-                        else
-                            makedelimiter(8, 0);
+                            if(clearformess)
+                                erase();
+                            else
+                                makedelimiter(8, 0);
 
-                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                        move(8, 1);
-                        addstr(pool[p]->name);
-                        addstr(" has passed away at the age of ");
-                        char str[5];
-                        itoa(pool[p]->age, str, 10);
-                        addstr(str);
-                        addstr(". The Liberal will be missed.");
-                        refresh();
-                        getch();
-                        break;
+                            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                            move(8, 1);
+                            addstr(pool[p]->name);
+                            addstr(" has passed away at the age of ");
+                            char str[5];
+                            itoa(pool[p]->age, str, 10);
+                            addstr(str);
+                            addstr(". The Liberal will be missed.");
+                            refresh();
+                            getch();
+                            break;
+                        }
                     }
+
+                    decrement += 10;
                 }
 
-                decrement += 10;
+                if(!pool[p]->alive)
+                    continue;
             }
 
-            if(!pool[p]->alive)
-                continue;
-        }
+            if(month == pool[p]->birthday_month &&
+                    day == pool[p]->birthday_day) {
+                pool[p]->age++;
 
-        if(month == pool[p]->birthday_month &&
-                day == pool[p]->birthday_day) {
-            pool[p]->age++;
+                switch(pool[p]->age) {
+                case 13:
+                    pool[p]->type = CREATURE_TEENAGER; // aww, all grown up
+                    break;
 
-            switch(pool[p]->age) {
-            case 13:
-                pool[p]->type = CREATURE_TEENAGER; // aww, all grown up
-                break;
-
-            case 18:
-                pool[p]->type = CREATURE_POLITICALACTIVIST; // ok seriously this time
-                break;
+                case 18:
+                    pool[p]->type = CREATURE_POLITICALACTIVIST; // ok seriously this time
+                    break;
+                }
             }
         }
 
@@ -1452,7 +1454,8 @@ bool promotesubordinates(Creature &cr, char &clearformess) {
 
             // Highest juice liberal not subject to a life sentence gets promoted
             if(pool[p]->juice > maxjuice &&
-                    (location[pool[p]->location]->type != SITE_GOVERNMENT_PRISON || pool[p]->sentence >= 0)) {
+                    (pool[p]->location == -1 ||
+                     (location[pool[p]->location]->type != SITE_GOVERNMENT_PRISON || pool[p]->sentence >= 0))) {
                 maxjuice = pool[p]->juice;
                 newboss = p;
             }

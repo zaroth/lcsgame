@@ -993,7 +993,7 @@ void elections_senate(int senmod, char canseethings) {
             if(senate[s] > 1 && vote < 4)
                 vote++;
 
-            if(senate[s] < 0 && vote > -1 && LCSrandom(100 - mood + 11) > 10)
+            if(senate[s] < 0 && vote > 1 && LCSrandom(100 - mood + 11) > 10)
                 vote--;
 
             if(senate[s] < -1 && vote > 0)
@@ -1255,7 +1255,7 @@ void elections_house(char canseethings) {
             if(house[h] > 1 && vote < 4)
                 vote++;
 
-            if(house[h] < 0 && vote > -1 && LCSrandom(100 - mood + 11) > 10)
+            if(house[h] < 0 && vote > 1 && LCSrandom(100 - mood + 11) > 10)
                 vote--;
 
             if(house[h] < -1 && vote > 0)
