@@ -169,7 +169,7 @@ void filelistst::smartappend(filelistst &list2) {
     }
 }
 
-void CursesMoviest::savemovie(char *filename, int flags = 0) {
+void CursesMoviest::savemovie(const char *filename, int flags = 0) {
     int numbytes;
     FILE *h;
     h = LCSOpenFile(filename, "wb", flags);
@@ -202,7 +202,7 @@ void CursesMoviest::savemovie(char *filename, int flags = 0) {
     }
 }
 
-void CursesMoviest::loadmovie(char *filename) {
+void CursesMoviest::loadmovie(const char *filename) {
     clean();
 
     FILE *h;

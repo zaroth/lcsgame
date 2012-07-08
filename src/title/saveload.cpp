@@ -44,7 +44,7 @@ void autosave(void) {
 
 
 /* handles saving */
-void savegame(char *str) {
+void savegame(const char *str) {
     char dummy_c;
     int dummy;
     int numbytes;

@@ -88,7 +88,7 @@ class configurable {
 
 // Reads in an entire configuration file
 // Returns 0 for read successful, returns -1 if failed read
-int readConfigFile(char *filename);
+int readConfigFile(const char *filename);
 // readLine reads a line from the file, parses it
 int readLine(std::fstream &file, std::string &command, std::string &value);
 // Constructs the new object, returns a pointer to it

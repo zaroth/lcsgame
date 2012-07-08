@@ -1323,7 +1323,7 @@ void loadgraphics(void) {
 
 
 
-void displaycenterednewsfont(char *str, int y) {
+void displaycenterednewsfont(const char *str, int y) {
     int width = -1;
     int s;
 
@@ -1396,7 +1396,7 @@ void displaycenterednewsfont(char *str, int y) {
 
 
 
-void displaycenteredsmallnews(char *str, int y) {
+void displaycenteredsmallnews(const char *str, int y) {
     int x = 39 - ((strlen(str) - 1) >> 1);
     move(y, x);
     set_color(COLOR_BLACK, COLOR_WHITE, 0);
