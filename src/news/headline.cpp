@@ -80,7 +80,7 @@ void displaystoryheader(newsstoryst &ns, bool liberalguardian, int &y, int heade
                             break;
 
                         case VIEW_NUCLEARPOWER:
-                            displaycenterednewsfont("NO NUKE POWER", 5);
+                            displaycenterednewsfont("MELTDOWN RISK", 5);
                             break;
 
                         case VIEW_POLICEBEHAVIOR:

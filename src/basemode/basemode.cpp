@@ -786,7 +786,11 @@ void mode_base(void) {
                 addstr("Cannot Wait until Siege Resolved");
             } else {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                addstr("W - Wait a day");
+
+                if(siege)
+                    addstr("W - Wait out the siege");
+                else
+                    addstr("W - Wait a day");
 
                 if(day == monthday())
                     addstr(" (next month)");

@@ -325,7 +325,7 @@ void getrecruitcreature(char *str, int type) {
         break;
 
     case CREATURE_MERC:
-        strcat(str, "Mercenary");
+        strcat(str, "Elite Security");
         break;
 
     case CREATURE_HICK:

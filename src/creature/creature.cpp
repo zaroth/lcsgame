@@ -1152,6 +1152,9 @@ int Creature::skill_roll(int skill) {
     case SKILL_STEALTH: {
         int stealth = get_armor().get_stealth_value();
 
+        if(stealth > 1 && get_armor().get_quality() > 2)
+            stealth--;
+
         if(stealth == 0)
             return 0;
 

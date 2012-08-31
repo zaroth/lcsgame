@@ -229,43 +229,57 @@ void disguisecheck(int timer) {
             n = noticer[an];
             noticer.erase(noticer.begin() + an);
 
-            int difficulty;
+            int stealth_difficulty;
+            int disguise_difficulty;
 
             // Determine difficulty based on enemy type
             switch(encounter[n].type) {
             default:
-                difficulty = DIFFICULTY_VERYEASY;
+                stealth_difficulty = DIFFICULTY_VERYEASY;
+                disguise_difficulty = DIFFICULTY_VERYEASY;
                 break;
 
             case CREATURE_SWAT:
             case CREATURE_COP:
             case CREATURE_GANGUNIT:
             case CREATURE_DEATHSQUAD:
-                difficulty = DIFFICULTY_EASY;
+                stealth_difficulty = DIFFICULTY_EASY;
+                disguise_difficulty = DIFFICULTY_EASY;
                 break;
 
             case CREATURE_PRISONGUARD:
             case CREATURE_BOUNCER:
-            case CREATURE_AGENT:
             case CREATURE_SECURITYGUARD:
-                difficulty = DIFFICULTY_AVERAGE;
+                stealth_difficulty = DIFFICULTY_AVERAGE;
+                disguise_difficulty = DIFFICULTY_EASY;
                 break;
 
+            case CREATURE_AGENT:
+                stealth_difficulty = DIFFICULTY_AVERAGE;
+                disguise_difficulty = DIFFICULTY_AVERAGE;
+                break;
+
+            case CREATURE_NEWSANCHOR:
+            case CREATURE_RADIOPERSONALITY:
             case CREATURE_CORPORATE_CEO:
             case CREATURE_JUDGE_CONSERVATIVE:
             case CREATURE_CCS_ARCHCONSERVATIVE:
             case CREATURE_SCIENTIST_EMINENT:
-                difficulty = DIFFICULTY_HARD;
+                stealth_difficulty = DIFFICULTY_EASY;
+                disguise_difficulty = DIFFICULTY_HARD;
                 break;
 
             case CREATURE_GUARDDOG:
-                difficulty = DIFFICULTY_HEROIC;
+                stealth_difficulty = DIFFICULTY_HEROIC;
+                disguise_difficulty = DIFFICULTY_AVERAGE;
                 break;
             }
 
             // Increase difficulty if Conservatives suspicious...
-            if(sitealarmtimer == 1)
-                difficulty += 3;
+            if(sitealarmtimer == 1) {
+                stealth_difficulty += 3;
+                disguise_difficulty += 3;
+            }
 
             // Make the attempt!
             for(int i = 0; i < 6; i++) {
@@ -278,7 +292,7 @@ void disguisecheck(int timer) {
                     result -= timer;
 
                     // Sneaking with a party is hard
-                    if(result < (difficulty + squadsize - 1))
+                    if(result < (stealth_difficulty + squadsize - 1))
                         spotted = true;
                 }
 
@@ -292,7 +306,7 @@ void disguisecheck(int timer) {
                         int result = activesquad->squad[i]->skill_roll(SKILL_DISGUISE);
                         result -= timer;
 
-                        if(result < difficulty) {
+                        if(result < disguise_difficulty) {
                             // That was not very casual, dude.
                             if(result < 0)
                                 blew_it = i;
@@ -468,7 +482,7 @@ void disguisecheck(int timer) {
 }
 
 /* checks if a creature's weapon is suspicious or illegal */
-char weaponcheck(Creature &cr) {
+char weaponcheck(Creature &cr, bool metaldetect) {
     bool suspicious = cr.get_weapon().is_suspicious(); // Does the weapon look at all suspicious?
     char illegal = 0;   // Is the weapon illegal?
     char incharacter = 0; // Is the weapon in character for the clothing the LCS is wearing?
@@ -545,7 +559,7 @@ char weaponcheck(Creature &cr) {
         incharacter = -1;
 
     if(suspicious) {
-        if(incharacter != -1 || concealed) {
+        if(incharacter != -1 || (concealed && !metaldetect)) {
             // if(illegal) return -1; else // OK, but busted if you shoot it
             return 0;  // OK
         } else // if(illegal)
@@ -835,13 +849,18 @@ char hasdisguise(Creature &cr) {
             break;
 
         case SITE_INDUSTRY_NUCLEAR:
-            uniformed = 0;
+            if(levelmap[locx][locy][locz].flag & SITEBLOCK_RESTRICTED) {
+                uniformed = 0;
 
-            if(cr.get_armor().get_itemtypename() == "ARMOR_LABCOAT")
-                uniformed = 1;
+                if(cr.get_armor().get_itemtypename() == "ARMOR_LABCOAT")
+                    uniformed = 1;
 
-            if(cr.get_armor().get_itemtypename() == "ARMOR_SECURITYUNIFORM")
-                uniformed = 1;
+                if(cr.get_armor().get_itemtypename() == "ARMOR_SECURITYUNIFORM")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_CIVILLIANARMOR")
+                    uniformed = 1;
+            }
 
             break;
 

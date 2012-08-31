@@ -78,7 +78,7 @@ void siegecheck(char canseethings) {
 
     for(int l = 0; l < location.size(); l++) {
         if(policestation_closed) {
-            location[l]->heat = location[l]->heat * 0.95;
+            location[l]->heat = static_cast<int>(location[l]->heat * 0.95);
             continue;
         }
 
@@ -165,13 +165,13 @@ void siegecheck(char canseethings) {
                 if(LCSrandom(3000) < location[l]->heat
                         && !(location[l]->siege.timeuntillocated >= 0)) { //Do not re-plan siege.
                     // Set force deployment (military, bombers, etc.)
-                    if(LCSrandom(location[l]->heat) > 100)
+                    if(LCSrandom(location[l]->heat) > 50)
                         location[l]->siege.escalationstate++;
 
-                    if(LCSrandom(location[l]->heat) > 250)
+                    if(LCSrandom(location[l]->heat) > 150)
                         location[l]->siege.escalationstate++;
 
-                    if(LCSrandom(location[l]->heat) > 500)
+                    if(LCSrandom(location[l]->heat) > 300)
                         location[l]->siege.escalationstate++;
 
                     if(location[l]->siege.escalationstate > 3)
@@ -220,7 +220,9 @@ void siegecheck(char canseethings) {
 
                     if(location[l]->siege.escalationstate >= 3) {
                         move(13, 1);
-                        addstr("Planes will bomb the compound during the siege.");
+                        addstr("Planes will bomb the compound during the siege, and the final");
+                        move(14, 1);
+                        addstr("attack will be carried out by SEAL Team 6.");
                     }
 
                     move (15, 1);

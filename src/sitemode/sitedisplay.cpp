@@ -97,7 +97,7 @@ void printsitemap(int x, int y, int z) {
         break;
 
     case SPECIAL_NUCLEAR_ONOFF:
-        strcpy(str, "The On/Off Switch");
+        strcpy(str, "Reactor Control Room");
         break;
 
     case SPECIAL_LAB_GENETIC_CAGEDANIMALS:
@@ -139,7 +139,7 @@ void printsitemap(int x, int y, int z) {
         strcpy(str, "Safe");
         break;
 
-    case SPECIAL_ARMYBASE_ARMORY:
+    case SPECIAL_ARMORY:
         strcpy(str, "Armory");
         break;
 
@@ -163,8 +163,20 @@ void printsitemap(int x, int y, int z) {
         strcpy(str, "Landlord's Office");
         break;
 
-    case SPECIAL_APARTMENT_SIGN:
+    case SPECIAL_SIGN_ONE:
         strcpy(str, "Sign");
+        break;
+
+    case SPECIAL_SIGN_TWO:
+        strcpy(str, "Sign");
+        break;
+
+    case SPECIAL_SIGN_THREE:
+        strcpy(str, "Sign");
+        break;
+
+    case SPECIAL_DISPLAY_CASE:
+        strcpy(str, "Display Case");
         break;
 
     case SPECIAL_STAIRS_UP:
@@ -187,11 +199,7 @@ void printsitemap(int x, int y, int z) {
         strcpy(str, "Bench");
         break;
 
-    case SPECIAL_CLUB_BOUNCER:
-        strcpy(str, "");
-        break;
-
-    case SPECIAL_CLUB_BOUNCER_SECONDVISIT:
+    default:
         strcpy(str, "");
         break;
     }
@@ -746,7 +754,7 @@ void printblock(int x, int y, int z, int px, int py) {
             addstr("SAFE!");
             break;
 
-        case SPECIAL_ARMYBASE_ARMORY:
+        case SPECIAL_ARMORY:
             addstr("ARMRY");
             break;
 
@@ -772,7 +780,15 @@ void printblock(int x, int y, int z, int px, int py) {
             addstr("RENT?");
             break;
 
-        case SPECIAL_APARTMENT_SIGN:
+        case SPECIAL_SIGN_ONE:
+            addstr("SIGN!");
+            break;
+
+        case SPECIAL_SIGN_TWO:
+            addstr("SIGN!");
+            break;
+
+        case SPECIAL_SIGN_THREE:
             addstr("SIGN!");
             break;
 
@@ -799,6 +815,18 @@ void printblock(int x, int y, int z, int px, int py) {
 
         case SPECIAL_PARK_BENCH:
             addstr("BENCH");
+            break;
+
+        case SPECIAL_SECURITY_METALDETECTORS:
+            addstr("METAL");
+            break;
+
+        case SPECIAL_SECURITY_CHECKPOINT:
+            addstr("GUARD");
+            break;
+
+        case SPECIAL_DISPLAY_CASE:
+            addstr("CASE");
             break;
         }
     }
