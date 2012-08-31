@@ -298,9 +298,9 @@ int main(int argc, char *argv[]) {
     //refresh();
     //getch();
 
-    oldMapMode = readConfigFile("sitemaps.txt"); // load site map data
+    oldMapMode = !readConfigFile("sitemaps.txt"); // load site map data
 
-    if (oldMapMode == -1) {
+    if (oldMapMode == true) {
         addstr("Failed to load sitemaps.txt! Reverting to old map mode.");
         refresh();
         getch();
