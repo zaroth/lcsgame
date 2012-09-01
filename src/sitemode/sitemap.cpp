@@ -71,6 +71,10 @@ void initsite(locationst &loc) {
     bool loaded = false;
 
     switch(loc.type) {
+    case SITE_BUSINESS_BANK:
+        loaded = readMap("Bank");
+        break;
+
     case SITE_INDUSTRY_NUCLEAR:
         loaded = readMap("NuclearPlant");
         break;
@@ -94,6 +98,7 @@ void initsite(locationst &loc) {
             build_site("GENERIC_UNSECURE");
             break;
 
+        case SITE_BUSINESS_BANK:
         case SITE_BUSINESS_BARANDGRILL:
         case SITE_RESIDENTIAL_BOMBSHELTER:
         case SITE_OUTDOOR_BUNKER:
@@ -465,6 +470,7 @@ void initsite(locationst &loc) {
                             !(levelmap[x][y][0].flag & SITEBLOCK_BLOCK) &&
                             !LCSrandom(10)) {
                         switch(loc.type) {
+                        case SITE_BUSINESS_BANK: // the valuables are in the vault
                         case SITE_RESIDENTIAL_SHELTER:
                         case SITE_BUSINESS_CRACKHOUSE:
                         case SITE_BUSINESS_JUICEBAR:
@@ -648,9 +654,9 @@ void initsite(locationst &loc) {
                             (levelmap[x][y][z].flag & SITEBLOCK_RESTRICTED)) {
                         //Unrestricted on two opposite sides?
                         if(((!(levelmap[x - 1][y][z].flag & SITEBLOCK_RESTRICTED) && !(levelmap[x - 1][y][z].flag & SITEBLOCK_BLOCK)) &&
-                                (!(levelmap[x + 1][y][z].flag & SITEBLOCK_RESTRICTED) && !(levelmap[x - 1][y][z].flag & SITEBLOCK_BLOCK))) ||
-                                ((!(levelmap[x][y - 1][z].flag & SITEBLOCK_RESTRICTED) && !(levelmap[x - 1][y][z].flag & SITEBLOCK_BLOCK)) &&
-                                 (!(levelmap[x][y + 1][z].flag & SITEBLOCK_RESTRICTED) && !(levelmap[x - 1][y][z].flag & SITEBLOCK_BLOCK)))) {
+                                (!(levelmap[x + 1][y][z].flag & SITEBLOCK_RESTRICTED) && !(levelmap[x + 1][y][z].flag & SITEBLOCK_BLOCK))) ||
+                                ((!(levelmap[x][y - 1][z].flag & SITEBLOCK_RESTRICTED) && !(levelmap[x][y - 1][z].flag & SITEBLOCK_BLOCK)) &&
+                                 (!(levelmap[x][y + 1][z].flag & SITEBLOCK_RESTRICTED) && !(levelmap[x][y + 1][z].flag & SITEBLOCK_BLOCK)))) {
                             //Unlock and unrestrict
                             levelmap[x][y][z].flag &= ~SITEBLOCK_LOCKED;
                             levelmap[x][y][z].flag &= ~SITEBLOCK_RESTRICTED;

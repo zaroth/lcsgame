@@ -604,6 +604,14 @@ void getrecruitcreature(char *str, int type) {
         strcat(str, "Navy SEAL");
         break;
 
+    case CREATURE_BANK_TELLER:
+        strcat(str, "Bank Teller");
+        break;
+
+    case CREATURE_BANK_MANAGER:
+        strcat(str, "Bank Manager");
+        break;
+
     case CREATURE_GUARDDOG:
         strcat(str, "Canine Hero");
         break;
@@ -1355,6 +1363,10 @@ void getlawflag(char *str, int type) {
 
     case LAWFLAG_EXTORTION:
         strcat(str, "Extortion");
+        break;
+
+    case LAWFLAG_BANKROBBERY:
+        strcat(str, "Bank robbery");
         break;
 
     default:

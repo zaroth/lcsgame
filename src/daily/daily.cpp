@@ -752,7 +752,7 @@ void advanceday(char &clearformess, char canseethings) {
                 if(pool[p]->blood < 100 - (clinictime(*pool[p]) - 1) * 20) {
                     // Add health
                     if(pool[p]->location > -1)
-                        pool[p]->blood += 1 + healing[pool[p]->location] / 10;
+                        pool[p]->blood += 1 + healing[pool[p]->location] / 3;
 
                     if(pool[p]->blood > 100 - (clinictime(*pool[p]) - 1) * 20)
                         pool[p]->blood = 100 - (clinictime(*pool[p]) - 1) * 20;
@@ -792,7 +792,7 @@ void advanceday(char &clearformess, char canseethings) {
                         // Difficulty 8 (1 in 10 of happening naturally)
                         if(pool[p]->location > -1 && healing[pool[p]->location] + LCSrandom(10) > 8) {
                             // Toggle bleeding off
-                            pool[p]->wound[w] ^= WOUND_BLEEDING;
+                            pool[p]->wound[w] &= ~WOUND_BLEEDING;
                         }
                         // Else take bleed damage (1)
                         else {
@@ -1619,6 +1619,7 @@ char securityable(int type) {
         return 1;
 
 //These places have better quality locks.
+    case SITE_BUSINESS_BANK:
     case SITE_INDUSTRY_NUCLEAR:
     case SITE_GOVERNMENT_POLICESTATION:
     case SITE_GOVERNMENT_COURTHOUSE:
@@ -1761,6 +1762,11 @@ void initlocation(locationst &loc) {
     case SITE_CORPORATE_HEADQUARTERS:
         strcpy(loc.name, "Corporate HQ");
         strcpy(loc.shortname, "Corp. HQ");
+        break;
+
+    case SITE_BUSINESS_BANK:
+        strcpy(loc.name, "American Bank Corp");
+        strcpy(loc.shortname, "Bank");
         break;
 
     case SITE_BUSINESS_PAWNSHOP:

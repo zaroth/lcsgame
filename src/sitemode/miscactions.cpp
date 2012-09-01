@@ -64,6 +64,10 @@ char unlock(short type, char &actual) {
     case UNLOCK_SAFE:
         difficulty = DIFFICULTY_HEROIC;
         break;
+
+    case UNLOCK_VAULT:
+        difficulty = DIFFICULTY_HEROIC;
+        break;
     }
 
     int maxattack = -1;
@@ -123,6 +127,10 @@ char unlock(short type, char &actual) {
 
             case UNLOCK_CELL:
                 addstr("unlocks the cell");
+                break;
+
+            case UNLOCK_VAULT:
+                addstr("cracks the combo locks");
                 break;
             }
 
@@ -345,6 +353,10 @@ char hack(short type, char &actual) {
     case HACK_SUPERCOMPUTER:
         difficulty = DIFFICULTY_HEROIC;
         break;
+
+    case HACK_VAULT:
+        difficulty = DIFFICULTY_CHALLENGING;
+        break;
     }
 
     int maxattack = 0;
@@ -382,6 +394,10 @@ char hack(short type, char &actual) {
             case HACK_SUPERCOMPUTER:
                 addstr(" has burned a disk of top secret files!");
                 break;
+
+            case HACK_VAULT:
+                addstr(" has disabled the second layer of security!");
+                break;
             }
 
             refresh();
@@ -398,6 +414,10 @@ char hack(short type, char &actual) {
             switch(type) {
             case HACK_SUPERCOMPUTER:
                 addstr(" couldn't bypass the supercomputer security.");
+                break;
+
+            case HACK_VAULT:
+                addstr(" couldn't bypass the vault's electronic lock.");
                 break;
             }
 
@@ -421,7 +441,7 @@ char hack(short type, char &actual) {
             refresh();
             getch();
             move(17, 1);
-            addstr("Including the BLIND HACKER you brought.");
+            addstr("Including the  HACKER you brought.");
         }
 
         refresh();

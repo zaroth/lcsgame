@@ -168,11 +168,11 @@ char chasesequence(void) {
                     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
                     move(9, 1);
                     //LIMIT :------------------------------------:
-                    addstr("You are speeding toward a fruit-stand!");
+                    addstr("You are speeding toward a flimsy fruit stand!");
                     move(10, 1);
-                    addstr("D - Evasive driving!");
+                    addstr("D - Swerve to avoid hitting anyone!");
                     move(11, 1);
-                    addstr("F - Plow through it!");
+                    addstr("F - Play it safe and plow through it!");
                     break;
 
                 case CARCHASE_OBSTACLE_TRUCKPULLSOUT:
@@ -195,6 +195,17 @@ char chasesequence(void) {
                     addstr("D - Run the light anyway!");
                     move(11, 1);
                     addstr("F - Slow down and turn!");
+                    break;
+
+                case CARCHASE_OBSTACLE_CHILD:
+                    set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
+                    move(9, 1);
+                    //LIMIT :------------------------------------:
+                    addstr("A kid runs into the street for his ball!");
+                    move(10, 1);
+                    addstr("D - Swerve around him!");
+                    move(11, 1);
+                    addstr("F - Slam the breaks!");
                     break;
                 }
             }
@@ -1436,18 +1447,49 @@ char obstacledrive(short obstacle, char choice) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
-            addstr("You plow through the fruit stand!");
+            addstr("Fruit smashes all over the windshield!");
             refresh();
             getch();
 
             if(!LCSrandom(5)) {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
                 move(17, 1);
-                addstr("The fruit-seller has been squashed!");
+                addstr("The fruit seller is squashed!");
                 refresh();
                 getch();
 
                 criminalizeparty(LAWFLAG_MURDER);
+            }
+        }
+
+        break;
+
+    case CARCHASE_OBSTACLE_CHILD:
+        if(choice == 0) {
+            if(dodgedrive())
+                return 1;
+        } else if(choice == 1) {
+            clearmessagearea();
+            set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+            move(16, 1);
+            addstr("You slow down and carefully avoid the kid.");
+            refresh();
+            getch();
+
+            if(!LCSrandom(3)) {
+                set_color(COLOR_RED, COLOR_BLACK, 1);
+                move(17, 1);
+                addstr("The kid screams as a hail of gunfire breaks out!");
+                refresh();
+                getch();
+                enemyattack();
+                youattack();
+            } else {
+                set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                move(17, 1);
+                addstr("Both sides refrain from exchanging fire...");
+                refresh();
+                getch();
             }
         }
 

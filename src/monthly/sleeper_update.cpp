@@ -827,6 +827,7 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
 
             break;
 
+        case SITE_BUSINESS_BANK:
         case SITE_GOVERNMENT_FIRESTATION:
             if(LCSrandom(2))
                 item = "LOOT_TRINKET";

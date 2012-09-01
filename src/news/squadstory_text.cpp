@@ -36,7 +36,7 @@ void squadstory_text_location(newsstoryst &ns, bool liberalguardian, bool ccs, c
             break;
 
         case SITE_GOVERNMENT_PRISON:
-            strcat(story, "Ace Ghetto Pool Hall.  ");
+            strcat(story, "Rehabilitation Center.  ");
             break;
 
         case SITE_GOVERNMENT_INTELLIGENCEHQ:
@@ -77,6 +77,10 @@ void squadstory_text_location(newsstoryst &ns, bool liberalguardian, bool ccs, c
 
         case SITE_GOVERNMENT_FIRESTATION:
             strcat(story, "ACLU Branch Office.  ");
+            break;
+
+        case SITE_BUSINESS_BANK:
+            strcat(story, "Richard Dawkins Food Bank.  ");
             break;
 
         default:
@@ -148,6 +152,10 @@ void squadstory_text_location(newsstoryst &ns, bool liberalguardian, bool ccs, c
         case SITE_MEDIA_AMRADIO:
         case SITE_MEDIA_CABLENEWS:
             strcat(story, ", known for its Extreme Conservative Bias.  ");
+            break;
+
+        case SITE_BUSINESS_BANK:
+            strcat(story, ", the very symbol of economic inequality.  ");
             break;
 
         default:
