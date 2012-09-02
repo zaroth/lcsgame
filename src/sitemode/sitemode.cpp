@@ -248,8 +248,6 @@ void mode_site(short loc) {
     mode_site();
 }
 
-
-
 void mode_site(void) {
     int p, u;
     int x;
@@ -275,6 +273,7 @@ void mode_site(void) {
     do {
         int partysize = 0;
         int partyalive = 0;
+        int hostages = 0;
 
         for(p = 0; p < 6; p++) {
             if(activesquad->squad[p] != NULL)
@@ -284,6 +283,9 @@ void mode_site(void) {
 
             if(activesquad->squad[p]->alive == 1)
                 partyalive++;
+
+            if(activesquad->squad[p]->prisoner && activesquad->squad[p]->prisoner->align != ALIGN_LIBERAL)
+                hostages++;
         }
 
         int encsize = 0;
@@ -570,13 +572,19 @@ void mode_site(void) {
             addstr("F - Fight!");
 
             if(!location[cursite]->siege.siege) {
-                if(freeable && (!enemy || !sitealarm))
+                if(freeable && (!enemy || !sitealarm)) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                else
-                    set_color(COLOR_BLACK, COLOR_BLACK, 1);
+                    move(14, 32);
+                    addstr("R - Release oppressed");
+                } else {
+                    if(hostages)
+                        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                    else
+                        set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
-                move(14, 32);
-                addstr("R - Release oppressed");
+                    move(14, 32);
+                    addstr("R - Release hostage");
+                }
             } else {
                 if(libnum > 6)
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -1216,9 +1224,7 @@ void mode_site(void) {
             if(c == 'r' && location[cursite]->siege.siege && libnum > 6) {
                 assemblesquad(activesquad);
                 autopromote(cursite);
-            }
-
-            if(freeable && (!enemy || !sitealarm) && c == 'r' && !location[cursite]->siege.siege) {
+            } else if(freeable && (!enemy || !sitealarm) && c == 'r' && !location[cursite]->siege.siege) {
                 short followers = 0;
                 short actgot = 0;
 
@@ -1345,7 +1351,9 @@ void mode_site(void) {
                     refresh();
                     getch();
                 }
-            }
+            } else if(c == 'r' && hostages)
+                releasehostage();
+
 
             if(c >= '1' && c <= '6') {
                 if(activesquad->squad[c - '1'] != NULL) {
