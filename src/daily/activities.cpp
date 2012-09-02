@@ -438,48 +438,56 @@ void makearmor(Creature &cr, char &clearformess) {
 
             int quality = 1;
 
-            if(!cr.skill_check(SKILL_TAILORING, dif)) {
+            if(LCSrandom(10) < dif) {
                 quality = 2;
 
-                if(!cr.skill_check(SKILL_TAILORING, dif)) {
+                if(LCSrandom(10) < dif) {
                     quality = 3;
 
-                    if(!cr.skill_check(SKILL_TAILORING, dif))
+                    if(LCSrandom(10) < dif) {
                         quality = 4;
+
+                        if(LCSrandom(10) < dif)
+                            quality = 5;
+                    }
                 }
             }
-
-            Item *it = new Armor(*armortype[at], quality);
-            location[cr.location]->loot.push_back(it);
-
 
             if(clearformess)
                 erase();
             else
                 makedelimiter(8, 0);
 
+            Item *it = new Armor(*armortype[at], quality);
+
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(8, 1);
             addstr(cr.name);
-            addstr(" has made a ");
 
-            switch(quality) {
-            case 1:
-                addstr("first-rate");
-                break;
+            if(quality < 5) {
+                addstr(" has made a ");
 
-            case 2:
-                addstr("second-rate");
-                break;
+                switch(quality) {
+                case 1:
+                    addstr("first-rate");
+                    break;
 
-            case 3:
-                addstr("third-rate");
-                break;
+                case 2:
+                    addstr("second-rate");
+                    break;
 
-            case 4:
-                addstr("fourth-rate");
-                break;
-            }
+                case 3:
+                    addstr("third-rate");
+                    break;
+
+                case 4:
+                    addstr("fourth-rate");
+                    break;
+                }
+
+                location[cr.location]->loot.push_back(it);
+            } else
+                addstr(" wasted the materials for a");
 
             addstr(" ");
             addstr(it->get_name().c_str());
@@ -1254,6 +1262,7 @@ void funds_and_trouble(char &clearformess) {
         case ACTIVITY_STUDY_TEACHING:
         case ACTIVITY_STUDY_MUSIC:
         case ACTIVITY_STUDY_WRITING:
+        case ACTIVITY_STUDY_LOCKSMITHING:
             students.push_back(pool[p]);
             break;
 
@@ -2059,6 +2068,10 @@ void funds_and_trouble(char &clearformess) {
         //   break;
         case ACTIVITY_STUDY_GYMNASTICS:
             skill[0] = SKILL_DODGE;
+            break;
+
+        case ACTIVITY_STUDY_LOCKSMITHING:
+            skill[0] = SKILL_SECURITY;
             break;
 
         case ACTIVITY_STUDY_MUSIC:

@@ -241,6 +241,10 @@ void listclasses(Creature *cr) {
         move(15, 40);
         addstr("4 - Music");
 
+        set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_STUDY_LOCKSMITHING);
+        move(16, 40);
+        addstr("5 - Locksmithing");
+
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(17, 40);
         addstr("6 - Other classes");
@@ -312,6 +316,10 @@ void updateclasschoice(Creature *cr, char choice) {
 
             case '4':
                 cr->activity.type = ACTIVITY_STUDY_MUSIC;
+                break;
+
+            case '5':
+                cr->activity.type = ACTIVITY_STUDY_LOCKSMITHING;
                 break;
             }
         }
@@ -775,6 +783,7 @@ void activate(Creature *cr) {
         case ACTIVITY_STUDY_ART:
         case ACTIVITY_STUDY_MUSIC:
         case ACTIVITY_STUDY_TEACHING:
+        case ACTIVITY_STUDY_LOCKSMITHING:
             move(22, 3);
             addstr(cr->name);
             addstr(" will attend classes in the University District");
@@ -1510,8 +1519,6 @@ void select_makeclothing(Creature *cr) {
     vector<int> armortypei;
 
     for (int a = 0; a < armortype.size(); ++a) {
-        int difficulty = 0;
-
         if (armortype[a]->get_make_difficulty() == 0)
             continue;
 
@@ -1519,9 +1526,6 @@ void select_makeclothing(Creature *cr) {
                 && (law[LAW_POLICEBEHAVIOR] != -2 || law[LAW_DEATHPENALTY] != -2))
             continue;
 
-        difficulty = armor_makedifficulty(*armortype[a], cr);
-        //if(difficulty>cr->get_skill(SKILL_TAILORING)*2+5)
-        //   continue;
         armortypei.push_back(a);
     }
 
@@ -1546,6 +1550,10 @@ void select_makeclothing(Creature *cr) {
 
         for(int p = page * 19; p < armortypei.size() && p < page * 19 + 19; p++) {
             difficulty = armor_makedifficulty(*armortype[armortypei[p]], cr);
+
+            if(difficulty < 0)
+                difficulty = 0;
+
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -1553,12 +1561,8 @@ void select_makeclothing(Creature *cr) {
             addstr(armortype[armortypei[p]]->get_name().c_str());
 
             move(y, 37);
-            int display_difficulty = difficulty - cr->get_skill(SKILL_TAILORING);
 
-            if(display_difficulty < 0)
-                display_difficulty = 0;
-
-            switch(display_difficulty) {
+            switch(difficulty) {
             case 0:
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
                 addstr("Simple");

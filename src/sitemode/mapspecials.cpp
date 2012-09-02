@@ -2560,9 +2560,10 @@ void special_bank_vault(void) {
                         }
                     }
 
-                    criminalizeparty(LAWFLAG_BANKROBBERY);
-
                     if(canbreakin) {
+                        criminalizeparty(LAWFLAG_BANKROBBERY);
+                        sitecrime += 20;
+                        sitestory->crime[CRIME_BANKVAULTROBBERY]++;
                         levelmap[locx + 1][locy][locz].flag &= ~SITEBLOCK_DOOR;
                         levelmap[locx - 1][locy][locz].flag &= ~SITEBLOCK_DOOR;
                         levelmap[locx][locy + 1][locz].flag &= ~SITEBLOCK_DOOR;
@@ -2634,10 +2635,11 @@ void special_bank_money(void) {
     levelmap[locx][locy][locz].special = -1;
 
     activesquad->loot.push_back(new Money(20000));
+    sitecrime += 20;
 
     if(!sitealarm && sitealarmtimer != 0)
         sitealarmtimer = 0;
-    else if(!sitealarm && !LCSrandom(3))
+    else if(!sitealarm && !LCSrandom(2))
         sitealarm = 1;
     else if(sitealarm && postalarmtimer <= 60)
         postalarmtimer += 20;
@@ -2649,7 +2651,7 @@ void special_bank_money(void) {
         move(17, 1);
         addstr("A SWAT team storms the vault!!");
 
-        int swatnum = 6;
+        int swatnum = 9;
 
         for(int e = 0; e < ENCMAX; e++) {
             if(!encounter[e].exists) {

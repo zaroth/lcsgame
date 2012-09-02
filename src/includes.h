@@ -70,7 +70,7 @@
 #endif
 
 #ifndef PACKAGE_VERSION
-#define PACKAGE_VERSION "4.06.1"
+#define PACKAGE_VERSION "4.06.2"
 #endif
 
 const int version = 40602;
@@ -527,6 +527,7 @@ enum Activity {
     ACTIVITY_SLEEPER_EMBEZZLE,
     ACTIVITY_SLEEPER_STEAL,
     ACTIVITY_SLEEPER_JOINLCS,
+    ACTIVITY_STUDY_LOCKSMITHING,
     ACTIVITYNUM
 };
 
@@ -764,6 +765,7 @@ struct siegest {
 #define COMPOUND_TRAPS BIT4
 #define COMPOUND_GENERATOR BIT5
 #define COMPOUND_PRINTINGPRESS BIT6
+#define COMPOUND_AAGUN BIT7
 
 struct locationst {
     char name[40];
@@ -1005,6 +1007,9 @@ enum Crimes {
     CRIME_TAGGING,
     CRIME_ARMORY,
     CRIME_VANDALISM,
+    CRIME_BANKVAULTROBBERY,
+    CRIME_BANKTELLERROBBERY,
+    CRIME_BANKSTICKUP,
     CRIMENUM
 };
 

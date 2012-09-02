@@ -617,10 +617,10 @@ int lawflagheat(int lawflag) {
     // - Jonathan S. Fox
     switch(lawflag) {
     case LAWFLAG_KIDNAPPING:
-        return 2;
+        return 20;
 
     case LAWFLAG_MURDER:
-        return 2;
+        return 20;
 
     case LAWFLAG_THEFT:
         return 0;
@@ -629,25 +629,25 @@ int lawflagheat(int lawflag) {
         return 0;
 
     case LAWFLAG_TERRORISM:
-        return 10;
+        return 100;
 
     case LAWFLAG_JURY:
         return 0;
 
     case LAWFLAG_TREASON:
-        return 10;
+        return 100;
 
     case LAWFLAG_ESCAPED:
-        return 5;
+        return 50;
 
     case LAWFLAG_HELPESCAPE:
-        return 5;
+        return 50;
 
     case LAWFLAG_RESIST:
-        return 1;
+        return 10;
 
     case LAWFLAG_EXTORTION:
-        return 1;
+        return 20;
 
     case LAWFLAG_BURNFLAG:
         return 0;
@@ -668,16 +668,16 @@ int lawflagheat(int lawflag) {
         return 0;
 
     case LAWFLAG_INFORMATION:
-        return 5;
+        return 50;
 
     case LAWFLAG_COMMERCE:
-        return 2;
+        return 20;
 
     case LAWFLAG_CCFRAUD:
-        return 2;
+        return 20;
 
     case LAWFLAG_BROWNIES:
-        return 5;
+        return 50;
 
     case LAWFLAG_BURIAL:
         return 0;
@@ -689,10 +689,10 @@ int lawflagheat(int lawflag) {
         return 0;
 
     case LAWFLAG_HIREILLEGAL:
-        return 1;
+        return 10;
 
     case LAWFLAG_RACKETEERING:
-        return 5;
+        return 50;
 
     case LAWFLAG_LOITERING:
         return 0;
@@ -700,10 +700,13 @@ int lawflagheat(int lawflag) {
     //case LAWFLAG_GUNCARRY:return 0;
     //case LAWFLAG_GUNUSE:return 1;
     case LAWFLAG_ARSON:
-        return 5;
+        return 50;
 
     case LAWFLAG_PUBLICNUDITY:
         return 0;
+
+    case LAWFLAG_BANKROBBERY:
+        return 20;
 
     default:
         return 0;
