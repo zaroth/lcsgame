@@ -351,6 +351,7 @@ char chasesequence(void) {
                     equip(activesquad->loot, -1);
             } else {
                 switch(obstacle) {
+                case CARCHASE_OBSTACLE_CHILD:
                 case CARCHASE_OBSTACLE_CROSSTRAFFIC:
                 case CARCHASE_OBSTACLE_TRUCKPULLSOUT:
                 case CARCHASE_OBSTACLE_FRUITSTAND:

@@ -383,6 +383,8 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
         displaymajoreventstory(ns, story, storyx_s, storyx_e);
         break;
 
+    case NEWSSTORY_CCS_NOBACKERS:
+    case NEWSSTORY_CCS_DEFEATED:
     case NEWSSTORY_SQUAD_SITE:
     case NEWSSTORY_SQUAD_ESCAPED:
     case NEWSSTORY_SQUAD_FLEDATTACK:
@@ -411,6 +413,35 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
         strcat(story, " - ");
 
         switch(ns.type) {
+        case NEWSSTORY_CCS_NOBACKERS:
+            strcat(story, "The FBI investigation into the Conservative Crime Squad's government connections has led to the arrest of more than ");
+            strcat(story, "a dozen elected officials and revealed extensive corruption in law enforcement.");
+            strcat(story, "&r");
+            strcat(story, "  \"The uphevals in the police force, and arrest of corrupt officials, are only the beginning,\" FBI Chief ");
+            strcat(story, "Roberta T. Malton said during a news conference.  \"A major focus ");
+            strcat(story, "of our efforts will be on the complete destruction of the Conservative Crime Squad. Within six months, we'll have their ");
+            strcat(story, "entire leadership, dead or alive. I personally guarantee it.\"");
+            strcat(story, "&r");
+            break;
+
+        case NEWSSTORY_CCS_DEFEATED:
+            strcat(story, "An elite FBI force conducted simultaneous ");
+            strcat(story, "raids on several suspected Conservative Crime Squad safehouses in the early hours. Despite resistance from ");
+            strcat(story, "CCS terrorists armed with automatic weapons and body armor, no FBI agents were killed in the raids, and all ");
+            strcat(story, "three raids were successful. Seventeen suspects were killed in the fighting, and twenty-three are ");
+            strcat(story, "now in custody.");
+            strcat(story, "&r");
+            strcat(story, "  The Conservative Crime Squad fell on hard times when the alternative newspaper Liberal Guardian published ");
+            strcat(story, "1147 pages of documents showing extensive government support for the group. The ensuing scandal ");
+            strcat(story, "led to the arrest of twenty-five members of Congress, as well as several leadership figures in the ");
+            strcat(story, "Conservative Party's National Committee.");
+            strcat(story, "&r");
+            strcat(story, "  \"I want parents to rest easy tonight,\" FBI Chief ");
+            strcat(story, "Roberta T. Malton said during a news conference to announce the raids.  \"You don't need the Liberal Crime Squad ");
+            strcat(story, "to protect you. The Government can handle it.\"");
+            strcat(story, "&r");
+            break;
+
         case NEWSSTORY_WANTEDARREST:
         case NEWSSTORY_GRAFFITIARREST: {
             int crime[CRIMENUM];
@@ -1685,6 +1716,93 @@ void majornewspaper(char &clearformess, char canseethings) {
         newsstory.push_back(ns);
     }
 
+    // The slow defeat of the conservative crime squad...
+    if(!LCSrandom(60)) {
+        if(endgamestate >= ENDGAME_CCS_APPEARANCE && endgamestate < ENDGAME_CCS_DEFEATED) {
+            newsstoryst *ns;
+
+            switch(ccsexposure) {
+            default:
+            case CCSEXPOSURE_NONE:
+            case CCSEXPOSURE_LCSGOTDATA:
+                break;
+
+            case CCSEXPOSURE_EXPOSED: {
+                ns = new newsstoryst;
+                ns->type = NEWSSTORY_CCS_NOBACKERS;
+                ns->priority = 800;
+                newsstory.push_back(ns);
+                ccsexposure = CCSEXPOSURE_NOBACKERS;
+                // arrest seventeen representatives and eight senators
+                int arrestsleft = 8;
+
+                for(int i = 0; i < 100; i++) {
+                    if((senate[i] == -2 || senate[i] == -1) && !LCSrandom(4)) {
+                        senate[i] = 2;
+                        arrestsleft--;
+
+                        if(arrestsleft <= 0)
+                            break;
+                    }
+                }
+
+                arrestsleft = 17;
+
+                for(int i = 0; i < 435; i++) {
+                    if((house[i] == -2 || house[i] == -1) && !LCSrandom(4)) {
+                        house[i] = 2;
+                        arrestsleft--;
+
+                        if(arrestsleft <= 0)
+                            break;
+                    }
+                }
+
+                // change police regulation issue to be more liberal
+                law[LAW_POLICEBEHAVIOR] += 2;
+
+                if(law[LAW_POLICEBEHAVIOR] > ALIGN_ELITELIBERAL)
+                    law[LAW_POLICEBEHAVIOR] = ALIGN_ELITELIBERAL;
+
+                change_public_opinion(VIEW_POLICEBEHAVIOR, 50);
+                change_public_opinion(VIEW_CONSERVATIVECRIMESQUAD, 50);
+                break;
+            }
+
+            case CCSEXPOSURE_NOBACKERS:
+                ns = new newsstoryst;
+                ns->type = NEWSSTORY_CCS_DEFEATED;
+                ns->priority = 800;
+                newsstory.push_back(ns);
+                endgamestate = ENDGAME_CCS_DEFEATED;
+
+                // arrest or kill ccs sleepers
+                for(int p = 0; p < pool.size(); p++) {
+                    if(pool[p]->flag & CREATUREFLAG_SLEEPER) {
+                        if(pool[p]->type == CREATURE_CCS_VIGILANTE || pool[p]->type == CREATURE_CCS_ARCHCONSERVATIVE ||
+                                pool[p]->type == CREATURE_CCS_MOLOTOV || pool[p]->type == CREATURE_CCS_SNIPER) {
+                            pool[p]->flag &= ~CREATUREFLAG_SLEEPER;
+                            criminalize(*pool[p], LAWFLAG_RACKETEERING);
+                            capturecreature(*pool[p]);
+                        }
+                    }
+                }
+
+                // hide ccs safehouses
+                for(int l = 0; l < location.size(); l++) {
+                    if(location[l]->renting == RENTING_CCS) {
+                        location[l]->renting = RENTING_NOCONTROL;
+                        location[l]->hidden = true;
+                    }
+                }
+
+                // go militarized police
+                change_public_opinion(VIEW_POLICEBEHAVIOR, -20);
+                break;
+            }
+        }
+    }
+
     //SET UP MAJOR EVENTS
     if(!LCSrandom(60)) {
         newsstoryst *ns = new newsstoryst;
@@ -2190,6 +2308,10 @@ void majornewspaper(char &clearformess, char canseethings) {
                 case NEWSSTORY_SQUAD_BROKESIEGE:
                 case NEWSSTORY_SQUAD_KILLED_SIEGEATTACK:
                 case NEWSSTORY_SQUAD_KILLED_SIEGEESCAPE:
+                    break;
+
+                case NEWSSTORY_CCS_NOBACKERS:
+                case NEWSSTORY_CCS_DEFEATED:
                     break;
                 }
 

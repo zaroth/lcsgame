@@ -305,7 +305,7 @@ void locheader(void) {
                 strcpy(str, "Acting Individually");
         }
 
-        move(0, 46);
+        move(0, 41);
         addstr(str);
     }
 }

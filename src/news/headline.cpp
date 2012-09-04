@@ -4,6 +4,16 @@
 
 void displaystoryheader(newsstoryst &ns, bool liberalguardian, int &y, int header) {
     switch(ns.type) {
+    case NEWSSTORY_CCS_NOBACKERS:
+        displaycenterednewsfont("FBI HUNTS CCS", 5);
+        y = 13;
+        break;
+
+    case NEWSSTORY_CCS_DEFEATED:
+        displaycenterednewsfont("RAIDS END CCS", 5);
+        y = 13;
+        break;
+
     case NEWSSTORY_NUDITYARREST:
     case NEWSSTORY_CARTHEFT:
     case NEWSSTORY_WANTEDARREST:

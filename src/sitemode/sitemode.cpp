@@ -1449,6 +1449,18 @@ void mode_site(void) {
 
                             break;
 
+                        case SITE_BUSINESS_BANK:
+                            if(!LCSrandom(4))
+                                newLootType = "LOOT_WATCH";
+                            else if(!LCSrandom(3))
+                                newLootType = "LOOT_CELLPHONE";
+                            else if(!LCSrandom(2))
+                                newLootType = "LOOT_PDA";
+                            else
+                                newLootType = "LOOT_COMPUTER";
+
+                            break;
+
                         case SITE_RESIDENTIAL_APARTMENT:
                             if(!LCSrandom(25)) {
                                 string rndWeps[] = {"WEAPON_BASEBALLBAT", "WEAPON_KNIFE", "WEAPON_REVOLVER_38",

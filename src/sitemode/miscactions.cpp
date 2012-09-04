@@ -441,7 +441,7 @@ char hack(short type, char &actual) {
             refresh();
             getch();
             move(17, 1);
-            addstr("Including the  HACKER you brought.");
+            addstr("Including the BLIND HACKER you brought.");
         }
 
         refresh();

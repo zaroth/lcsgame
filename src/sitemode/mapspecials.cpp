@@ -1297,9 +1297,22 @@ void special_intel_supercomputer(void) {
             if(hack(HACK_SUPERCOMPUTER, actual)) {
                 clearmessagearea();
 
+                char *loot;
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("The Squad obtains sensitive information.");
+                addstr("The Squad obtains sensitive information");
+
+                if(endgamestate >= ENDGAME_CCS_APPEARANCE && endgamestate < ENDGAME_CCS_DEFEATED && ccsexposure < CCSEXPOSURE_LCSGOTDATA) {
+                    addstr(",");
+                    move(17, 1);
+                    addstr("including a list of government backers of the CCS.");
+
+                    Item *it = new Loot(*loottype[getloottype("LOOT_CCS_BACKERLIST")]);
+                    activesquad->loot.push_back(it);
+
+                    ccsexposure = CCSEXPOSURE_LCSGOTDATA;
+                } else
+                    addstr(".");
 
                 juiceparty(50, 1000);
 

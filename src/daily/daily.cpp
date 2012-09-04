@@ -1810,11 +1810,12 @@ void initlocation(locationst &loc) {
 
     case SITE_INDUSTRY_WAREHOUSE: {
         do {
-            strcpy(loc.name, "Old ");
+            strcpy(loc.name, "Abandoned ");
             char str[50];
-            lastname(str);
-            strcat(loc.name, str);
-            strcat(loc.name, " ");
+
+            /*lastname(str);
+            strcat(loc.name,str);
+            strcat(loc.name," ");*/
 
             switch(LCSrandom(10)) {
             case 0:
@@ -1926,8 +1927,12 @@ void initlocation(locationst &loc) {
 
     case SITE_RESIDENTIAL_TENEMENT:
         do {
-            char str[50];
-            lastname(str);
+            char str[50] = "";
+
+            do {
+                lastname(str);
+            } while(strlen(str) > 7);
+
             strcpy(loc.name, str);
             strcat(loc.name, " St. ");
             strcat (loc.name, "Housing Projects");
