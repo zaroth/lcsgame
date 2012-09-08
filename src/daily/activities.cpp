@@ -2359,6 +2359,8 @@ void funds_and_trouble(char &clearformess) {
                             refresh();
                             getch();
 
+                            makedelimiter(8, 0);
+
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(8, 1);
                             addstr("The mob scatters!");
