@@ -278,6 +278,8 @@ char bash(short type, char &actual) {
                 addstr("uses a crowbar on the door");
             else if(activesquad->squad[maxp]->get_weapon().get_bashstrengthmod() > 1)
                 addstr("smashes in the door");
+            else if(activesquad->squad[maxp]->flag & CREATUREFLAG_WHEELCHAIR)
+                addstr("rams open the door");
             else
                 addstr("kicks in the door");
 
@@ -320,7 +322,11 @@ char bash(short type, char &actual) {
 
         switch(type) {
         case BASH_DOOR:
-            addstr(" kicks the door");
+            if(activesquad->squad[maxp]->flag & CREATUREFLAG_WHEELCHAIR)
+                addstr(" rams into the door");
+            else
+                addstr(" kicks the door");
+
             break;
         }
 

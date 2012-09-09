@@ -2997,6 +2997,7 @@ char talkInCombat(Creature &a, Creature &tk) {
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
                 addstr(" on the floor.");
             } else {
+                addstr(a.name);
                 addstr(" talks like a Conservative");
                 move(17, 1);
                 addstr("and pretends to belong here.");
