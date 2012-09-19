@@ -1605,6 +1605,7 @@ void funds_and_trouble(char &clearformess) {
                 strcat(msg, "spread videos of racist police brutality.");
 
                 trackdif = DIFFICULTY_FORMIDABLE;
+                crime = LAWFLAG_INFORMATION;
                 juiceval = 10;
                 change_public_opinion(VIEW_POLICEBEHAVIOR, 2, 0, 75);
                 change_public_opinion(VIEW_CIVILRIGHTS, 2, 0, 75);
@@ -1616,6 +1617,7 @@ void funds_and_trouble(char &clearformess) {
                 //Scambaiting, except you're baiting a CEO
 
                 trackdif = DIFFICULTY_FORMIDABLE;
+                crime = LAWFLAG_INFORMATION;
                 juiceval = 10;
                 change_public_opinion(VIEW_CEOSALARY, 2, 0, 75);
                 change_public_opinion(VIEW_TAXES, 2, 0, 75);
@@ -2359,7 +2361,10 @@ void funds_and_trouble(char &clearformess) {
                             refresh();
                             getch();
 
-                            makedelimiter(8, 0);
+                            if(clearformess)
+                                erase();
+                            else
+                                makedelimiter(8, 0);
 
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(8, 1);
