@@ -370,6 +370,7 @@ void sleeper_spy(Creature &cr, char &clearformess, char canseethings, int *libpo
 
             removesquadinfo(cr);
             cr.location = hs;
+            cr.base = hs;
             cr.drop_weapons_and_clips(NULL);
             cr.activity.type = ACTIVITY_NONE;
             cr.flag &= ~CREATUREFLAG_SLEEPER;

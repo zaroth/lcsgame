@@ -1203,6 +1203,8 @@ void mode_site(void) {
             }
 
             if(enemy && c == 'f') {
+                bool subdue = false;
+
                 for(int i = 0; i < ENCMAX; i++) {
                     if(encounter[i].exists &&
                             encounter[i].blood > 60 &&
@@ -1214,19 +1216,21 @@ void mode_site(void) {
                                 break;
                         }
 
-                        if(i == 6) {
-                            fight_subdued();
-                            return;
-                        }
+                        if(i == 6)
+                            subdue = true;
 
                         break;
                     }
                 }
 
-                youattack();
-                enemyattack();
-                creatureadvance();
-                encounter_timer++;
+                if(subdue)
+                    fight_subdued();
+                else {
+                    youattack();
+                    enemyattack();
+                    creatureadvance();
+                    encounter_timer++;
+                }
             }
 
             if(c == 'r' && location[cursite]->siege.siege && libnum > 6) {
