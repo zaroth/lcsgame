@@ -156,6 +156,34 @@ FILE *LCSOpenFile(const char *filename, const char *mode, int flags) {
     return fopen(filepath.c_str(), mode);
 }
 
+//C++ file i/o version of the above.
+bool LCSOpenFileCPP(std::string filename, std::ios_base::openmode mode, int flags, std::fstream &file) {
+    if(!initialized) { //Check if the directories have not been initialized.
+        LCSInitHomeDir(); //Initialize the home directory of LCS. Where stuff like the save and score files are stored.
+        LCSInitArtDir(); //Initialize the art dir.
+        initialized = true; //Initialized.
+    }
+
+    std::string filepath = ""; //The actual path to the file.
+
+    //This ifelse block decides which directory the file gets saved to.
+    if(flags & LCSIO_PRE_ART) { //Art dir specified.
+        filepath = artdir; //Set the filepath to the artdir.
+    } else if(flags & LCSIO_PRE_HOME) { //Home dir specified.
+        filepath = homedir; //Set the filepath to the homedir.
+    }
+
+    filepath.append(filename); //Append the file's name/relative path to the filepath.
+
+    file.open(filepath.c_str(), mode); //Opens the file.
+
+    if(file.is_open()) { //Check if file opened successfully.
+        return true; //Success!
+    } else {
+        return false; //Failure!
+    }
+}
+
 void LCSDeleteFile(const char *filename, int flags) {
 
     if(!initialized) {
@@ -183,5 +211,11 @@ void LCSDeleteFile(const char *filename, int flags) {
 
 void LCSCloseFile(FILE *handle) {
     fclose(handle);
+}
+
+//C++ file i/o version of the above.
+void LCSCloseFileCPP(std::fstream &file) {
+    if(file.is_open())   //Check if the file even is open so that we don't bother closing a file that isn't open.
+        file.close();
 }
 
