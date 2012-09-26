@@ -447,7 +447,8 @@ void mode_base(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(12, 39 - ((strlen(str) - 1) >> 1));
-                addstr(str);
+                addstr(str, gamelog);
+                gamelog.nextMessage(); //Write out buffer to prepare for the next message.
 
                 refresh();
                 getch();
@@ -949,67 +950,68 @@ void mode_base(void) {
                 char num[10];
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 move(7, 5);
-                addstr("Time passes...");
+                addstr("Time passes...", gamelog);
                 move(9, 12);
 
                 switch(month) {
                 case 1:
-                    addstr("Jan");
+                    addstr("Jan", gamelog);
                     break;
 
                 case 2:
-                    addstr("Feb");
+                    addstr("Feb", gamelog);
                     break;
 
                 case 3:
-                    addstr("Mar");
+                    addstr("Mar", gamelog);
                     break;
 
                 case 4:
-                    addstr("Apr");
+                    addstr("Apr", gamelog);
                     break;
 
                 case 5:
-                    addstr("May");
+                    addstr("May", gamelog);
                     break;
 
                 case 6:
-                    addstr("Jun");
+                    addstr("Jun", gamelog);
                     break;
 
                 case 7:
-                    addstr("Jul");
+                    addstr("Jul", gamelog);
                     break;
 
                 case 8:
-                    addstr("Aug");
+                    addstr("Aug", gamelog);
                     break;
 
                 case 9:
-                    addstr("Sep");
+                    addstr("Sep", gamelog);
                     break;
 
                 case 10:
-                    addstr("Oct");
+                    addstr("Oct", gamelog);
                     break;
 
                 case 11:
-                    addstr("Nov");
+                    addstr("Nov", gamelog);
                     break;
 
                 case 12:
-                    addstr("Dec");
+                    addstr("Dec", gamelog);
                     break;
                 }
 
-                addstr(". ");
+                addstr(". ", gamelog);
                 move(9, 17);
                 itoa(day, num, 10);
-                addstr(num);
-                addstr(", ");
+                addstr(num, gamelog);
+                addstr(", ", gamelog);
                 move(9, 21);
                 itoa(year, num, 10);
-                addstr(num);
+                addstr(num, gamelog);
+                gamelog.nextMessage(); //Write out buffer to prepare for the next message.
                 refresh();
             }
         }

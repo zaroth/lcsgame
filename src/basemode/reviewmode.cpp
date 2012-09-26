@@ -721,9 +721,10 @@ void review_mode(short mode) {
                         if(c == 'c') {
                             // Release squad member
                             move(22, 0);
-                            addstr(temppool[p]->name);
-                            addstr(" has been released.                                                                      ");
+                            addstr(temppool[p]->name, gamelog);
+                            addstr(" has been released.                                                                      ", gamelog);
                             move(23, 0);
+                            gamelog.newline(); //New line.
                             addstr("                                                                                         ");
                             move(24, 0);
                             addstr("                                                                                         ");
@@ -736,15 +737,17 @@ void review_mode(short mode) {
                                     && iscriminal(*pool[boss])) {
                                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
                                 move(22, 0);
-                                addstr("A Liberal friend tips you off on ");
-                                addstr(temppool[p]->name);
-                                addstr("'s whereabouts.");
+                                addstr("A Liberal friend tips you off on ", gamelog);
+                                addstr(temppool[p]->name, gamelog);
+                                addstr("'s whereabouts.", gamelog);
                                 move(24, 0);
-                                addstr("The Conservative traitor has ratted you out to the police, and sworn");
+                                gamelog.newline(); //New line.
+                                addstr("The Conservative traitor has ratted you out to the police, and sworn", gamelog);
                                 move(25, 0);
-                                addstr("to testify against ");
-                                addstr(pool[boss]->name);
-                                addstr(" in court.");
+                                gamelog.newline(); //New line.
+                                addstr("to testify against ", gamelog);
+                                addstr(pool[boss]->name, gamelog);
+                                addstr(" in court.", gamelog);
 
                                 criminalize(*pool[boss], LAWFLAG_RACKETEERING);
                                 pool[boss]->confessions++;
@@ -756,6 +759,8 @@ void review_mode(short mode) {
                                 else
                                     location[pool[boss]->location]->heat += 20;
                             }
+
+                            gamelog.nextMessage(); //Write out buffer to prepare for next message.
 
                             // Remove squad member
                             removesquadinfo(*temppool[p]);
@@ -798,22 +803,22 @@ void review_mode(short mode) {
                             stat_kills++;
 
                             move(22, 0);
-                            addstr(pool[boss]->name);
-                            addstr(" executes ");
-                            addstr(temppool[p]->name);
-                            addstr(" by ");
+                            addstr(pool[boss]->name, gamelog);
+                            addstr(" executes ", gamelog);
+                            addstr(temppool[p]->name, gamelog);
+                            addstr(" by ", gamelog);
 
                             switch(LCSrandom(3)) {
                             case 0:
-                                addstr("strangling to death.                             ");
+                                addstr("strangling to death.                             ", gamelog);
                                 break;
 
                             case 1:
-                                addstr("beating to death.                                ");
+                                addstr("beating to death.                                ", gamelog);
                                 break;
 
                             case 2:
-                                addstr("cold execution.                                  ");
+                                addstr("cold execution.                                  ", gamelog);
                                 break;
                             }
 
@@ -828,43 +833,49 @@ void review_mode(short mode) {
                             if(boss != -1) {
                                 if(LCSrandom(pool[boss]->get_attribute(ATTRIBUTE_HEART, false)) > LCSrandom(3)) {
                                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                                    addstr(pool[boss]->name);
-                                    addstr(" feels sick to the stomach afterward and ");
+                                    gamelog.newline(); //New line.
+                                    addstr(pool[boss]->name, gamelog);
+                                    addstr(" feels sick to the stomach afterward and ", gamelog);
                                     pool[boss]->adjust_attribute(ATTRIBUTE_HEART, -1);
 
                                     switch(LCSrandom(4)) {
                                     case 0:
-                                        addstr("throws up in a trash can.                                          ");
+                                        addstr("throws up in a trash can.                                          ", gamelog);
                                         break;
 
                                     case 1:
-                                        addstr("gets drunk, eventually falling asleep.                             ");
+                                        addstr("gets drunk, eventually falling asleep.                             ", gamelog);
                                         break;
 
                                     case 2:
-                                        addstr("curls up in a ball, crying softly.                                 ");
+                                        addstr("curls up in a ball, crying softly.                                 ", gamelog);
                                         break;
 
                                     case 3:
-                                        addstr("shoots up and collapses in a heap on the floor.                    ");
+                                        addstr("shoots up and collapses in a heap on the floor.                    ", gamelog);
                                         break;
                                     }
 
                                     move(23, 0);
-                                    addstr(pool[boss]->name);
-                                    addstr(" has lost heart.");
+                                    gamelog.newline(); //New line.
+                                    addstr(pool[boss]->name, gamelog);
+                                    addstr(" has lost heart.", gamelog);
                                     getch();
                                 } else if(!LCSrandom(3)) {
+                                    gamelog.newline(); //New line here too.
                                     set_color(COLOR_CYAN, COLOR_BLACK, 1);
-                                    addstr(pool[boss]->name);
-                                    addstr(" grows colder.                                                            ");
+                                    addstr(pool[boss]->name, gamelog);
+                                    addstr(" grows colder.                                                            ", gamelog);
                                     pool[boss]->adjust_attribute(ATTRIBUTE_WISDOM, +1);
                                     move(23, 0);
-                                    addstr(pool[boss]->name);
-                                    addstr(" has gained wisdom.                                                           ");
+                                    gamelog.newline(); //New line.
+                                    addstr(pool[boss]->name, gamelog);
+                                    addstr(" has gained wisdom.                                                           ", gamelog);
                                     getch();
                                 }
                             }
+
+                            gamelog.nextMessage(); //Write buffer out to prepare for next message.
 
                             break;
                         }
