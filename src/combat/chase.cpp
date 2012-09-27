@@ -53,8 +53,10 @@ char chasesequence(void) {
             chasenum++;
     }
 
-    if(chasenum == 0)
+    if(chasenum == 0) {
+        gamelog.nextMessage(); //Next message.
         return 1;
+    }
 
     chaseseq.friendcar.clear();
 
@@ -82,9 +84,11 @@ char chasesequence(void) {
     erase();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(0, 0);
-    addstr("As you pull away from the site, you notice that you are");
+    addstr("As you pull away from the site, you notice that you are", gamelog);
     move(1, 0);
-    addstr("being followed by Conservative swine!");
+    gamelog.newline(); //New line. I'd rather it be continuous but whatever.
+    addstr("being followed by Conservative swine!", gamelog);
+    gamelog.newline(); //New line.
     refresh();
     getch();
 
@@ -168,7 +172,8 @@ char chasesequence(void) {
                     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
                     move(9, 1);
                     //LIMIT :------------------------------------:
-                    addstr("You are speeding toward a flimsy fruit stand!");
+                    addstr("You are speeding toward a flimsy fruit stand!", gamelog);
+                    gamelog.newline(); //Newline!
                     move(10, 1);
                     addstr("D - Swerve to avoid hitting anyone!");
                     move(11, 1);
@@ -179,7 +184,8 @@ char chasesequence(void) {
                     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
                     move(9, 1);
                     //LIMIT :------------------------------------:
-                    addstr("A truck pulls out in your path!");
+                    addstr("A truck pulls out in your path!", gamelog);
+                    gamelog.newline(); //Newline.
                     move(10, 1);
                     addstr("D - Speed around it!");
                     move(11, 1);
@@ -190,7 +196,8 @@ char chasesequence(void) {
                     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
                     move(9, 1);
                     //LIMIT :------------------------------------:
-                    addstr("There's a red light with cross traffic ahead!");
+                    addstr("There's a red light with cross traffic ahead!", gamelog);
+                    gamelog.newline(); //Newline...
                     move(10, 1);
                     addstr("D - Run the light anyway!");
                     move(11, 1);
@@ -201,7 +208,8 @@ char chasesequence(void) {
                     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
                     move(9, 1);
                     //LIMIT :------------------------------------:
-                    addstr("A kid runs into the street for his ball!");
+                    addstr("A kid runs into the street for his ball!", gamelog);
+                    gamelog.newline(); //Newline.
                     move(10, 1);
                     addstr("D - Swerve around him!");
                     move(11, 1);
@@ -266,6 +274,7 @@ char chasesequence(void) {
 
             if(!endcheck()) {
                 mode = GAMEMODE_BASE;
+                gamelog.nextMessage(); //Next message.
                 return 0;
             }
         }
@@ -309,6 +318,7 @@ char chasesequence(void) {
             } else if(c == 'p') {
                 if(chaseseq.canpullover) {
                     chase_giveup();
+                    gamelog.nextMessage(); //Next message.
                     return 0;
                 }
             } else if(obstacle == -1) {
@@ -406,7 +416,8 @@ char chasesequence(void) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 clearmessagearea();
                 move(16, 1);
-                addstr("It looks like you've lost them!");
+                addstr("It looks like you've lost them!", gamelog);
+                gamelog.newline(); //New line.
                 refresh();
                 getch();
 
@@ -416,6 +427,9 @@ char chasesequence(void) {
                 }
 
                 mode = GAMEMODE_BASE;
+                //Make sure all possible exist of the chase have the nextMessage() call
+                //to ensure that the gamelog is split properly into blocks.
+                gamelog.nextMessage();
                 return 1;
             }
         }
@@ -423,6 +437,9 @@ char chasesequence(void) {
     } while(1);
 
     mode = GAMEMODE_BASE;
+    //Make sure all possible exist of the chase have the nextMessage() call
+    //to ensure that the gamelog is split properly into blocks.
+    gamelog.nextMessage();
     return 1;
 }
 
@@ -451,8 +468,10 @@ char footchase(void) {
         encounter[e].carid = -1;
     }
 
-    if(chasenum == 0)
+    if(chasenum == 0) {
+        gamelog.nextMessage(); //Output this message, preparing for next.
         return 1;
+    }
 
     mode = GAMEMODE_CHASEFOOT;
 
@@ -576,6 +595,7 @@ char footchase(void) {
 
             if(!endcheck()) {
                 mode = GAMEMODE_BASE;
+                gamelog.nextMessage(); //Output this message, preparing for next.
                 return 0;
             }
         }
@@ -599,6 +619,7 @@ char footchase(void) {
             if(c == 'g') {
                 if(chaseseq.canpullover) {
                     chase_giveup();
+                    gamelog.nextMessage(); //Get ready for the next message.
                     return 0;
                 }
             }
@@ -658,7 +679,8 @@ char footchase(void) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 clearmessagearea();
                 move(16, 1);
-                addstr("It looks like you've lost them!");
+                addstr("It looks like you've lost them!", gamelog);
+                gamelog.newline(); //New line.
                 refresh();
                 getch();
 
@@ -668,6 +690,7 @@ char footchase(void) {
                 }
 
                 mode = GAMEMODE_BASE;
+                gamelog.nextMessage(); //Output this message, preparing for next.
                 return 1;
             }
         }
@@ -675,6 +698,8 @@ char footchase(void) {
     } while(1);
 
     mode = GAMEMODE_BASE;
+    //All possible exists of the chase should be covered by a nextMessage() call.
+    gamelog.nextMessage();
     return 1;
 }
 
@@ -730,23 +755,27 @@ void evasivedrive(void) {
 
     switch(LCSrandom(4)) {
     case 0:
-        addstr("You keep the gas floored!");
+        addstr("You keep the gas floored!", gamelog);
+        gamelog.newline(); //Newline.
         break;
 
     case 1:
-        addstr("You swerve around the next corner!");
+        addstr("You swerve around the next corner!", gamelog);
+        gamelog.newline(); //New line.
         break;
 
     case 2:
-        addstr("You screech through an empty lot to the next street!");
+        addstr("You screech through an empty lot to the next street!", gamelog);
+        gamelog.newline(); //New line.
         break;
 
     case 3:
         if(yourworst > 15)
-            addstr("You boldly weave through oncoming traffic!");
+            addstr("You boldly weave through oncoming traffic!", gamelog);
         else
-            addstr("You make obscene gestures at the pursuers!");
+            addstr("You make obscene gestures at the pursuers!", gamelog);
 
+        gamelog.newline(); //new line.
         break;
     }
 
@@ -765,26 +794,30 @@ void evasivedrive(void) {
 
             for(e = 0; e < ENCMAX; e++) {
                 if(encounter[e].id == theirrolls_drv[i]) {
-                    addstr(encounter[e].name);
+                    addstr(encounter[e].name, gamelog);
                     break;
                 }
             }
 
             switch(LCSrandom(cnt / 5)) {
             default:
-                addstr(" falls behind!");
+                addstr(" falls behind!", gamelog);
+                gamelog.newline(); //New line.
                 break;
 
             case 1:
-                addstr(" skids out!");
+                addstr(" skids out!", gamelog);
+                gamelog.newline(); //New line.
                 break;
 
             case 2:
-                addstr(" backs off for safety.");
+                addstr(" backs off for safety.", gamelog);
+                gamelog.newline(); //New line.
                 break;
 
             case 3:
-                addstr(" breaks hard and nearly crashes!");
+                addstr(" breaks hard and nearly crashes!", gamelog);
+                gamelog.newline(); //New line.
                 break;
             }
 
@@ -818,12 +851,13 @@ void evasivedrive(void) {
 
             for(int e = 0; e < ENCMAX; e++) {
                 if(encounter[e].id == theirrolls_drv[i]) {
-                    addstr(encounter[e].name);
+                    addstr(encounter[e].name, gamelog);
                     break;
                 }
             }
 
-            addstr(" is still on your tail!");
+            addstr(" is still on your tail!", gamelog);
+            gamelog.newline(); //Blarg. Newline.
             refresh();
             getch();
         }
@@ -874,19 +908,23 @@ void evasiverun(void) {
 
         switch(LCSrandom(yourworst / 5)) {
         default:
-            addstr("You suddenly dart into an alley!");
+            addstr("You suddenly dart into an alley!", gamelog);
+            gamelog.newline(); //New line.
             break;
 
         case 1:
-            addstr("You run as fast as you can!");
+            addstr("You run as fast as you can!", gamelog);
+            gamelog.newline(); //New line.
             break;
 
         case 2:
-            addstr("You climb a fence in record time!");
+            addstr("You climb a fence in record time!", gamelog);
+            gamelog.newline(); //New line.
             break;
 
         case 3:
-            addstr("You scale a small building and leap between rooftops!");
+            addstr("You scale a small building and leap between rooftops!", gamelog);
+            gamelog.newline(); //New line.
         }
 
         refresh();
@@ -915,23 +953,27 @@ void evasiverun(void) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
-            addstr(encounter[e].name);
+            addstr(encounter[e].name, gamelog);
 
             switch(LCSrandom(4)) {
             case 0:
-                addstr(" plows through a brick wall like it was nothing!");
+                addstr(" plows through a brick wall like it was nothing!", gamelog);
+                gamelog.newline(); //New line.
                 break;
 
             case 1:
-                addstr(" charges down an alley, smashing both side walls out!");
+                addstr(" charges down an alley, smashing both side walls out!", gamelog);
+                gamelog.newline(); //Blarg.
                 break;
 
             case 2:
-                addstr(" smashes straight through traffic, demolishing cars!");
+                addstr(" smashes straight through traffic, demolishing cars!", gamelog);
+                gamelog.newline(); //Newline.
                 break;
 
             case 3:
-                addstr(" destroys everything in its path, closing the distance!");
+                addstr(" destroys everything in its path, closing the distance!", gamelog);
+                gamelog.newline(); //I wish these were all contained in addstr.
                 break;
             }
 
@@ -941,12 +983,15 @@ void evasiverun(void) {
             clearmessagearea();
             set_color(COLOR_CYAN, COLOR_BLACK, 1);
             move(16, 1);
-            addstr(encounter[e].name);
+            addstr(encounter[e].name, gamelog);
 
-            if(encounter[e].type == CREATURE_TANK)
-                addstr(" tips into a pool. The tank is trapped!");
-            else
-                addstr(" can't keep up!");
+            if(encounter[e].type == CREATURE_TANK) {
+                addstr(" tips into a pool. The tank is trapped!", gamelog);
+                gamelog.newline(); //New line.
+            } else {
+                addstr(" can't keep up!", gamelog);
+                gamelog.newline(); //Another new line.
+            }
 
             delenc(e, 0);
             e--;
@@ -958,8 +1003,9 @@ void evasiverun(void) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
-            addstr(encounter[e].name);
-            addstr(" is still on your tail!");
+            addstr(encounter[e].name, gamelog);
+            addstr(" is still on your tail!", gamelog);
+            gamelog.newline(); //New line.
             refresh();
             getch();
         }
@@ -986,8 +1032,9 @@ void evasiverun(void) {
                 clearmessagearea();
                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr(activesquad->squad[p]->name);
-                addstr(" breaks away!");
+                addstr(activesquad->squad[p]->name, gamelog);
+                addstr(" breaks away!", gamelog);
+                gamelog.newline(); //New line.
                 refresh();
                 getch();
 
@@ -1016,19 +1063,23 @@ void evasiverun(void) {
                 clearmessagearea();
                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr(activesquad->squad[p]->name);
+                addstr(activesquad->squad[p]->name, gamelog);
 
                 switch(encounter[0].type) {
                 case CREATURE_COP:
-                    addstr(" is seized, ");
+                    addstr(" is seized, ", gamelog);
 
-                    if(law[LAW_POLICEBEHAVIOR] >= ALIGN_LIBERAL)
-                        addstr("pushed to the ground, and handcuffed!");
-                    else {
-                        if(activesquad->squad[p]->blood <= 10)
-                            addstr("thrown to the ground, and tazed to death!");
-                        else
-                            addstr("thrown to the ground, and tazed repeatedly!");
+                    if(law[LAW_POLICEBEHAVIOR] >= ALIGN_LIBERAL) {
+                        addstr("pushed to the ground, and handcuffed!", gamelog);
+                        gamelog.newline(); //...Newline.
+                    } else {
+                        if(activesquad->squad[p]->blood <= 10) {
+                            addstr("thrown to the ground, and tazed to death!", gamelog);
+                            gamelog.newline(); //Not another newline!
+                        } else {
+                            addstr("thrown to the ground, and tazed repeatedly!", gamelog);
+                            gamelog.newline(); //Yet another newline...
+                        }
 
                         activesquad->squad[p]->blood -= 10;
                     }
@@ -1036,23 +1087,28 @@ void evasiverun(void) {
                     break;
 
                 case CREATURE_DEATHSQUAD:
-                    addstr(" is seized, ");
-                    addstr("thrown to the ground, and shot in the head!");
+                    addstr(" is seized, ", gamelog);
+                    addstr("thrown to the ground, and shot in the head!", gamelog);
+                    gamelog.newline(); //New line.
                     activesquad->squad[p]->blood = 0;
                     break;
 
                 case CREATURE_TANK:
-                    addstr(" crushed beneath the tank's treads!");
+                    addstr(" crushed beneath the tank's treads!", gamelog);
+                    gamelog.newline(); //New line.
                     activesquad->squad[p]->blood = 0;
                     break;
 
                 default:
-                    addstr(" is seized, ");
+                    addstr(" is seized, ", gamelog);
 
-                    if(activesquad->squad[p]->blood <= 60)
-                        addstr("thrown to the ground, and beaten to death!");
-                    else
-                        addstr("thrown to the ground, and beaten senseless!");
+                    if(activesquad->squad[p]->blood <= 60) {
+                        addstr("thrown to the ground, and beaten to death!", gamelog);
+                        gamelog.newline(); //New line.
+                    } else {
+                        addstr("thrown to the ground, and beaten senseless!", gamelog);
+                        gamelog.newline(); //New line.
+                    }
 
                     activesquad->squad[p]->blood -= 60;
                     break;
@@ -1151,8 +1207,9 @@ char drivingupdate(short &obstacle) {
                 clearmessagearea();
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr(activesquad->squad[p]->name);
-                addstr(" takes over the wheel.");
+                addstr(activesquad->squad[p]->name, gamelog);
+                addstr(" takes over the wheel.", gamelog);
+                gamelog.newline(); //New line.
                 printparty();
                 refresh();
                 getch();
@@ -1398,14 +1455,16 @@ char obstacledrive(short obstacle, char choice) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
-            addstr("You slow down, and turn the corner.");
+            addstr("You slow down, and turn the corner.", gamelog);
+            gamelog.newline(); //New line.
             refresh();
             getch();
 
             if(!LCSrandom(3)) {
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
                 move(17, 1);
-                addstr("Here they come!");
+                addstr("Here they come!", gamelog);
+                gamelog.newline(); //New line.
                 refresh();
                 getch();
                 enemyattack();
@@ -1423,14 +1482,16 @@ char obstacledrive(short obstacle, char choice) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
-            addstr("You slow down, and carefully evade the truck.");
+            addstr("You slow down, and carefully evade the truck.", gamelog);
+            gamelog.newline(); //New line.
             refresh();
             getch();
 
             if(!LCSrandom(3)) {
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
                 move(17, 1);
-                addstr("Here they come!");
+                addstr("Here they come!", gamelog);
+                gamelog.newline(); //New line.
                 refresh();
                 getch();
                 enemyattack();
@@ -1448,14 +1509,16 @@ char obstacledrive(short obstacle, char choice) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
-            addstr("Fruit smashes all over the windshield!");
+            addstr("Fruit smashes all over the windshield!", gamelog);
+            gamelog.newline(); //New line.
             refresh();
             getch();
 
             if(!LCSrandom(5)) {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
                 move(17, 1);
-                addstr("The fruit seller is squashed!");
+                addstr("The fruit seller is squashed!", gamelog);
+                gamelog.newline(); //All this logging and lining...
                 refresh();
                 getch();
 
@@ -1473,14 +1536,16 @@ char obstacledrive(short obstacle, char choice) {
             clearmessagearea();
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(16, 1);
-            addstr("You slow down and carefully avoid the kid.");
+            addstr("You slow down and carefully avoid the kid.", gamelog);
+            gamelog.newline(); //New line.
             refresh();
             getch();
 
             if(!LCSrandom(3)) {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
                 move(17, 1);
-                addstr("The kid screams as a hail of gunfire breaks out!");
+                addstr("The kid screams as a hail of gunfire breaks out!", gamelog);
+                gamelog.newline(); //New line.
                 refresh();
                 getch();
                 enemyattack();
@@ -1488,7 +1553,8 @@ char obstacledrive(short obstacle, char choice) {
             } else {
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
                 move(17, 1);
-                addstr("Both sides refrain from exchanging fire...");
+                addstr("Both sides refrain from exchanging fire...", gamelog);
+                gamelog.newline(); //New line.
                 refresh();
                 getch();
             }
@@ -1507,7 +1573,8 @@ char dodgedrive(void) {
     clearmessagearea();
     set_color(COLOR_YELLOW, COLOR_BLACK, 1);
     move(16, 1);
-    addstr("You swerve to avoid the obstacle!");
+    addstr("You swerve to avoid the obstacle!", gamelog);
+    gamelog.newline(); //New line.
     refresh();
     getch();
 
@@ -1570,23 +1637,24 @@ void crashfriendlycar(int v) {
     clearmessagearea();
     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
     move(16, 1);
-    addstr("Your ");
-    addstr(chaseseq.friendcar[v]->fullname().c_str());
+    addstr("Your ", gamelog);
+    addstr(chaseseq.friendcar[v]->fullname().c_str(), gamelog);
 
     switch(LCSrandom(3)) {
     case 0:
-        addstr(" slams into a building!");
+        addstr(" slams into a building!", gamelog);
         break;
 
     case 1:
-        addstr(" skids out and crashes!");
+        addstr(" skids out and crashes!", gamelog);
         break;
 
     case 2:
-        addstr(" hits a parked car and flips over!");
+        addstr(" hits a parked car and flips over!", gamelog);
         break;
     }
 
+    gamelog.newline(); //New line it.
     printparty();
     refresh();
     getch();
@@ -1629,22 +1697,23 @@ void crashfriendlycar(int v) {
                     clearmessagearea();
                     set_color(COLOR_RED, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr(activesquad->squad[p]->prisoner->name);
+                    addstr(activesquad->squad[p]->prisoner->name, gamelog);
 
                     switch(LCSrandom(3)) {
                     case 0:
-                        addstr(" is crushed inside the car.");
+                        addstr(" is crushed inside the car.", gamelog);
                         break;
 
                     case 1:
-                        addstr("'s lifeless body smashes through the windshield.");
+                        addstr("'s lifeless body smashes through the windshield.", gamelog);
                         break;
 
                     case 2:
-                        addstr(" is thrown from the car and killed instantly.");
+                        addstr(" is thrown from the car and killed instantly.", gamelog);
                         break;
                     }
 
+                    gamelog.newline(); //New line.
                     printparty();
                     refresh();
                     getch();
@@ -1675,31 +1744,32 @@ void crashfriendlycar(int v) {
                 clearmessagearea();
                 set_color(COLOR_RED, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr(activesquad->squad[p]->name);
+                addstr(activesquad->squad[p]->name, gamelog);
 
                 switch(LCSrandom(3)) {
                 case 0:
-                    addstr(" slumps in ");
+                    addstr(" slumps in ", gamelog);
 
                     if(activesquad->squad[p]->gender_liberal == GENDER_MALE)
-                        addstr("his");
+                        addstr("his", gamelog);
                     else if(activesquad->squad[p]->gender_liberal == GENDER_FEMALE)
-                        addstr("her");
+                        addstr("her", gamelog);
                     else
-                        addstr("its");
+                        addstr("its", gamelog);
 
-                    addstr(" seat, out cold, and dies.");
+                    addstr(" seat, out cold, and dies.", gamelog);
                     break;
 
                 case 1:
-                    addstr(" is crushed by the impact.");
+                    addstr(" is crushed by the impact.", gamelog);
                     break;
 
                 case 2:
-                    addstr(" struggles free of the car, then collapses lifelessly.");
+                    addstr(" struggles free of the car, then collapses lifelessly.", gamelog);
                     break;
                 }
 
+                gamelog.newline(); //New line.
                 printparty();
                 refresh();
                 getch();
@@ -1719,43 +1789,44 @@ void crashfriendlycar(int v) {
                 clearmessagearea();
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr(activesquad->squad[p]->name);
+                addstr(activesquad->squad[p]->name, gamelog);
 
                 switch(LCSrandom(3)) {
                 case 0:
-                    addstr(" grips the ");
+                    addstr(" grips the ", gamelog);
 
                     if(activesquad->squad[p]->is_armed())
-                        addstr(activesquad->squad[p]->get_weapon().get_shortname().c_str());
+                        addstr(activesquad->squad[p]->get_weapon().get_shortname().c_str(), gamelog);
                     else
-                        addstr("car frame");
+                        addstr("car frame", gamelog);
 
-                    addstr(" and struggles to ");
+                    addstr(" and struggles to ", gamelog);
 
                     if(activesquad->squad[p]->gender_liberal == GENDER_MALE)
-                        addstr("his");
+                        addstr("his", gamelog);
                     else if(activesquad->squad[p]->gender_liberal == GENDER_FEMALE)
-                        addstr("her");
+                        addstr("her", gamelog);
                     else
-                        addstr("its");
+                        addstr("its", gamelog);
 
                     if(activesquad->squad[p]->flag & CREATUREFLAG_WHEELCHAIR)
-                        addstr(" wheelchair.");
+                        addstr(" wheelchair.", gamelog);
                     else
-                        addstr(" feet.");
+                        addstr(" feet.", gamelog);
 
                     break;
 
                 case 1:
-                    addstr(" gasps in pain, but lives, for now.");
+                    addstr(" gasps in pain, but lives, for now.", gamelog);
                     break;
 
                 case 2:
-                    addstr(" crawls free of the car, shivering with pain.");
+                    addstr(" crawls free of the car, shivering with pain.", gamelog);
                     activesquad->squad[p]->drop_weapon(NULL);
                     break;
                 }
 
+                gamelog.newline(); //New line.
                 printparty();
                 refresh();
                 getch();
@@ -1823,30 +1894,31 @@ void crashenemycar(int v) {
     clearmessagearea();
     set_color(COLOR_CYAN, COLOR_BLACK, 1);
     move(16, 1);
-    addstr("The ");
-    addstr(str.c_str());
+    addstr("The ", gamelog);
+    addstr(str.c_str(), gamelog);
 
     switch(LCSrandom(3)) {
     case 0:
-        addstr(" slams into a building.");
+        addstr(" slams into a building.", gamelog);
         break;
 
     case 1:
-        addstr(" spins out and crashes.");
+        addstr(" spins out and crashes.", gamelog);
         move(17, 1);
 
         if(victimsum > 1)
-            addstr("Everyone inside is peeled off against the pavement.");
+            addstr("Everyone inside is peeled off against the pavement.", gamelog);
         else if(victimsum == 1)
-            addstr("The person inside is squashed into a cube.");
+            addstr("The person inside is squashed into a cube.", gamelog);
 
         break;
 
     case 2:
-        addstr(" hits a parked car and flips over.");
+        addstr(" hits a parked car and flips over.", gamelog);
         break;
     }
 
+    gamelog.newline(); //New line.
     printchaseencounter();
     refresh();
     getch();
@@ -1904,18 +1976,22 @@ void chase_giveup(void) {
     move(16, 1);
 
     if(mode != GAMEMODE_CHASECAR)
-        addstr("You stop and are arrested.");
+        addstr("You stop and are arrested.", gamelog);
     else
-        addstr("You pull over and are arrested.");
+        addstr("You pull over and are arrested.", gamelog);
+
+    gamelog.newline(); //New line.
 
     if(hostagefreed > 0) {
         move(17, 1);
-        addstr("Your hostage");
+        addstr("Your hostage", gamelog);
 
         if(hostagefreed > 1)
-            addstr("s are free.");
+            addstr("s are free.", gamelog);
         else
-            addstr(" is free.");
+            addstr(" is free.", gamelog);
+
+        gamelog.newline(); //New line.
     }
 
     refresh();
@@ -2006,5 +2082,6 @@ char chasesequence(Creature &cr, Vehicle &v) {
     }
 
     activesquad = oact;
+    gamelog.nextMessage(); //Next message.
     return ret;
 }
