@@ -48,6 +48,24 @@ make it more likely to be raided:
 */
 
 
+/* siege - gives up on sieges with empty locations */
+/* Work in progress. It works, but needs to be called in more places. */
+/* Currently, it only works when you confront a siege and then fail. */
+void resolvesafehouses(void) {
+    for(int l = 0; l < location.size(); l++) {
+        //locationst* d_loc = location[l];
+        //int d_renting = d_loc->renting;
+        if(location[l]->renting >= 0 && location[l]->siege.siege) {
+            cleangonesquads();
+            selectedsiege = l; // hack for calling giveup()
+            giveup();
+
+            int bp = 0;
+        }
+    }
+}
+
+
 /* siege - updates upcoming sieges */
 void siegecheck(char canseethings) {
     if(disbanding)
@@ -206,28 +224,31 @@ void siegecheck(char canseethings) {
                     erase();
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(8, 1);
-                    addstr("You have received advance warning from your sleepers regarding");
+                    addstr("You have received advance warning from your sleepers regarding ", gamelog);
                     move(9, 1);
-                    addstr("in imminent police raid on ");
+                    addstr("an imminent police raid on ", gamelog);
                     addlocationname(location[l]);
-                    addstr(".");
+                    addstr(".", gamelog);
+                    gamelog.newline();
 
                     if(location[l]->siege.escalationstate >= 2) {
                         move(11, 1);
-                        addstr("The fighting force will be composed of national guard troops.");
+                        addstr("The fighting force will be composed of national guard troops.", gamelog);
                     }
 
                     if(location[l]->siege.escalationstate >= 2) {
                         move(12, 1);
-                        addstr("A tank will cover the entrance to the compound.");
+                        addstr("A tank will cover the entrance to the compound.", gamelog);
                     }
 
                     if(location[l]->siege.escalationstate >= 3) {
                         move(13, 1);
-                        addstr("Planes will bomb the compound during the siege, and the final");
+                        addstr("Planes will bomb the compound during the siege, and the final ", gamelog);
                         move(14, 1);
-                        addstr("attack will be carried out by SEAL Team 6.");
+                        addstr("attack will be carried out by SEAL Team 6.", gamelog);
                     }
+
+                    gamelog.nextMessage(); //Write out buffer to prepare for next message.
 
                     move (15, 1);
                     addstr("Press X to ponder the situation...");
@@ -252,9 +273,10 @@ void siegecheck(char canseethings) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                     move(8, 1);
-                    addstr("The police have surrounded the ");
-                    addlocationname(location[l]);
-                    addstr("!");
+                    addstr("The police have surrounded the ", gamelog);
+                    addlocationname(location[l], gamelog);
+                    addstr("!", gamelog);
+                    gamelog.newline();
                     location[l]->siege.underattack = 0;
                     refresh();
                     getch();
@@ -262,7 +284,8 @@ void siegecheck(char canseethings) {
                     //MENTION ESCALATION STATE
                     if(location[l]->siege.escalationstate >= 1) {
                         move(9, 1);
-                        addstr("National Guard troops are replacing normal SWAT units.");
+                        addstr("National Guard troops are replacing normal SWAT units.", gamelog);
+                        gamelog.nextMessage();
                         refresh();
                         getch();
                     }
@@ -271,22 +294,24 @@ void siegecheck(char canseethings) {
                         move(10, 1);
 
                         if(location[l]->compound_walls & COMPOUND_TANKTRAPS)
-                            addstr("An M1 Abrams Tank is stopped by the tank traps.");
+                            addstr("An M1 Abrams Tank is stopped by the tank traps.", gamelog);
                         else
-                            addstr("An M1 Abrams Tank takes up position outside the compound.");
+                            addstr("An M1 Abrams Tank takes up position outside the compound.", gamelog);
 
+                        gamelog.nextMessage();
                         refresh();
                         getch();
                     }
 
                     if(location[l]->siege.escalationstate >= 3) {
                         move(11, 1);
-                        addstr("You hear jet bombers streak overhead.");
+                        addstr("You hear jet bombers streak overhead.", gamelog);
+                        gamelog.nextMessage();
                         refresh();
                         getch();
                     }
 
-
+                    // "You are wanted for blahblah and other crimes."
                     statebrokenlaws(l);
 
                     location[l]->siege.siege = 1;
@@ -298,9 +323,10 @@ void siegecheck(char canseethings) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                     move(8, 1);
-                    addstr("The cops have raided the ");
-                    addlocationname(location[l]);
-                    addstr(", an unoccupied safehouse.");
+                    addstr("The cops have raided the ", gamelog);
+                    addlocationname(location[l], gamelog);
+                    addstr(", an unoccupied safehouse.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -314,8 +340,9 @@ void siegecheck(char canseethings) {
                         if(!pool[p]->alive) {
                             move(y, 1);
                             y++;
-                            addstr(pool[p]->name);
-                            addstr("'s corpse has been recovered.");
+                            addstr(pool[p]->name, gamelog);
+                            addstr("'s corpse has been recovered.", gamelog);
+                            gamelog.newline();
                             refresh();
                             getch();
 
@@ -327,8 +354,9 @@ void siegecheck(char canseethings) {
                         if(pool[p]->align != 1) {
                             move(y, 1);
                             y++;
-                            addstr(pool[p]->name);
-                            addstr(" has been rescued.");
+                            addstr(pool[p]->name, gamelog);
+                            addstr(" has been rescued.", gamelog);
+                            gamelog.newline();
                             refresh();
                             getch();
 
@@ -337,6 +365,8 @@ void siegecheck(char canseethings) {
                             continue;
                         }
                     }
+
+                    gamelog.newline();
 
                     for(int l2 = 0; l2 < location[l]->loot.size(); l2++)
                         delete location[l]->loot[l2];
@@ -370,23 +400,25 @@ void siegecheck(char canseethings) {
                     erase();
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(8, 1);
-                    addstr("You have received ");
+                    addstr("You have received ", gamelog);
 
                     if(ceosleepercount)
-                        addstr("your sleeper CEO's warning");
+                        addstr("your sleeper CEO's warning", gamelog);
                     else
-                        addstr("an anonymous tip");
+                        addstr("an anonymous tip", gamelog);
 
-                    addstr(" that the Corporations");
+                    addstr(" that the Corporations ", gamelog);
                     move(9, 1);
-                    addstr("are hiring mercenaries to attack ");
+                    addstr("are hiring mercenaries to attack ", gamelog);
 
                     if(ceosleepercount)
-                        addstr(location[l]->name);
+                        addstr(location[l]->name, gamelog);
                     else
-                        addstr("the LCS");
+                        addstr("the LCS", gamelog);
 
-                    addstr(".");
+                    addstr(".", gamelog);
+                    gamelog.nextMessage();
+
                     refresh();
                     getch();
                 }
@@ -399,9 +431,10 @@ void siegecheck(char canseethings) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                 move(8, 1);
-                addstr("Corporate mercenaries are raiding the ");
-                addlocationname(location[l]);
-                addstr("!");
+                addstr("Corporate mercenaries are raiding the ", gamelog);
+                addlocationname(location[l], gamelog);
+                addstr("!", gamelog);
+                gamelog.nextMessage();
 
                 refresh();
                 getch();
@@ -438,11 +471,13 @@ void siegecheck(char canseethings) {
                         erase();
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
-                        addstr("You have received a sleeper warning that the CCS");
+                        addstr("You have received a sleeper warning that the CCS ", gamelog);
                         move(9, 1);
-                        addstr(" is gearing up to attack ");
-                        addstr(location[l]->name);
-                        addstr(".");
+                        addstr(" is gearing up to attack ", gamelog);
+                        addstr(location[l]->name, gamelog);
+                        addstr(".", gamelog);
+                        gamelog.nextMessage();
+
                         refresh();
                         getch();
                     }
@@ -455,9 +490,10 @@ void siegecheck(char canseethings) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                     move(8, 1);
-                    addstr("A screeching truck pulls up to ");
-                    addlocationname(location[l]);
-                    addstr("!");
+                    addstr("A screeching truck pulls up to ", gamelog);
+                    addlocationname(location[l], gamelog);
+                    addstr("!", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -469,7 +505,8 @@ void siegecheck(char canseethings) {
                         set_color(COLOR_RED, COLOR_BLACK, 1);
 
                         move(8, 1);
-                        addstr("The truck plows into the building and explodes!");
+                        addstr("The truck plows into the building and explodes!", gamelog);
+                        gamelog.nextMessage();
 
                         refresh();
                         getch();
@@ -537,7 +574,8 @@ void siegecheck(char canseethings) {
                         set_color(COLOR_RED, COLOR_BLACK, 1);
 
                         move(8, 1);
-                        addstr("CCS members pour out of the truck and shoot in the front doors!");
+                        addstr("CCS members pour out of the truck and shoot in the front doors!", gamelog);
+                        gamelog.nextMessage();
 
                         refresh();
                         getch();
@@ -575,11 +613,13 @@ void siegecheck(char canseethings) {
                     erase();
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(8, 1);
-                    addstr("A sleeper agent has reported that the CIA is planning");
+                    addstr("A sleeper agent has reported that the CIA is planning ", gamelog);
                     move(9, 1);
-                    addstr("to launch an attack on ");
-                    addstr(location[l]->name);
-                    addstr(".");
+                    addstr("to launch an attack on ", gamelog);
+                    addstr(location[l]->name, gamelog);
+                    addstr(".", gamelog);
+                    gamelog.nextMessage();
+
                     refresh();
                     getch();
                 }
@@ -592,23 +632,27 @@ void siegecheck(char canseethings) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                 move(8, 1);
-                addstr("Unmarked black vans are surrounding the ");
-                addlocationname(location[l]);
-                addstr("!");
+                addstr("Unmarked black vans are surrounding the ", gamelog);
+                addlocationname(location[l], gamelog);
+                addstr("!", gamelog);
+                gamelog.newline();
 
                 if(location[l]->compound_walls & COMPOUND_CAMERAS) {
                     move(9, 1);
-                    addstr("Through some form of high technology, they've managed");
+                    addstr("Through some form of high technology, they've managed ", gamelog);
                     move(10, 1);
-                    addstr("to shut off the lights and the cameras!");
+                    addstr("to shut off the lights and the cameras!", gamelog);
+                    gamelog.nextMessage();
                 } else if(location[l]->compound_walls & COMPOUND_GENERATOR) {
                     move(9, 1);
-                    addstr("Through some form of high technology, they've managed");
+                    addstr("Through some form of high technology, they've managed ", gamelog);
                     move(10, 1);
-                    addstr("to shut off the lights!");
+                    addstr("to shut off the lights!", gamelog);
+                    gamelog.nextMessage();
                 } else {
                     move(9, 1);
-                    addstr("They've shut off the lights!");
+                    addstr("They've shut off the lights!", gamelog);
+                    gamelog.nextMessage();
                 }
 
                 refresh();
@@ -628,11 +672,12 @@ void siegecheck(char canseethings) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                 move(8, 1);
-                addstr("Masses dissatisfied with your lack of respect for AM Radio");
+                addstr("Masses dissatisfied with your lack of respect for AM Radio ", gamelog);
                 move(9, 1);
-                addstr("are storming the ");
-                addlocationname(location[l]);
-                addstr("!");
+                addstr("are storming the ", gamelog);
+                addlocationname(location[l], gamelog);
+                addstr("!", gamelog);
+                gamelog.nextMessage();
 
                 refresh();
                 getch();
@@ -650,11 +695,12 @@ void siegecheck(char canseethings) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                 move(8, 1);
-                addstr("Masses dissatisfied with your lack of respect for Cable News");
+                addstr("Masses dissatisfied with your lack of respect for Cable News ", gamelog);
                 move(9, 1);
-                addstr("are storming the ");
-                addlocationname(location[l]);
-                addstr("!");
+                addstr("are storming the ", gamelog);
+                addlocationname(location[l], gamelog);
+                addstr("!", gamelog);
+                gamelog.nextMessage();
 
                 refresh();
                 getch();
@@ -687,14 +733,16 @@ void siegecheck(char canseethings) {
                     move(8, 1);
 
                     if(firemensleepercount)
-                        addstr("A sleeper Fireman has informed you that");
+                        addstr("A sleeper Fireman has informed you that ", gamelog);
                     else
-                        addstr("Word in the underground is that");
+                        addstr("Word in the underground is that ", gamelog);
 
                     move(9, 1);
-                    addstr("the Firemen are planning to burn ");
-                    addstr(location[l]->name);
-                    addstr(".");
+                    addstr("the Firemen are planning to burn ", gamelog);
+                    addstr(location[l]->name, gamelog);
+                    addstr(".", gamelog);
+                    gamelog.nextMessage();
+
                     refresh();
                     getch();
                 }
@@ -708,12 +756,14 @@ void siegecheck(char canseethings) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                 move(8, 1);
-                addstr("Screaming fire engines pull up to the ");
-                addlocationname(location[l]);
-                addstr("!");
+                addstr("Screaming fire engines pull up to the ", gamelog);
+                addlocationname(location[l], gamelog);
+                addstr("!", gamelog);
+                gamelog.newline();
 
                 move(9, 1);
-                addstr("Armored firemen swarm out, pilot lights burning.");
+                addstr("Armored firemen swarm out, pilot lights burning.", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -722,16 +772,20 @@ void siegecheck(char canseethings) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(1, 1);
-                addstr("You hear a screeching voice over the sound of fire engine sirens:");
+                addstr("You hear a screeching voice over the sound of fire engine sirens:", gamelog);
+                gamelog.newline();
 
                 move(3, 1);
-                addstr("Surrender yourselves!");
+                addstr("Surrender yourselves!", gamelog);
+                gamelog.newline();
 
                 move(4, 1);
-                addstr("Unacceptable Speech has occurred at this location.");
+                addstr("Unacceptable Speech has occurred at this location.", gamelog);
+                gamelog.newline();
 
                 move(6, 1);
-                addstr("Come quietly and you will not be harmed.");
+                addstr("Come quietly and you will not be harmed.", gamelog);
+                gamelog.nextMessage();
 
                 refresh();
                 getch();
@@ -748,9 +802,10 @@ void siegecheck(char canseethings) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                 move(8, 1);
-                addstr("The Firemen have raided the ");
-                addlocationname(location[l]);
-                addstr(", an unoccupied safehouse.");
+                addstr("The Firemen have raided the ", gamelog);
+                addlocationname(location[l], gamelog);
+                addstr(", an unoccupied safehouse.", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -764,8 +819,9 @@ void siegecheck(char canseethings) {
                     if(!pool[p]->alive) {
                         move(y, 1);
                         y++;
-                        addstr(pool[p]->name);
-                        addstr("'s corpse has been recovered.");
+                        addstr(pool[p]->name, gamelog);
+                        addstr("'s corpse has been recovered.", gamelog);
+                        gamelog.newline();
                         refresh();
                         getch();
 
@@ -777,8 +833,9 @@ void siegecheck(char canseethings) {
                     if(pool[p]->align != 1) {
                         move(y, 1);
                         y++;
-                        addstr(pool[p]->name);
-                        addstr(" has been rescued.");
+                        addstr(pool[p]->name, gamelog);
+                        addstr(" has been rescued.", gamelog);
+                        gamelog.newline();
                         refresh();
                         getch();
 
@@ -795,16 +852,20 @@ void siegecheck(char canseethings) {
 
                 if(location[l]->compound_walls & COMPOUND_PRINTINGPRESS) {
                     move(10, 1);
-                    addstr("The printing press is dismantled and burned.");
+                    addstr("The printing press is dismantled and burned.", gamelog);
+                    gamelog.newline();
                     location[l]->compound_walls &= ~COMPOUND_PRINTINGPRESS;
                     offended_firemen = 0;
                 }
 
                 if(location[l]->front_business != -1) {
                     move(12, 1);
-                    addstr("Materials relating to the business front have been destroyed.");
+                    addstr("Materials relating to the business front have been destroyed.", gamelog);
+                    gamelog.newline();
                     location[l]->front_business = -1;
                 }
+
+                gamelog.newline();
             }
         }
     }
@@ -905,9 +966,10 @@ void siegeturn(char clearformess) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
                 move(8, 1);
-                addstr("Conservatives have raided the ");
-                addlocationname(location[l]);
-                addstr(", an unoccupied safehouse.");
+                addstr("Conservatives have raided the ", gamelog);
+                addlocationname(location[l], gamelog);
+                addstr(", an unoccupied safehouse.", gamelog);
+                gamelog.newline();
 
                 if(location[l]->siege.siegetype == SIEGE_CCS) {
                     if(location[l]->type == SITE_INDUSTRY_WAREHOUSE)
@@ -927,7 +989,8 @@ void siegeturn(char clearformess) {
                         move(y, 1);
                         y++;
                         addstr(pool[p]->name);
-                        addstr("'s corpse has been recovered.");
+                        addstr("'s corpse has been recovered.", gamelog);
+                        gamelog.newline();
                         refresh();
                         getch();
 
@@ -940,7 +1003,8 @@ void siegeturn(char clearformess) {
                         move(y, 1);
                         y++;
                         addstr(pool[p]->name);
-                        addstr(" has been rescued.");
+                        addstr(" has been rescued.", gamelog);
+                        gamelog.newline();
                         refresh();
                         getch();
 
@@ -962,16 +1026,36 @@ void siegeturn(char clearformess) {
                     }
                 }
 
+                gamelog.newline();
+
                 location[l]->siege.siege = 0;
             }
 
             if(!location[l]->siege.underattack) {
+                // Seperate logging message.
+                gamelog.record("A day passes while under siege...");
+                gamelog.newline();
+
                 //EAT
                 bool starving = false;
                 int eaters = numbereating(l);
 
-                if(location[l]->compound_stores == 0)
+                if(location[l]->compound_stores == 0 && eaters > 0) {
                     starving = true;
+
+                    if(clearformess)
+                        erase();
+                    else
+                        makedelimiter(8, 0);
+
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    move(8, 1);
+                    addstr("Your Liberals are starving!", gamelog);
+                    gamelog.newline();
+
+                    refresh();
+                    getch();
+                }
 
                 if(location[l]->compound_stores >= eaters)
                     location[l]->compound_stores -= eaters;
@@ -980,9 +1064,9 @@ void siegeturn(char clearformess) {
 
                 //ATTACK!
                 char attack = 0;
-                int kidnapped = 0;
-                int criminalcount = 0;
-                int fortified = 0;
+                //int kidnapped=0; // unused
+                //int criminalcount=0; // unused
+                //int fortified=0; // unused
 
                 for(int p = 0; p < pool.size(); p++) {
                     if(!pool[p]->alive)
@@ -992,19 +1076,38 @@ void siegeturn(char clearformess) {
                         continue;
 
                     if(starving)
-                        pool[p]->blood -= LCSrandom(5) + 1;
+                        pool[p]->blood -= LCSrandom(8) + 4;
 
-                    if(pool[p]->flag & CREATUREFLAG_KIDNAPPED)
-                        kidnapped++;
+                    // Check if liberal starved to death.
+                    if(pool[p]->blood <= 0) {
+                        pool[p]->die();
 
-                    if(iscriminal(*pool[p]))
-                        criminalcount++;
+                        if(clearformess)
+                            erase();
+                        else
+                            makedelimiter(8, 0);
+
+                        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                        move(8, 1);
+                        addstr(pool[p]->name, gamelog);
+                        addstr(" has starved to death.", gamelog);
+                        gamelog.newline();
+
+                        refresh();
+                        getch();
+                    }
+
+                    /*if(pool[p]->flag & CREATUREFLAG_KIDNAPPED)
+                    {
+                       kidnapped++;
+                    }*/
+
+                    /*if(iscriminal(*pool[p]))criminalcount++;*/
                 }
 
-                if(location[l]->compound_walls & COMPOUND_BASIC)
-                    fortified = 5;
+                /*if(location[l]->compound_walls & COMPOUND_BASIC)fortified=5;*/
 
-                if(!LCSrandom(5))
+                if(!LCSrandom(12))
                     attack = 1;
 
                 if(attack) {
@@ -1015,7 +1118,8 @@ void siegeturn(char clearformess) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(8, 1);
-                    addstr("The cops are coming!");
+                    addstr("The cops are coming!", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1036,7 +1140,8 @@ void siegeturn(char clearformess) {
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
-                        addstr("The police have cut the lights!");
+                        addstr("The police have cut the lights!", gamelog);
+                        gamelog.newline();
 
                         refresh();
                         getch();
@@ -1066,9 +1171,10 @@ void siegeturn(char clearformess) {
                             int targ = pol[LCSrandom(pol.size())];
 
                             if((int)LCSrandom(50) > pool[targ]->juice) {
-                                addstr("A sniper takes out ");
-                                addstr(pool[targ]->name);
-                                addstr("!");
+                                addstr("A sniper takes out ", gamelog);
+                                addstr(pool[targ]->name, gamelog);
+                                addstr("!", gamelog);
+                                gamelog.newline();
 
                                 if(pool[targ]->align == 1) {
                                     stat_dead++;
@@ -1081,9 +1187,10 @@ void siegeturn(char clearformess) {
                                 //delete pool[targ];
                                 //pool.erase(pool.begin() + targ);
                             } else {
-                                addstr("A sniper nearly hits ");
-                                addstr(pool[targ]->name);
-                                addstr("!");
+                                addstr("A sniper nearly hits ", gamelog);
+                                addstr(pool[targ]->name, gamelog);
+                                addstr("!", gamelog);
+                                gamelog.newline();
                             }
 
                             refresh();
@@ -1108,7 +1215,8 @@ void siegeturn(char clearformess) {
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
-                        addstr("You hear planes streak overhead!");
+                        addstr("You hear planes streak overhead!", gamelog);
+                        gamelog.newline();
                         refresh();
                         getch();
 
@@ -1124,12 +1232,14 @@ void siegeturn(char clearformess) {
 
                         if(hasAAGun && LCSrandom(3)) {
                             move(8, 1);
-                            addstr("The thunder of anti-aircraft fire drives them back!");
+                            addstr("The thunder of anti-aircraft fire drives them back!", gamelog);
+                            gamelog.newline();
                             refresh();
                             getch();
                         } else {
                             move(8, 1);
-                            addstr("Explosions rock the compound!");
+                            addstr("Explosions rock the compound!", gamelog);
+                            gamelog.newline();
                             refresh();
                             getch();
                         }
@@ -1142,7 +1252,8 @@ void siegeturn(char clearformess) {
                                     makedelimiter(8, 0);
 
                                 move(8, 1);
-                                addstr("The anti-aircraft gun takes a direct hit!");
+                                addstr("The anti-aircraft gun takes a direct hit!", gamelog);
+                                gamelog.newline();
                                 refresh();
                                 getch();
 
@@ -1152,7 +1263,8 @@ void siegeturn(char clearformess) {
                                     makedelimiter(8, 0);
 
                                 move(8, 1);
-                                addstr("Nothing left but smoking wreckage...");
+                                addstr("Nothing left but smoking wreckage...", gamelog);
+                                gamelog.newline();
                                 refresh();
                                 getch();
 
@@ -1164,7 +1276,8 @@ void siegeturn(char clearformess) {
                                     makedelimiter(8, 0);
 
                                 move(8, 1);
-                                addstr("The generator has been destroyed!");
+                                addstr("The generator has been destroyed!", gamelog);
+                                gamelog.newline();
                                 refresh();
                                 getch();
 
@@ -1174,7 +1287,8 @@ void siegeturn(char clearformess) {
                                     makedelimiter(8, 0);
 
                                 move(8, 1);
-                                addstr("The lights fade and all is dark. ");
+                                addstr("The lights fade and all is dark.", gamelog);
+                                gamelog.newline();
                                 refresh();
                                 getch();
 
@@ -1202,8 +1316,9 @@ void siegeturn(char clearformess) {
                                 int targ = pol[LCSrandom(pol.size())];
 
                                 if((int)LCSrandom(100) > pool[targ]->juice) {
-                                    addstr(pool[targ]->name);
-                                    addstr(" was killed in the bombing!");
+                                    addstr(pool[targ]->name, gamelog);
+                                    addstr(" was killed in the bombing!", gamelog);
+                                    gamelog.newline();
 
                                     if(pool[targ]->align == 1) {
                                         stat_dead++;
@@ -1216,8 +1331,9 @@ void siegeturn(char clearformess) {
                                     //delete pool[targ];
                                     //pool.erase(pool.begin() + targ);
                                 } else {
-                                    addstr(pool[targ]->name);
-                                    addstr(" narrowly avoided death!");
+                                    addstr(pool[targ]->name, gamelog);
+                                    addstr(" narrowly avoided death!", gamelog);
+                                    gamelog.newline();
                                 }
 
                                 refresh();
@@ -1230,7 +1346,8 @@ void siegeturn(char clearformess) {
                                 makedelimiter(8, 0);
 
                             move(8, 1);
-                            addstr("Fortunately, no one is hurt.");
+                            addstr("Fortunately, no one is hurt.", gamelog);
+                            gamelog.newline();
                             refresh();
                             getch();
                         }
@@ -1248,7 +1365,8 @@ void siegeturn(char clearformess) {
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
-                        addstr("Army engineers have removed your tank traps.");
+                        addstr("Army engineers have removed your tank traps.", gamelog);
+                        gamelog.newline();
 
                         refresh();
                         getch();
@@ -1260,7 +1378,8 @@ void siegeturn(char clearformess) {
                             move(8, 1);
                         }
 
-                        addstr("The tank moves forward to your compound entrance.");
+                        addstr("The tank moves forward to your compound entrance.", gamelog);
+                        gamelog.newline();
 
                         refresh();
                         getch();
@@ -1279,29 +1398,29 @@ void siegeturn(char clearformess) {
 
                         erase();
                         move(1, 1);
-                        addstr("Elitist ");
-                        addstr(repname);
-                        addstr(" from the ");
+                        addstr("Elitist ", gamelog);
+                        addstr(repname, gamelog);
+                        addstr(" from the ", gamelog);
 
                         switch(LCSrandom(5)) {
                         case 0:
-                            addstr("news program");
+                            addstr("news program", gamelog);
                             break;
 
                         case 1:
-                            addstr("news magazine");
+                            addstr("news magazine", gamelog);
                             break;
 
                         case 2:
-                            addstr("website");
+                            addstr("website", gamelog);
                             break;
 
                         case 3:
-                            addstr("scandal rag");
+                            addstr("scandal rag", gamelog);
                             break;
 
                         case 4:
-                            addstr("newspaper");
+                            addstr("newspaper", gamelog);
                             break;
                         }
 
@@ -1309,104 +1428,105 @@ void siegeturn(char clearformess) {
 
                         switch(LCSrandom(12)) {
                         case 0:
-                            addstr("Daily");
+                            addstr("Daily", gamelog);
                             break;
 
                         case 1:
-                            addstr("Nightly");
+                            addstr("Nightly", gamelog);
                             break;
 
                         case 2:
-                            addstr("Current");
+                            addstr("Current", gamelog);
                             break;
 
                         case 3:
-                            addstr("Pressing");
+                            addstr("Pressing", gamelog);
                             break;
 
                         case 4:
-                            addstr("Socialist");
+                            addstr("Socialist", gamelog);
                             break;
 
                         case 5:
-                            addstr("American");
+                            addstr("American", gamelog);
                             break;
 
                         case 6:
-                            addstr("National");
+                            addstr("National", gamelog);
                             break;
 
                         case 7:
-                            addstr("Union");
+                            addstr("Union", gamelog);
                             break;
 
                         case 8:
-                            addstr("Foreign");
+                            addstr("Foreign", gamelog);
                             break;
 
                         case 9:
-                            addstr("Associated");
+                            addstr("Associated", gamelog);
                             break;
 
                         case 10:
-                            addstr("International");
+                            addstr("International", gamelog);
                             break;
 
                         case 11:
-                            addstr("County");
+                            addstr("County", gamelog);
                             break;
                         }
 
-                        addstr(" ");
+                        addstr(" ", gamelog);
 
                         switch(LCSrandom(11)) {
                         case 0:
-                            addstr("Reporter");
+                            addstr("Reporter", gamelog);
                             break;
 
                         case 1:
-                            addstr("Issue");
+                            addstr("Issue", gamelog);
                             break;
 
                         case 2:
-                            addstr("Take");
+                            addstr("Take", gamelog);
                             break;
 
                         case 3:
-                            addstr("Constitution");
+                            addstr("Constitution", gamelog);
                             break;
 
                         case 4:
-                            addstr("Times");
+                            addstr("Times", gamelog);
                             break;
 
                         case 5:
-                            addstr("Post");
+                            addstr("Post", gamelog);
                             break;
 
                         case 6:
-                            addstr("News");
+                            addstr("News", gamelog);
                             break;
 
                         case 7:
-                            addstr("Affair");
+                            addstr("Affair", gamelog);
                             break;
 
                         case 8:
-                            addstr("Statesman");
+                            addstr("Statesman", gamelog);
                             break;
 
                         case 9:
-                            addstr("Star");
+                            addstr("Star", gamelog);
                             break;
 
                         case 10:
-                            addstr("Inquirer");
+                            addstr("Inquirer", gamelog);
                             break;
                         }
 
                         move(2, 1);
-                        addstr("got into the compound somehow!");
+                        addstr("got into the compound somehow!", gamelog);
+                        gamelog.newline();
                         refresh();
                         getch();
 
@@ -1435,13 +1555,15 @@ void siegeturn(char clearformess) {
                         }
 
                         move(4, 1);
-                        addstr(pool[best]->name);
-                        addstr(" decides to give an interview.");
+                        addstr(pool[best]->name, gamelog);
+                        addstr(" decides to give an interview.", gamelog);
+                        gamelog.newline();
                         refresh();
                         getch();
 
                         move(6, 1);
-                        addstr("The interview is wide-ranging, covering a variety of topics.");
+                        addstr("The interview is wide-ranging, covering a variety of topics.", gamelog);
+                        gamelog.newline();
                         refresh();
                         getch();
 
@@ -1457,132 +1579,139 @@ void siegeturn(char clearformess) {
                         move(8, 1);
 
                         if(segmentpower < 15) {
-                            addstr(repname);
-                            addstr(" cancelled the interview halfway through");
+                            addstr(repname, gamelog);
+                            addstr(" cancelled the interview halfway through", gamelog);
                             move(9, 1);
-                            addstr("and later used the material for a Broadway play called");
+                            addstr("and later used the material for a Broadway play called", gamelog);
                             move(10, 1);
 
                             switch(LCSrandom(11)) {
                             case 0:
-                                addstr("Flaming");
+                                addstr("Flaming", gamelog);
                                 break;
 
                             case 1:
                                 if(law[LAW_FREESPEECH] == -2)
-                                    addstr("Dumb");
+                                    addstr("Dumb", gamelog);
                                 else
-                                    addstr("Retarded");
+                                    addstr("Retarded", gamelog);
 
                                 break;
 
                             case 2:
-                                addstr("Insane");
+                                addstr("Insane", gamelog);
                                 break;
 
                             case 3:
-                                addstr("Crazy");
+                                addstr("Crazy", gamelog);
                                 break;
 
                             case 4:
-                                addstr("Loopy");
+                                addstr("Loopy", gamelog);
                                 break;
 
                             case 5:
-                                addstr("Idiot");
+                                addstr("Idiot", gamelog);
                                 break;
 
                             case 6:
-                                addstr("Empty-Headed");
+                                addstr("Empty-Headed", gamelog);
                                 break;
 
                             case 7:
-                                addstr("Nutty");
+                                addstr("Nutty", gamelog);
                                 break;
 
                             case 8:
-                                addstr("Half-Baked");
+                                addstr("Half-Baked", gamelog);
                                 break;
 
                             case 9:
-                                addstr("Pot-Smoking");
+                                addstr("Pot-Smoking", gamelog);
                                 break;
 
                             case 10:
-                                addstr("Stoner");
+                                addstr("Stoner", gamelog);
                                 break;
                             }
 
-                            addstr(" ");
+                            addstr(" ", gamelog);
 
                             switch(LCSrandom(10)) {
                             case 0:
-                                addstr("Liberal");
+                                addstr("Liberal", gamelog);
                                 break;
 
                             case 1:
-                                addstr("Socialist");
+                                addstr("Socialist", gamelog);
                                 break;
 
                             case 2:
-                                addstr("Anarchist");
+                                addstr("Anarchist", gamelog);
                                 break;
 
                             case 3:
-                                addstr("Communist");
+                                addstr("Communist", gamelog);
                                 break;
 
                             case 4:
-                                addstr("Marxist");
+                                addstr("Marxist", gamelog);
                                 break;
 
                             case 5:
-                                addstr("Green");
+                                addstr("Green", gamelog);
                                 break;
 
                             case 6:
-                                addstr("Elite");
+                                addstr("Elite", gamelog);
                                 break;
 
                             case 7:
-                                addstr("Guerrilla");
+                                addstr("Guerrilla", gamelog);
                                 break;
 
                             case 8:
-                                addstr("Commando");
+                                addstr("Commando", gamelog);
                                 break;
 
                             case 9:
-                                addstr("Soldier");
+                                addstr("Soldier", gamelog);
                                 break;
                             }
 
-                            addstr(".");
+                            addstr(".", gamelog);
+                            gamelog.newline();
                         } else if(segmentpower < 20) {
-                            addstr("But the interview is so boring that ");
-                            addstr(repname);
-                            addstr(" falls asleep.");
+                            addstr("But the interview is so boring that ", gamelog);
+                            addstr(repname, gamelog);
+                            addstr(" falls asleep.", gamelog);
+                            gamelog.newline();
                         } else if(segmentpower < 25) {
-                            addstr("But ");
-                            addstr(pool[best]->name);
-                            addstr(" stutters nervously the whole time.");
+                            addstr("But ", gamelog);
+                            addstr(pool[best]->name, gamelog);
+                            addstr(" stutters nervously the whole time.", gamelog);
+                            gamelog.newline();
                         } else if(segmentpower < 30) {
-                            addstr(pool[best]->name);
-                            addstr("'s verbal finesse leaves something to be desired.");
+                            addstr(pool[best]->name, gamelog);
+                            addstr("'s verbal finesse leaves something to be desired.", gamelog);
+                            gamelog.newline();
                         } else if(segmentpower < 45) {
-                            addstr(pool[best]->name);
-                            addstr(" represents the LCS well.");
+                            addstr(pool[best]->name, gamelog);
+                            addstr(" represents the LCS well.", gamelog);
+                            gamelog.newline();
                         } else if(segmentpower < 60) {
-                            addstr("The discussion was exciting and dynamic.");
+                            addstr("The discussion was exciting and dynamic.", gamelog);
                             move(9, 1);
-                            addstr("Even the Cable News and AM Radio spend days talking about it.");
+                            addstr("Even the Cable News and AM Radio spend days talking about it.", gamelog);
+                            gamelog.newline();
                         } else {
                             addstr(repname);
-                            addstr(" later went on to win a Pulitzer for it.");
+                            addstr(" later went on to win a Pulitzer for it.", gamelog);
                             move(9, 1);
-                            addstr("Virtually everyone in America was moved by ");
-                            addstr(pool[best]->name);
-                            addstr("'s words.");
+                            addstr("Virtually everyone in America was moved by ", gamelog);
+                            addstr(pool[best]->name, gamelog);
+                            addstr("'s words.", gamelog);
+                            gamelog.newline();
                         }
 
                         refresh();
@@ -1599,9 +1728,11 @@ void siegeturn(char clearformess) {
                         }
                     }
                 }
-            }
-        }
-    }
+
+                gamelog.newline(); // single blank line after every siege day
+            } // end if(!location[l]->siege.underattack)
+        } // end if(location[l]->siege.siege)
+    } // end for(l=0;l<location.size();l++)
 
     delete[] liberalcount;
     delete[] food_prep;
@@ -1644,13 +1775,14 @@ void giveup(void) {
         move(1, 1);
 
         if(location[loc]->siege.siegetype == SIEGE_POLICE && location[loc]->siege.escalationstate == 0)
-            addstr("The police");
+            addstr("The police", gamelog);
         else if(location[loc]->siege.siegetype == SIEGE_POLICE && location[loc]->siege.escalationstate >= 1)
-            addstr("The soldiers");
+            addstr("The soldiers", gamelog);
         else
-            addstr("The firemen");
+            addstr("The firemen", gamelog);
 
-        addstr(" confiscate everything, including Squad weapons.");
+        addstr(" confiscate everything, including Squad weapons.", gamelog);
+        gamelog.newline();
 
         int kcount = 0;
         int pcount = 0;
@@ -1718,40 +1850,45 @@ void giveup(void) {
         if(kcount == 1) {
             move(3, 1);
             addstr(kname);
-            addstr(" is rehabilitated and freed.");
+            addstr(" is rehabilitated and freed.", gamelog);
+            gamelog.newline();
         }
 
         if(kcount > 1) {
             move(3, 1);
-            addstr("The kidnap victims are rehabilitated and freed.");
+            addstr("The kidnap victims are rehabilitated and freed.", gamelog);
+            gamelog.newline();
         }
 
         if(pcount == 1) {
             move(5, 1);
-            addstr(pname);
+            addstr(pname, gamelog);
 
             if(stricmp(pname, pcname)) {
-                addstr(", aka ");
-                addstr(pcname);
-                addstr(",");
+                addstr(", aka ", gamelog);
+                addstr(pcname, gamelog);
+                addstr(",", gamelog);
             }
 
             move(6, 1);
-            addstr("is taken to the police station.");
+            addstr("is taken to the police station.", gamelog);
+            gamelog.newline();
         }
 
         if(pcount > 1) {
             char num[20];
             move(5, 1);
             itoa(pcount, num, 10);
-            addstr(num);
-            addstr(" Liberals are taken to the police station.");
+            addstr(num, gamelog);
+            addstr(" Liberals are taken to the police station.", gamelog);
+            gamelog.newline();
         }
 
         if(ledger.get_funds() > 0) {
             if(ledger.get_funds() <= 2000 || location[loc]->siege.siegetype == SIEGE_FIREMEN) {
                 move(8, 1);
-                addstr("Fortunately, your funds remain intact.");
+                addstr("Fortunately, your funds remain intact.", gamelog);
+                gamelog.newline();
             } else {
                 move(8, 1);
                 int confiscated = LCSrandom(LCSrandom(ledger.get_funds() - 2000) + 1) + 1000;
@@ -1760,8 +1897,9 @@ void giveup(void) {
                     confiscated += ledger.get_funds() - 30000 - LCSrandom(20000) - confiscated;
 
                 char str[100];
-                sprintf(str, "Law enforcement have confiscated $%d in LCS funds.", confiscated);
-                addstr(str);
+                sprintf(str, "Law enforcement has confiscated $%d in LCS funds.", confiscated);
+                addstr(str, gamelog);
+                gamelog.newline();
                 ledger.subtract_funds(confiscated, EXPENSE_CONFISCATED);
             }
         }
@@ -1773,20 +1911,23 @@ void giveup(void) {
                     criminalizepool(LAWFLAG_SPEECH, -1, loc);
 
                 move(10, 1);
-                addstr("The printing press is dismantled and burned.");
+                addstr("The printing press is dismantled and burned.", gamelog);
+                gamelog.newline();
                 location[loc]->compound_walls &= ~COMPOUND_PRINTINGPRESS;
             }
         } else {
             if(location[loc]->compound_walls) {
                 move(10, 1);
-                addstr("The compound is dismantled.");
+                addstr("The compound is dismantled.", gamelog);
+                gamelog.newline();
                 location[loc]->compound_walls = 0;
             }
         }
 
         if(location[loc]->front_business != -1) {
             move(12, 1);
-            addstr("Materials relating to the business front have been taken.");
+            addstr("Materials relating to the business front have been taken.", gamelog);
+            gamelog.newline();
             location[loc]->front_business = -1;
         }
 
@@ -1869,9 +2010,10 @@ void giveup(void) {
         erase();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(1, 1);
-        addstr("Everyone in the ");
-        addlocationname(location[loc]);
-        addstr(" is slain.");
+        addstr("Everyone in the ", gamelog);
+        addlocationname(location[loc], gamelog);
+        addstr(" is slain.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -1904,6 +2046,9 @@ void giveup(void) {
             vehicle.erase(vehicle.begin() + v);
         }
     }
+
+    gamelog.newline();
+
 }
 
 
@@ -2075,6 +2220,12 @@ char sally_forth_aux(int loc) {
 
         refresh();
 
+        // check if we fought the previous loop; if so, add a blank gamelog line
+        if(foughtthisround)
+            gamelog.newline();
+
+        foughtthisround = 0;
+
         int c = getch();
         translategetch(c);
 
@@ -2188,7 +2339,8 @@ char sally_forth_aux(int loc) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     clearmessagearea();
                     move(16, 1);
-                    addstr("You're free!");
+                    addstr("You're free!", gamelog);
+                    gamelog.nextMessage();
                     refresh();
                     getch();
 
@@ -2198,7 +2350,8 @@ char sally_forth_aux(int loc) {
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     clearmessagearea();
                     move(16, 1);
-                    addstr("The siege is broken!");
+                    addstr("The siege is broken!", gamelog);
+                    gamelog.nextMessage();
                     refresh();
                     getch();
 
@@ -2253,6 +2406,9 @@ void sally_forth(void) {
     set_color(COLOR_RED, COLOR_BLACK, 1);
     move(23, 11);
     addstr("Press any key to Confront the Conservative Aggressors");
+
+    // Seperate logging text
+    gamelog.log("Your Liberals sally forth to confront the siege.");
 
     refresh();
     getch();
@@ -2332,6 +2488,13 @@ void sally_forth(void) {
 
     if(result == 2)
         ns->type = NEWSSTORY_SQUAD_BROKESIEGE;
+
+    // If you fail, make sure the safehouse isn't under siege anymore by
+    // forcing you to "give up".
+    if(result == 0) {
+        gamelog.log("You have been defeated.");
+        resolvesafehouses();
+    }
 }
 
 
@@ -2399,6 +2562,9 @@ void escape_engage(void) {
     set_color(COLOR_RED, COLOR_BLACK, 1);
     move(23, 11);
     addstr("Press any key to Confront the Conservative Aggressors");
+
+    // Seperate logging text
+    gamelog.log("Your Liberals confront the Conservatives within the safehouse.");
 
     refresh();
     getch();
@@ -2489,7 +2655,8 @@ void escapesiege(char won) {
         erase();
         set_color(COLOR_YELLOW, COLOR_BLACK, 1);
         move(1, 32);
-        addstr("You have escaped!");
+        addstr("You have escaped!", gamelog);
+        gamelog.nextMessage();
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(3, 16);
@@ -2521,6 +2688,9 @@ void escapesiege(char won) {
         set_color(COLOR_YELLOW, COLOR_BLACK, 1);
         move(13, 11);
         addstr("Press any key to split up and lay low for a few days");
+
+        // Seperate logging text
+        gamelog.log("Your Liberals split up and lay low for a few days.");
 
         refresh();
         getch();
@@ -2602,24 +2772,27 @@ void conquertext(void) {
     erase();
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     move(1, 26);
-    addstr("* * * * *   VICTORY   * * * * *");
+    addstr("* * * * *   VICTORY   * * * * *", gamelog);
+    gamelog.newline();
 
     if(location[cursite]->siege.siegetype == SIEGE_POLICE) {
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(3, 16);
-        addstr("The Conservative automatons have been driven back -- for");
+        addstr("The Conservative automatons have been driven back -- for ", gamelog);
         move(4, 11);
-        addstr("the time being.  While they are regrouping, you might consider");
+        addstr("the time being.  While they are regrouping, you might consider ", gamelog);
         move(5, 11);
-        addstr("abandoning this safe house for a safer location.");
+        addstr("abandoning this safe house for a safer location.", gamelog);
+        gamelog.nextMessage();
     } else {
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(3, 16);
-        addstr("The Conservative automatons have been driven back.");
+        addstr("The Conservative automatons have been driven back. ", gamelog);
         move(4, 11);
-        addstr("Unfortunately, you will never truly be safe from");
+        addstr("Unfortunately, you will never truly be safe from ", gamelog);
         move(5, 11);
-        addstr("this filth until the Liberal Agenda is realized.");
+        addstr("this filth until the Liberal Agenda is realized.", gamelog);
+        gamelog.nextMessage();
     }
 
     move(7, 19);
@@ -2737,318 +2910,141 @@ void statebrokenlaws(int loc) {
     move(1, 1);
 
     if(location[loc]->siege.underattack)
-        addstr("You hear shouts:");
+        addstr("You hear shouts:", gamelog);
     else
-        addstr("You hear a blaring voice on a loudspeaker:");
+        addstr("You hear a blaring voice on a loudspeaker:", gamelog);
+
+    gamelog.newline();
 
     move(3, 1);
 
     if(location[loc]->siege.escalationstate >= 2 && publicmood(-1) < 20)
-        addstr("In the name of God, your campaign of terror ends here!");
+        addstr("In the name of God, your campaign of terror ends here!", gamelog);
     else
-        addstr("Surrender yourselves!");
+        addstr("Surrender yourselves!", gamelog);
+
+    gamelog.newline();
+
+    move(4, 1);
 
     //KIDNAP VICTIM
     if(kidnapped) {
-        move(4, 1);
-        addstr("Release ");
-        addstr(kname);
+        addstr("Release ", gamelog);
+        addstr(kname, gamelog);
 
         if(kidnapped > 1)
-            addstr(" and the others");
+            addstr(" and the others", gamelog);
 
-        addstr(" unharmed!");
+        addstr(" unharmed!", gamelog);
     }
     //TREASON
-    else if(breakercount[LAWFLAG_TREASON]) {
-        move(4, 1);
-        addstr("You are wanted for treason");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_TREASON])
+        addstr("You are wanted for treason", gamelog);
     //TERRORISM
-    else if(breakercount[LAWFLAG_TERRORISM]) {
-        move(4, 1);
-        addstr("You are wanted for terrorism");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_TERRORISM])
+        addstr("You are wanted for terrorism", gamelog);
     //MURDERER
-    else if(breakercount[LAWFLAG_MURDER]) {
-        move(4, 1);
-        addstr("You are wanted for murder");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_MURDER])
+        addstr("You are wanted for murder", gamelog);
     //KIDNAPPER
-    else if(breakercount[LAWFLAG_KIDNAPPING]) {
-        move(4, 1);
-        addstr("You are wanted for kidnapping");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_KIDNAPPING])
+        addstr("You are wanted for kidnapping", gamelog);
     //BANK ROBBER
-    else if(breakercount[LAWFLAG_BANKROBBERY]) {
-        move(4, 1);
-        addstr("You are wanted for bank robbery");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_BANKROBBERY])
+        addstr("You are wanted for bank robbery", gamelog);
     //BURN FLAG
     else if(breakercount[LAWFLAG_BURNFLAG]) {
-        move(4, 1);
-
         if(law[LAW_FLAGBURNING] == -2)
-            addstr("You are wanted for flag murder");
+            addstr("You are wanted for flag murder", gamelog);
         else
-            addstr("You are wanted for flag burning");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
+            addstr("You are wanted for flag burning", gamelog);
     }
     //SPEECH
-    else if(breakercount[LAWFLAG_SPEECH]) {
-        move(4, 1);
-        addstr("You are wanted for harmful speech");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_SPEECH])
+        addstr("You are wanted for harmful speech", gamelog);
     //BROWNIES
-    else if(breakercount[LAWFLAG_BROWNIES]) {
-        move(4, 1);
-        addstr("You are wanted for drug dealing");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_BROWNIES])
+        addstr("You are wanted for drug dealing", gamelog);
     //ESCAPED
-    else if(breakercount[LAWFLAG_ESCAPED]) {
-        move(4, 1);
-        addstr("You are wanted for escaping prison");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_ESCAPED])
+        addstr("You are wanted for escaping prison", gamelog);
     //HELP ESCAPED
-    else if(breakercount[LAWFLAG_HELPESCAPE]) {
-        move(4, 1);
-        addstr("You are wanted for aiding a prison escape");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_HELPESCAPE])
+        addstr("You are wanted for aiding a prison escape", gamelog);
     //JURY
-    else if(breakercount[LAWFLAG_JURY]) {
-        move(4, 1);
-        addstr("You are wanted for jury tampering");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_JURY])
+        addstr("You are wanted for jury tampering", gamelog);
     //RACKETEERING
-    else if(breakercount[LAWFLAG_RACKETEERING]) {
-        move(4, 1);
-        addstr("You are wanted for racketeering");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_RACKETEERING])
+        addstr("You are wanted for racketeering", gamelog);
     //EXTORTION
-    else if(breakercount[LAWFLAG_EXTORTION]) {
-        move(4, 1);
-        addstr("You are wanted for extortion");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_EXTORTION])
+        addstr("You are wanted for extortion", gamelog);
     //ASSAULT
-    else if(breakercount[LAWFLAG_ARMEDASSAULT]) {
-        move(4, 1);
-        addstr("You are wanted for armed assault");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_ARMEDASSAULT])
+        addstr("You are wanted for armed assault", gamelog);
     //ASSAULT
-    else if(breakercount[LAWFLAG_ASSAULT]) {
-        move(4, 1);
-        addstr("You are wanted for assault");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_ASSAULT])
+        addstr("You are wanted for assault", gamelog);
     //CAR THEFT
-    else if(breakercount[LAWFLAG_CARTHEFT]) {
-        move(4, 1);
-        addstr("You are wanted for motor theft");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_CARTHEFT])
+        addstr("You are wanted for motor theft", gamelog);
     //CC FRAUD
-    else if(breakercount[LAWFLAG_CCFRAUD]) {
-        move(4, 1);
-        addstr("You are wanted for credit card fraud");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_CCFRAUD])
+        addstr("You are wanted for credit card fraud", gamelog);
     //THIEF
-    else if(breakercount[LAWFLAG_THEFT]) {
-        move(4, 1);
-        addstr("You are wanted for theft");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_THEFT])
+        addstr("You are wanted for theft", gamelog);
     //PROSTITUTION
-    else if(breakercount[LAWFLAG_PROSTITUTION]) {
-        move(4, 1);
-        addstr("You are wanted for prostitution");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_PROSTITUTION])
+        addstr("You are wanted for prostitution", gamelog);
     //HIRE ILLEGAL
     else if(breakercount[LAWFLAG_HIREILLEGAL]) {
-        move(4, 1);
-        addstr("You are wanted for hiring an illegal alien");//XXX: Maybe `undocumented worker` if LAW_IMMIGRATION is 0, or maybe 1...
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
+        addstr("You are wanted for hiring an illegal alien", gamelog);//XXX: Maybe `undocumented worker` if LAW_IMMIGRATION is 0, or maybe 1...
     }
     //GUN CARRY
     /*else if(breakercount[LAWFLAG_GUNUSE])
     {
-       move(4,1);
-       addstr("You are wanted for use of an illegal weapon");
-       if(typenum>1)addstr(" and other crimes");
-       addstr(".");
+       addstr("You are wanted for use of an illegal weapon", gamelog);
     }
     //GUN CARRY
     else if(breakercount[LAWFLAG_GUNCARRY])
     {
-       move(4,1);
-       addstr("You are wanted for carrying an illegal weapon");
-       if(typenum>1)addstr(" and other crimes");
-       addstr(".");
+       addstr("You are wanted for carrying an illegal weapon", gamelog);
     }*/
     //COMMERCE
-    else if(breakercount[LAWFLAG_COMMERCE]) {
-        move(4, 1);
-        addstr("You are wanted for interfering with interstate commerce");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_COMMERCE])
+        addstr("You are wanted for interfering with interstate commerce", gamelog);
     //INFORMATION
-    else if(breakercount[LAWFLAG_INFORMATION]) {
-        move(4, 1);
-        addstr("You are wanted for unlawfully accessing an information system");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_INFORMATION])
+        addstr("You are wanted for unlawfully accessing an information system", gamelog);
     //UNLAWFUL BURIAL
-    else if(breakercount[LAWFLAG_BURIAL]) {
-        move(4, 1);
-        addstr("You are wanted for unlawful burial");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_BURIAL])
+        addstr("You are wanted for unlawful burial", gamelog);
     //BREAKING
-    else if(breakercount[LAWFLAG_BREAKING]) {
-        move(4, 1);
-        addstr("You are wanted for breaking and entering");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_BREAKING])
+        addstr("You are wanted for breaking and entering", gamelog);
     //VANDALISM
-    else if(breakercount[LAWFLAG_VANDALISM]) {
-        move(4, 1);
-        addstr("You are wanted for vandalism");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_VANDALISM])
+        addstr("You are wanted for vandalism", gamelog);
     //RESIST
-    else if(breakercount[LAWFLAG_RESIST]) {
-        move(4, 1);
-        addstr("You are wanted for resisting arrest");
-
-        if(typenum > 1)
-            addstr(" and other crimes");
-
-        addstr(".");
-    }
+    else if(breakercount[LAWFLAG_RESIST])
+        addstr("You are wanted for resisting arrest", gamelog);
     //DISTURBANCE
     else if(breakercount[LAWFLAG_DISTURBANCE]) {
-        move(4, 1);
-        addstr("You are wanted for disturbing the peace");
+        addstr("You are wanted for disturbing the peace", gamelog);
+        //UNDEFINED
+    } else
+        addstr("You are wanted for finding a bug", gamelog);
 
+    if(!kidnapped) {
         if(typenum > 1)
-            addstr(" and other crimes");
+            addstr(" and other crimes", gamelog);
 
-        addstr(".");
+        addstr(".", gamelog);
     }
+
+    gamelog.nextMessage();
 
     refresh();
     getch();

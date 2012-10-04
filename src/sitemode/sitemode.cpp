@@ -646,8 +646,11 @@ void mode_site(void) {
             clearmessagearea();
         }
 
+        // check if we fought the previous loop; if so, add a blank gamelog line
+        if(foughtthisround)
+            gamelog.newline();
 
-
+        foughtthisround = 0;
 
         refresh();
 
@@ -1974,6 +1977,18 @@ void mode_site(void) {
                 if((levelmap[locx][locy][locz].flag & SITEBLOCK_EXIT) ||
                         (cbase == cursite && !location[cursite]->siege.siege &&
                          bail_on_base)) {
+                    // Seperate logging message.
+                    gamelog.record(activesquad->name);
+                    gamelog.record(" has left ");
+
+                    if(location[cursite]->front_business != -1)
+                        gamelog.record(location[cursite]->front_name);
+                    else
+                        gamelog.record(location[cursite]->name);
+
+                    gamelog.record(".");
+                    gamelog.nextMessage();
+
                     //RESET MODE PRIOR TO CHASE
                     showcarprefs = 0;
 

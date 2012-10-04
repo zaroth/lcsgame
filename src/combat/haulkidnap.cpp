@@ -346,7 +346,7 @@ char kidnap(Creature &a, Creature &t, char &amateur) {
             refresh();
             getch();
 
-            gamelog.nextMessage(); //Woo, next message.
+            gamelog.newline();
             return 1;
         } else {
             set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
@@ -365,7 +365,7 @@ char kidnap(Creature &a, Creature &t, char &amateur) {
             getch();
 
 
-            gamelog.nextMessage(); //Next message.
+            gamelog.newline();
             return 0;
         }
     } else {
@@ -378,7 +378,7 @@ char kidnap(Creature &a, Creature &t, char &amateur) {
         addstr(t.name, gamelog);
         addstr(" the ", gamelog);
         addstr(a.get_weapon().get_name(2).c_str(), gamelog);
-        gamelog.newline(); //New line.
+        addstr(" ", gamelog);
         move(17, 1);
         addstr("and says, ", gamelog);
         set_color(COLOR_GREEN, COLOR_BLACK, 1);
@@ -394,7 +394,7 @@ char kidnap(Creature &a, Creature &t, char &amateur) {
         refresh();
         getch();
 
-        gamelog.nextMessage(); //Flush out for next message.
+        gamelog.newline();
         return 1;
     }
 }
@@ -568,11 +568,6 @@ void squadgrab_immobile(char dead) {
                                     break; //No reason to continue
                                 }
                             }
-                        }
-
-                        //Check if squad is dead.
-                        if(squad_dead) {
-                            gamelog.nextMessage(); //Squad is dead. Next message.
                         }
                     } else {
                         clearmessagearea();

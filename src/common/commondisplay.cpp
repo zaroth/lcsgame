@@ -1881,12 +1881,28 @@ void addlocationname(locationst *loc) {
         addstr(loc->name);
 }
 
+/* print location name (is aware of business fronts) (uses gamelog) */
+void addlocationname(locationst *loc, Log &log) {
+    if(loc->front_business != -1)
+        addstr(loc->front_name, log);
+    else
+        addstr(loc->name, log);
+}
+
 /* print location's shortname (is aware of business fronts) */
 void addshortname (locationst *loc) {
     if (loc->front_business != -1)
         addstr (loc->front_shortname);
     else
         addstr (loc->shortname);
+}
+
+/* print location's shortname (is aware of business fronts) (uses gamelog) */
+void addshortname (locationst *loc, Log &log) {
+    if (loc->front_business != -1)
+        addstr (loc->front_shortname, log);
+    else
+        addstr (loc->shortname, log);
 }
 
 /* prints a character's health description (One Leg, Liberal, NearDETH...) */
