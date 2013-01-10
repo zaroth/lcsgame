@@ -910,6 +910,9 @@ void mode_base(void) {
             else
                 sl = selectedsiege + 1;
 
+            if(sl >= location.size())
+                sl = 0;
+
             for(int l = sl; l < location.size(); l++) {
                 if(location[l]->renting >= 0) {
                     selectedsiege = l;
