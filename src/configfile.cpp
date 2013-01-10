@@ -333,7 +333,7 @@ void readMapCBTiles(int x, int y, int z, int i) {
     }
 }
 
-bool readMapFile(const char *filename, void (*callback)(int, int, int, int)) {
+bool readMapFile(const char *filename, const int zLevel, void (*callback)(int, int, int, int)) {
     int x, y, z, i, j;
 
     // open the file in question
@@ -347,7 +347,7 @@ bool readMapFile(const char *filename, void (*callback)(int, int, int, int)) {
 
     char line[1024];
     y = 0;
-    z = 0;
+    z = zLevel;
 
     do {
         if(file->eof())
@@ -390,19 +390,34 @@ bool readMapFile(const char *filename, void (*callback)(int, int, int, int)) {
 bool readMap(const char *filename) {
     std::string prefix = std::string("mapCSV_");
 
+    int x, y, z;
+
     // clear any old map data
-    for(int x = 0; x < MAPX; x++)
-        for(int y = 0; y < MAPY; y++)
-            for(int z = 0; z < MAPZ; z++) {
+    for(x = 0; x < MAPX; x++)
+        for(y = 0; y < MAPY; y++)
+            for(z = 0; z < MAPZ; z++) {
                 levelmap[x][y][z].flag = 0;
                 levelmap[x][y][z].special = SPECIAL_NONE;
             }
 
-    if(!readMapFile((prefix + filename + "_Tiles.csv").c_str(), readMapCBTiles))
+    // Try first floor (eg "mapCSV_Bank_Tiles.csv"), abort this method if it doesn't exist
+    if(!readMapFile((prefix + filename + "_Tiles.csv").c_str(), 0, readMapCBTiles))
         return false;
 
-    if(!readMapFile((prefix + filename + "_Specials.csv").c_str(), readMapCBSpecials))
+    if(!readMapFile((prefix + filename + "_Specials.csv").c_str(), 0, readMapCBSpecials))
         return false;
+
+    // Try upper levels (eg "mapCSV_Bank2_Tiles.csv"), but don't sweat it if they don't exist
+    for(z = 1; z < MAPZ; z++) {
+        char str[3];
+        itoa(z + 1, str, 10);
+
+        if(!readMapFile((prefix + filename + str + "_Tiles.csv").c_str(), z, readMapCBTiles))
+            break;
+
+        if(!readMapFile((prefix + filename + str + "_Specials.csv").c_str(), z, readMapCBSpecials))
+            break;
+    }
 
     return true;
 }
