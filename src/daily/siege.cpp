@@ -251,14 +251,14 @@ void siegecheck(char canseethings) {
                     gamelog.nextMessage(); //Write out buffer to prepare for next message.
 
                     move (15, 1);
-                    addstr("Press X to ponder the situation...");
+                    addstr("Press Esc to ponder the situation...");
                     refresh();
                     int c;
 
                     do {
                         c = getch();
                         translategetch(c);
-                    } while(c != 'x');
+                    } while(c != 'x' && c != ESC);
                 }
             }
 

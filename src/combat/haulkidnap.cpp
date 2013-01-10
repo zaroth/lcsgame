@@ -79,7 +79,7 @@ void kidnapattempt(void) {
         int c = getch();
         translategetch(c);
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             return;
 
         if(c >= '1' && c <= '6') {
@@ -149,7 +149,7 @@ void kidnapattempt(void) {
                         break;
                     }
 
-                    if(c == 10 || c == 27 || c == 32) {
+                    if(c == 10 || c == ESC || c == 32) {
                         t = -1;
                         break;
                     }
@@ -277,7 +277,7 @@ void releasehostage(void) {
         int c = getch();
         translategetch(c);
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             return;
 
         if(c >= '1' && c <= '6') {

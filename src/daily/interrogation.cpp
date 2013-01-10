@@ -424,7 +424,7 @@ void tendhostage(Creature *cr, char &clearformess) {
             if(c == 'k')
                 techniques[TECHNIQUE_KILL] = !techniques[TECHNIQUE_KILL];
 
-            if(c == 10)
+            if(c == 10 || c == ESC)
                 break;
         }
 

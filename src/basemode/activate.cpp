@@ -164,7 +164,7 @@ void activate(void) {
         if(c == 'z')
             activatebulk();
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             break;
     } while(1);
 }
@@ -1085,7 +1085,7 @@ void activate(Creature *cr) {
         }
 
         // Enter pressed
-        if(c == 10)
+        if(c == 10 || c == ESC)
             break;
 
         // ? Pressed
@@ -1308,7 +1308,7 @@ void activatebulk(void) {
         if(c >= '1' && c <= '6')
             selectedactivity = c - '1';
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             break;
     } while(1);
 }
@@ -1432,7 +1432,7 @@ void select_tendhostage(Creature *cr) {
             }
         }
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             break;
     } while(1);
 }
@@ -1657,7 +1657,7 @@ void select_makeclothing(Creature *cr) {
             }
         }
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             break;
     } while(1);
 }
@@ -1818,7 +1818,7 @@ char select_view(Creature *cr, int &v) {
             }
         }
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             break;
     } while(1);
 

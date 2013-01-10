@@ -603,7 +603,7 @@ int Shop::fenceselect(squadst &customers) const {
         move(23, 1);
         addstr("Press a letter to select an item to sell.");
         move(24, 1);
-        addstr("X - Done");
+        addstr("Enter - Done");
 
         refresh();
 
@@ -666,7 +666,7 @@ int Shop::fenceselect(squadst &customers) const {
             }
         }
 
-        if(c == 'x')
+        if(c == 'x' || c == 10 || c == ESC)
             break;
 
         //PAGE UP

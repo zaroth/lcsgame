@@ -394,7 +394,7 @@ void equip(vector<Item *> &loot, int loc) {
             }
         }
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             return;
 
         if(loc != -1) {
@@ -520,7 +520,7 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
             }
         }
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             break;
 
         //PAGE UP
@@ -689,7 +689,7 @@ void equipmentbaseassign(void) {
                 selectedbase = p;
         }
 
-        if(c == 10)
+        if(c == 10 || c == ESC)
             break;
     } while(1);
 }

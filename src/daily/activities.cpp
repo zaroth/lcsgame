@@ -1059,7 +1059,7 @@ void survey(Creature *cr) {
             refresh();
             char key = getch();
 
-            if(key == 10)
+            if(key == 10 || key == ESC)
                 return;
             else if(key == interface_pgup) {
                 page--;
@@ -2890,7 +2890,7 @@ char stealcar(Creature &cr, char &clearformess) {
         move(12, 0);
         addstr("A - Approach the driver's side door.");
         move(13, 0);
-        addstr("X - Call it a day.");
+        addstr("Enter - Call it a day.");
 
         refresh();
 
@@ -2903,7 +2903,7 @@ char stealcar(Creature &cr, char &clearformess) {
             if(c == 'a')
                 break;
 
-            if(c == 'x') {
+            if(c == 'x' || c == ESC || c == 10) {
                 delete v;
                 return 1;
             }
@@ -2971,14 +2971,14 @@ char stealcar(Creature &cr, char &clearformess) {
             move(14, 0);
 
             if(!sensealarm)
-                addstr("X - Call it a day.");
+                addstr("Enter - Call it a day.");
             else {
                 if(!alarmon) {
-                    addstr("X - The Viper?   ");
+                    addstr("Enter - The Viper?   ");
                     addstr(cr.name);
                     addstr(" is deterred.");
                 } else {
-                    addstr("X - Yes, the Viper has deterred ");
+                    addstr("Enter - Yes, the Viper has deterred ");
                     addstr(cr.name);
                     addstr(".");
                 }
@@ -3000,7 +3000,7 @@ char stealcar(Creature &cr, char &clearformess) {
                     break;
                 }
 
-                if(c == 'x') {
+                if(c == 'x' || c == 10 || c == ESC) {
                     delete v;    /* try again tomorrow */
                     return 0;
                 }
@@ -3185,9 +3185,9 @@ char stealcar(Creature &cr, char &clearformess) {
             y++;
 
             if(!sensealarm)
-                addstr("X - Call it a day.");
+                addstr("Enter - Call it a day.");
             else {
-                addstr("X - The Viper has finally deterred ");
+                addstr("Enter - The Viper has finally deterred ");
                 addstr(cr.name);
                 addstr(".");
             }
@@ -3210,7 +3210,7 @@ char stealcar(Creature &cr, char &clearformess) {
                     break;
                 }
 
-                if(c == 'x') {
+                if(c == 'x' || c == 10 || c == ESC) {
                     delete v;    // Call it a day and try again tomorrow
                     return 0;
                 }
