@@ -1770,7 +1770,7 @@ void crashfriendlycar(int v) {
                     else if(activesquad->squad[p]->gender_liberal == GENDER_FEMALE)
                         addstr("her", gamelog);
                     else
-                        addstr("its", gamelog);
+                        addstr("their", gamelog);
 
                     addstr(" seat, out cold, and dies.", gamelog);
                     break;
@@ -1822,7 +1822,7 @@ void crashfriendlycar(int v) {
                     else if(activesquad->squad[p]->gender_liberal == GENDER_FEMALE)
                         addstr("her", gamelog);
                     else
-                        addstr("its", gamelog);
+                        addstr("their", gamelog);
 
                     if(activesquad->squad[p]->flag & CREATUREFLAG_WHEELCHAIR)
                         addstr(" wheelchair.", gamelog);
