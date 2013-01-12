@@ -2700,11 +2700,13 @@ char wincheck(void) {
             libjudge++;
     }
 
-    if (wincondition == WINCONDITION_ELITE)
+    if (wincondition == WINCONDITION_ELITE) {
         if(elibjudge < 5)
             return 0;
-        else if (elibjudge < 5 && elibjudge + libjudge / 2 < 6)
+    } else {
+        if (elibjudge < 5 && elibjudge + libjudge / 2 < 6)
             return 0;
+    }
 
     return 1;
 }

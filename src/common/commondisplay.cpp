@@ -1098,7 +1098,7 @@ void fullstatus(int p) {
         if(activesquad->squad[1] != NULL && ((c == KEY_LEFT) || (c == KEY_RIGHT))) {
             int sx = 1;
 
-            if((c == KEY_LEFT))
+            if(c == KEY_LEFT)
                 sx = -1;
 
             do {
