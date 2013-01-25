@@ -29,6 +29,8 @@ This file is part of Liberal Crime Squad.                                       
 //#include <includes.h>
 #include <externs.h>
 
+//TODO: Log the monthly report? --Addictgamer
+
 
 
 /* monthly - reports the guardian's power to the player */
@@ -39,31 +41,34 @@ void guardianupdate(char size, char power) {
     move(5, 2);
 
     if(size)
-        addstr("The monthly Liberal Guardian newspaper");
+        addstr("The monthly Liberal Guardian newspaper", gamelog);
     else
-        addstr("The monthly Liberal Guardian online newsletter");
+        addstr("The monthly Liberal Guardian online newsletter", gamelog);
 
-    addstr(" is published.");
+    addstr(" is published.", gamelog);
+    gamelog.newline();
 
     move(7, 2);
 
     if(power < 0)
-        addstr("The only readers are Conservatives, who seem to think it's funny.");
+        addstr("The only readers are Conservatives, who seem to think it's funny.", gamelog);
     else if(power == 0)
-        addstr("Unfortunately, nobody seems interested.");
+        addstr("Unfortunately, nobody seems interested."), gamelog;
     else if(power < 5)
-        addstr("Very few people seem to be interested.");
+        addstr("Very few people seem to be interested.", gamelog);
     else if(power < 50)
-        addstr("A fair number of people are reading it.");
+        addstr("A fair number of people are reading it.", gamelog);
     else if(power < 100)
-        addstr("Many people are reading it.");
+        addstr("Many people are reading it.", gamelog);
     else if(power < 250)
-        addstr("The response is very strong. People are changing their minds.");
+        addstr("The response is very strong. People are changing their minds.", gamelog);
     else {
-        addstr("The response is electric. Everyone is talking about this month's");
+        addstr("The response is electric. Everyone is talking about this month's ", gamelog);
         move(8, 2);
-        addstr("Liberal Guardian.");
+        addstr("Liberal Guardian.",  gamelog);
     }
+
+    gamelog.nextMessage();
 
     getch();
     return;
@@ -269,147 +274,156 @@ void printnews(short li, short newspaper) {
 
     if(loottype[li]->get_idname() == "LOOT_CEOPHOTOS") { // Tmp -XML
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring photos of a major CEO");
+        addstr("The Liberal Guardian runs a story featuring photos of a major CEO ", gamelog);
         move(7, 1);
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
         change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
 
         switch(LCSrandom(10)) {
         case 0:
-            addstr("engaging in lewd behavior with animals.");
+            addstr("engaging in lewd behavior with animals.", gamelog);
             change_public_opinion(VIEW_ANIMALRESEARCH, 15);
             break;
 
         case 1:
-            addstr("digging up graves and sleeping with the dead.");
+            addstr("digging up graves and sleeping with the dead.", gamelog);
             break;
 
         case 2:
-            addstr("participating in a murder.");
+            addstr("participating in a murder.", gamelog);
             change_public_opinion(VIEW_POLICEBEHAVIOR, 15);
             change_public_opinion(VIEW_JUSTICES, 10);
             break;
 
         case 3:
-            addstr("engaging in heavy bondage.  A cucumber was involved in some way.");
+            addstr("engaging in heavy bondage.  A cucumber was involved in some way.", gamelog);
             break;
 
         case 4:
-            addstr("tongue-kissing an infamous dictator.");
+            addstr("tongue-kissing an infamous dictator.", gamelog);
             break;
 
         case 5:
-            addstr("making out with an FDA official overseeing the CEO's products.");
+            addstr("making out with an FDA official overseeing the CEO's products.", gamelog);
             change_public_opinion(VIEW_GENETICS, 10);
             change_public_opinion(VIEW_POLLUTION, 10);
             break;
 
         case 6:
-            addstr("castrating himself.");
+            addstr("castrating himself.", gamelog);
             break;
 
         case 7:
-            addstr("waving a Nazi flag at a supremacist rally.");
+            addstr("waving a Nazi flag at a supremacist rally.", gamelog);
             break;
 
         case 8:
-            addstr("torturing an employee with a hot iron.");
+            addstr("torturing an employee with a hot iron.", gamelog);
             change_public_opinion(VIEW_SWEATSHOPS, 10);
             break;
 
         case 9:
-            addstr("playing with feces and urine.");
+            addstr("playing with feces and urine.", gamelog);
             break;
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.newline();
         move(10, 1);
-        addstr("This is bound to get the Corporations a little riled up.");
+        addstr("This is bound to get the Corporations a little riled up.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_CEOSALARY, 50);
         change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
     } else if(loottype[li]->get_idname() == "LOOT_CEOLOVELETTERS") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring love letters from a major CEO");
+        addstr("The Liberal Guardian runs a story featuring love letters from a major CEO ", gamelog);
         move(7, 1);
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
         change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
 
         switch(LCSrandom(8)) {
         case 0:
-            addstr("addressed to his pet dog.  Yikes.");
+            addstr("addressed to his pet dog.  Yikes.", gamelog);
             change_public_opinion(VIEW_ANIMALRESEARCH, 15);
             break;
 
         case 1:
-            addstr("to the judge that acquit him in a corruption trial.");
+            addstr("to the judge that acquit him in a corruption trial.", gamelog);
             change_public_opinion(VIEW_JUSTICES, 15);
             break;
 
         case 2:
-            addstr("to an illicit gay lover.");
+            addstr("to an illicit gay lover.", gamelog);
             change_public_opinion(VIEW_GAY, 15);
             break;
 
         case 3:
-            addstr("to himself.  They're very steamy.");
+            addstr("to himself.  They're very steamy.", gamelog);
             break;
 
         case 4:
-            addstr("implying that he has enslaved his houseservants.");
+            addstr("implying that he has enslaved his houseservants.", gamelog);
             change_public_opinion(VIEW_SWEATSHOPS, 10);
             break;
 
         case 5:
-            addstr("to the FDA official overseeing the CEO's products.");
+            addstr("to the FDA official overseeing the CEO's products.", gamelog);
             change_public_opinion(VIEW_GENETICS, 10);
             change_public_opinion(VIEW_POLLUTION, 10);
             break;
 
         case 6:
-            addstr("that seem to touch on every fetish known to man.");
+            addstr("that seem to touch on every fetish known to man.", gamelog);
             break;
 
         case 7:
-            addstr("promising someone company profits in exchange for sexual favors.");
+            addstr("promising someone company profits in exchange for sexual favors.", gamelog);
             break;
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.newline();
         move(10, 1);
-        addstr("This is bound to get the Corporations a little riled up.");
+        addstr("This is bound to get the Corporations a little riled up.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_CEOSALARY, 50);
         change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
     } else if(loottype[li]->get_idname() == "LOOT_CEOTAXPAPERS") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring a major CEO's tax papers");
+        addstr("The Liberal Guardian runs a story featuring a major CEO's tax papers ", gamelog);
         move(7, 1);
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
         change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
 
         switch(LCSrandom(1)) {
         default:
-            addstr("showing that he has engaged in consistent tax evasion.");
+            addstr("showing that he has engaged in consistent tax evasion.", gamelog);
             change_public_opinion(VIEW_TAXES, 25);
             break;
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.newline();
         move(10, 1);
-        addstr("This is bound to get the Corporations a little riled up.");
+        addstr("This is bound to get the Corporations a little riled up.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_CEOSALARY, 50);
         change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
     } else if(loottype[li]->get_idname() == "LOOT_CORPFILES") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring Corporate files");
+        addstr("The Liberal Guardian runs a story featuring Corporate files ", gamelog);
         move(7, 1);
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, newspaper * 10);
@@ -417,70 +431,86 @@ void printnews(short li, short newspaper) {
 
         switch(LCSrandom(5)) {
         case 0:
-            addstr("describing a genetic monster created in a lab.");
+            addstr("describing a genetic monster created in a lab.", gamelog);
             change_public_opinion(VIEW_GENETICS, 50);
             break;
 
         case 1:
-            addstr("with a list of gay employees entitled \"Homo-workers\".");
+            addstr("with a list of gay employees entitled \"Homo-workers\".", gamelog);
             change_public_opinion(VIEW_GAY, 50);
             break;
 
         case 2:
-            addstr("containing a memo: \"Terminate the pregnancy, I terminate you.\"");
+            addstr("containing a memo: \"Terminate the pregnancy, I terminate you.\"", gamelog);
             change_public_opinion(VIEW_WOMEN, 50);
             break;
 
         case 3:
-            addstr("cheerfully describing foreign corporate sweatshops.");
+            addstr("cheerfully describing foreign corporate sweatshops.", gamelog);
             change_public_opinion(VIEW_SWEATSHOPS, 50);
             break;
 
         case 4:
-            addstr("describing an intricate tax scheme.");
+            addstr("describing an intricate tax scheme.", gamelog);
             change_public_opinion(VIEW_TAXES, 50);
             break;
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.newline();
         move(10, 1);
-        addstr("This is bound to get the Corporations a little riled up.");
+        addstr("This is bound to get the Corporations a little riled up.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_CEOSALARY, 50);
         change_public_opinion(VIEW_CORPORATECULTURE, 50);
         offended_corps = 1;
     } else if(loottype[li]->get_idname() == "LOOT_CCS_BACKERLIST") {
         move(5, 1);
-        addstr("The Liberal Guardian runs more than one thousand pages of documents about");
+        addstr("The Liberal Guardian runs more than one thousand pages of documents about ", gamelog);
+        gamelog.newline();
         move(6, 1);
-        addstr("the CCS organization, also revealing in extreme detail the names and");
+        addstr("the CCS organization, also revealing in extreme detail the names and ", gamelog);
+        gamelog.newline();
         move(7, 1);
-        addstr("responsibilities of Conservative Crime Squad sympathizers and supporters");
+        addstr("responsibilities of Conservative Crime Squad sympathizers and supporters", gamelog);
+        gamelog.newline();
         move(8, 1);
-        addstr("in the state and federal governments. Sections precisely document the");
+        addstr("in the state and federal governments. Sections precisely document the", gamelog);
+        gamelog.newline();
         move(9, 1);
-        addstr("extensive planning to create an extra-judicial death squad that would be");
+        addstr("extensive planning to create an extra-judicial death squad that would be", gamelog);
+        gamelog.newline();
         move(10, 1);
-        addstr("above prosecution, and could hunt down law-abiding Liberals and act");
+        addstr("above prosecution, and could hunt down law-abiding Liberals and act", gamelog);
+        gamelog.newline();
         move(11, 1);
-        addstr("as a foil when no other enemies were present to direct public energy");
+        addstr("as a foil when no other enemies were present to direct public energy", gamelog);
+        gamelog.newline();
         move(12, 1);
-        addstr("against.");
+        addstr("against.", gamelog);
 
         move(14, 1);
-        addstr("The scandal reaches into the heart of the Conservative leadership in the");
+        addstr("The scandal reaches into the heart of the Conservative leadership in the", gamelog);
+        gamelog.newline();
         move(15, 1);
-        addstr("country, and the full ramifications of this revelation may not be felt");
+        addstr("country, and the full ramifications of this revelation may not be felt", gamelog);
+        gamelog.newline();
         move(16, 1);
-        addstr("for months. One thing is clear, however, from the immediate public reaction");
+        addstr("for months. One thing is clear, however, from the immediate public reaction", gamelog);
+        gamelog.newline();
         move(17, 1);
-        addstr("toward the revelations, and the speed with which even AM Radio and Cable");
+        addstr("toward the revelations, and the speed with which even AM Radio and Cable", gamelog);
+        gamelog.newline();
         move(18, 1);
-        addstr("News denounce the CCS.");
+        addstr("News denounce the CCS.", gamelog);
+        gamelog.newline();
 
         move(20, 1);
-        addstr("This is the beginning of the end for the Conservative Crime Squad.");
+        addstr("This is the beginning of the end for the Conservative Crime Squad.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_INTELLIGENCE, 50);
         change_public_opinion(VIEW_CONSERVATIVECRIMESQUAD, 100);
@@ -488,7 +518,7 @@ void printnews(short li, short newspaper) {
     } else if(loottype[li]->get_idname() == "LOOT_INTHQDISK"
               || loottype[li]->get_idname() == "LOOT_SECRETDOCUMENTS") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring CIA and other intelligence files");
+        addstr("The Liberal Guardian runs a story featuring CIA and other intelligence files ", gamelog);
         move(7, 1);
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
@@ -496,44 +526,47 @@ void printnews(short li, short newspaper) {
 
         switch(LCSrandom(6)) {
         case 0:
-            addstr("documenting the overthrow of a government.");
+            addstr("documenting the overthrow of a government.", gamelog);
             break;
 
         case 1:
-            addstr("documenting the planned assassination of a Liberal federal judge.");
+            addstr("documenting the planned assassination of a Liberal federal judge.", gamelog);
             change_public_opinion(VIEW_JUSTICES, 50);
             break;
 
         case 2:
-            addstr("containing private information on innocent citizens.");
+            addstr("containing private information on innocent citizens.", gamelog);
             break;
 
         case 3:
-            addstr("documenting \"harmful speech\" made by innocent citizens.");
+            addstr("documenting \"harmful speech\" made by innocent citizens.", gamelog);
             change_public_opinion(VIEW_FREESPEECH, 50);
             break;
 
         case 4:
-            addstr("used to keep tabs on gay citizens.");
+            addstr("used to keep tabs on gay citizens.", gamelog);
             change_public_opinion(VIEW_GAY, 50);
             break;
 
         case 5:
-            addstr("documenting the infiltration of a pro-choice group.");
+            addstr("documenting the infiltration of a pro-choice group.", gamelog);
             change_public_opinion(VIEW_WOMEN, 50);
             break;
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.newline();
         move(10, 1);
-        addstr("This is bound to get the Government a little riled up.");
+        addstr("This is bound to get the Government a little riled up.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_INTELLIGENCE, 50);
         offended_cia = 1;
     } else if(loottype[li]->get_idname() == "LOOT_POLICERECORDS") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring police records");
+        addstr("The Liberal Guardian runs a story featuring police records ", gamelog);
         move(7, 1);
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
@@ -541,41 +574,43 @@ void printnews(short li, short newspaper) {
 
         switch(LCSrandom(6)) {
         case 0:
-            addstr("documenting human rights abuses by the force.");
+            addstr("documenting human rights abuses by the force.", gamelog);
             change_public_opinion(VIEW_TORTURE, 15);
             break;
 
         case 1:
-            addstr("documenting a police torture case.");
+            addstr("documenting a police torture case.", gamelog);
             change_public_opinion(VIEW_TORTURE, 50);
             break;
 
         case 2:
-            addstr("documenting a systematic invasion of privacy by the force.");
+            addstr("documenting a systematic invasion of privacy by the force.", gamelog);
             change_public_opinion(VIEW_INTELLIGENCE, 15);
             break;
 
         case 3:
-            addstr("documenting a forced confession.");
+            addstr("documenting a forced confession.", gamelog);
             break;
 
         case 4:
-            addstr("documenting widespread corruption in the force.");
+            addstr("documenting widespread corruption in the force.", gamelog);
             break;
 
         case 5:
-            addstr("documenting gladiatorial matches held between prisoners by guards.");
+            addstr("documenting gladiatorial matches held between prisoners by guards.", gamelog);
             change_public_opinion(VIEW_DEATHPENALTY, 50);
             break;
         }
 
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        gamelog.newline();
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_POLICEBEHAVIOR, 50);
     } else if(loottype[li]->get_idname() == "LOOT_JUDGEFILES") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story with evidence of a Conservative judge");
+        addstr("The Liberal Guardian runs a story with evidence of a Conservative judge ", gamelog);
         move(7, 1);
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
@@ -583,21 +618,23 @@ void printnews(short li, short newspaper) {
 
         switch(LCSrandom(2)) {
         case 0:
-            addstr("taking bribes to acquit murderers.");
+            addstr("taking bribes to acquit murderers.", gamelog);
             break;
 
         case 1:
-            addstr("promising Conservative rulings in exchange for appointments.");
+            addstr("promising Conservative rulings in exchange for appointments.", gamelog);
             break;
         }
 
+        gamelog.newline();
         move(8, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_JUSTICES, 50);
     } else if(loottype[li]->get_idname() == "LOOT_RESEARCHFILES") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring research papers");
+        addstr("The Liberal Guardian runs a story featuring research papers ", gamelog);
         move(7, 1);
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
@@ -605,31 +642,33 @@ void printnews(short li, short newspaper) {
 
         switch(LCSrandom(4)) {
         case 0:
-            addstr("documenting horrific animal rights abuses.");
+            addstr("documenting horrific animal rights abuses.", gamelog);
             change_public_opinion(VIEW_ANIMALRESEARCH, 50);
             break;
 
         case 1:
-            addstr("studying the effects of torture on cats.");
+            addstr("studying the effects of torture on cats.", gamelog);
             change_public_opinion(VIEW_ANIMALRESEARCH, 50);
             break;
 
         case 2:
-            addstr("covering up the accidental creation of a genetic monster.");
+            addstr("covering up the accidental creation of a genetic monster.", gamelog);
             change_public_opinion(VIEW_GENETICS, 50);
             break;
 
         case 3:
-            addstr("showing human test subjects dying under genetic research.");
+            addstr("showing human test subjects dying under genetic research.", gamelog);
             change_public_opinion(VIEW_GENETICS, 50);
             break;
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.nextMessage();
     } else if(loottype[li]->get_idname() == "LOOT_PRISONFILES") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring prison documents");
+        addstr("The Liberal Guardian runs a story featuring prison documents ", gamelog);
         move(7, 1);
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
@@ -637,29 +676,31 @@ void printnews(short li, short newspaper) {
 
         switch(LCSrandom(4)) {
         case 0:
-            addstr("documenting human rights abuses by prison guards.");
+            addstr("documenting human rights abuses by prison guards.", gamelog);
             break;
 
         case 1:
-            addstr("documenting a prison torture case.");
+            addstr("documenting a prison torture case.", gamelog);
             change_public_opinion(VIEW_TORTURE, 50);
             break;
 
         case 2:
-            addstr("documenting widespread corruption among prison employees.");
+            addstr("documenting widespread corruption among prison employees.", gamelog);
             break;
 
         case 3:
-            addstr("documenting gladiatorial matches held between prisoners by guards.");
+            addstr("documenting gladiatorial matches held between prisoners by guards.", gamelog);
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_DEATHPENALTY, 50);
     } else if(loottype[li]->get_idname() == "LOOT_CABLENEWSFILES") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring cable news memos");
+        addstr("The Liberal Guardian runs a story featuring cable news memos ", gamelog);
         move(7, 1);
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
@@ -667,32 +708,35 @@ void printnews(short li, short newspaper) {
 
         switch(LCSrandom(4)) {
         case 0:
-            addstr("calling their news 'the vanguard of Conservative thought'.");
+            addstr("calling their news 'the vanguard of Conservative thought'.", gamelog);
             break;
 
         case 1:
-            addstr("mandating negative coverage of Liberal politicians.");
+            addstr("mandating negative coverage of Liberal politicians.", gamelog);
             break;
 
         case 2:
-            addstr("planning to drum up a false scandal about a Liberal figure.");
+            addstr("planning to drum up a false scandal about a Liberal figure.", gamelog);
             break;
 
         case 3:
-            addstr("instructing a female anchor to 'get sexier or get a new job'.");
+            addstr("instructing a female anchor to 'get sexier or get a new job'.", gamelog);
             break;
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.newline();
         move(10, 1);
-        addstr("This is bound to get the Conservative masses a little riled up.");
+        addstr("This is bound to get the Conservative masses a little riled up.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_CABLENEWS, 50);
         offended_cablenews = 1;
     } else if(loottype[li]->get_idname() == "LOOT_AMRADIOFILES") {
         move(6, 1);
-        addstr("The Liberal Guardian runs a story featuring AM radio plans");
+        addstr("The Liberal Guardian runs a story featuring AM radio plans ", gamelog);
         move(7, 1);
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
@@ -700,22 +744,25 @@ void printnews(short li, short newspaper) {
 
         switch(LCSrandom(3)) {
         case 0:
-            addstr("calling listeners 'sheep to be told what to think'.");
+            addstr("calling listeners 'sheep to be told what to think'.", gamelog);
             break;
 
         case 1:
-            addstr("saying 'it's okay to lie, they don't need the truth'.");
+            addstr("saying 'it's okay to lie, they don't need the truth'.", gamelog);
             break;
 
         case 2:
-            addstr("planning to drum up a false scandal about a Liberal figure.");
+            addstr("planning to drum up a false scandal about a Liberal figure.", gamelog);
             break;
         }
 
+        gamelog.newline();
         move(9, 1);
-        addstr("The major networks and publications take it up and run it for weeks.");
+        addstr("The major networks and publications take it up and run it for weeks.", gamelog);
+        gamelog.newline();
         move(10, 1);
-        addstr("This is bound to get the Conservative masses a little riled up.");
+        addstr("This is bound to get the Conservative masses a little riled up.", gamelog);
+        gamelog.nextMessage();
 
         change_public_opinion(VIEW_AMRADIO, 50);
         offended_cablenews = 1;

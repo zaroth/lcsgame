@@ -52,8 +52,9 @@ void trial(Creature &g) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(1, 1);
-    addstr(g.name);
-    addstr(" is standing trial.");
+    addstr(g.name, gamelog);
+    addstr(" is standing trial.", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
@@ -107,17 +108,18 @@ void trial(Creature &g) {
     move(3, 1);
 
     if(sleeperjudge) {
-        addstr("Sleeper ");
-        addstr(sleeperjudge->name);
-        addstr(" reads the charges, trying to hide a smile:");
+        addstr("Sleeper ", gamelog);
+        addstr(sleeperjudge->name, gamelog);
+        addstr(" reads the charges, trying to hide a smile:", gamelog);
     } else
-        addstr("The judge reads the charges:");
+        addstr("The judge reads the charges:", gamelog);
 
+    gamelog.newline();
     set_color(COLOR_RED, COLOR_BLACK, 1);
     move(5, 1);
-    addstr("The defendant, ");
-    addstr(g.propername);
-    addstr(", is charged with ");
+    addstr("The defendant, ", gamelog);
+    addstr(g.propername, gamelog);
+    addstr(", is charged with ", gamelog);
     int x = 2, y = 5;
 
     while(typenum > 0) {
@@ -148,113 +150,113 @@ void trial(Creature &g) {
             if(g.crimes_suspected[LAWFLAG_TREASON] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_TREASON], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("treason");
+            addstr("treason", gamelog);
             breaker[LAWFLAG_TREASON] = 0;
         } else if(breaker[LAWFLAG_TERRORISM]) {
             if(g.crimes_suspected[LAWFLAG_TERRORISM] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_TERRORISM], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("terrorism");
+            addstr("terrorism", gamelog);
             breaker[LAWFLAG_TERRORISM] = 0;
         } else if(breaker[LAWFLAG_KIDNAPPING]) {
             if(g.crimes_suspected[LAWFLAG_KIDNAPPING] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_KIDNAPPING], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("kidnapping");
+            addstr("kidnapping", gamelog);
             breaker[LAWFLAG_KIDNAPPING] = 0;
         } else if(breaker[LAWFLAG_BURNFLAG] && law[LAW_FLAGBURNING] <= 0) {
             if(g.crimes_suspected[LAWFLAG_BURNFLAG] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_BURNFLAG], str, 10);
                 addstr(str);
-                addstr(" counts of ");
+                addstr(" counts of ", gamelog);
             }
 
             if(law[LAW_FLAGBURNING] == -2)
-                addstr("Flag Murder");
+                addstr("Flag Murder", gamelog);
             else if(law[LAW_FLAGBURNING] == -1)
-                addstr("felony flag burning");
+                addstr("felony flag burning", gamelog);
             else if(law[LAW_FLAGBURNING] == 0)
-                addstr("flag burning");
+                addstr("flag burning", gamelog);
 
             breaker[LAWFLAG_BURNFLAG] = 0;
         } else if(breaker[LAWFLAG_SPEECH]) {
             if(g.crimes_suspected[LAWFLAG_SPEECH] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_SPEECH], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("harmful speech");
+            addstr("harmful speech", gamelog);
             breaker[LAWFLAG_SPEECH] = 0;
         } else if(breaker[LAWFLAG_BROWNIES]) {
             if(g.crimes_suspected[LAWFLAG_BROWNIES] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_BROWNIES], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("distribution of a controlled substance");
+            addstr("distribution of a controlled substance", gamelog);
             breaker[LAWFLAG_BROWNIES] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_ESCAPED]) {
             if(g.crimes_suspected[LAWFLAG_ESCAPED] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_ESCAPED], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("escaping prison");
+            addstr("escaping prison", gamelog);
             breaker[LAWFLAG_ESCAPED] = 0;
             //autoconvict=1; // *Impossible* to beat this charge if this line isn't commented out
         } else if(breaker[LAWFLAG_HELPESCAPE]) {
             if(g.crimes_suspected[LAWFLAG_HELPESCAPE] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_HELPESCAPE], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("aiding a prison escape");
+            addstr("aiding a prison escape", gamelog);
             breaker[LAWFLAG_HELPESCAPE] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_JURY]) {
             if(g.crimes_suspected[LAWFLAG_JURY] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_JURY], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("jury tampering");
+            addstr("jury tampering", gamelog);
             breaker[LAWFLAG_JURY] = 0;
         } else if(breaker[LAWFLAG_RACKETEERING]) {
-            addstr("racketeering");
+            addstr("racketeering", gamelog);
             breaker[LAWFLAG_RACKETEERING] = 0;
         } else if(breaker[LAWFLAG_ARMEDASSAULT]) {
             if(g.crimes_suspected[LAWFLAG_ARMEDASSAULT] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_ARMEDASSAULT], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("felony assault");
+            addstr("felony assault", gamelog);
             breaker[LAWFLAG_ARMEDASSAULT] = 0;
         } else if(breaker[LAWFLAG_MURDER]) { //XXX: How about the addition of a `manslaughter` charge? -- LK
             //     Manslaughter is murder without forethought or malice, IIRC. -- LK
@@ -263,41 +265,41 @@ void trial(Creature &g) {
             if(g.crimes_suspected[LAWFLAG_MURDER] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_MURDER], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("murder");
+            addstr("murder", gamelog);
             breaker[LAWFLAG_MURDER] = 0;
         } else if(breaker[LAWFLAG_EXTORTION]) {
             if(g.crimes_suspected[LAWFLAG_EXTORTION] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_EXTORTION], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("extortion");
+            addstr("extortion", gamelog);
             breaker[LAWFLAG_EXTORTION] = 0;
         } else if(breaker[LAWFLAG_ARSON]) {
             if(g.crimes_suspected[LAWFLAG_ARSON] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_ARSON], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("arson");
+            addstr("arson", gamelog);
             breaker[LAWFLAG_ARSON] = 0;
         } else if(breaker[LAWFLAG_ASSAULT]) {
             if(g.crimes_suspected[LAWFLAG_ASSAULT] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_ASSAULT], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("misdemeanor assault");
+            addstr("misdemeanor assault", gamelog);
             breaker[LAWFLAG_ASSAULT] = 0;
         }
         /*else if(breaker[LAWFLAG_GUNCARRY])
@@ -330,11 +332,11 @@ void trial(Creature &g) {
             if(g.crimes_suspected[LAWFLAG_CARTHEFT] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_CARTHEFT], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("grand theft auto");// If chase lasts more than 20 `turns` then
+            addstr("grand theft auto", gamelog);// If chase lasts more than 20 `turns` then
             breaker[LAWFLAG_CARTHEFT] = 0; // this should be `Grand Theft Auto`
         }                              //                 -- LK
         // We'll just make it grand theft auto anyway :) -Fox
@@ -342,145 +344,147 @@ void trial(Creature &g) {
             if(g.crimes_suspected[LAWFLAG_BANKROBBERY] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_BANKROBBERY], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("bank robbery");
+            addstr("bank robbery", gamelog);
             breaker[LAWFLAG_BANKROBBERY] = 0;
         } else if(breaker[LAWFLAG_CCFRAUD]) {
             if(g.crimes_suspected[LAWFLAG_CCFRAUD] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_CCFRAUD], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("credit card fraud");
+            addstr("credit card fraud", gamelog);
             breaker[LAWFLAG_CCFRAUD] = 0;
         } else if(breaker[LAWFLAG_THEFT]) {
             if(g.crimes_suspected[LAWFLAG_THEFT] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_THEFT], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("theft");
+            addstr("theft", gamelog);
             breaker[LAWFLAG_THEFT] = 0;
         } else if(breaker[LAWFLAG_PROSTITUTION]) {
             if(g.crimes_suspected[LAWFLAG_PROSTITUTION] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_PROSTITUTION], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("prostitution");
+            addstr("prostitution", gamelog);
             breaker[LAWFLAG_PROSTITUTION] = 0;
         } else if(breaker[LAWFLAG_HIREILLEGAL]) {
             if(g.crimes_suspected[LAWFLAG_HIREILLEGAL] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_HIREILLEGAL], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("hiring an illegal alien");
+            addstr("hiring an illegal alien", gamelog);
             breaker[LAWFLAG_HIREILLEGAL] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_COMMERCE]) {
             if(g.crimes_suspected[LAWFLAG_COMMERCE] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_COMMERCE], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("interference with interstate commerce");
+            addstr("interference with interstate commerce", gamelog);
             breaker[LAWFLAG_COMMERCE] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_INFORMATION]) {
             if(g.crimes_suspected[LAWFLAG_INFORMATION] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_INFORMATION], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("unlawful access of an information system");
+            addstr("unlawful access of an information system", gamelog);
             breaker[LAWFLAG_INFORMATION] = 0;
             x = 2;
         } else if(breaker[LAWFLAG_BURIAL]) {
             if(g.crimes_suspected[LAWFLAG_BURIAL] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_BURIAL], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("unlawful burial");
+            addstr("unlawful burial", gamelog);
             breaker[LAWFLAG_BURIAL] = 0;
         } else if(breaker[LAWFLAG_BREAKING]) {
             if(g.crimes_suspected[LAWFLAG_BREAKING] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_BREAKING], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("breaking and entering");
+            addstr("breaking and entering", gamelog);
             breaker[LAWFLAG_BREAKING] = 0;
         } else if(breaker[LAWFLAG_VANDALISM]) {
             if(g.crimes_suspected[LAWFLAG_VANDALISM] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_VANDALISM], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("vandalism");
+            addstr("vandalism", gamelog);
             breaker[LAWFLAG_VANDALISM] = 0;
         } else if(breaker[LAWFLAG_RESIST]) {
-            addstr("resisting arrest");
+            addstr("resisting arrest", gamelog);
             breaker[LAWFLAG_RESIST] = 0;
         } else if(breaker[LAWFLAG_DISTURBANCE]) {
             if(g.crimes_suspected[LAWFLAG_DISTURBANCE] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_DISTURBANCE], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("disturbing the peace");
+            addstr("disturbing the peace", gamelog);
             breaker[LAWFLAG_DISTURBANCE] = 0;
         } else if(breaker[LAWFLAG_PUBLICNUDITY]) {
             if(g.crimes_suspected[LAWFLAG_PUBLICNUDITY] > 1) {
                 char str[10];
                 itoa(g.crimes_suspected[LAWFLAG_PUBLICNUDITY], str, 10);
-                addstr(str);
-                addstr(" counts of ");
+                addstr(str, gamelog);
+                addstr(" counts of ", gamelog);
             }
 
-            addstr("indecent exposure");
+            addstr("indecent exposure", gamelog);
             breaker[LAWFLAG_PUBLICNUDITY] = 0;
         } else if(breaker[LAWFLAG_LOITERING]) {
-            addstr("loitering");
+            addstr("loitering", gamelog);
             breaker[LAWFLAG_LOITERING] = 0;
         }
 
         if(typenum > 1)
-            addstr(", ");
+            addstr(", ", gamelog);
 
         if(typenum == 1)
-            addstr(" and ");
+            addstr(" and ", gamelog);
 
         if(typenum == 0)
-            addstr(".");
+            addstr(".", gamelog);
 
         refresh();
         getch();
     }
+
+    gamelog.newline();
 
     if(g.confessions && !sleeperjudge) {     //Made sleeper judge prevent these lunatics from testifying
         move(y += 2, 1);
@@ -488,13 +492,14 @@ void trial(Creature &g) {
         if(g.confessions > 1) {
             char str[10];
             itoa(g.confessions, str, 10);
-            addstr(str);
-            addstr(" former LCS members will testify against ");
+            addstr(str, gamelog);
+            addstr(" former LCS members will testify against ", gamelog);
         } else
-            addstr("A former LCS member will testify against ");
+            addstr("A former LCS member will testify against ", gamelog);
 
-        addstr(g.name);
-        addstr(".");
+        addstr(g.name, gamelog);
+        addstr(".", gamelog);
+        gamelog.newline();
         refresh();
         getch();
     }
@@ -609,13 +614,14 @@ void trial(Creature &g) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(1, 1);
-        addstr(g.name);
+        addstr(g.name, gamelog);
         addstr(" is standing trial.");
 
         //TRIAL MESSAGE
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(3, 1);
-        addstr("The trial proceeds.  Jury selection is first.");
+        addstr("The trial proceeds.  Jury selection is first.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -629,10 +635,11 @@ void trial(Creature &g) {
 
         if(defense == 3) { // Hired $5000 ace attorney
             if(LCSrandom(10)) {
-                addstr(attorneyname);
-                addstr(" ensures the jury is stacked in ");
-                addstr(g.name);
-                addstr("'s favor!");
+                addstr(attorneyname, gamelog);
+                addstr(" ensures the jury is stacked in ", gamelog);
+                addstr(g.name, gamelog);
+                addstr("'s favor!", gamelog);
+                gamelog.newline();
 
                 if(jury > 0)
                     jury = 0;
@@ -640,8 +647,9 @@ void trial(Creature &g) {
                 jury -= 30;
             } else {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
-                addstr(attorneyname);
-                addstr("'s CONSERVATIVE ARCH-NEMESIS will represent the prosecution!!!");
+                addstr(attorneyname, gamelog);
+                addstr("'s CONSERVATIVE ARCH-NEMESIS will represent the prosecution!!!", gamelog);
+                gamelog.newline();
                 jury = 0;
                 prosecution += 100; // DUN DUN DUN!!
             }
@@ -651,48 +659,52 @@ void trial(Creature &g) {
             switch(LCSrandom(4)) {
             case 0:
                 addstr(g.name);
-                addstr("'s best friend from childhood is a juror.");
+                addstr("'s best friend from childhood is a juror.", gamelog);
                 break;
 
             case 1:
-                addstr("The jury is Flaming Liberal.");
+                addstr("The jury is Flaming Liberal.", gamelog);
                 break;
 
             case 2:
-                addstr("A few of the jurors are closet Socialists.");
+                addstr("A few of the jurors are closet Socialists.", gamelog);
                 break;
 
             case 3:
-                addstr("One of the jurors flashes a SECRET LIBERAL HAND SIGNAL when no one is looking.");
+                addstr("One of the jurors flashes a SECRET LIBERAL HAND SIGNAL when no one is looking.", gamelog);
                 break;
             }
+
+            gamelog.newline();
         } else if(jury <= -15)
-            addstr("The jury is fairly Liberal.");
+            addstr("The jury is fairly Liberal.", gamelog);
         else if(jury < 15)
-            addstr("The jury is quite moderate.");
+            addstr("The jury is quite moderate.", gamelog);
         else if(jury < 29)
-            addstr("The jury is a bit Conservative.");
+            addstr("The jury is a bit Conservative.", gamelog);
         else {
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
 
             switch(LCSrandom(4)) {
             case 0:
-                addstr("Such a collection of Conservative jurors has never before been assembled.");
+                addstr("Such a collection of Conservative jurors has never before been assembled.", gamelog);
                 break;
 
             case 1:
-                addstr("One of the accepted jurors is a Conservative activist.");
+                addstr("One of the accepted jurors is a Conservative activist.", gamelog);
                 break;
 
             case 2:
-                addstr("A few of the jurors are members of the KKK.");
+                addstr("A few of the jurors are members of the KKK.", gamelog);
                 break;
 
             case 3:
-                addstr("The jury is frighteningly Conservative.");
+                addstr("The jury is frighteningly Conservative.", gamelog);
                 break;
             }
         }
+
+        gamelog.newline();
 
         // Debug jury bias
         #ifdef SHOWMECHANICS
@@ -728,20 +740,23 @@ void trial(Creature &g) {
         move(7, 1);
 
         if(autoconvict) {
-            addstr("There is no question of ");
-            addstr(g.name);
-            addstr("'s guilt.");
+            addstr("There is no question of ", gamelog);
+            addstr(g.name, gamelog);
+            addstr("'s guilt.", gamelog);
+            gamelog.newline();
         } else {
             if(prosecution <= 50)
-                addstr("The prosecution's presentation is terrible.");
+                addstr("The prosecution's presentation is terrible.", gamelog);
             else if(prosecution <= 75)
-                addstr("The prosecution gives a standard presentation.");
+                addstr("The prosecution gives a standard presentation.", gamelog);
             else if(prosecution <= 125)
-                addstr("The prosecution's case is solid.");
+                addstr("The prosecution's case is solid.", gamelog);
             else if(prosecution <= 175)
-                addstr("The prosecution makes an airtight case.");
+                addstr("The prosecution makes an airtight case.", gamelog);
             else
-                addstr("The prosecution is incredibly strong.");
+                addstr("The prosecution is incredibly strong.", gamelog);
+
+            gamelog.newline();
         }
 
         // Debug prosecution power
@@ -770,9 +785,10 @@ void trial(Creature &g) {
         int defensepower = 0;
 
         if(defense == 0 || defense == 3 || defense == 4) {
-            if(autoconvict)
-                addstr("The defense makes a noble attempt, but the outcome is inevitable.");
-            else {
+            if(autoconvict) {
+                addstr("The defense makes a noble attempt, but the outcome is inevitable.", gamelog);
+                gamelog.newline();
+            } else {
                 if(defense == 0)
                     defensepower = LCSrandom(71);   // Court-appointed attorney
                 else if(defense == 3)
@@ -786,36 +802,38 @@ void trial(Creature &g) {
                 }
 
                 if(defensepower <= 5)
-                    addstr("The defense attorney rarely showed up.");
+                    addstr("The defense attorney rarely showed up.", gamelog);
                 else if(defensepower <= 15)
-                    addstr("The defense attorney accidentally said \"My client is GUILTY!\" during closing.");
+                    addstr("The defense attorney accidentally said \"My client is GUILTY!\" during closing.", gamelog);
                 else if(defensepower <= 25)
-                    addstr("The defense is totally lame.");
+                    addstr("The defense is totally lame.", gamelog);
                 else if(defensepower <= 50)
-                    addstr("The defense was lackluster.");
+                    addstr("The defense was lackluster.", gamelog);
                 else if(defensepower <= 75)
-                    addstr("Defense arguments were pretty good.");
+                    addstr("Defense arguments were pretty good.", gamelog);
                 else if(defensepower <= 100)
-                    addstr("The defense was really slick.");
+                    addstr("The defense was really slick.", gamelog);
                 else if(defensepower <= 145) {
                     if(prosecution < 100)
-                        addstr("The defense makes the prosecution look like amateurs.");
+                        addstr("The defense makes the prosecution look like amateurs.", gamelog);
                     else
-                        addstr("The defense is extremely compelling.");
+                        addstr("The defense is extremely compelling.", gamelog);
                 } else {
                     if(prosecution < 100) {
-                        addstr(attorneyname);
-                        addstr("'s arguments made several of the jurors stand up");
+                        addstr(attorneyname, gamelog);
+                        addstr("'s arguments made several of the jurors stand up ", gamelog);
                         move(10, 1);
-                        addstr("and shout \"NOT GUILTY!\" before deliberations even began.");
+                        addstr("and shout \"NOT GUILTY!\" before deliberations even began.", gamelog);
 
                         if(defense == 4)
                             addjuice(*sleeperlawyer, 10, 500);  // Bow please
                     } else {
-                        addstr(attorneyname);
-                        addstr(" conducts an incredible defense.");
+                        addstr(attorneyname, gamelog);
+                        addstr(" conducts an incredible defense.", gamelog);
                     }
                 }
+
+                gamelog.newline();
             }
         }
 
@@ -834,25 +852,28 @@ void trial(Creature &g) {
             g.train(SKILL_PERSUASION, 50);
             g.train(SKILL_LAW, 50);
 
-            addstr(g.name);
+            addstr(g.name, gamelog);
 
             if(defensepower <= 0) {
-                addstr(" makes one horrible mistake after another.");
+                addstr(" makes one horrible mistake after another.", gamelog);
+                gamelog.newline();
                 addjuice(g, -10, -50); // You should be ashamed
             } else if(defensepower <= 25)
-                addstr("'s case really sucked.");
+                addstr("'s case really sucked.", gamelog);
             else if(defensepower <= 50)
-                addstr(" did all right, but made some mistakes.");
+                addstr(" did all right, but made some mistakes.", gamelog);
             else if(defensepower <= 75)
-                addstr("'s arguments were pretty good.");
+                addstr("'s arguments were pretty good.", gamelog);
             else if(defensepower <= 100)
-                addstr(" worked the jury very well.");
+                addstr(" worked the jury very well.", gamelog);
             else if(defensepower <= 150)
-                addstr(" made a very powerful case.");
+                addstr(" made a very powerful case.", gamelog);
             else {
-                addstr(" had the jury, judge, and prosecution crying for freedom.");
+                addstr(" had the jury, judge, and prosecution crying for freedom.", gamelog);
                 addjuice(g, 50, 1000); // That shit is legend
             }
+
+            gamelog.newline();
         }
 
         // Debug defense power
@@ -875,7 +896,8 @@ void trial(Creature &g) {
         //DELIBERATION MESSAGE
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(12, 1);
-        addstr("The jury leaves to consider the case.");
+        addstr("The jury leaves to consider the case.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -883,7 +905,8 @@ void trial(Creature &g) {
         erase();
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(1, 1);
-        addstr("The jury has returned from deliberations.");
+        addstr("The jury has returned from deliberations.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -893,7 +916,8 @@ void trial(Creature &g) {
         if(defensepower == jury) {
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             move(3, 1);
-            addstr("But they can't reach a verdict!");
+            addstr("But they can't reach a verdict!", gamelog);
+            gamelog.newline();
             refresh();
             getch();
 
@@ -901,7 +925,8 @@ void trial(Creature &g) {
             if(LCSrandom(2) || scarefactor >= 10 || g.confessions) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 move(5, 1);
-                addstr("The case will be re-tried next month.");
+                addstr("The case will be re-tried next month.", gamelog);
+                gamelog.newline();
                 refresh();
                 getch();
 
@@ -919,11 +944,13 @@ void trial(Creature &g) {
             else {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 move(5, 1);
-                addstr("The prosecution declines to re-try the case.");
+                addstr("The prosecution declines to re-try the case.", gamelog);
+                gamelog.newline();
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
                 move(7, 1);
-                addstr(g.name);
-                addstr(" is free!");
+                addstr(g.name, gamelog);
+                addstr(" is free!", gamelog);
+                gamelog.nextMessage();
                 refresh();
                 getch();
             }
@@ -932,13 +959,15 @@ void trial(Creature &g) {
         else if(!autoconvict && defensepower > jury) {
             set_color(COLOR_GREEN, COLOR_BLACK, 1);
             move(3, 1);
-            addstr("NOT GUILTY!");
+            addstr("NOT GUILTY!", gamelog);
+            gamelog.newline();
             refresh();
             getch();
             set_color(COLOR_GREEN, COLOR_BLACK, 1);
             move(5, 1);
-            addstr(g.name);
-            addstr(" is free!");
+            addstr(g.name, gamelog);
+            addstr(" is free!", gamelog);
+            gamelog.nextMessage();
 
 
             if(defense == 4) {
@@ -998,7 +1027,8 @@ void trial(Creature &g) {
         erase();
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(1, 1);
-        addstr("The court accepts the plea.");
+        addstr("The court accepts the plea.", gamelog);
+        gamelog.nextMessage();
         refresh();
         getch();
 
@@ -1028,7 +1058,8 @@ void trial(Creature &g) {
 void penalize(Creature &g, char lenient) {
     set_color(COLOR_RED, COLOR_BLACK, 1);
     move(3, 1);
-    addstr("GUILTY!");
+    addstr("GUILTY!", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
@@ -1155,7 +1186,8 @@ void penalize(Creature &g, char lenient) {
     if(lenient) {
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(5, 1);
-        addstr("During sentencing, the judge grants some leniency.");
+        addstr("During sentencing, the judge grants some leniency.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
     }
@@ -1165,20 +1197,21 @@ void penalize(Creature &g, char lenient) {
         g.sentence = 3;
         set_color(COLOR_RED, COLOR_RED, 1);
         move(7, 1);
-        addstr(g.propername);
-        addstr(", you are sentenced to DEATH!");
+        addstr(g.propername, gamelog);
+        addstr(", you are sentenced to DEATH!", gamelog);
+        gamelog.newline();
         refresh();
         getch();
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(9, 1);
-        addstr("The execution is scheduled to occur three months from now.");
+        addstr("The execution is scheduled to occur three months from now.", gamelog);
         refresh();
         getch();
     } else if(g.sentence == 0) {
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(7, 1);
-        addstr(g.propername);
-        addstr(", consider this a warning.  You are free to go.");
+        addstr(g.propername, gamelog);
+        addstr(", consider this a warning.  You are free to go.", gamelog);
         refresh();
         getch();
     } else {
@@ -1187,8 +1220,8 @@ void penalize(Creature &g, char lenient) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(7, 1);
-        addstr(g.propername);
-        addstr(", you are sentenced to ");
+        addstr(g.propername, gamelog);
+        addstr(", you are sentenced to ", gamelog);
 
         if(g.sentence > 1200)
             g.sentence /= -1200;
@@ -1197,33 +1230,34 @@ void penalize(Creature &g, char lenient) {
             if(g.sentence < -1) {
                 char num[20];
                 itoa(-(g.sentence), num, 10);
-                addstr(num);
-                addstr(" consecutive life terms in prison.");
+                addstr(num, gamelog);
+                addstr(" consecutive life terms in prison.", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
 
                 move(9, 1);
-                addstr("Have a nice day, ");
-                addstr(g.propername);
-                addstr(".");
+                addstr("Have a nice day, ", gamelog);
+                addstr(g.propername, gamelog);
+                addstr(".", gamelog);
             } else
-                addstr("life in prison.");
+                addstr("life in prison.", gamelog);
         } else if(g.sentence >= 36) {
             char num[20];
             itoa(g.sentence / 12, num, 10);
-            addstr(num);
-            addstr(" years in prison.");
+            addstr(num, gamelog);
+            addstr(" years in prison.", gamelog);
         } else {
             char num[20];
             itoa(g.sentence, num, 10);
-            addstr(num);
-            addstr(" month");
+            addstr(num, gamelog);
+            addstr(" month", gamelog);
 
             if(g.sentence > 1)
-                addstr("s");
+                addstr("s", gamelog);
 
-            addstr(" in prison.");
+            addstr(" in prison.", gamelog);
         }
 
         //dejuice boss
@@ -1241,6 +1275,8 @@ void penalize(Creature &g, char lenient) {
         refresh();
         getch();
     }
+
+    gamelog.nextMessage();
 }
 
 
@@ -1284,10 +1320,11 @@ char prison(Creature &g) {
             erase();
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(8, 1);
-            addstr(g.name);
-            addstr("'s death sentence has been commuted to life,");
+            addstr(g.name, gamelog);
+            addstr("'s death sentence has been commuted to life, ", gamelog);
             move(9, 1);
-            addstr("due to the abolition of the death penalty.");
+            addstr("due to the abolition of the death penalty.", gamelog);
+            gamelog.nextMessage();
             refresh();
             getch();
 
@@ -1305,129 +1342,131 @@ char prison(Creature &g) {
                 erase();
                 set_color(COLOR_RED, COLOR_BLACK, 1);
                 move(8, 1);
-                addstr("FOR SHAME:");
+                addstr("FOR SHAME:", gamelog);
+                gamelog.newline();
                 move(9, 1);
-                addstr("Today, the Conservative Machine executed ");
-                addstr(g.name);
+                addstr("Today, the Conservative Machine executed ", gamelog);
+                addstr(g.name, gamelog);
+                gamelog.record(" "); //Log this for formatting purposes.
                 move(10, 1);
-                addstr("by ");
+                addstr("by ", gamelog);
 
                 if(law[LAW_DEATHPENALTY] == -2) {
                     switch(LCSrandom(23)) {
                     case 0:
-                        addstr("beheading");
+                        addstr("beheading", gamelog);
                         break;
 
                     case 1:
-                        addstr("drawing and quartering");
+                        addstr("drawing and quartering", gamelog);
                         break;
 
                     case 2:
-                        addstr("disemboweling");
+                        addstr("disemboweling", gamelog);
                         break;
 
                     case 3:
-                        addstr("one thousand cuts");
+                        addstr("one thousand cuts", gamelog);
                         break;
 
                     case 4:
-                        addstr("feeding the lions");
+                        addstr("feeding the lions", gamelog);
                         break;
 
                     case 5:
-                        addstr("repeated gladiatorial death matches");
+                        addstr("repeated gladiatorial death matches", gamelog);
                         break;
 
                     case 6:
-                        addstr("burning");
+                        addstr("burning", gamelog);
                         break;
 
                     case 7:
-                        addstr("crucifixion");
+                        addstr("crucifixion", gamelog);
                         break;
 
                     case 8:
-                        addstr("head-squishing");
+                        addstr("head-squishing", gamelog);
                         break;
 
                     case 9:
-                        addstr("piranha tank swimming exhibition");
+                        addstr("piranha tank swimming exhibition", gamelog);
                         break;
 
                     case 10:
-                        addstr("forced sucking of Ronald Reagan's ass");
+                        addstr("forced sucking of Ronald Reagan's ass", gamelog);
                         break;
 
                     case 11:
-                        addstr("covering with peanut butter and letting rats eat");
+                        addstr("covering with peanut butter and letting rats eat", gamelog);
                         break;
 
                     case 12:
-                        addstr("burying up to the neck in a fire ant nest");
+                        addstr("burying up to the neck in a fire ant nest", gamelog);
                         break;
 
                     case 13:
-                        addstr("running truck over the head");
+                        addstr("running truck over the head", gamelog);
                         break;
 
                     case 14:
-                        addstr("drowning in a sewage digester vat");
+                        addstr("drowning in a sewage digester vat", gamelog);
                         break;
 
                     case 15:
-                        addstr("chipper-shredder");
+                        addstr("chipper-shredder", gamelog);
                         break;
 
                     case 16:
-                        addstr("use in lab research");
+                        addstr("use in lab research", gamelog);
                         break;
 
                     case 17:
-                        addstr("blood draining");
+                        addstr("blood draining", gamelog);
                         break;
 
                     case 18:
-                        addstr("chemical weapons test");
+                        addstr("chemical weapons test", gamelog);
                         break;
 
                     case 19:
-                        addstr("sale to a furniture maker");
+                        addstr("sale to a furniture maker", gamelog);
                         break;
 
                     case 20:
-                        addstr("sale to a CEO as a personal pleasure toy");
+                        addstr("sale to a CEO as a personal pleasure toy", gamelog);
                         break;
 
                     case 21:
-                        addstr("sale to foreign slave traders");
+                        addstr("sale to foreign slave traders", gamelog);
                         break;
 
                     case 22:
-                        addstr("exposure to degenerate Bay 12 Curses games");
+                        addstr("exposure to degenerate Bay 12 Curses games", gamelog);
                         break;
                     }
                 } else if(law[LAW_DEATHPENALTY] == -1 || law[LAW_DEATHPENALTY] == 0) {
                     switch(LCSrandom(4)) {
                     case 0:
-                        addstr("lethal injection");
+                        addstr("lethal injection", gamelog);
                         break;
 
                     case 1:
-                        addstr("hanging");
+                        addstr("hanging", gamelog);
                         break;
 
                     case 2:
-                        addstr("firing squad");
+                        addstr("firing squad", gamelog);
                         break;
 
                     case 3:
-                        addstr("electrocution");
+                        addstr("electrocution", gamelog);
                         break;
                     }
                 } else
-                    addstr("lethal injection");
+                    addstr("lethal injection", gamelog);
 
-                addstr(".");
+                addstr(".", gamelog);
                 refresh();
                 getch();
 
@@ -1435,17 +1474,21 @@ char prison(Creature &g) {
                 int boss = getpoolcreature(g.hireid);
 
                 if(boss != -1) {
+                    gamelog.newline();
                     set_color(COLOR_WHITE, COLOR_BLACK, 0);
                     move(12, 1);
-                    addstr(pool[boss]->name);
-                    addstr(" has failed the Liberal Crime Squad.");
+                    addstr(pool[boss]->name, gamelog);
+                    addstr(" has failed the Liberal Crime Squad.", gamelog);
+                    gamelog.newline();
                     move(14, 1);
-                    addstr("If you can't protect your own people, who can you protect?");
+                    addstr("If you can't protect your own people, who can you protect?", gamelog);
                     refresh();
                     getch();
 
                     addjuice(*pool[boss], -50, -50);
                 }
+
+                gamelog.nextMessage();
 
                 g.die();
                 stat_dead++;
@@ -1456,10 +1499,12 @@ char prison(Creature &g) {
                 erase();
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
                 move(8, 1);
-                addstr(g.name);
-                addstr(" has been released from prison.");
+                addstr(g.name, gamelog);
+                addstr(" has been released from prison.", gamelog);
+                gamelog.newline();
                 move(9, 1);
-                addstr("No doubt there are some mental scars, but the Liberal is back.");
+                addstr("No doubt there are some mental scars, but the Liberal is back.", gamelog);
+                gamelog.nextMessage();
                 refresh();
                 getch();
 
@@ -1487,8 +1532,9 @@ char prison(Creature &g) {
                 erase();
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
                 move(8, 1);
-                addstr(g.name);
-                addstr(" is due to be executed next month.");
+                addstr(g.name, gamelog);
+                addstr(" is due to be executed next month.", gamelog);
+                gamelog.nextMessage();
                 refresh();
                 getch();
 
@@ -1497,8 +1543,9 @@ char prison(Creature &g) {
                 erase();
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(8, 1);
-                addstr(g.name);
-                addstr(" is due to be released next month.");
+                addstr(g.name, gamelog);
+                addstr(" is due to be released next month.", gamelog);
+                gamelog.nextMessage();
                 refresh();
                 getch();
 
@@ -1510,11 +1557,12 @@ char prison(Creature &g) {
                 erase();
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
                 move(8, 1);
-                addstr(g.name);
-                addstr(" is due to be executed in ");
+                addstr(g.name, gamelog);
+                addstr(" is due to be executed in ", gamelog);
                 itoa(g.sentence, str, 10);
-                addstr(str);
-                addstr(" months.");
+                addstr(str, gamelog);
+                addstr(" months.", gamelog);
+                gamelog.nextMessage();
                 refresh();
                 getch();
 
@@ -1533,64 +1581,65 @@ void reeducation(Creature &g) {
     erase();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(8, 1);
-    addstr(g.name);
+    addstr(g.name, gamelog);
 
     switch(LCSrandom(8)) {
     case 0:
-        addstr(" is subjected to rehabilitative therapy in prison.");
+        addstr(" is subjected to rehabilitative therapy in prison.", gamelog);
         break;
 
     case 1:
-        addstr(" works on a prison mural about political diversity.");
+        addstr(" works on a prison mural about political diversity.", gamelog);
         break;
 
     case 2:
-        addstr(" routinely sees a Liberal therapist in prison.");
+        addstr(" routinely sees a Liberal therapist in prison.", gamelog);
         break;
 
     case 3:
-        addstr(" participates in a group therapy session in prison.");
+        addstr(" participates in a group therapy session in prison.", gamelog);
         break;
 
     case 4:
-        addstr(" sings songs with prisoners of all political persuasions.");
+        addstr(" sings songs with prisoners of all political persuasions.", gamelog);
         break;
 
     case 5:
-        addstr(" is encouraged to befriend Conservatives in prison.");
+        addstr(" is encouraged to befriend Conservatives in prison.", gamelog);
         break;
 
     case 6:
-        addstr(" puts on an anti-crime performance in prison.");
+        addstr(" puts on an anti-crime performance in prison.", gamelog);
         break;
 
     case 7:
-        addstr(" sees an video in prison by victims of political crime.");
+        addstr(" sees an video in prison by victims of political crime.", gamelog);
         break;
     }
 
+    gamelog.newline();
     getch();
 
     move(10, 1);
 
     if(!g.attribute_check(ATTRIBUTE_HEART, DIFFICULTY_FORMIDABLE)) {
         if(g.juice > 0 && LCSrandom(2)) {
-            addstr(g.name);
-            addstr(" feels bad about LCS actions, and loses juice!");
+            addstr(g.name, gamelog);
+            addstr(" feels bad about LCS actions, and loses juice!", gamelog);
             addjuice(g, -50, 0);
         } else if(LCSrandom(15) > g.get_attribute(ATTRIBUTE_WISDOM, true)
                   || g.get_attribute(ATTRIBUTE_WISDOM, true) < g.get_attribute(ATTRIBUTE_HEART, true)) {
-            addstr(g.name);
-            addstr(" silently grows Wiser...");
+            addstr(g.name, gamelog);
+            addstr(" silently grows Wiser...", gamelog);
             g.adjust_attribute(ATTRIBUTE_WISDOM, +1);
         } else if(g.align == ALIGN_LIBERAL && g.flag & CREATUREFLAG_LOVESLAVE && LCSrandom(4)) {
-            addstr(g.name);
-            addstr(" stays loyal to the LCS for ");
-            addstr(pool[g.hireid]->name);
-            addstr(".");
+            addstr(g.name, gamelog);
+            addstr(" stays loyal to the LCS for ", gamelog);
+            addstr(pool[g.hireid]->name, gamelog);
+            addstr(".", gamelog);
         } else {
-            addstr(g.name);
-            addstr(" abandons the Liberal Crime Squad!");
+            addstr(g.name, gamelog);
+            addstr(" abandons the Liberal Crime Squad!", gamelog);
             //conservatise(g);
 
             //Rat out contact
@@ -1605,9 +1654,11 @@ void reeducation(Creature &g) {
             g.location = -1;
         }
     } else {
-        addstr(g.name);
-        addstr(" remains strong.");
+        addstr(g.name, gamelog);
+        addstr(" remains strong.", gamelog);
     }
+
+    gamelog.nextMessage();
 
     refresh();
     getch();
@@ -1623,63 +1674,66 @@ void laborcamp(Creature &g) {
     erase();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(8, 1);
-    addstr(g.name);
+    addstr(g.name, gamelog);
 
     switch(LCSrandom(8)) {
     case 0:
-        addstr(" is forced to work hard labor in prison.");
+        addstr(" is forced to work hard labor in prison.", gamelog);
         break;
 
     case 1:
-        addstr(" operates dangerous machinery day after day in prison.");
+        addstr(" operates dangerous machinery day after day in prison.", gamelog);
         break;
 
     case 2:
-        addstr(" is beaten by sadistic prison guards.");
+        addstr(" is beaten by sadistic prison guards.", gamelog);
         break;
 
     case 3:
-        addstr(" carries heavy burdens back and forth in prison labor camp.");
+        addstr(" carries heavy burdens back and forth in prison labor camp.", gamelog);
         break;
 
     case 4:
-        addstr(" does back-breaking work all month in prison.");
+        addstr(" does back-breaking work all month in prison.", gamelog);
         break;
 
     case 5:
-        addstr(" gets in a brutal fight with other distraught prisoners.");
+        addstr(" gets in a brutal fight with other distraught prisoners.", gamelog);
         break;
 
     case 6:
-        addstr(" participates in a quickly-suppressed prison riot.");
+        addstr(" participates in a quickly-suppressed prison riot.", gamelog);
         break;
 
     case 7:
-        addstr(" is whipped and kicked by prison guards for refusing to work.");
+        addstr(" is whipped and kicked by prison guards for refusing to work.", gamelog);
         break;
     }
 
+    gamelog.newline();
     getch();
 
     move(10, 1);
 
     if(!LCSrandom(10)) {
         if(g.get_attribute(ATTRIBUTE_HEALTH, false) > 1) {
-            addstr(g.name);
-            addstr(" is badly hurt in the process.");
+            addstr(g.name, gamelog);
+            addstr(" is badly hurt in the process.", gamelog);
             addjuice(g, -50, 0);
         } else {
-            addstr(g.name);
-            addstr(" is found dead.");
+            addstr(g.name, gamelog);
+            addstr(" is found dead.", gamelog);
             //conservatise(g);
 
             g.die();
             g.location = -1;
         }
     } else {
-        addstr(g.name);
-        addstr(" carries on, regardless.");
+        addstr(g.name, gamelog);
+        addstr(" carries on, regardless.", gamelog);
     }
+
+    gamelog.nextMessage();
 
     refresh();
     getch();

@@ -83,17 +83,19 @@ void special_bouncer_assess_squad() {
     move(16, 1);
 
     if(autoadmit) {
-        addstr("Sleeper ");
-        addstr(sleepername);
-        addstr(" smirks and lets the squad in.");
+        addstr("Sleeper ", gamelog);
+        addstr(sleepername, gamelog);
+        addstr(" smirks and lets the squad in.", gamelog);
+        gamelog.newline();
 
         levelmap[locx][locy][locz].special = -1;
     } else {
         if(location[cursite]->renting == RENTING_CCS)
-            addstr("The Conservative scum block the door.");
+            addstr("The Conservative scum block the door.", gamelog);
         else
-            addstr("The bouncer assesses your squad.");
+            addstr("The bouncer assesses your squad.", gamelog);
 
+        gamelog.newline();
         levelmap[locx][locy][locz].special = SPECIAL_CLUB_BOUNCER_SECONDVISIT;
     }
 
@@ -178,47 +180,47 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(11)) {
             case 0:
-                addstr("\"Can I see... heh heh... some ID?\"");
+                addstr("\"Can I see... heh heh... some ID?\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Woah... you think you're coming in here?\"");
+                addstr("\"Woah... you think you're coming in here?\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"Check out this fool. Heh.\"");
+                addstr("\"Check out this fool. Heh.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Want some trouble, dumpster breath?\"");
+                addstr("\"Want some trouble, dumpster breath?\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"You're gonna stir up the hornet's nest, fool.\"");
+                addstr("\"You're gonna stir up the hornet's nest, fool.\"", gamelog);
                 break;
 
             case 5:
-                addstr("\"Come on, take a swing at me. Just try it.\"");
+                addstr("\"Come on, take a swing at me. Just try it.\"", gamelog);
                 break;
 
             case 6:
-                addstr("\"You really don't want to fuck with me.\"");
+                addstr("\"You really don't want to fuck with me.\"", gamelog);
                 break;
 
             case 7:
-                addstr("\"Hey girly, have you written your will?\"");
+                addstr("\"Hey girly, have you written your will?\"", gamelog);
                 break;
 
             case 8:
-                addstr("\"Oh, you're trouble. I *like* trouble.\"");
+                addstr("\"Oh, you're trouble. I *like* trouble.\"", gamelog);
                 break;
 
             case 9:
-                addstr("\"I'll bury you in those planters over there.\"");
+                addstr("\"I'll bury you in those planters over there.\"", gamelog);
                 break;
 
             case 10:
-                addstr("\"Looking to check on the color of your blood?\"");
+                addstr("\"Looking to check on the color of your blood?\"", gamelog);
                 break;
             }
 
@@ -229,19 +231,19 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(4)) {
             case 0:
-                addstr("\"No shirt, no underpants, no service.\"");
+                addstr("\"No shirt, no underpants, no service.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Put some clothes on! That's disgusting.\"");
+                addstr("\"Put some clothes on! That's disgusting.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"No! No, you can't come in naked! God!!\"");
+                addstr("\"No! No, you can't come in naked! God!!\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"No shoes, no shirt and you don't get service\"");
+                addstr("\"No shoes, no shirt and you don't get service\"", gamelog);
                 break;
             }
 
@@ -252,23 +254,23 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(5)) {
             case 0:
-                addstr("\"Hahaha, come back in a few years.\"");
+                addstr("\"Hahaha, come back in a few years.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Find some kiddy club.\"");
+                addstr("\"Find some kiddy club.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"You don't look 18 to me.\"");
+                addstr("\"You don't look 18 to me.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Go back to your treehouse.\"");
+                addstr("\"Go back to your treehouse.\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"Where's your mother?\"");
+                addstr("\"Where's your mother?\"", gamelog);
                 break;
             }
 
@@ -279,19 +281,19 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(4)) {
             case 0:
-                addstr("\"Move along ma'am, this club's for men.\"");
+                addstr("\"Move along ma'am, this club's for men.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"This 'ain't no sewing circle, ma'am.\"");
+                addstr("\"This 'ain't no sewing circle, ma'am.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"Sorry ma'am, this place is only for the men.\"");
+                addstr("\"Sorry ma'am, this place is only for the men.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Where's your husband?\"");
+                addstr("\"Where's your husband?\"", gamelog);
                 break;
             }
 
@@ -302,15 +304,15 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(3)) {
             case 0:
-                addstr("\"You /really/ don't look like a man to me...\"");
+                addstr("\"You /really/ don't look like a man to me...\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Y'know... the \'other\' guys won't like you much.\"");
+                addstr("\"Y'know... the \'other\' guys won't like you much.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"Uhh... can't let you in, ma'am. Sir. Whatever.\"");
+                addstr("\"Uhh... can't let you in, ma'am. Sir. Whatever.\"", gamelog);
                 break;
             }
 
@@ -321,15 +323,15 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(3)) {
             case 0:
-                addstr("\"Check the dress code.\"");
+                addstr("\"Check the dress code.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"We have a dress code here.\"");
+                addstr("\"We have a dress code here.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"I can't let you in looking like that.\"");
+                addstr("\"I can't let you in looking like that.\"", gamelog);
                 break;
             }
 
@@ -340,32 +342,32 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(6)) {
             case 0:
-                addstr("\"God, you smell.\"");
+                addstr("\"God, you smell.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Not letting you in. Because I said so.\"");
+                addstr("\"Not letting you in. Because I said so.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"There's just something off about you.\"");
+                addstr("\"There's just something off about you.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Take a shower.\"");
+                addstr("\"Take a shower.\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"You'd just harass the others, wouldn't you?\"");
+                addstr("\"You'd just harass the others, wouldn't you?\"", gamelog);
                 break;
 
             case 5:
                 if(law[LAW_FREESPEECH] == -2)
-                    addstr("\"Get the [heck] out of here.\"");
+                    addstr("\"Get the [heck] out of here.\"", gamelog);
                 else if(law[LAW_FREESPEECH] == 2)
-                    addstr("\"Get the fuck out of here.\"");
+                    addstr("\"Get the fuck out of here.\"", gamelog);
                 else
-                    addstr("\"Get the hell out of here.\"");
+                    addstr("\"Get the hell out of here.\"", gamelog);
 
                 break;
             }
@@ -377,27 +379,27 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(5)) {
             case 0:
-                addstr("\"Good God! What is wrong with your clothes?\"");
+                addstr("\"Good God! What is wrong with your clothes?\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Absolutely not. Clean up a bit.\"");
+                addstr("\"Absolutely not. Clean up a bit.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"This isn't a goth club, bloody clothes don't cut it here.\"");
+                addstr("\"This isn't a goth club, bloody clothes don't cut it here.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Uh, maybe you should wash... replace... those clothes.\"");
+                addstr("\"Uh, maybe you should wash... replace... those clothes.\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"Did you spill something on your clothes?\"");
+                addstr("\"Did you spill something on your clothes?\"", gamelog);
                 break;
 
             case 5:
-                addstr("\"Come back when you get the red wine out of your clothes.\"");
+                addstr("\"Come back when you get the red wine out of your clothes.\"", gamelog);
                 break;
             }
 
@@ -408,11 +410,11 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(2)) {
             case 0:
-                addstr("\"Good God! What is wrong with your clothes?\"");
+                addstr("\"Good God! What is wrong with your clothes?\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"This isn't a goth club, ripped clothes don't cut it here.\"");
+                addstr("\"This isn't a goth club, ripped clothes don't cut it here.\"", gamelog);
                 break;
             }
 
@@ -423,11 +425,11 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(2)) {
             case 0:
-                addstr("\"That looks like you sewed it yourself.\"");
+                addstr("\"That looks like you sewed it yourself.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"If badly cut clothing is a hot new trend, I missed it.\"");
+                addstr("\"If badly cut clothing is a hot new trend, I missed it.\"", gamelog);
                 break;
             }
 
@@ -438,23 +440,23 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(5)) {
             case 0:
-                addstr("\"No weapons allowed.\"");
+                addstr("\"No weapons allowed.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"I can't let you in carrying that.\"");
+                addstr("\"I can't let you in carrying that.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"I can't let you take that in.\"");
+                addstr("\"I can't let you take that in.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Come to me armed, and I'll tell you to take a hike.\"");
+                addstr("\"Come to me armed, and I'll tell you to take a hike.\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"Real men fight with fists. And no, you can't come in.\"");
+                addstr("\"Real men fight with fists. And no, you can't come in.\"", gamelog);
                 break;
             }
 
@@ -462,7 +464,7 @@ void special_bouncer_assess_squad() {
 
         case REJECTED_GUESTLIST:
             set_color(COLOR_RED, COLOR_BLACK, 1);
-            addstr("\"This club is by invitation only.\"");
+            addstr("\"This club is by invitation only.\"", gamelog);
             break;
 
         case NOT_REJECTED:
@@ -470,25 +472,26 @@ void special_bouncer_assess_squad() {
 
             switch(LCSrandom(4)) {
             case 0:
-                addstr("\"Keep it civil and don't drink too much.\"");
+                addstr("\"Keep it civil and don't drink too much.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Let me get the door for you.\"");
+                addstr("\"Let me get the door for you.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"Ehh, alright, go on in.\"");
+                addstr("\"Ehh, alright, go on in.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Come on in.\"");
+                addstr("\"Come on in.\"", gamelog);
                 break;
             }
 
             break;
         }
 
+        gamelog.newline();
         refresh();
         getch();
     } else
@@ -518,7 +521,8 @@ void special_lab_cosmetics_cagedanimals(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see fluffy white rabbits in a locked cage.");
+        addstr("You see fluffy white rabbits in a locked cage.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Free them? (Yes or No)");
 
@@ -564,7 +568,7 @@ void special_readsign(int sign) {
     clearmessagearea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
 
-    switch(sign) {
+    switch(sign) { //TODO: Log these?
     case SPECIAL_SIGN_ONE:
         switch(location[cursite]->type) {
         default:
@@ -625,12 +629,14 @@ void special_nuclear_onoff(void) {
 
         if(law[LAW_NUCLEARPOWER] == 2) {
             move(16, 1);
-            addstr("You see the nuclear waste center control room.");
+            addstr("You see the nuclear waste center control room.", gamelog);
+            gamelog.newline();
             move(17, 1);
             addstr("Attempt to release nuclear waste? (Yes or No)");
         } else {
             move(16, 1);
-            addstr("You see the nuclear power plant control room.");
+            addstr("You see the nuclear power plant control room.", gamelog);
+            gamelog.newline();
             move(17, 1);
             addstr("Mess with the reactor settings? (Yes or No)");
         }
@@ -659,24 +665,26 @@ void special_nuclear_onoff(void) {
             if(maxs) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr(maxs->name);
-                addstr(" presses the big red button!");
+                addstr(maxs->name, gamelog);
+                addstr(" presses the big red button!", gamelog);
+                gamelog.newline();
                 refresh();
                 getch();
                 move(17, 1);
-                addstr(".");
+                addstr(".", gamelog);
                 refresh();
                 getch();
-                addstr(".");
+                addstr(".", gamelog);
                 refresh();
                 getch();
-                addstr(".");
+                addstr(".", gamelog);
                 refresh();
                 getch();
 
                 if(law[LAW_NUCLEARPOWER] == 2) {
                     move(17, 1);
-                    addstr("The nuclear waste gets released into the state's water supply!");
+                    addstr("The nuclear waste gets released into the state's water supply!", gamelog);
+                    gamelog.newline();
                     change_public_opinion(VIEW_NUCLEARPOWER, 15, 0, 95);
                     change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, -50, 0, 0);
                     refresh();
@@ -689,9 +697,11 @@ void special_nuclear_onoff(void) {
 
                 } else {
                     move(16, 1);
-                    addstr("A deafening alarm sounds!");
+                    addstr("A deafening alarm sounds!", gamelog);
+                    gamelog.newline();
                     move(17, 1);
-                    addstr("The reactor is overheating!");
+                    addstr("The reactor is overheating!", gamelog);
+                    gamelog.newline();
                     change_public_opinion(VIEW_NUCLEARPOWER, 15, 0, 95);
                     refresh();
                     getch();
@@ -704,9 +714,10 @@ void special_nuclear_onoff(void) {
             } else {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("After some failed attempts, and a very loud alarm,");
+                addstr("After some failed attempts, and a very loud alarm, ", gamelog);
                 move(17, 1);
-                addstr("the Squad resigns to just leaving a threatening note.");
+                addstr("the Squad resigns to just leaving a threatening note.", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -735,7 +746,8 @@ void special_lab_genetic_cagedanimals(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see horrible misshapen creatures in a sealed cage.");
+        addstr("You see horrible misshapen creatures in a sealed cage.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Free them? (Yes or No)");
 
@@ -766,7 +778,8 @@ void special_lab_genetic_cagedanimals(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("Uh, maybe that idea was Conservative in retrospect...");
+                    addstr("Uh, maybe that idea was Conservative in retrospect...", gamelog);
+                    gamelog.newline();
 
                     int numleft = LCSrandom(6) + 1;
 
@@ -814,7 +827,8 @@ void special_policestation_lockup(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see prisoners in the detention room.");
+        addstr("You see prisoners in the detention room.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Free them? (Yes or No)");
 
@@ -885,7 +899,8 @@ void special_courthouse_lockup(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see prisoners in the Court House jail.");
+        addstr("You see prisoners in the Court House jail.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Free them? (Yes or No)");
 
@@ -958,9 +973,10 @@ void special_courthouse_jury(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("It appears as if this room has been");
+        addstr("It appears as if this room has been ", gamelog);
         move(17, 1);
-        addstr("vacated in a hurry.");
+        addstr("vacated in a hurry.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -972,7 +988,8 @@ void special_courthouse_jury(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You've found a Jury in deliberations!");
+        addstr("You've found a Jury in deliberations!", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Attempt to influence them? (Yes or No)");
 
@@ -1021,78 +1038,79 @@ void special_courthouse_jury(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr(activesquad->squad[p]->name);
-                    addstr(" works the room like in Twelve Angry Men, and the jury");
+                    addstr(activesquad->squad[p]->name, gamelog);
+                    addstr(" works the room like in Twelve Angry Men, and the jury ", gamelog);
                     move(17, 1);
-                    addstr("concludes that ");//XXX: This is very awkward grammar.
+                    addstr("concludes that ", gamelog);//XXX: This is very awkward grammar.
 
                     switch(LCSrandom(16)) {   // Fixed. -Fox
                     case 0:
-                        addstr("murder");
+                        addstr("murder", gamelog);
                         break;
 
                     case 1:
-                        addstr("assault");
+                        addstr("assault", gamelog);
                         break;
 
                     case 2:
-                        addstr("theft");
+                        addstr("theft", gamelog);
                         break;
 
                     case 3:
-                        addstr("mugging");
+                        addstr("mugging", gamelog);
                         break;
 
                     case 4:
-                        addstr("burglary");
+                        addstr("burglary", gamelog);
                         break;
 
                     case 5:
-                        addstr("property destruction");
+                        addstr("property destruction", gamelog);
                         break;
 
                     case 6:
-                        addstr("vandalism");
+                        addstr("vandalism", gamelog);
                         break;
 
                     case 7:
-                        addstr("libel");
+                        addstr("libel", gamelog);
                         break;
 
                     case 8:
-                        addstr("slander");
+                        addstr("slander", gamelog);
                         break;
 
                     case 9:
-                        addstr("sodomy");
+                        addstr("sodomy", gamelog);
                         break;
 
                     case 10:
-                        addstr("obstruction of justice");
+                        addstr("obstruction of justice", gamelog);
                         break;
 
                     case 11:
-                        addstr("breaking and entering");
+                        addstr("breaking and entering", gamelog);
                         break;
 
                     case 12:
-                        addstr("public indecency");
+                        addstr("public indecency", gamelog);
                         break;
 
                     case 13:
-                        addstr("arson");
+                        addstr("arson", gamelog);
                         break;
 
                     case 14:
-                        addstr("resisting arrest");
+                        addstr("resisting arrest", gamelog);
                         break;
 
                     case 15:
-                        addstr("tax evasion");
+                        addstr("tax evasion", gamelog);
                         break;
                     }
 
-                    addstr(" wasn't really wrong here.");
+                    addstr(" wasn't really wrong here.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1107,9 +1125,10 @@ void special_courthouse_jury(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr(activesquad->squad[p]->name);
+                    addstr(activesquad->squad[p]->name, gamelog);
 
-                    addstr(" wasn't quite convincing...");
+                    addstr(" wasn't quite convincing...", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1158,16 +1177,17 @@ void special_prison_control(short prison_control_type) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You've found the ");
+        addstr("You've found the ", gamelog);
 
         if(prison_control_type == SPECIAL_PRISON_CONTROL_LOW)
-            addstr("low security ");
+            addstr("low security ", gamelog);
         else if(prison_control_type == SPECIAL_PRISON_CONTROL_MEDIUM)
-            addstr("medium security ");
+            addstr("medium security ", gamelog);
         else if(prison_control_type == SPECIAL_PRISON_CONTROL_HIGH)
-            addstr("high security ");
+            addstr("high security ", gamelog);
 
-        addstr("prison control room.");
+        addstr("prison control room.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Free the prisoners? (Yes or No)");
 
@@ -1268,9 +1288,10 @@ void special_intel_supercomputer(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("The security alert has caused the");
+        addstr("The security alert has caused the ", gamelog);
         move(17, 1);
-        addstr("computer to shut down.");
+        addstr("computer to shut down.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -1282,7 +1303,8 @@ void special_intel_supercomputer(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You've found the Intelligence Supercomputer.");
+        addstr("You've found the Intelligence Supercomputer.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Hack it? (Yes or No)");
 
@@ -1300,19 +1322,21 @@ void special_intel_supercomputer(void) {
                 char *loot;
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("The Squad obtains sensitive information");
+                addstr("The Squad obtains sensitive information", gamelog);
 
                 if(endgamestate >= ENDGAME_CCS_APPEARANCE && endgamestate < ENDGAME_CCS_DEFEATED && ccsexposure < CCSEXPOSURE_LCSGOTDATA) {
-                    addstr(",");
+                    addstr(",", gamelog);
                     move(17, 1);
-                    addstr("including a list of government backers of the CCS.");
+                    addstr("including a list of government backers of the CCS.", gamelog);
 
                     Item *it = new Loot(*loottype[getloottype("LOOT_CCS_BACKERLIST")]);
                     activesquad->loot.push_back(it);
 
                     ccsexposure = CCSEXPOSURE_LCSGOTDATA;
                 } else
-                    addstr(".");
+                    addstr(".", gamelog);
+
+                gamelog.newline();
 
                 juiceparty(50, 1000);
 
@@ -1354,7 +1378,8 @@ void special_graffiti(void) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(16, 1);
-    addstr("The squad sprays Liberal Graffiti!");
+    addstr("The squad sprays Liberal Graffiti!", gamelog);
+    gamelog.newline();
 
     if(!sitestory->claimed)
         sitestory->claimed = 1;
@@ -1414,7 +1439,8 @@ void special_sweatshop_equipment(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see some textile equipment.");
+        addstr("You see some textile equipment.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Destroy it? (Yes or No)");
 
@@ -1456,7 +1482,8 @@ void special_polluter_equipment(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see some industrial equipment.");
+        addstr("You see some industrial equipment.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Destroy it? (Yes or No)");
 
@@ -1500,7 +1527,8 @@ void special_house_photos(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You've found a safe.");
+        addstr("You've found a safe.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Open it? (Yes or No)");
 
@@ -1521,7 +1549,8 @@ void special_house_photos(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("The squad has found a Desert Eagle.");
+                    addstr("The squad has found a Desert Eagle.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1543,7 +1572,8 @@ void special_house_photos(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("This guy sure had a lot of $100 bills.");
+                    addstr("This guy sure had a lot of $100 bills.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1559,7 +1589,8 @@ void special_house_photos(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("The squad Liberates some expensive jewelery.");
+                    addstr("The squad Liberates some expensive jewelery.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1575,7 +1606,8 @@ void special_house_photos(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("There are some... very compromising photos here.");
+                    addstr("There are some... very compromising photos here.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1591,7 +1623,8 @@ void special_house_photos(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("There are some drugs here.");
+                    addstr("There are some drugs here.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1604,9 +1637,10 @@ void special_house_photos(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("Wow, get a load of these love letters.");
+                    addstr("Wow, get a load of these love letters. ", gamelog);
                     move(17, 1);
                     addstr("The squad will take those.");
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1622,7 +1656,8 @@ void special_house_photos(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("These documents show serious tax evasion.");
+                    addstr("These documents show serious tax evasion.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1638,7 +1673,8 @@ void special_house_photos(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("Wow, it's empty.  That sucks.");
+                    addstr("Wow, it's empty.  That sucks.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1678,7 +1714,8 @@ void special_armory(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You've found the armory.");
+        addstr("You've found the armory.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Break in? (Yes or No)");
 
@@ -1693,7 +1730,8 @@ void special_armory(void) {
             sitealarm = 1;
             move(16, 1);
             set_color(COLOR_RED, COLOR_BLACK, 1);
-            addstr("Alarms go off!");
+            addstr("Alarms go off!", gamelog);
+            gamelog.newline();
             refresh();
             getch();
 
@@ -1705,7 +1743,8 @@ void special_armory(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("Jackpot! The squad found a M249 Machine Gun!");
+                addstr("Jackpot! The squad found a M249 Machine Gun!", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -1727,7 +1766,8 @@ void special_armory(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("The squad finds some M16 Assault Rifles.");
+                addstr("The squad finds some M16 Assault Rifles.", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -1753,7 +1793,8 @@ void special_armory(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("The squad finds some M4 Carbines.");
+                addstr("The squad finds some M4 Carbines.", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -1779,7 +1820,8 @@ void special_armory(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("The squad finds some body armor.");
+                addstr("The squad finds some body armor.", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -1808,7 +1850,8 @@ void special_armory(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("It's a trap!  The armory is empty.");
+                addstr("It's a trap!  The armory is empty.", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -1847,7 +1890,8 @@ void special_armory(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("Guards are everywhere!");
+                addstr("Guards are everywhere!", gamelog);
+                gamelog.newline();
 
                 refresh();
                 getch();
@@ -1888,7 +1932,8 @@ void special_corporate_files(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You've found a safe.");
+        addstr("You've found a safe.", gamelog);
+        gamelog.newline();
         move(17, 1);
         addstr("Open it? (Yes or No)");
 
@@ -1905,7 +1950,8 @@ void special_corporate_files(void) {
 
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("The Squad has found some very interesting files.");
+                addstr("The Squad has found some very interesting files.", gamelog);
+                gamelog.newline();
 
                 Item *it = new Loot(*loottype[getloottype("LOOT_CORPFILES")]);
                 activesquad->loot.push_back(it);
@@ -1954,12 +2000,15 @@ void special_radio_broadcaststudio(void) {
 
         if(sitealarm || sitealienate) {
             move(16, 1);
-            addstr("The radio broadcasters left the equipment on in");
+            addstr("The radio broadcasters left the equipment on in ", gamelog);
             move(17, 1);
-            addstr("their rush to get out. Take over the studio? (Yes or No)");
+            addstr("their rush to get out.", gamelog);
+            gamelog.newline();
+            addstr(" Take over the studio? (Yes or No)");
         } else {
             move(16, 1);
-            addstr("You've found a radio broadcasting room.");
+            addstr("You've found a radio broadcasting room.", gamelog);
+            gamelog.newline();
             move(17, 1);
             addstr("Interrupt this evening's programming? (Yes or No)");
         }
@@ -1992,12 +2041,14 @@ void special_news_broadcaststudio(void) {
 
         if(sitealarm || sitealienate) {
             move(16, 1);
-            addstr("The Cable News broadcasters left the equipment on in");
+            addstr("The Cable News broadcasters left the equipment on in", gamelog);
             move(17, 1);
-            addstr("their rush to get out. Take over the studio? (Yes or No)");
+            addstr("their rush to get out.");
+            gamelog.newline();
+            addstr(" Take over the studio? (Yes or No)");
         } else {
             move(16, 1);
-            addstr("You've found a Cable News broadcasting studio.");
+            addstr("You've found a Cable News broadcasting studio.", gamelog);
             move(17, 1);
             addstr("Start an impromptu news program? (Yes or No)");
         }
@@ -2027,7 +2078,7 @@ void special_display_case(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see a display case.");
+        addstr("You see a display case.", gamelog);
         move(17, 1);
         addstr("Smash it? (Yes or No)");
 
@@ -2134,17 +2185,20 @@ void special_security(bool metaldetect) {
     move(16, 1);
 
     if(sitealarm) {
-        addstr("Looks like security is in disarray.");
+        addstr("Looks like security is in disarray.", gamelog);
+        gamelog.newline();
         levelmap[locx][locy][locz].special = SPECIAL_NONE;
     } else if(autoadmit) {
-        addstr("The squad flashes ID badges.");
+        addstr("The squad flashes ID badges.", gamelog);
+        gamelog.newline();
         levelmap[locx][locy][locz].special = SPECIAL_SECURITY_SECONDVISIT;
     } else {
         if(metaldetect)
-            addstr("The squad steps into a metal detector.");
+            addstr("The squad steps into a metal detector.", gamelog);
         else
-            addstr("This door is guarded.");
+            addstr("This door is guarded."), gamelog;
 
+        gamelog.newline();
         levelmap[locx][locy][locz].special = SPECIAL_SECURITY_SECONDVISIT;
     }
 
@@ -2206,25 +2260,26 @@ void special_security(bool metaldetect) {
         set_color(COLOR_RED, COLOR_BLACK, 1);
 
         if(autoadmit)
-            addstr("\"Jesus! Put some clothes on!\"");
+            addstr("\"Jesus! Put some clothes on!\"", gamelog);
         else switch(LCSrandom(4)) {
             case 0:
-                addstr("\"Get out of here you nudist!!\"");
+                addstr("\"Get out of here you nudist!!\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Back off, creep!\"");
+                addstr("\"Back off, creep!\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"Jesus!! Somebody call the cops!\"");
+                addstr("\"Jesus!! Somebody call the cops!\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Are you sleepwalking?!\"");
+                addstr("\"Are you sleepwalking?!\"", gamelog);
                 break;
             }
 
+        gamelog.newline();
         break;
 
     case REJECTED_UNDERAGE:
@@ -2232,22 +2287,23 @@ void special_security(bool metaldetect) {
 
         switch(LCSrandom(4)) {
         case 0:
-            addstr("\"No admittance, youngster.\"");
+            addstr("\"No admittance, youngster.\"", gamelog);
             break;
 
         case 1:
-            addstr("\"You're too young to work here.\"");
+            addstr("\"You're too young to work here.\"", gamelog);
             break;
 
         case 2:
-            addstr("\"Go play someplace else.\"");
+            addstr("\"Go play someplace else.\"", gamelog);
             break;
 
         case 3:
-            addstr("\"Where's your mother?\"");
+            addstr("\"Where's your mother?\"", gamelog);
             break;
         }
 
+        gamelog.newline();
         break;
 
     case REJECTED_DRESSCODE:
@@ -2255,10 +2311,11 @@ void special_security(bool metaldetect) {
 
         switch(LCSrandom(1)) {
         case 0:
-            addstr("\"Employees only.\"");
+            addstr("\"Employees only.\"", gamelog);
             break;
         }
 
+        gamelog.newline();
         break;
 
     case REJECTED_SMELLFUNNY:
@@ -2266,22 +2323,23 @@ void special_security(bool metaldetect) {
 
         switch(LCSrandom(4)) {
         case 0:
-            addstr("\"You don't work here, do you?\"");
+            addstr("\"You don't work here, do you?\"", gamelog);
             break;
 
         case 1:
-            addstr("\"Hmm... can I see your badge?\"");
+            addstr("\"Hmm... can I see your badge?\"", gamelog);
             break;
 
         case 2:
-            addstr("\"There's just something off about you.\"");
+            addstr("\"There's just something off about you.\"", gamelog);
             break;
 
         case 3:
-            addstr("\"You must be new. You'll need your badge.\"");
+            addstr("\"You must be new. You'll need your badge.\"", gamelog);
             break;
         }
 
+        gamelog.newline();
         break;
 
     case REJECTED_BLOODYCLOTHES:
@@ -2289,30 +2347,31 @@ void special_security(bool metaldetect) {
 
         switch(LCSrandom(5)) {
         case 0:
-            addstr("\"Good God! What is wrong with your clothes?\"");
+            addstr("\"Good God! What is wrong with your clothes?\"", gamelog);
             break;
 
         case 1:
-            addstr("\"Are you hurt?! The aid station is the other way!\"");
+            addstr("\"Are you hurt?! The aid station is the other way!\"", gamelog);
             break;
 
         case 2:
-            addstr("\"Your clothes, that's blood!\"");
+            addstr("\"Your clothes, that's blood!\"", gamelog);
             break;
 
         case 3:
-            addstr("\"Blood?! That's more than a little suspicious...\"");
+            addstr("\"Blood?! That's more than a little suspicious...\"", gamelog);
             break;
 
         case 4:
-            addstr("\"Did you just butcher a cat?!\"");
+            addstr("\"Did you just butcher a cat?!\"", gamelog);
             break;
 
         case 5:
-            addstr("\"Blood everywhere...?\"");
+            addstr("\"Blood everywhere...?\"", gamelog);
             break;
         }
 
+        gamelog.newline();
         break;
 
     case REJECTED_DAMAGEDCLOTHES:
@@ -2320,14 +2379,15 @@ void special_security(bool metaldetect) {
 
         switch(LCSrandom(2)) {
         case 0:
-            addstr("\"Good God! What is wrong with your clothes?\"");
+            addstr("\"Good God! What is wrong with your clothes?\"", gamelog);
             break;
 
         case 1:
-            addstr("\"Is that a damaged halloween costume?\"");
+            addstr("\"Is that a damaged halloween costume?\"", gamelog);
             break;
         }
 
+        gamelog.newline();
         break;
 
     case REJECTED_SECONDRATECLOTHES:
@@ -2335,44 +2395,46 @@ void special_security(bool metaldetect) {
 
         switch(LCSrandom(2)) {
         case 0:
-            addstr("\"That looks like you sewed it yourself.\"");
+            addstr("\"That looks like you sewed it yourself.\"", gamelog);
             break;
 
         case 1:
-            addstr("\"That's a poor excuse for a uniform. Who are you?\"");
+            addstr("\"That's a poor excuse for a uniform. Who are you?\"", gamelog);
             break;
         }
 
+        gamelog.newline();
         break;
 
     case REJECTED_WEAPONS:
         set_color(COLOR_RED, COLOR_BLACK, 1);
 
         if(metaldetect) {
-            addstr("-BEEEP- -BEEEP- -BEEEP-");
+            addstr("-BEEEP- -BEEEP- -BEEEP-", gamelog);
             sitealarm = 1;
         } else switch(LCSrandom(5)) {
             case 0:
-                addstr("\"Put that away!\"");
+                addstr("\"Put that away!\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Hey, back off!\"");
+                addstr("\"Hey, back off!\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"Don't try anything!\"");
+                addstr("\"Don't try anything!\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"Are you here to make trouble?\"");
+                addstr("\"Are you here to make trouble?\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"Stay back!\"");
+                addstr("\"Stay back!\"", gamelog);
                 break;
             }
 
+        gamelog.newline();
         break;
 
     case NOT_REJECTED:
@@ -2380,22 +2442,23 @@ void special_security(bool metaldetect) {
 
         switch(LCSrandom(4)) {
         case 0:
-            addstr("\"Move along.\"");
+            addstr("\"Move along.\"", gamelog);
             break;
 
         case 1:
-            addstr("\"Have a nice day.\"");
+            addstr("\"Have a nice day.\"", gamelog);
             break;
 
         case 2:
-            addstr("\"Quiet day, today.\"");
+            addstr("\"Quiet day, today.\"", gamelog);
             break;
 
         case 3:
-            addstr("\"Go on in.\"");
+            addstr("\"Go on in.\"", gamelog);
             break;
         }
 
+        gamelog.newline();
         break;
     }
 
@@ -2433,16 +2496,18 @@ void special_security_secondvisit(void) {
 void special_bank_vault(void) {
     clearmessagearea();
     move(16, 1);
-    addstr("The vault door has three layers: A combo lock,");
+    addstr("The vault door has three layers: A combo lock, ", gamelog);
     move(17, 1);
-    addstr("an electronic lock, and a biometric lock.");
+    addstr("an electronic lock, and a biometric lock.", gamelog);
+    gamelog.newline();
     getch();
 
     clearmessagearea();
     move(16, 1);
-    addstr("You will need a security expert, a computer");
+    addstr("You will need a security expert, a computer ", gamelog);
     move(17, 1);
-    addstr("expert, and one of the bank managers.");
+    addstr("expert, and one of the bank managers.", gamelog);
+    gamelog.newline();
     getch();
 
     for(int p = 0; p < pool.size(); p++) {
@@ -2451,11 +2516,12 @@ void special_bank_vault(void) {
                 pool[p]->base == cursite) {
             clearmessagearea();
             move(16, 1);
-            addstr("Sleeper ");
-            addstr(pool[p]->name);
-            addstr(" can handle the biometrics,");
+            addstr("Sleeper ", gamelog);
+            addstr(pool[p]->name, gamelog);
+            addstr(" can handle the biometrics, ", gamelog);
             move(17, 1);
-            addstr("but you'll still have to crack the other locks.");
+            addstr("but you'll still have to crack the other locks.", gamelog);
+            gamelog.newline();
             getch();
         }
     }
@@ -2475,18 +2541,20 @@ void special_bank_vault(void) {
             clearmessagearea();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
-            addstr("First is the combo lock that will have");
+            addstr("First is the combo lock that will have ", gamelog);
             move(17, 1);
-            addstr("be cracked by a security expert.");
+            addstr("be cracked by a security expert.", gamelog);
+            gamelog.newline();
             getch();
 
             if(!unlock(UNLOCK_VAULT, actual)) {
                 clearmessagearea();
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("The squad can only dream of the money");
+                addstr("The squad can only dream of the money ", gamelog);
                 move(17, 1);
-                addstr("on the other side of this door...");
+                addstr("on the other side of this door...", gamelog);
+                gamelog.newline();
                 getch();
 
                 levelmap[locx][locy][locz].special = -1;
@@ -2494,16 +2562,18 @@ void special_bank_vault(void) {
                 clearmessagearea();
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(16, 1);
-                addstr("Next is the electronic lock that will have");
+                addstr("Next is the electronic lock that will have ", gamelog);
                 move(17, 1);
-                addstr("be bypassed by a computer expert.");
+                addstr("be bypassed by a computer expert.", gamelog);
+                gamelog.newline();
                 getch();
 
                 if(!hack(HACK_VAULT, actual)) {
                     clearmessagearea();
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("The money was so close the squad could taste it!");
+                    addstr("The money was so close the squad could taste it!", gamelog);
+                    gamelog.newline();
                     getch();
 
                     levelmap[locx][locy][locz].special = -1;
@@ -2511,9 +2581,10 @@ void special_bank_vault(void) {
                     clearmessagearea();
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("Last is the biometric lock that keyed only");
+                    addstr("Last is the biometric lock that keyed only ", gamelog);
                     move(17, 1);
-                    addstr("to the bank's managers.");
+                    addstr("to the bank's managers.", gamelog);
+                    gamelog.newline();
                     getch();
 
                     Creature *manager = 0;
@@ -2530,8 +2601,9 @@ void special_bank_vault(void) {
                                     clearmessagearea();
                                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                     move(16, 1);
-                                    addstr(c->name);
-                                    addstr(" opens the vault.");
+                                    addstr(c->name, gamelog);
+                                    addstr(" opens the vault.", gamelog);
+                                    gamelog.newline();
                                     getch();
                                     canbreakin = true;
                                     break;
@@ -2542,7 +2614,8 @@ void special_bank_vault(void) {
                                 clearmessagearea();
                                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                 move(16, 1);
-                                addstr("The hostage is forced to open the vault.");
+                                addstr("The hostage is forced to open the vault.", gamelog);
+                                gamelog.newline();
                                 getch();
                                 canbreakin = true;
                                 break;
@@ -2556,11 +2629,12 @@ void special_bank_vault(void) {
                                 clearmessagearea();
                                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                 move(16, 1);
-                                addstr("Sleeper ");
-                                addstr(pool[p]->name);
-                                addstr(" opens the vault,");
+                                addstr("Sleeper ", gamelog);
+                                addstr(pool[p]->name, gamelog);
+                                addstr(" opens the vault, ", gamelog);
                                 move(17, 1);
-                                addstr("and will join the active LCS to avoid arrest.");
+                                addstr("and will join the active LCS to avoid arrest.", gamelog);
+                                gamelog.newline();
                                 getch();
                                 canbreakin = true;
 
@@ -2587,14 +2661,16 @@ void special_bank_vault(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr(manager->name);
-                            addstr(" is no longer recognized.");
+                            addstr(manager->name, gamelog);
+                            addstr(" is no longer recognized.", gamelog);
+                            gamelog.newline();
                             getch();
                         } else {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The squad has nobody that can do the job.");
+                            addstr("The squad has nobody that can do the job.", gamelog);
+                            gamelog.newline();
                             getch();
                         }
                     }
@@ -2619,7 +2695,8 @@ void special_bank_teller(void) {
         clearmessagearea(false);
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("The teller window is empty.");
+        addstr("The teller window is empty.", gamelog);
+        gamelog.newline();
         levelmap[locx][locy][locz].special = -1;
         refresh();
         getch();
@@ -2627,7 +2704,8 @@ void special_bank_teller(void) {
         clearmessagearea(false);
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("A bank teller is available.");
+        addstr("A bank teller is available.", gamelog);
+        gamelog.newline();
         levelmap[locx][locy][locz].special = -1;
         refresh();
         getch();
@@ -2643,7 +2721,8 @@ void special_bank_money(void) {
     clearmessagearea(false);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     move(16, 1);
-    addstr("The squad loads bricks of cash into a duffel bag.");
+    addstr("The squad loads bricks of cash into a duffel bag.", gamelog);
+    gamelog.newline();
 
     levelmap[locx][locy][locz].special = -1;
 
@@ -2662,7 +2741,8 @@ void special_bank_money(void) {
         refresh();
         getch();
         move(17, 1);
-        addstr("A SWAT team storms the vault!!");
+        addstr("A SWAT team storms the vault!!", gamelog);
+        gamelog.newline();
 
         int swatnum = 9;
 

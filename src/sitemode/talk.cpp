@@ -109,85 +109,87 @@ char talkToBankTeller(Creature &a, Creature &tk) {
         clearmaparea();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(9, 1);
-        addstr(a.name);
-        addstr(" slips the teller a note:");
+        addstr(a.name, gamelog);
+        addstr(" slips the teller a note: ", gamelog);
         set_color(COLOR_GREEN, COLOR_BLACK, 1);
         move(10, 1);
 
         switch(LCSrandom(10)) {
         case 0:
-            addstr("KINDLY PUT MONEY IN BAG. OR ELSE.");
+            addstr("KINDLY PUT MONEY IN BAG. OR ELSE.", gamelog);
             break;
 
         case 1:
-            addstr("I AM LIBERATING YOUR MONEY SUPPLY.");
+            addstr("I AM LIBERATING YOUR MONEY SUPPLY.", gamelog);
             break;
 
         case 2:
-            addstr("THIS IS A ROBBERY. GIVE ME THE MONEY.");
+            addstr("THIS IS A ROBBERY. GIVE ME THE MONEY.", gamelog);
             break;
 
         case 3:
-            addstr("I HAVE A GUN. CASH PLEASE.");
+            addstr("I HAVE A GUN. CASH PLEASE.", gamelog);
             break;
 
         case 4:
-            addstr("THE LIBERAL CRIME SQUAD REQUESTS CASH.");
+            addstr("THE LIBERAL CRIME SQUAD REQUESTS CASH.", gamelog);
             break;
 
         case 5:
-            addstr("I AM MAKING A WITHDRAWAL. ALL YOUR MONEY.");
+            addstr("I AM MAKING A WITHDRAWAL. ALL YOUR MONEY.", gamelog);
             break;
 
         case 6:
-            addstr("YOU ARE BEING ROBBED. GIVE ME YOUR MONEY.");
+            addstr("YOU ARE BEING ROBBED. GIVE ME YOUR MONEY.", gamelog);
             break;
 
         case 7:
-            addstr("PLEASE PLACE LOTS OF DOLLARS IN THIS BAG.");
+            addstr("PLEASE PLACE LOTS OF DOLLARS IN THIS BAG.", gamelog);
             break;
 
         case 8:
-            addstr("SAY NOTHING. YOU ARE BEING ROBBED.");
+            addstr("SAY NOTHING. YOU ARE BEING ROBBED.", gamelog);
             break;
 
         case 9:
-            addstr("ROBBERY. GIVE ME CASH. NO FUNNY MONEY.");
+            addstr("ROBBERY. GIVE ME CASH. NO FUNNY MONEY.", gamelog);
             break;
         }
 
+        gamelog.newline();
         refresh();
         getch();
 
         if(location[cursite]->highsecurity) {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(11, 1);
-            addstr("The bank teller reads the note, ");
+            addstr("The bank teller reads the note, ", gamelog);
 
             switch(LCSrandom(5)) {
             case 0:
-                addstr("gestures,");
+                addstr("gestures, ", gamelog);
                 break;
 
             case 1:
-                addstr("signals,");
+                addstr("signals, ", gamelog);
                 break;
 
             case 2:
-                addstr("shouts,");
+                addstr("shouts, ", gamelog);
                 break;
 
             case 3:
-                addstr("screams,");
+                addstr("screams, ", gamelog);
                 break;
 
             case 4:
-                addstr("gives a warning,");
+                addstr("gives a warning, ", gamelog);
                 break;
             }
 
             move(12, 1);
-            addstr("and dives for cover as the guards move in on the squad!");
+            addstr("and dives for cover as the guards move in on the squad!", gamelog);
+            gamelog.newline();
             refresh();
             getch();
             sitealarm = 1;
@@ -201,32 +203,33 @@ char talkToBankTeller(Creature &a, Creature &tk) {
         } else {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(11, 1);
-            addstr("The bank teller reads the note, ");
+            addstr("The bank teller reads the note, ", gamelog);
 
             switch(LCSrandom(5)) {
             case 0:
-                addstr("nods calmly,");
+                addstr("nods calmly, ", gamelog);
                 break;
 
             case 1:
-                addstr("looks startled,");
+                addstr("looks startled, ", gamelog);
                 break;
 
             case 2:
-                addstr("bites her lip,");
+                addstr("bites her lip, ", gamelog);
                 break;
 
             case 3:
-                addstr("grimaces,");
+                addstr("grimaces, ", gamelog);
                 break;
 
             case 4:
-                addstr("frowns,");
+                addstr("frowns, ", gamelog);
                 break;
             }
 
             move(12, 1);
-            addstr("and slips several bricks of cash into the squad's bag.");
+            addstr("and slips several bricks of cash into the squad's bag.", gamelog);
+            gamelog.newline();
             refresh();
             getch();
             criminalize(a, LAWFLAG_BANKROBBERY);
@@ -256,24 +259,27 @@ char talkToBankTeller(Creature &a, Creature &tk) {
 
         if(armed_liberal) {
             move(9, 1);
-            addstr(armed_liberal->name);
-            addstr(" brandishes the ");
-            addstr(armed_liberal->get_weapon().get_shortname(0).c_str());
-            addstr(".");
+            addstr(armed_liberal->name, gamelog);
+            addstr(" brandishes the ", gamelog);
+            addstr(armed_liberal->get_weapon().get_shortname(0).c_str(), gamelog);
+            addstr(".", gamelog);
+            gamelog.newline();
             refresh();
             getch();
             clearmessagearea();
         }
 
         move(10, 1);
-        addstr(a.name);
-        addstr(" says,");
+        addstr(a.name, gamelog);
+        addstr(" says, ", gamelog);
         set_color(COLOR_GREEN, COLOR_BLACK, 1);
         move(11, 1);
-        addstr("\"");
-        addstr(slogan);
+        addstr("\"", gamelog);
+        addstr(slogan, gamelog);
+        gamelog.record(" ");
         move(12, 1);
-        addstr("OPEN THE VAULT, NOW!\"");
+        addstr("OPEN THE VAULT, NOW!\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -294,9 +300,10 @@ char talkToBankTeller(Creature &a, Creature &tk) {
         if(roll < difficulty) {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(9, 1);
-            addstr("The bank teller and dives for cover as");
+            addstr("The bank teller and dives for cover as ", gamelog);
             move(10, 1);
-            addstr("guards move in on the squad!");
+            addstr("guards move in on the squad!", gamelog);
+            gamelog.newline();
             refresh();
             getch();
             sitealarm = 1;
@@ -318,11 +325,13 @@ char talkToBankTeller(Creature &a, Creature &tk) {
         } else {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(9, 1);
-            addstr("The bank employees hesitantly cooperate!");
+            addstr("The bank employees hesitantly cooperate!", gamelog);
+            gamelog.newline();
             refresh();
             getch();
             move(10, 1);
-            addstr("The vault is open!");
+            addstr("The vault is open!", gamelog);
+            gamelog.newline();
             refresh();
             getch();
 
@@ -468,22 +477,24 @@ char heyIWantToCancelMyRoom(Creature &a, Creature &tk) {
     clearmaparea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(9, 1);
-    addstr(a.name);
-    addstr(" says,");
+    addstr(a.name, gamelog);
+    addstr(" says, ", gamelog);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     move(10, 1);
-    addstr("\"I'd like cancel my room.\"");
+    addstr("\"I'd like cancel my room.\"", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
     if (a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
-        addstr("\"Put some clothes on before I call the cops.\"");
+        addstr("\"Put some clothes on before I call the cops.\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
         return 1;
@@ -491,17 +502,19 @@ char heyIWantToCancelMyRoom(Creature &a, Creature &tk) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(12, 1);
-    addstr(tk.name);
-    addstr(" responds,");
+    addstr(tk.name, gamelog);
+    addstr(" responds, ", gamelog);
     set_color(COLOR_BLUE, COLOR_BLACK, 1);
     move(13, 1);
-    addstr("\"Alright. Please clear out your room.\"");
+    addstr("\"Alright. Please clear out your room.\"", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(15, 1);
-    addstr("<Your possessions at this location have been moved to the shelter.>");
+    addstr("<Your possessions at this location have been moved to the shelter.>", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
@@ -543,22 +556,24 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
     clearmaparea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(9, 1);
-    addstr(a.name);
-    addstr(" says,");
+    addstr(a.name, gamelog);
+    addstr(" says, ", gamelog);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     move(10, 1);
-    addstr("\"I'd like to rent a room.\"");
+    addstr("\"I'd like to rent a room.\"", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
     if(a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
-        addstr("\"Put some clothes on before I call the cops.\"");
+        addstr("\"Put some clothes on before I call the cops.\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
         return 1;
@@ -585,17 +600,19 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(12, 1);
-    addstr(tk.name);
-    addstr(" responds,");
+    addstr(tk.name, gamelog);
+    addstr(" responds, ", gamelog);
     set_color(COLOR_BLUE, COLOR_BLACK, 1);
     move(13, 1);
-    addstr("\"It'll be $");
-    addstr(num);
-    addstr(" a month.");
+    addstr("\"It'll be $", gamelog);
+    addstr(num, gamelog);
+    addstr(" a month.", gamelog);
+    gamelog.newline();
     move(14, 1);
-    addstr("I'll need $");
-    addstr(num);
-    addstr(" now as a security deposit.\"");
+    addstr("I'll need $", gamelog);
+    addstr(num, gamelog);
+    addstr(" now as a security deposit.\"", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
@@ -630,23 +647,26 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
             clearmaparea();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(9, 1);
-            addstr(a.name);
-            addstr(" says,");
+            addstr(a.name, gamelog);
+            addstr(" says, ", gamelog);
             set_color(COLOR_GREEN, COLOR_BLACK, 1);
             move(10, 1);
-            addstr("\"I'll take it.\"");
+            addstr("\"I'll take it.\"", gamelog);
+            gamelog.newline();
             refresh();
             getch();
 
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(12, 1);
-            addstr(tk.name);
-            addstr(" responds,");
+            addstr(tk.name, gamelog);
+            addstr(" responds, ", gamelog);
             set_color(COLOR_BLUE, COLOR_BLACK, 1);
             move(13, 1);
-            addstr("\"Rent is due by the third of every month.");
+            addstr("\"Rent is due by the third of every month.", gamelog);
+            gamelog.newline();
             move(14, 1);
-            addstr("We'll start next month.\"");
+            addstr("We'll start next month.\"", gamelog);
+            gamelog.newline();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             addstr(" <turns away>");
             refresh();
@@ -665,23 +685,25 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
             clearmaparea();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(9, 1);
-            addstr(a.name);
-            addstr(" says,");
+            addstr(a.name, gamelog);
+            addstr(" says, ", gamelog);
             set_color(COLOR_GREEN, COLOR_BLACK, 1);
             move(10, 1);
-            addstr("\"Whoa, I was looking for something cheaper.\"");
+            addstr("\"Whoa, I was looking for something cheaper.\"", gamelog);
+            gamelog.newline();
             refresh();
             getch();
 
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(12, 1);
-            addstr(tk.name);
-            addstr(" responds,");
+            addstr(tk.name, gamelog);
+            addstr(" responds, ", gamelog);
             set_color(COLOR_BLUE, COLOR_BLACK, 1);
             move(13, 1);
-            addstr("\"Not my problem...\"");
+            addstr("\"Not my problem...\"", gamelog);
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
-            addstr(" <turns away>");
+            addstr(" <turns away>", gamelog);
+            gamelog.newline();
             refresh();
             getch();
 
@@ -704,21 +726,23 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
 
             if(armed_liberal) {
                 move(9, 1);
-                addstr(armed_liberal->name);
-                addstr(" brandishes the ");
-                addstr(armed_liberal->get_weapon().get_shortname(0).c_str());
-                addstr(".");
+                addstr(armed_liberal->name, gamelog);
+                addstr(" brandishes the ", gamelog);
+                addstr(armed_liberal->get_weapon().get_shortname(0).c_str(), gamelog);
+                addstr(".", gamelog);
+                gamelog.newline();
                 refresh();
                 getch();
                 clearmessagearea();
             }
 
             move(9, 1);
-            addstr(a.name);
-            addstr(" says,");
+            addstr(a.name, gamelog);
+            addstr(" says, ", gamelog);
             set_color(COLOR_GREEN, COLOR_BLACK, 1);
             move(10, 1);
-            addstr("\"What's the price for the Liberal Crime Squad?\"");
+            addstr("\"What's the price for the Liberal Crime Squad?\"", gamelog);
+            gamelog.newline();
             refresh();
             getch();
 
@@ -734,13 +758,14 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
             if(roll < difficulty - 1) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(12, 1);
-                addstr(tk.name);
-                addstr(" responds,");
+                addstr(tk.name, gamelog);
+                addstr(" responds, ", gamelog);
                 set_color(COLOR_BLUE, COLOR_BLACK, 1);
                 move(13, 1);
-                addstr("\"I think you'd better leave.\"");
+                addstr("\"I think you'd better leave.\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <crosses arms>");
+                addstr(" <crosses arms>", gamelog);
+                gamelog.newline();
                 refresh();
                 getch();
                 tk.cantbluff = 1;
@@ -748,11 +773,12 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
             } else {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 move(12, 1);
-                addstr(tk.name);
-                addstr(" responds,");
+                addstr(tk.name, gamelog);
+                addstr(" responds, ", gamelog);
                 set_color(COLOR_BLUE, COLOR_BLACK, 1);
                 move(13, 1);
-                addstr("\"Jesus... it's yours...\"");
+                addstr("\"Jesus... it's yours...\"", gamelog);
+                gamelog.newline();
                 refresh();
                 getch();
 
@@ -789,22 +815,24 @@ char heyINeedAGun(Creature &a, Creature &tk) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(9, 1);
-    addstr(a.name);
-    addstr(" says,");
+    addstr(a.name, gamelog);
+    addstr(" says, ", gamelog);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     move(10, 1);
-    addstr("\"Hey, I need a gun.\"");
+    addstr("\"Hey, I need a gun.\"", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
     if(a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
-        addstr("\"Jesus...\"");
+        addstr("\"Jesus...\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
         return 1;
@@ -814,11 +842,12 @@ char heyINeedAGun(Creature &a, Creature &tk) {
             || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR") {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
-        addstr("\"I don't sell guns, officer.\"");
+        addstr("\"I don't sell guns, officer.\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
         return 1;
@@ -827,11 +856,12 @@ char heyINeedAGun(Creature &a, Creature &tk) {
     if(sitealarm != 0) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
-        addstr("\"We can talk when things are calm.\"");
+        addstr("\"We can talk when things are calm.\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
         return 1;
@@ -846,11 +876,12 @@ char heyINeedAGun(Creature &a, Creature &tk) {
     case SITE_RESIDENTIAL_BOMBSHELTER:
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
-        addstr("\"What exactly do you need?\"");
+        addstr("\"What exactly do you need?\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -860,11 +891,12 @@ char heyINeedAGun(Creature &a, Creature &tk) {
     default:
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
-        addstr("\"Uhhh... not a good place for this.\"");
+        addstr("\"Uhhh... not a good place for this.\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
         return 1;
@@ -878,12 +910,13 @@ char wannaHearSomethingDisturbing(Creature &a, Creature &tk) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(9, 1);
-    addstr(a.name);
-    addstr(" says,");
+    addstr(a.name, gamelog);
+    addstr(" says, ", gamelog);
 
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     move(10, 1);
-    addstr("\"Do you want to hear something disturbing?\"");
+    addstr("\"Do you want to hear something disturbing?\"", gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
@@ -896,20 +929,22 @@ char wannaHearSomethingDisturbing(Creature &a, Creature &tk) {
             tk.animalgloss == ANIMALGLOSS_TANK) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
+        addstr(tk.name, gamelog);
 
         switch(tk.type) {
         case CREATURE_TANK:
-            addstr(" rumbles disinterestedly.");
+            addstr(" rumbles disinterestedly.", gamelog);
             break;
 
         case CREATURE_GUARDDOG:
-            addstr(" barks.");
+            addstr(" barks.", gamelog);
             break;
 
         default:
-            addstr(" doesn't understand.");
+            addstr(" doesn't understand.", gamelog);
         }
+
+        gamelog.newline();
 
         refresh();
         getch();
@@ -918,11 +953,12 @@ char wannaHearSomethingDisturbing(Creature &a, Creature &tk) {
     } else if(tk.type != CREATURE_PRISONER && interested) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
-        addstr("\"What?\"");
+        addstr("\"What?\"", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -930,21 +966,22 @@ char wannaHearSomethingDisturbing(Creature &a, Creature &tk) {
     } else {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(13, 1);
 
         if(tk.type == CREATURE_PRISONER) {
             if(tk.align == ALIGN_LIBERAL)
-                addstr("\"Now's not the time!\"");
+                addstr("\"Now's not the time!\"", gamelog);
             else
-                addstr("\"Leave me alone.\"");
+                addstr("\"Leave me alone.\"", gamelog);
         } else
-            addstr("\"No.\"");
+            addstr("\"No.\"", gamelog);
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        addstr(" <turns away>");
+        addstr(" <turns away>", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -959,8 +996,8 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
     clearmaparea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(9, 1);
-    addstr(a.name);
-    addstr(" says,");
+    addstr(a.name, gamelog);
+    addstr(" says, ", gamelog);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     move(10, 1);
     int line;
@@ -970,15 +1007,15 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
 
         switch(line) {
         case 0:
-            addstr("\"[What church do you go to?]\"");
+            addstr("\"[What church do you go to?]\"", gamelog);
             break;
 
         case 1:
-            addstr("\"[Will you marry me?]\"");
+            addstr("\"[Will you marry me?]\"", gamelog);
             break;
 
         case 2:
-            addstr("\"[Do you believe in abstinence education?]\"");
+            addstr("\"[Do you believe in abstinence education?]\"", gamelog);
             break;
         }
     } else {
@@ -986,195 +1023,196 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
 
         switch(line) {
         case 0:
-            addstr("\"Hey baby, you're kinda ugly.  I like that.\"");
+            addstr("\"Hey baby, you're kinda ugly.  I like that.\"", gamelog);
             break;
 
         case 1:
-            addstr("\"I lost my phone number.  Could I have yours?\"");
+            addstr("\"I lost my phone number.  Could I have yours?\"", gamelog);
             break;
 
         case 2:
-            addstr("\"Hey, you wanna go rub one off?\"");
+            addstr("\"Hey, you wanna go rub one off?\"", gamelog);
             break;
 
         case 3:
-            addstr("\"Hot damn.  You're built like a brick shithouse, honey.\"");
+            addstr("\"Hot damn.  You're built like a brick shithouse, honey.\"", gamelog);
             break;
 
         case 4:
-            addstr("\"I know I've seen you on the back of a milk carton,");
+            addstr("\"I know I've seen you on the back of a milk carton, ", gamelog);
             move(11, 1);
             y++;
-            addstr("cuz you've been missing from my life.\"");
+            addstr("cuz you've been missing from my life.\"", gamelog);
             break;
 
         case 5:
-            addstr("\"I'm big where it counts.\"");
+            addstr("\"I'm big where it counts.\"", gamelog);
             break;
 
         case 6:
-            addstr("\"Daaaaaamn girl, I want to wrap your legs around my face and");
+            addstr("\"Daaaaaamn girl, I want to wrap your legs around my face and ", gamelog);
             move(11, 1);
             y++;
-            addstr("wear you like a feed bag!\""); // Bill Hicks
+            addstr("wear you like a feed bag!\"", gamelog); // Bill Hicks
             break;
 
         case 7:
-            addstr("\"Let's play squirrel.  I'll bust a nut in your hole.\"");
+            addstr("\"Let's play squirrel.  I'll bust a nut in your hole.\"", gamelog);
             break;
 
         case 8:
-            addstr("\"You know, if I were you, I'd have sex with me.\"");
+            addstr("\"You know, if I were you, I'd have sex with me.\"", gamelog);
             break;
 
         case 9:
-            addstr("\"You don't sweat much for a fat chick.\"");
+            addstr("\"You don't sweat much for a fat chick.\"", gamelog);
             break;
 
         case 10:
-            addstr("\"Fuck me if I'm wrong but you want to kiss me, right?\"");
+            addstr("\"Fuck me if I'm wrong but you want to kiss me, right?\"", gamelog);
             break;
 
         case 11:
-            addstr("\"Your parents must be retarded, because you are special.\"");
+            addstr("\"Your parents must be retarded, because you are special.\"", gamelog);
             break;
 
         case 12:
-            addstr("\"Let's play trains...  you can sit on my face and I will chew chew chew.\"");
+            addstr("\"Let's play trains...  you can sit on my face and I will chew chew chew.\"", gamelog);
             break;
 
         case 13:
-            addstr("\"Is it hot in here or is it just you?\"");
+            addstr("\"Is it hot in here or is it just you?\"", gamelog);
             break;
 
         case 14:
-            addstr("\"I may not be Fred Flintstone, but I can make your bed rock!\"");
+            addstr("\"I may not be Fred Flintstone, but I can make your bed rock!\"", gamelog);
             break;
 
         case 15:
-            addstr("\"What do you say we go behind a rock and get a little boulder?\"");
+            addstr("\"What do you say we go behind a rock and get a little boulder?\"", gamelog);
             break;
 
         case 16:
-            addstr("\"Do you have stars on your panties?  Your ass is outta this world!\"");
+            addstr("\"Do you have stars on your panties?  Your ass is outta this world!\"", gamelog);
             break;
 
         case 17:
-            addstr("\"Those pants would look great on the floor of my bedroom.\"");
+            addstr("\"Those pants would look great on the floor of my bedroom.\"", gamelog);
             break;
 
         case 18:
-            addstr("\"If I said you had a nice body, would you hold it against me?\"");
+            addstr("\"If I said you had a nice body, would you hold it against me?\"", gamelog);
             break;
 
         case 19:
-            addstr("\"Are you tired?  You've been running around in my thoughts all day.\"");
+            addstr("\"Are you tired?  You've been running around in my thoughts all day.\"", gamelog);
             break;
 
         case 20:
-            addstr("\"If I could change the alphabet baby, I would put the U and I together!\"");
+            addstr("\"If I could change the alphabet baby, I would put the U and I together!\"", gamelog);
             break;
 
         case 21:
-            addstr("\"Your lips look sweet.  Can I taste them?\"");
+            addstr("\"Your lips look sweet.  Can I taste them?\"", gamelog);
             break;
 
         case 22:
-            addstr("\"Nice shoes.  Wanna fuck?\"");
+            addstr("\"Nice shoes.  Wanna fuck?\"", gamelog);
             break;
 
         case 23:
-            addstr("\"Your sexuality makes me nervous and this frustrates me.\"");
+            addstr("\"Your sexuality makes me nervous and this frustrates me.\"", gamelog);
             break;
 
         case 24:
-            addstr("\"Are you Jamaican?  Cuz Jamaican me horny.\"");
+            addstr("\"Are you Jamaican?  Cuz Jamaican me horny.\"", gamelog);
             break;
 
         case 25:
-            addstr("\"Hey pop tart, fancy coming in my toaster of love?\"");
+            addstr("\"Hey pop tart, fancy coming in my toaster of love?\"", gamelog);
             break;
 
         case 26:
-            addstr("\"Wanna play army?  You lie down and I'll blow you away.\"");
+            addstr("\"Wanna play army?  You lie down and I'll blow you away.\"", gamelog);
             break;
 
         case 27:
-            addstr("\"Can I lick your forehead?\"");
+            addstr("\"Can I lick your forehead?\"", gamelog);
             break;
 
         case 28:
-            addstr("\"I have a genital rash.  Will you rub this ointment on me?\"");
+            addstr("\"I have a genital rash.  Will you rub this ointment on me?\"", gamelog);
             break;
 
         case 29:
-            addstr("\"What's your sign?\"");
+            addstr("\"What's your sign?\"", gamelog);
             break;
 
         case 30:
-            addstr("\"Do you work for the post office?");
+            addstr("\"Do you work for the post office? ", gamelog);
             move(11, 1);
             y++;
-            addstr("Because I could have sworn you were checking out my package.\"");
+            addstr("Because I could have sworn you were checking out my package.\"", gamelog);
             break;
 
         case 31:
-            addstr("\"I'm not the most attractive person in here,");
+            addstr("\"I'm not the most attractive person in here, ", gamelog);
             move(11, 1);
             y++;
-            addstr("but I'm the only one talking to you.\"");
+            addstr("but I'm the only one talking to you.\"", gamelog);
             break;
 
         case 32:
-            addstr("\"Hi.  I suffer from amnesia.  Do I come here often?\"");
+            addstr("\"Hi.  I suffer from amnesia.  Do I come here often?\"", gamelog);
             break;
 
         case 33:
-            addstr("\"I'm new in town.  Could you give me directions to your apartment?\"");
+            addstr("\"I'm new in town.  Could you give me directions to your apartment?\"", gamelog);
             break;
 
         case 34:
-            addstr("\"Stand still so I can pick you up!\"");
+            addstr("\"Stand still so I can pick you up!\"", gamelog);
             break;
 
         case 35:
-            addstr("\"Your daddy must have been a baker, cuz you've got a nice set of buns.\"");
+            addstr("\"Your daddy must have been a baker, cuz you've got a nice set of buns.\"", gamelog);
             break;
 
         case 36:
-            addstr("\"If you were a laser, you'd be set on 'stunning'.\"");
+            addstr("\"If you were a laser, you'd be set on 'stunning'.\"", gamelog);
             break;
 
         case 37:
-            addstr("\"Is that a keg in your pants?  Cuz I'd love to tap that ass.\"");
+            addstr("\"Is that a keg in your pants?  Cuz I'd love to tap that ass.\"", gamelog);
             break;
 
         case 38:
-            addstr("\"If I could be anything, I'd love to be your bathwater.\"");
+            addstr("\"If I could be anything, I'd love to be your bathwater.\"", gamelog);
             break;
 
         case 39:
-            addstr("\"Stop, drop and roll, baby.  You are on fire.\"");
+            addstr("\"Stop, drop and roll, baby.  You are on fire.\"", gamelog);
             break;
 
         case 40:
-            addstr("\"Do you want to see something swell?\"");
+            addstr("\"Do you want to see something swell?\"", gamelog);
             break;
 
         case 41:
-            addstr("\"Excuse me.  Do you want to fuck or should I apologize?\"");
+            addstr("\"Excuse me.  Do you want to fuck or should I apologize?\"", gamelog);
             break;
 
         case 42:
-            addstr("\"Say, did we go to different schools together?\"");
+            addstr("\"Say, did we go to different schools together?\"", gamelog);
             break;
 
         case 43:
-            addstr("\"You smell...  Let's go take a shower.\"");
+            addstr("\"You smell...  Let's go take a shower.\"", gamelog);
             break;
         }
     }
 
+    gamelog.newline();
     refresh();
     getch();
 
@@ -1192,29 +1230,29 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
             tk.animalgloss == ANIMALGLOSS_TANK) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
-        addstr(tk.name);
+        addstr(tk.name, gamelog);
 
         switch(tk.type) {
         case CREATURE_TANK:
-            addstr(" shakes its turret a firm 'no'.");
+            addstr(" shakes its turret a firm 'no'.", gamelog);
             break;
 
         case CREATURE_GUARDDOG:
-            addstr(" says, ");
+            addstr(" says, ", gamelog);
             move(13, 1);
             set_color(COLOR_RED, COLOR_BLACK, 1);
 
             switch(LCSrandom(3)) {
             case 0:
-                addstr("\"No! Wrong! I'm a dog!! Jesus.\"");
+                addstr("\"No! Wrong! I'm a dog!! Jesus.\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"What?! Ugh, I'm going to toss my kibble.\"");
+                addstr("\"What?! Ugh, I'm going to toss my kibble.\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"Okay, you need to stop petting me now.\"");
+                addstr("\"Okay, you need to stop petting me now.\"", gamelog);
                 break;
             }
 
@@ -1223,41 +1261,41 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
             break;
 
         case CREATURE_GENETIC:
-            addstr(" says, ");
+            addstr(" says, ", gamelog);
             move(13, 1);
             set_color(COLOR_RED, COLOR_BLACK, 1);
 
             switch(LCSrandom(8)) {
             case 0:
-                addstr("\"Foolish human!\"");
+                addstr("\"Foolish human!\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"Never thought I'd hear that...\"");
+                addstr("\"Never thought I'd hear that...\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"STRANGER DANGER.\"");
+                addstr("\"STRANGER DANGER.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"I am not laughing, mortal!\"");
+                addstr("\"I am not laughing, mortal!\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"Gag!\"");
+                addstr("\"Gag!\"", gamelog);
                 break;
 
             case 5:
-                addstr("\"You would make jokes with the likes of me?!\"");
+                addstr("\"You would make jokes with the likes of me?!\"", gamelog);
                 break;
 
             case 6:
-                addstr("\"I am above such mortal sins!\"");
+                addstr("\"I am above such mortal sins!\"", gamelog);
                 break;
 
             case 7:
-                addstr("\"You foul, disgusting human...!\"");
+                addstr("\"You foul, disgusting human...!\"", gamelog);
                 break;
             }
 
@@ -1266,8 +1304,10 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
             break;
 
         default:
-            addstr(" doesn't quite pick up on the subtext.");
+            addstr(" doesn't quite pick up on the subtext.", gamelog);
         }
+
+        gamelog.newline();
 
         refresh();
         getch();
@@ -1283,13 +1323,14 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(y, 1);
         y++;
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_RED, COLOR_BLACK, 1);
         move(y, 1);
         y++;
 
-        addstr("Dirty. You know that's illegal, officer.");
+        addstr("Dirty. You know that's illegal, officer.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -1299,8 +1340,8 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(y, 1);
         y++;
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(y, 1);
         y++;
@@ -1308,198 +1349,199 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
         if(law[LAW_FREESPEECH] == -2) {
             switch(line) {
             case 0:
-                addstr("\"[I go to your church.]\"");
+                addstr("\"[I go to your church.]\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"[Yes.]\"");
+                addstr("\"[Yes.]\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"[Yes.  Yes, I do.]\"");
+                addstr("\"[Yes.  Yes, I do.]\"", gamelog);
                 break;
             }
         } else {
             switch(line) {
             //LIMIT             :-----------------------------------------------------------------------------:
             case 0:
-                addstr("\"You're not so cute yourself.  Wanna get a room?\"");
+                addstr("\"You're not so cute yourself.  Wanna get a room?\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"How sweet!  You can call me tonight...\"");
+                addstr("\"How sweet!  You can call me tonight...\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"You bet, baby.\"");
+                addstr("\"You bet, baby.\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"He he, I'll let that one slide.  Besides, I like country folk...\"");
+                addstr("\"He he, I'll let that one slide.  Besides, I like country folk...\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"That's sick.  I can do sick tonight.\"");
+                addstr("\"That's sick.  I can do sick tonight.\"", gamelog);
                 break;
 
             case 5:
-                addstr("\"Oooo, let me see!\"");
+                addstr("\"Oooo, let me see!\"", gamelog);
                 break;
 
             case 6:
-                addstr("\"Wow, looks like I'm going to have to reward creativity tonight!\"");
+                addstr("\"Wow, looks like I'm going to have to reward creativity tonight!\"", gamelog);
                 break;
 
             case 7:
-                addstr("\"Winter's coming.  You'd better bust more than one.\"");
+                addstr("\"Winter's coming.  You'd better bust more than one.\"", gamelog);
                 break;
 
             case 8:
-                addstr("\"But you're not, so the pleasure's all mine.\"");
+                addstr("\"But you're not, so the pleasure's all mine.\"", gamelog);
                 break;
 
             case 9:
-                addstr("\"Just wait until tonight, baby.\"");
+                addstr("\"Just wait until tonight, baby.\"", gamelog);
                 break;
 
             case 10:
-                addstr("\"You're wrong.\"");
+                addstr("\"You're wrong.\"", gamelog);
                 break;
 
             case 11:
-                addstr("\"I can drool on you if you like it that way.\"");
+                addstr("\"I can drool on you if you like it that way.\"", gamelog);
                 break;
 
             case 12:
-                addstr("\"Oooo, all aboard baby!\"");
+                addstr("\"Oooo, all aboard baby!\"", gamelog);
                 break;
 
             case 13:
-                addstr("\"Not as hot as we'll be tonight you slut.\"");
+                addstr("\"Not as hot as we'll be tonight you slut.\"", gamelog);
                 break;
 
             case 14:
-                addstr("\"Goober.  You wanna hook up tonight?\"");
+                addstr("\"Goober.  You wanna hook up tonight?\"", gamelog);
                 break;
 
             case 15:
-                addstr("\"Oooo, we should get stoned too!  He he.\"");
+                addstr("\"Oooo, we should get stoned too!  He he.\"", gamelog);
                 break;
 
             case 16:
-                addstr("\"You'll have to whip out your rocket to get some.  Let's do it.\"");
+                addstr("\"You'll have to whip out your rocket to get some.  Let's do it.\"", gamelog);
                 break;
 
             case 17:
-                addstr("\"So would my underwear.\"");
+                addstr("\"So would my underwear.\"", gamelog);
                 break;
 
             case 18:
-                addstr("\"Yeah, and you're going to repay me tonight.\"");
+                addstr("\"Yeah, and you're going to repay me tonight.\"", gamelog);
                 break;
 
             case 19:
-                addstr("\"Then stop *thinking* about it and come over tonight.\"");
+                addstr("\"Then stop *thinking* about it and come over tonight.\"", gamelog);
                 break;
 
             case 20:
-                addstr("\"As long as you put a condom between them, I'm all for it.\"");
+                addstr("\"As long as you put a condom between them, I'm all for it.\"", gamelog);
                 break;
 
             case 21:
-                addstr("\"Sure, but you can't use your mouth.\"");
+                addstr("\"Sure, but you can't use your mouth.\"", gamelog);
                 break;
 
             case 22:
-                addstr("\"I hope you don't have a foot fetish, but I'm game.\"");
+                addstr("\"I hope you don't have a foot fetish, but I'm game.\"", gamelog);
                 break;
 
             case 23:
-                addstr("\"My sex could do even more.\"");
+                addstr("\"My sex could do even more.\"", gamelog);
                 break;
 
             case 24:
-                addstr("\"Let me invite you to visit my island paradise.  Tonight.\"");
+                addstr("\"Let me invite you to visit my island paradise.  Tonight.\"", gamelog);
                 break;
 
             case 25:
-                addstr("\"Oh, man...  just don't tell anybody I'm seeing you.\"");
+                addstr("\"Oh, man...  just don't tell anybody I'm seeing you.\"", gamelog);
                 break;
 
             case 26:
-                addstr("\"I hope we're shooting blanks, soldier.  I'm out of condoms.\"");
+                addstr("\"I hope we're shooting blanks, soldier.  I'm out of condoms.\"", gamelog);
                 break;
 
             case 27:
-                addstr("\"You can lick all my decals off, baby.\"");
+                addstr("\"You can lick all my decals off, baby.\"", gamelog);
                 break;
 
             case 28:
-                addstr("\"Only if I'm not allowed to use my hands.\"");
+                addstr("\"Only if I'm not allowed to use my hands.\"", gamelog);
                 break;
 
             case 29:
-                addstr("\"The one that says 'Open All Night'.\"");
+                addstr("\"The one that says 'Open All Night'.\"", gamelog);
                 break;
 
             case 30:
-                addstr("\"It looks like a letter bomb to me.  Let me blow it up.\"");
+                addstr("\"It looks like a letter bomb to me.  Let me blow it up.\"", gamelog);
                 break;
 
             case 31:
-                addstr("\"Hey, I could do better.  But I'm feeling cheap tonight.\"");
+                addstr("\"Hey, I could do better.  But I'm feeling cheap tonight.\"", gamelog);
                 break;
 
             case 32:
-                addstr("\"Yeah.  I hope you remember the lube this time.\"");
+                addstr("\"Yeah.  I hope you remember the lube this time.\"", gamelog);
                 break;
 
             case 33:
-                addstr("\"But if we use a hotel, you won't get shot by an angry spouse tonight.\"");
+                addstr("\"But if we use a hotel, you won't get shot by an angry spouse tonight.\"", gamelog);
                 break;
 
             case 34:
-                addstr("\"I think you'll appreciate the way I move after tonight.\"");
+                addstr("\"I think you'll appreciate the way I move after tonight.\"", gamelog);
                 break;
 
             case 35:
-                addstr("\"They make a yummy bedtime snack.\"");
+                addstr("\"They make a yummy bedtime snack.\"", gamelog);
                 break;
 
             case 36:
-                addstr("\"Oh..  oh, God.  I can't believe I'm going to date a Trekkie.\"");
+                addstr("\"Oh..  oh, God.  I can't believe I'm going to date a Trekkie.\"", gamelog);
                 break;
 
             case 37:
-                addstr("\"Oh, it isn't safe for you to drive like that.  You'd better stay the night.\"");
+                addstr("\"Oh, it isn't safe for you to drive like that.  You'd better stay the night.\"", gamelog);
                 break;
 
             case 38:
-                addstr("\"Come over tonight and I can show you what it's like.\"");
+                addstr("\"Come over tonight and I can show you what it's like.\"", gamelog);
                 break;
 
             case 39:
-                addstr("\"I'll stop, drop and roll if you do it with me.\"");
+                addstr("\"I'll stop, drop and roll if you do it with me.\"", gamelog);
                 break;
 
             case 40:
-                addstr("\"I'd rather feel something swell.\"");
+                addstr("\"I'd rather feel something swell.\"", gamelog);
                 break;
 
             case 41:
-                addstr("\"You can apologize later if it isn't any good.\"");
+                addstr("\"You can apologize later if it isn't any good.\"", gamelog);
                 break;
 
             case 42:
-                addstr("\"Yeah, and we tonight can try different positions together.\"");
+                addstr("\"Yeah, and we tonight can try different positions together.\"", gamelog);
                 break;
 
             case 43:
-                addstr("\"Don't you like it dirty?\"");
+                addstr("\"Don't you like it dirty?\"", gamelog);
                 break;
             }
         }
 
+        gamelog.newline();
         refresh();
         getch();
 
@@ -1508,21 +1550,22 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(y, 1);
         y++;
-        addstr(a.name);
-        addstr(" and ");
-        addstr(tk.name);
-        addstr(" make plans for tonight");
+        addstr(a.name, gamelog);
+        addstr(" and ", gamelog);
+        addstr(tk.name, gamelog);
+        addstr(" make plans for tonight", gamelog);
 
         if(tk.type == CREATURE_PRISONER) {
-            addstr(", and ");
+            addstr(", and ", gamelog);
             move(y, 1);
             y++;
-            addstr(tk.name);
-            addstr(" breaks for the exit");
+            addstr(tk.name, gamelog);
+            addstr(" breaks for the exit", gamelog);
             criminalize(tk, LAWFLAG_ESCAPED);
         }
 
-        addstr(".  ");
+        addstr(".  ", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -1556,74 +1599,76 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(y, 1);
         y++;
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_RED, COLOR_BLACK, 1);
         move(y, 1);
         y++;
 
         if(tk.type == CREATURE_CORPORATE_CEO) {
             if(a.gender_liberal != GENDER_MALE)
-                addstr("\"I'm a happily married man, sweetie.\"");
+                addstr("\"I'm a happily married man, sweetie.\"", gamelog);
             else
-                addstr("\"This ain't Brokeback Mountain, son.\"");
+                addstr("\"This ain't Brokeback Mountain, son.\"", gamelog);
         } else {
             switch(LCSrandom(9)) {
             case 0:
-                addstr("\"Jesus...\"");
+                addstr("\"Jesus...\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <turns away>");
+                addstr(" <turns away>", gamelog);
                 break;
 
             case 1:
-                addstr("\"Touch me and you'll regret it.\"");
+                addstr("\"Touch me and you'll regret it.\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <crosses arms>");
+                addstr(" <crosses arms>", gamelog);
                 break;
 
             case 2:
-                addstr("\"I'm.. uh.. waiting for someone.\"");
+                addstr("\"I'm.. uh.. waiting for someone.\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <turns away>");
+                addstr(" <turns away>", gamelog);
                 break;
 
             case 3:
-                addstr("\"Hey, look, a UFO!\"");
+                addstr("\"Hey, look, a UFO!\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <ducks away>");
+                addstr(" <ducks away>", gamelog);
                 break;
 
             case 4:
-                addstr("\"You're not my type. I like sane people.\"");
+                addstr("\"You're not my type. I like sane people.\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <turns away>");
+                addstr(" <turns away>", gamelog);
                 break;
 
             case 5:
-                addstr("\"Hahahahaha!\"");
+                addstr("\"Hahahahaha!\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <shakes head>");
+                addstr(" <shakes head>", gamelog);
                 break;
 
             case 6:
-                addstr("\"You're disgusting.\"");
+                addstr("\"You're disgusting.\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <turns away>");
+                addstr(" <turns away>", gamelog);
                 break;
 
             case 7:
-                addstr("\"Are you serious?\"");
+                addstr("\"Are you serious?\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <turns away>");
+                addstr(" <turns away>", gamelog);
                 break;
 
             case 8:
-                addstr("\"You're a pig.\"");
+                addstr("\"You're a pig.\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr(" <turns away>");
+                addstr(" <turns away>", gamelog);
                 break;
             }
         }
+
+        gamelog.newline();
 
         refresh();
         getch();
@@ -1650,8 +1695,8 @@ char talkAboutIssues(Creature &a, Creature &tk) {
     clearmaparea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(9, 1);
-    addstr(a.name);
-    addstr(" says,");
+    addstr(a.name, gamelog);
+    addstr(" says, ", gamelog);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     int y = 10;
     move(y, 1);
@@ -1660,324 +1705,325 @@ char talkAboutIssues(Creature &a, Creature &tk) {
     if(you_are_stupid) {
         switch(lw) {
         case LAW_ABORTION:
-            addstr("\"Conservatives make women turn to coat hangers.\"");
+            addstr("\"Conservatives make women turn to coat hangers.\"", gamelog);
             break;
 
         case LAW_ANIMALRESEARCH:
-            addstr("\"Richard Gere put a gerbil in his butt!\"");
+            addstr("\"Richard Gere put a gerbil in his butt!\"", gamelog);
             break;
 
         case LAW_POLICEBEHAVIOR:
             if(law[LAW_FREESPEECH] == ALIGN_ARCHCONSERVATIVE)
-                addstr("\"[The police are not doing their job very well!]\"");
+                addstr("\"[The police are not doing their job very well!]\"", gamelog);
             else
-                addstr("\"The cops suck!\"");
+                addstr("\"The cops suck!\"", gamelog);
 
             break;
 
         case LAW_PRIVACY:
-            addstr("\"The government, like, knows things about you.\"");
+            addstr("\"The government, like, knows things about you.\"", gamelog);
             break;
 
         case LAW_DEATHPENALTY:
-            addstr("\"They executed this one dude, and like, his head caught on fire.\"");
+            addstr("\"They executed this one dude, and like, his head caught on fire.\"", gamelog);
             break;
 
         case LAW_NUCLEARPOWER:
-            addstr("\"Have you seen Godzilla?  Nuclear power is bad, yo.\"");
+            addstr("\"Have you seen Godzilla?  Nuclear power is bad, yo.\"", gamelog);
             break;
 
         case LAW_POLLUTION:
-            addstr("\"You wanna look like the Toxic Avenger?  Oppose pollution!\"");
+            addstr("\"You wanna look like the Toxic Avenger?  Oppose pollution!\"", gamelog);
             break;
 
         case LAW_LABOR:
-            addstr("\"Bad people wanna make babies work and stuff.\"");
+            addstr("\"Bad people wanna make babies work and stuff.\"", gamelog);
             break;
 
         case LAW_GAY:
-            addstr("\"Lots of people don't like homosexuals.\"");
+            addstr("\"Lots of people don't like homosexuals.\"", gamelog);
             break;
 
         case LAW_CORPORATE:
-            addstr("\"The corporations are putting you down, dude.\"");
+            addstr("\"The corporations are putting you down, dude.\"", gamelog);
             break;
 
         case LAW_FREESPEECH:
-            addstr("\"Better watch what you say.  They've got ears everywhere.\"");
+            addstr("\"Better watch what you say.  They've got ears everywhere.\"", gamelog);
             break;
 
         case LAW_FLAGBURNING:
-            addstr("\"The flag is stupid.\"");
+            addstr("\"The flag is stupid.\"", gamelog);
             break;
 
         case LAW_TAX:
-            addstr("\"Rich people, like, have money, man.\"");
+            addstr("\"Rich people, like, have money, man.\"", gamelog);
             break;
 
         case LAW_GUNCONTROL:
-            addstr("\"People like, think they need lots of guns.\"");
+            addstr("\"People like, think they need lots of guns.\"", gamelog);
             break;
 
         case LAW_WOMEN:
-            addstr("\"We need more women!\"");
+            addstr("\"We need more women!\"", gamelog);
             break;
 
         case LAW_CIVILRIGHTS:
-            addstr("\"Conservatives are all racists!\"");
+            addstr("\"Conservatives are all racists!\"", gamelog);
             break;
 
         case LAW_DRUGS:
-            addstr("\"Dude, the government won't let you do drugs.\"");
+            addstr("\"Dude, the government won't let you do drugs.\"", gamelog);
             break;
 
         case LAW_IMMIGRATION:
-            addstr("\"They're all trying to keep people out of the country.\"");
+            addstr("\"They're all trying to keep people out of the country.\"", gamelog);
             break;
 
         case LAW_ELECTIONS:
-            addstr("\"The politicians are just tools of the corporations!\"");
+            addstr("\"The politicians are just tools of the corporations!\"", gamelog);
             break;
 
         case LAW_MILITARY:
-            addstr("\"Patriots are idiots! Give peace a chance!\"");
+            addstr("\"Patriots are idiots! Give peace a chance!\"", gamelog);
             break;
 
         case LAW_TORTURE:
-            addstr("\"Torture is bad!\"");
+            addstr("\"Torture is bad!\"", gamelog);
             break;
         }
     } else if(issue_too_liberal) {
         switch(lw) {
         case LAW_ABORTION:
-            addstr("\"Conservatives don't like abortion.\"");
+            addstr("\"Conservatives don't like abortion.\"", gamelog);
             break;
 
         case LAW_ANIMALRESEARCH:
-            addstr("\"Animals are denied the right to vote.\"");
+            addstr("\"Animals are denied the right to vote.\"", gamelog);
             break;
 
         case LAW_POLICEBEHAVIOR:
-            addstr("\"The police are still out there.\"");
+            addstr("\"The police are still out there.\"", gamelog);
             break;
 
         case LAW_PRIVACY:
-            addstr("\"The government runs intelligence agencies.\"");
+            addstr("\"The government runs intelligence agencies.\"", gamelog);
             break;
 
         case LAW_DEATHPENALTY:
-            addstr("\"You can go to prison for life for serious crimes.\"");
+            addstr("\"You can go to prison for life for serious crimes.\"", gamelog);
             break;
 
         case LAW_NUCLEARPOWER:
-            addstr("\"Some people support legalizing nuclear power.\"");
+            addstr("\"Some people support legalizing nuclear power.\"", gamelog);
             break;
 
         case LAW_POLLUTION:
-            addstr("\"We're still polluting a little bit.\"");
+            addstr("\"We're still polluting a little bit.\"", gamelog);
             break;
 
         case LAW_LABOR:
-            addstr("\"Corporate bosses don't always give in to unions.\"");
+            addstr("\"Corporate bosses don't always give in to unions.\"", gamelog);
             break;
 
         case LAW_GAY:
-            addstr("\"Not everybody likes gay people.\"");
+            addstr("\"Not everybody likes gay people.\"", gamelog);
             break;
 
         case LAW_CORPORATE:
-            addstr("\"There are corporations.\"");
+            addstr("\"There are corporations.\"", gamelog);
             break;
 
         case LAW_FREESPEECH:
-            addstr("\"People get mad if you swear a lot in public.\"");
+            addstr("\"People get mad if you swear a lot in public.\"", gamelog);
             break;
 
         case LAW_FLAGBURNING:
-            addstr("\"The flag code says you shouldn't make it into clothing.\"");
+            addstr("\"The flag code says you shouldn't make it into clothing.\"", gamelog);
             break;
 
         case LAW_TAX:
-            addstr("\"There's still inequality in this country.\"");
+            addstr("\"There's still inequality in this country.\"", gamelog);
             break;
 
         case LAW_GUNCONTROL:
-            addstr("\"We need to repeal the second amendment.\"");
+            addstr("\"We need to repeal the second amendment.\"", gamelog);
             break;
 
         case LAW_WOMEN:
-            addstr("\"Some people are sexist.\"");
+            addstr("\"Some people are sexist.\"", gamelog);
             break;
 
         case LAW_CIVILRIGHTS:
-            addstr("\"I knew some people that were pretty racist.\"");
+            addstr("\"I knew some people that were pretty racist.\"", gamelog);
             break;
 
         case LAW_DRUGS:
-            addstr("\"Drugs are expensive.\"");
+            addstr("\"Drugs are expensive.\"", gamelog);
             break;
 
         case LAW_IMMIGRATION:
-            addstr("\"All the immigrants, not everybody likes them.\"");
+            addstr("\"All the immigrants, not everybody likes them.\"", gamelog);
             break;
 
         case LAW_ELECTIONS:
-            addstr("\"Some of these politicians rub me the wrong way.\"");
+            addstr("\"Some of these politicians rub me the wrong way.\"", gamelog);
             break;
 
         case LAW_MILITARY:
-            addstr("\"We still have a military.\"");
+            addstr("\"We still have a military.\"", gamelog);
             break;
 
         case LAW_TORTURE:
-            addstr("\"Some conservatives support torture.\"");
+            addstr("\"Some conservatives support torture.\"", gamelog);
             break;
         }
     } else {
         switch(lw) {
         case LAW_ABORTION:
-            addstr("\"The government is systematically trying to rob women of the right");
+            addstr("\"The government is systematically trying to rob women of the right ", gamelog);
             move(y, 1);
             y++;
-            addstr("to control their own destinies.\"");
+            addstr("to control their own destinies.\"", gamelog);
             break;
 
         case LAW_ANIMALRESEARCH:
-            addstr("\"Animals are routinely subjected to inhumane treatment in labs in this");
+            addstr("\"Animals are routinely subjected to inhumane treatment in labs in this", gamelog);
             move(y, 1);
             y++;
-            addstr("country.\"");
+            addstr("country.\"", gamelog);
             break;
 
         case LAW_POLICEBEHAVIOR:
-            addstr("\"The police regularly torture minority suspects during interrogations.\"");
+            addstr("\"The police regularly torture minority suspects during interrogations.\"", gamelog);
             break;
 
         case LAW_PRIVACY:
-            addstr("\"Files are being kept on innocent citizens whose only crime is to");
+            addstr("\"Files are being kept on innocent citizens whose only crime is to ", gamelog);
             move(y, 1);
             y++;
-            addstr("speak out against a system that is trying to farm them like beasts.\"");
+            addstr("speak out against a system that is trying to farm them like beasts.\"", gamelog);
             break;
 
         case LAW_DEATHPENALTY:
-            addstr("\"Over thirty innocent people have been executed over the past decade.\"");
+            addstr("\"Over thirty innocent people have been executed over the past decade.\"", gamelog);
             break;
 
         case LAW_NUCLEARPOWER:
-            addstr("\"Radioactive waste is being stored all over the country, and it poses");
+            addstr("\"Radioactive waste is being stored all over the country, and it poses ", gamelog);
             move(y, 1);
             y++;
-            addstr("a serious threat to many families, even in this neighborhood.\"");
+            addstr("a serious threat to many families, even in this neighborhood.\"", gamelog);
             break;
 
         case LAW_POLLUTION:
-            addstr("\"Industries that stop at nothing to become more profitable are polluting");
+            addstr("\"Industries that stop at nothing to become more profitable are polluting ", gamelog);
             move(y, 1);
             y++;
-            addstr("the environment in ways that hurt not only animals, but people too.");
+            addstr("the environment in ways that hurt not only animals, but people too.", gamelog);
             break;
 
         case LAW_LABOR:
-            addstr("\"Have you noticed how people are working more and more hours for less and");
+            addstr("\"Have you noticed how people are working more and more hours for less and ", gamelog);
             move(y, 1);
             y++;
-            addstr("less money?  It's all part of a plan to keep you enslaved, man.\"");
+            addstr("less money?  It's all part of a plan to keep you enslaved, man.\"", gamelog);
             break;
 
         case LAW_GAY:
-            addstr("\"Homosexuals are people like anyone else, and yet they are treated in this");
+            addstr("\"Homosexuals are people like anyone else, and yet they are treated in this ", gamelog);
             move(y, 1);
             y++;
-            addstr("country as if they are deviants fit only for cheap entertainment.\"");
+            addstr("country as if they are deviants fit only for cheap entertainment.\"", gamelog);
             break;
 
         case LAW_CORPORATE:
-            addstr("\"Corporate executives use giant corporations as a means to become parasites");
+            addstr("\"Corporate executives use giant corporations as a means to become parasites ", gamelog);
             move(y, 1);
             y++;
-            addstr("that suck wealth out of this country and put it into their pockets.\"");
+            addstr("that suck wealth out of this country and put it into their pockets.\"", gamelog);
             break;
 
         case LAW_FREESPEECH:
-            addstr("\"Protests and demonstrations are regularly and often brutally suppressed in");
+            addstr("\"Protests and demonstrations are regularly and often brutally suppressed in ", gamelog);
             move(y, 1);
             y++;
-            addstr("this country.  People have to watch what they write -- even what they read.\"");
+            addstr("this country.  People have to watch what they write -- even what they read.\"", gamelog);
             break;
 
         case LAW_FLAGBURNING:
-            addstr("\"Burning a piece of cloth is actually stigmatized in this country.");
+            addstr("\"Burning a piece of cloth is actually stigmatized in this country. ", gamelog);
             move(y, 1);
             y++;
-            addstr("You can love freedom and still hate what our government stands for.\"");
+            addstr("You can love freedom and still hate what our government stands for.\"", gamelog);
             break;
 
         case LAW_TAX:
-            addstr("\"The tax code has been designed to perpetuate an unjust class");
+            addstr("\"The tax code has been designed to perpetuate an unjust class ", gamelog);
             move(y, 1);
             y++;
-            addstr("structure that is keeping you oppressed.\"");
+            addstr("structure that is keeping you oppressed.\"", gamelog);
             break;
 
         case LAW_GUNCONTROL:
-            addstr("\"We live in such a backwards country right now that people think it's");
+            addstr("\"We live in such a backwards country right now that people think it's ", gamelog);
             move(y, 1);
             y++;
-            addstr("a right to walk around with the power to murder at any moment.\"");
+            addstr("a right to walk around with the power to murder at any moment.\"", gamelog);
             break;
 
         case LAW_WOMEN:
-            addstr("\"Sexism is still pervasive, in subtle ways, and women make much less");
+            addstr("\"Sexism is still pervasive, in subtle ways, and women make much less ", gamelog);
             move(y, 1);
             y++;
-            addstr("than they deserve for their labor.\"");
+            addstr("than they deserve for their labor.\"", gamelog);
             break;
 
         case LAW_CIVILRIGHTS:
-            addstr("\"Despite our progress, this society is still strangled by its continuing");
+            addstr("\"Despite our progress, this society is still strangled by its continuing ", gamelog);
             move(y, 1);
             y++;
-            addstr("legacy of racial discrimination and inequality.\"");
+            addstr("legacy of racial discrimination and inequality.\"", gamelog);
             break;
 
         case LAW_DRUGS:
-            addstr("\"The government's drug policy is a mess.  We need to stop filling");
+            addstr("\"The government's drug policy is a mess.  We need to stop filling ", gamelog);
             move(y, 1);
             y++;
-            addstr("prisons with drug users, and only intervene when people really need help.\"");
+            addstr("prisons with drug users, and only intervene when people really need help.\"", gamelog);
             break;
 
         case LAW_IMMIGRATION:
-            addstr("\"Millions of people are doing jobs most folks don't even want, and");
+            addstr("\"Millions of people are doing jobs most folks don't even want, and ", gamelog);
             move(y, 1);
             y++;
-            addstr("saving their families from poverty, but we just try to kick them out.\"");
+            addstr("saving their families from poverty, but we just try to kick them out.\"", gamelog);
             break;
 
         case LAW_ELECTIONS:
-            addstr("\"Political favors are bought and sold for campaign contributions,");
+            addstr("\"Political favors are bought and sold for campaign contributions, ", gamelog);
             move(y, 1);
             y++;
-            addstr("and the voting system enforces two party dominance.\"");
+            addstr("and the voting system enforces two party dominance.\"", gamelog);
             break;
 
         case LAW_MILITARY:
-            addstr("\"Take a breath and think about the world we live in, that we're spending");
+            addstr("\"Take a breath and think about the world we live in, that we're spending ", gamelog);
             move(y, 1);
             y++;
-            addstr("hundreds of billions on new ways to kill people.  This has to stop!\"");
+            addstr("hundreds of billions on new ways to kill people.  This has to stop!\"", gamelog);
             break;
 
         case LAW_TORTURE:
-            addstr("\"In the name of the war on terror, we've sacrificed our soul by letting");
+            addstr("\"In the name of the war on terror, we've sacrificed our soul by letting ", gamelog);
             move(y, 1);
             y++;
-            addstr("the government torture and abuse human beings on our behalf.\"");
+            addstr("the government torture and abuse human beings on our behalf.\"", gamelog);
             break;
         }
     }
 
+    gamelog.newline();
     refresh();
     getch();
 
@@ -2006,66 +2052,68 @@ char talkAboutIssues(Creature &a, Creature &tk) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(y, 1);
         y++;
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
         move(y, 1);
         y++;
 
         if(tk.type == CREATURE_MUTANT &&
                 tk.get_attribute(ATTRIBUTE_INTELLIGENCE, true) < 3)
-            addstr("\"Aaaahhh...\"");
+            addstr("\"Aaaahhh...\"", gamelog);
         else {
             switch(LCSrandom(10)) {
             case 0:
-                addstr("\"Dear me! Is there anything we can do?\"");
+                addstr("\"Dear me! Is there anything we can do?\"", gamelog);
                 break;
 
             case 1:
-                addstr("\"That *is* disturbing!   What can I do?\"");
+                addstr("\"That *is* disturbing!   What can I do?\"", gamelog);
                 break;
 
             case 2:
-                addstr("\"Gosh!   Is there anything I can do?\"");
+                addstr("\"Gosh!   Is there anything I can do?\"", gamelog);
                 break;
 
             case 3:
-                addstr("\"That's frightening!   What can we do?\"");
+                addstr("\"That's frightening!   What can we do?\"", gamelog);
                 break;
 
             case 4:
-                addstr("\"Oh, really?\" ");
+                addstr("\"Oh, really?\" ", gamelog);
                 refresh();
                 getch();
                 move(y, 1);
                 y++;
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                addstr("\"Yeah, really!\"");
+                addstr("\"Yeah, really!\"", gamelog);
                 break;
 
             case 5:
-                addstr("\"Oh my Science!   We've got to do something!\"");
+                addstr("\"Oh my Science!   We've got to do something!\"", gamelog);
                 break;
 
             case 6:
-                addstr("\"Dude... that's like... totally bumming me.\"");
+                addstr("\"Dude... that's like... totally bumming me.\"", gamelog);
                 break;
 
             case 7:
-                addstr("\"Gadzooks! Something must be done!\"");
+                addstr("\"Gadzooks! Something must be done!\"", gamelog);
                 break;
 
             case 8:
-                addstr("\"You got anything to smoke on you?\" ");
+                addstr("\"You got anything to smoke on you?\" ", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                addstr("*cough*");
+                addstr("*cough*", gamelog);
                 break;
 
             case 9:
-                addstr("\"Lawks, I don't think we can allow that.\"");
+                addstr("\"Lawks, I don't think we can allow that.\"", gamelog);
                 break;
             }
         }
+
+        gamelog.newline();
 
         refresh();
         getch();
@@ -2074,9 +2122,10 @@ char talkAboutIssues(Creature &a, Creature &tk) {
         move(y, 1);
         y++;
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        addstr("After more discussion, ");
-        addstr(tk.name);
-        addstr(" agrees to come by later tonight.");
+        addstr("After more discussion, ", gamelog);
+        addstr(tk.name, gamelog);
+        addstr(" agrees to come by later tonight.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -2099,64 +2148,64 @@ char talkAboutIssues(Creature &a, Creature &tk) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(y, 1);
         y++;
-        addstr(tk.name);
-        addstr(" responds,");
+        addstr(tk.name, gamelog);
+        addstr(" responds, ", gamelog);
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
 
         if(tk.type == CREATURE_MUTANT &&
                 tk.get_attribute(ATTRIBUTE_INTELLIGENCE, true) < 3) {
             move(y, 1);
             y++;
-            addstr("\"Ugh.  Pfft.\"");
+            addstr("\"Ugh.  Pfft.\"", gamelog);
         } else {
             if(tk.align == ALIGN_CONSERVATIVE && you_are_stupid) {
                 move(y, 1);
                 y++;
 
                 if(tk.type == CREATURE_GANGUNIT)
-                    addstr("\"Do you want me to arrest you?\"");
+                    addstr("\"Do you want me to arrest you?\"", gamelog);
                 else if(tk.type == CREATURE_DEATHSQUAD)
-                    addstr("\"If you don't shut up, I'm going to shoot you.\"");
+                    addstr("\"If you don't shut up, I'm going to shoot you.\"", gamelog);
                 else {
                     switch(LCSrandom(10)) {
                     case 0:
-                        addstr("\"Get away from me, you hippie.\"");
+                        addstr("\"Get away from me, you hippie.\"", gamelog);
                         break;
 
                     case 1:
-                        addstr("\"My heart aches for humanity.\"");
+                        addstr("\"My heart aches for humanity.\"", gamelog);
                         break;
 
                     case 2:
-                        addstr("\"I'm sorry, but I think I'm done talking to you.\"");
+                        addstr("\"I'm sorry, but I think I'm done talking to you.\"", gamelog);
                         break;
 
                     case 3:
-                        addstr("\"Do you need some help finding the exit?\"");
+                        addstr("\"Do you need some help finding the exit?\"", gamelog);
                         break;
 
                     case 4:
-                        addstr("\"People like you are the reason I'm on medication.\"");
+                        addstr("\"People like you are the reason I'm on medication.\"", gamelog);
                         break;
 
                     case 5:
-                        addstr("\"Everyone is entitled to be stupid, but you abuse the privilege.\"");
+                        addstr("\"Everyone is entitled to be stupid, but you abuse the privilege.\"", gamelog);
                         break;
 
                     case 6:
-                        addstr("\"I don't know what you're on, but I hope it's illegal.\"");
+                        addstr("\"I don't know what you're on, but I hope it's illegal.\"", gamelog);
                         break;
 
                     case 7:
-                        addstr("\"Don't you have a parole meeting to get to?\"");
+                        addstr("\"Don't you have a parole meeting to get to?\"", gamelog);
                         break;
 
                     case 8:
-                        addstr("\"Wow. Why am I talking to you again?\"");
+                        addstr("\"Wow. Why am I talking to you again?\"", gamelog);
                         break;
 
                     case 9:
-                        addstr("\"Were you dropped as a child?\"");
+                        addstr("\"Were you dropped as a child?\"", gamelog);
                         break;
                     }
                 }
@@ -2166,98 +2215,99 @@ char talkAboutIssues(Creature &a, Creature &tk) {
 
                 switch(lw) {
                 case LAW_ABORTION:
-                    addstr("\"Abortion is murder.\"");
+                    addstr("\"Abortion is murder.\"", gamelog);
                     break;
 
                 case LAW_ANIMALRESEARCH:
-                    addstr("\"Don't pretend animals are human.\"");
+                    addstr("\"Don't pretend animals are human.\"", gamelog);
                     break;
 
                 case LAW_POLICEBEHAVIOR:
-                    addstr("\"Only criminals have reason to fear police.\"");
+                    addstr("\"Only criminals have reason to fear police.\"", gamelog);
                     break;
 
                 case LAW_PRIVACY:
-                    addstr("\"National security is important.\"");
+                    addstr("\"National security is important.\"", gamelog);
                     break;
 
                 case LAW_DEATHPENALTY:
-                    addstr("\"Some people deserve to die.\"");
+                    addstr("\"Some people deserve to die.\"", gamelog);
                     break;
 
                 case LAW_NUCLEARPOWER:
-                    addstr("\"Nuclear power is clean.\"");
+                    addstr("\"Nuclear power is clean.\"", gamelog);
                     break;
 
                 case LAW_POLLUTION:
-                    addstr("\"It's not that bad.\"");
+                    addstr("\"It's not that bad.\"", gamelog);
                     break;
 
                 case LAW_LABOR:
-                    addstr("\"Trust the free market, it hasn't failed us yet.\"");
+                    addstr("\"Trust the free market, it hasn't failed us yet.\"", gamelog);
                     break;
 
                 case LAW_GAY:
-                    addstr("\"Homosexuality is a sin.\"");
+                    addstr("\"Homosexuality is a sin.\"", gamelog);
                     break;
 
                 case LAW_CORPORATE:
-                    addstr("\"Corporations are part of capitalism.\"");
+                    addstr("\"Corporations are part of capitalism.\"", gamelog);
                     break;
 
                 case LAW_FREESPEECH:
-                    addstr("\"Don't be offensive and you'll be fine.\"");
+                    addstr("\"Don't be offensive and you'll be fine.\"", gamelog);
                     break;
 
                 case LAW_FLAGBURNING:
-                    addstr("\"That flag is the sacred symbol of our country.\"");
+                    addstr("\"That flag is the sacred symbol of our country.\"", gamelog);
                     break;
 
                 case LAW_TAX:
-                    addstr("\"I want to pay lower taxes.\"");
+                    addstr("\"I want to pay lower taxes.\"", gamelog);
                     break;
 
                 case LAW_GUNCONTROL:
-                    addstr("\"Without guns, we're slaves to the Government.\"");
+                    addstr("\"Without guns, we're slaves to the Government.\"", gamelog);
                     break;
 
                 case LAW_WOMEN:
-                    addstr("\"Why don't you go burn a bra or something?\"");
+                    addstr("\"Why don't you go burn a bra or something?\"", gamelog);
                     break;
 
                 case LAW_CIVILRIGHTS:
-                    addstr("\"Reverse discrimination is still discrimination.\"");
+                    addstr("\"Reverse discrimination is still discrimination.\"", gamelog);
                     break;
 
                 case LAW_DRUGS:
-                    addstr("\"Drugs are a terrible influence on society.\"");
+                    addstr("\"Drugs are a terrible influence on society.\"", gamelog);
                     break;
 
                 case LAW_IMMIGRATION:
-                    addstr("\"Immigration undermines our economy and culture.\"");
+                    addstr("\"Immigration undermines our economy and culture.\"", gamelog);
                     break;
 
                 case LAW_ELECTIONS:
-                    addstr("\"Unregulated campaigning is a matter of free speech.\"");
+                    addstr("\"Unregulated campaigning is a matter of free speech.\"", gamelog);
                     break;
 
                 case LAW_MILITARY:
-                    addstr("\"The military protects us and enables our way of life.\"");
+                    addstr("\"The military protects us and enables our way of life.\"", gamelog);
                     break;
 
                 case LAW_TORTURE:
-                    addstr("\"The terrorists would do worse to us.\"");
+                    addstr("\"The terrorists would do worse to us.\"", gamelog);
                     break;
                 }
             } else {
                 move(y, 1);
                 y++;
-                addstr("\"Whatever.\"");
+                addstr("\"Whatever.\"", gamelog);
             }
         }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        addstr(" <turns away>");
+        addstr(" <turns away>", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -2275,10 +2325,11 @@ char talkInCombat(Creature &a, Creature &tk) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(9, 1);
-    addstr(a.name);
-    addstr(" talks to ");
-    addstr(tk.name);
-    addstr(":");
+    addstr(a.name, gamelog);
+    addstr(" talks to ", gamelog);
+    addstr(tk.name, gamelog);
+    addstr(":", gamelog);
+    gamelog.newline();
 
     int c = 0;
     int hostages = 0;
@@ -2357,8 +2408,8 @@ char talkInCombat(Creature &a, Creature &tk) {
     if(c == 'a') {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr(a.name);
-        addstr(":");
+        addstr(a.name, gamelog);
+        addstr(": ", gamelog);
         move(17, 1);
         set_color(COLOR_GREEN, COLOR_BLACK, 1);
 
@@ -2368,14 +2419,14 @@ char talkInCombat(Creature &a, Creature &tk) {
             if(slogan[0] != '"')
                 addch('"');
 
-            addstr(slogan);
+            addstr(slogan, gamelog);
             int last = strlen(slogan);
 
             if(last && slogan[last - 1] != '"' && slogan[last - 1] != '!' && slogan[last - 1] != '.' && slogan[last - 1] != '?')
                 addch('!');
 
             if(last && slogan[last - 1] != '"')
-                addstr("\"");
+                addstr("\"", gamelog);
 
             if(!sitestory->claimed)
                 sitestory->claimed = 1;
@@ -2384,15 +2435,15 @@ char talkInCombat(Creature &a, Creature &tk) {
         }
 
         case 1:
-            addstr("Die you Conservative dogs!");
+            addstr("Die you Conservative dogs!", gamelog);
             break;
 
         case 2:
-            addstr("We're the Liberal Crime Squad!");
+            addstr("We're the Liberal Crime Squad!", gamelog);
             break;
 
         case 3:
-            addstr("Praying won't help you now!");
+            addstr("Praying won't help you now!", gamelog);
             break;
         }
 
@@ -2420,31 +2471,31 @@ char talkInCombat(Creature &a, Creature &tk) {
 
                     clearmessagearea();
                     move(16, 1);
-                    addstr(encounter[e].name);
+                    addstr(encounter[e].name, gamelog);
 
                     switch(LCSrandom(6)) {
                     case 0:
-                        addstr(" chickens out!");
+                        addstr(" chickens out!", gamelog);
                         break;
 
                     case 1:
-                        addstr(" backs off!");
+                        addstr(" backs off!", gamelog);
                         break;
 
                     case 2:
-                        addstr(" doesn't want to die!");
+                        addstr(" doesn't want to die!", gamelog);
                         break;
 
                     case 3:
-                        addstr(" is out of there!");
+                        addstr(" is out of there!", gamelog);
                         break;
 
                     case 4:
-                        addstr(" has a family!");
+                        addstr(" has a family!", gamelog);
                         break;
 
                     case 5:
-                        addstr(" is too young to die!");
+                        addstr(" is too young to die!", gamelog);
                         break;
                     }
 
@@ -2458,18 +2509,18 @@ char talkInCombat(Creature &a, Creature &tk) {
     } else if(c == 'b') {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr(a.name);
-        addstr(":");
+        addstr(a.name, gamelog);
+        addstr(": ", gamelog);
         set_color(COLOR_GREEN, COLOR_BLACK, 1);
         move(17, 1);
 
         switch(LCSrandom(6)) {
         case 0:
-            addstr("\"Back off or the hostage dies!\"");
+            addstr("\"Back off or the hostage dies!\"", gamelog);
             break;
 
         case 1:
-            addstr("\"Don't push the LCS!\"");
+            addstr("\"Don't push the LCS!\"", gamelog);
 
             if(!sitestory->claimed)
                 sitestory->claimed = 1;
@@ -2477,25 +2528,27 @@ char talkInCombat(Creature &a, Creature &tk) {
             break;
 
         case 2:
-            addstr("\"Hostage says you better leave!\"");
+            addstr("\"Hostage says you better leave!\"", gamelog);
             break;
 
         case 3:
-            addstr("\"I'll do it! I'll kill this one!\"");
+            addstr("\"I'll do it! I'll kill this one!\"", gamelog);
             break;
 
         case 4:
-            addstr("\"You gonna tell the family you pushed me?!\"");
+            addstr("\"You gonna tell the family you pushed me?!\"", gamelog);
             break;
 
         case 5:
             if(law[LAW_FREESPEECH] == -2)
-                addstr("\"Don't [play] with me!\"");
+                addstr("\"Don't [play] with me!\"", gamelog);
             else
-                addstr("\"Don't fuck with me!\"");
+                addstr("\"Don't fuck with me!\"", gamelog);
 
             break;
         }
+
+        gamelog.newline();
 
         sitecrime += 5;
         criminalizeparty(LAWFLAG_KIDNAPPING);
@@ -2527,8 +2580,8 @@ char talkInCombat(Creature &a, Creature &tk) {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         clearmessagearea();
                         move(16, 1);
-                        addstr(encounter[e].name);
-                        addstr(":");
+                        addstr(encounter[e].name, gamelog);
+                        addstr(": ", gamelog);
                         move(17, 1);
 
                         if(encounter[e].align != ALIGN_CONSERVATIVE) {
@@ -2536,23 +2589,23 @@ char talkInCombat(Creature &a, Creature &tk) {
 
                             switch(LCSrandom(5)) {
                             case 0:
-                                addstr("\"Let them go. Think about what you're doing.\"");
+                                addstr("\"Let them go. Think about what you're doing.\"", gamelog);
                                 break;
 
                             case 1:
-                                addstr("\"Calm down, and let's talk about this.\"");
+                                addstr("\"Calm down, and let's talk about this.\"", gamelog);
                                 break;
 
                             case 2:
-                                addstr("\"Wait! We can work this out.\"");
+                                addstr("\"Wait! We can work this out.\"", gamelog);
                                 break;
 
                             case 3:
-                                addstr("\"This isn't right, think about it.\"");
+                                addstr("\"This isn't right, think about it.\"", gamelog);
                                 break;
 
                             case 4:
-                                addstr("\"Slow down. We can work this out.\"");
+                                addstr("\"Slow down. We can work this out.\"", gamelog);
                                 break;
                             }
                         } else {
@@ -2565,54 +2618,56 @@ char talkInCombat(Creature &a, Creature &tk) {
                                     && encounter[e].align == ALIGN_CONSERVATIVE) {
                                 switch(LCSrandom(5)) {
                                 case 0:
-                                    addstr("\"Hahahaha...\"");
+                                    addstr("\"Hahahaha...\"", gamelog);
                                     break;
 
                                 case 1:
-                                    addstr("\"You think you can scare me?\"");
+                                    addstr("\"You think you can scare me?\"", gamelog);
                                     break;
 
                                 case 2:
-                                    addstr("\"You're not getting out of here alive.\"");
+                                    addstr("\"You're not getting out of here alive.\"", gamelog);
                                     break;
 
                                 case 3:
-                                    addstr("\"What's wrong?  Need your diaper changed?\"");
+                                    addstr("\"What's wrong?  Need your diaper changed?\"", gamelog);
                                     break;
 
                                 case 4:
-                                    addstr("\"Three... two...\"");
+                                    addstr("\"Three... two...\"", gamelog);
                                     break;
                                 }
                             } else {
                                 switch(LCSrandom(5)) {
                                 case 0:
                                     if(hostages > 1)
-                                        addstr("\"Release your hostages, and nobody gets hurt.\"");
+                                        addstr("\"Release your hostages, and nobody gets hurt.\"", gamelog);
                                     else
-                                        addstr("\"Let the hostage go, and nobody gets hurt.\"");
+                                        addstr("\"Let the hostage go, and nobody gets hurt.\"", gamelog);
 
                                     break;
 
                                 case 1:
-                                    addstr("\"You got about five seconds to back down.\"");
+                                    addstr("\"You got about five seconds to back down.\"", gamelog);
                                     break;
 
                                 case 2:
-                                    addstr("\"You want to do this the hard way?\"");
+                                    addstr("\"You want to do this the hard way?\"", gamelog);
                                     break;
 
                                 case 3:
-                                    addstr("\"Big mistake.\"");
+                                    addstr("\"Big mistake.\"", gamelog);
                                     break;
 
                                 case 4:
-                                    addstr("\"Release them, and I'll let you go.\"");
+                                    addstr("\"Release them, and I'll let you go.\"", gamelog);
                                     break;
                                 }
                             }
 
                         }
+
+                        gamelog.newline();
 
                         refresh();
                         getch();
@@ -2627,7 +2682,8 @@ char talkInCombat(Creature &a, Creature &tk) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 clearmessagearea();
                 move(16, 1);
-                addstr("The ploy works! The Conservatives back off.");
+                addstr("The ploy works! The Conservatives back off.", gamelog);
+                gamelog.newline();
 
                 for(int i = ENCMAX; i >= 0; i--) {
                     if(encounter[i].exists &&
@@ -2692,19 +2748,23 @@ char talkInCombat(Creature &a, Creature &tk) {
 
                     if(executer->get_weapon().is_ranged()
                             && executer->get_weapon().get_ammoamount() > 0) {
-                        addstr("BLAM!");
+                        addstr("BLAM!", gamelog);
+                        gamelog.newline();
                         executer->get_weapon().decrease_ammo(1); //What if it doesn't use ammo? -XML
-                    } else
-                        addstr("CRUNCH!");
+                    } else {
+                        addstr("CRUNCH!", gamelog);
+                        gamelog.newline();
+                    }
 
                     refresh();
                     getch();
                     move(17, 1);
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                    addstr(executer->name);
-                    addstr(" drops ");
-                    addstr(executer->prisoner->name);
-                    addstr("'s body.");
+                    addstr(executer->name, gamelog);
+                    addstr(" drops ", gamelog);
+                    addstr(executer->prisoner->name, gamelog);
+                    addstr("'s body.", gamelog);
+                    gamelog.newline();
 
                     addjuice(*executer, -5, -50); // DE-juice for this shit
                     sitecrime += 10;
@@ -2730,37 +2790,39 @@ char talkInCombat(Creature &a, Creature &tk) {
                         clearmessagearea();
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(16, 1);
-                        addstr(encounter[e].name);
-                        addstr(":");
+                        addstr(encounter[e].name, gamelog);
+                        addstr(": ", gamelog);
                         set_color(COLOR_RED, COLOR_BLACK, 1);
                         move(17, 1);
 
                         if(law[LAW_FREESPEECH] > ALIGN_ARCHCONSERVATIVE)
-                            addstr("\"Fuck! ");
+                            addstr("\"Fuck! ", gamelog);
                         else
-                            addstr("\"[No!] ");
+                            addstr("\"[No!] ", gamelog);
 
                         switch(LCSrandom(5)) {
                         case 0:
-                            addstr("Okay, okay, you win!\"");
+                            addstr("Okay, okay, you win!\"", gamelog);
                             break;
 
                         case 1:
-                            addstr("Don't shoot!\"");
+                            addstr("Don't shoot!\"", gamelog);
                             break;
 
                         case 2:
-                            addstr("Do you even care?!\"");
+                            addstr("Do you even care?!\"", gamelog);
                             break;
 
                         case 3:
-                            addstr("Heartless!\"");
+                            addstr("Heartless!\"", gamelog);
                             break;
 
                         case 4:
-                            addstr("It's not worth it!\"");
+                            addstr("It's not worth it!\"", gamelog);
                             break;
                         }
+
+                        gamelog.newline();
 
                         for(int i = ENCMAX; i >= 0; i--) {
                             if(encounter[i].exists && encounter[i].enemy() && encounter[i].alive)
@@ -2773,36 +2835,38 @@ char talkInCombat(Creature &a, Creature &tk) {
                 } else if(c == 'b') {
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr(a.name);
-                    addstr(":");
+                    addstr(a.name, gamelog);
+                    addstr(": ", gamelog);
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
                     move(17, 1);
 
                     switch(LCSrandom(5)) {
                     case 0:
                         if(hostages > 1)
-                            addstr("\"Back off and we'll let the hostages go.\"");
+                            addstr("\"Back off and we'll let the hostages go.\"", gamelog);
                         else
-                            addstr("\"Back off and the hostage goes free.\"");
+                            addstr("\"Back off and the hostage goes free.\"", gamelog);
 
                         break;
 
                     case 1:
-                        addstr("\"Freedom for freedom, understand?\"");
+                        addstr("\"Freedom for freedom, understand?\"", gamelog);
                         break;
 
                     case 2:
-                        addstr("\"Let me go in peace, okay?\"");
+                        addstr("\"Let me go in peace, okay?\"", gamelog);
                         break;
 
                     case 3:
-                        addstr("\"Let's make a trade, then.\"");
+                        addstr("\"Let's make a trade, then.\"", gamelog);
                         break;
 
                     case 4:
-                        addstr("\"I just want out of here, yeah?\"");
+                        addstr("\"I just want out of here, yeah?\"", gamelog);
                         break;
                     }
+
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -2815,32 +2879,34 @@ char talkInCombat(Creature &a, Creature &tk) {
                         clearmessagearea();
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(16, 1);
-                        addstr(encounter[e].name);
-                        addstr(":");
+                        addstr(encounter[e].name, gamelog);
+                        addstr(": ", gamelog);
                         set_color(COLOR_RED, COLOR_BLACK, 1);
                         move(17, 1);
 
                         switch(LCSrandom(5)) {
                         case 0:
-                            addstr("\"Do I look like a loving person?\"");
+                            addstr("\"Do I look like a loving person?\"", gamelog);
                             break;
 
                         case 1:
-                            addstr("\"You don't take a hint, do you?\"");
+                            addstr("\"You don't take a hint, do you?\"", gamelog);
                             break;
 
                         case 2:
-                            addstr("\"I'm doing the world a favor.\"");
+                            addstr("\"I'm doing the world a favor.\"", gamelog);
                             break;
 
                         case 3:
-                            addstr("\"That's so pathetic...\"");
+                            addstr("\"That's so pathetic...\"", gamelog);
                             break;
 
                         case 4:
-                            addstr("\"It's a deal.\"");
+                            addstr("\"It's a deal.\"", gamelog);
                             break;
                         }
+
+                        gamelog.newline();
 
                         refresh();
                         getch();
@@ -2848,29 +2914,30 @@ char talkInCombat(Creature &a, Creature &tk) {
                         clearmessagearea();
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(16, 1);
-                        addstr(encounter[e].name);
-                        addstr(":");
+                        addstr(encounter[e].name, gamelog);
+                        addstr(": ", gamelog);
                         set_color(COLOR_RED, COLOR_BLACK, 1);
                         move(17, 1);
 
                         switch(LCSrandom(4)) {
                         case 0:
-                            addstr("\"Right. Let's do it.\"");
+                            addstr("\"Right. Let's do it.\"", gamelog);
                             break;
 
                         case 1:
-                            addstr("\"No further conditions.\"");
+                            addstr("\"No further conditions.\"", gamelog);
                             break;
 
                         case 2:
-                            addstr("\"Let them go, and we're done.\"");
+                            addstr("\"Let them go, and we're done.\"", gamelog);
                             break;
 
                         case 3:
-                            addstr("\"No tricks, okay?\"");
+                            addstr("\"No tricks, okay?\"", gamelog);
                             break;
                         }
 
+                        gamelog.newline();
                         refresh();
                         getch();
 
@@ -2887,9 +2954,11 @@ char talkInCombat(Creature &a, Creature &tk) {
                         juiceparty(15, 200); // Instant juice for successful hostage negotiation
 
                         if(hostages > 1)
-                            addstr("The squad releases all hostages in the trade.");
+                            addstr("The squad releases all hostages in the trade.", gamelog);
                         else
-                            addstr("The squad releases the hostage in the trade.");
+                            addstr("The squad releases the hostage in the trade.", gamelog);
+
+                        gamelog.newline();
 
                         for(int i = 0; i < 6; i++) {
                             if(activesquad->squad[i] &&
@@ -2909,8 +2978,9 @@ char talkInCombat(Creature &a, Creature &tk) {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             clearmessagearea();
             move(16, 1);
-            addstr(tk.name);
-            addstr(" isn't interested in your pathetic threats.");
+            addstr(tk.name, gamelog);
+            addstr(" isn't interested in your pathetic threats.", gamelog);
+            gamelog.newline();
             refresh();
             getch();
         }
@@ -2919,42 +2989,42 @@ char talkInCombat(Creature &a, Creature &tk) {
         move(16, 1);
 
         if(location[cursite]->siege.siege) {
-            addstr(a.name);
-            addstr(" ");
+            addstr(a.name, gamelog);
+            addstr(" ", gamelog);
 
             switch(location[cursite]->siege.siegetype) {
             case SIEGE_POLICE:
-                addstr("pretends to be part of a police raid.");
+                addstr("pretends to be part of a police raid.", gamelog);
                 break;
 
             case SIEGE_CIA:
-                addstr("pretends to be a Secret Agent.");
+                addstr("pretends to be a Secret Agent.", gamelog);
                 break;
 
             case SIEGE_CCS:
             case SIEGE_HICKS:
                 switch(LCSrandom(2)) {
                 case 0:
-                    addstr("pretends to be Mountain");
+                    addstr("pretends to be Mountain ", gamelog);
                     move(17, 1);
-                    addstr("like Patrick Swayze in Next of Kin.");
+                    addstr("like Patrick Swayze in Next of Kin.", gamelog);
                     break;
 
                 case 1:
-                    addstr("squeals like Ned Beatty");
+                    addstr("squeals like Ned Beatty ", gamelog);
                     move(17, 1);
-                    addstr("in Deliverance.");
+                    addstr("in Deliverance.", gamelog);
                     break;
                 }
 
                 break;
 
             case SIEGE_CORPORATE:
-                addstr("pretends to be a mercenary.");
+                addstr("pretends to be a mercenary.", gamelog);
                 break;
 
             case SIEGE_FIREMEN:
-                addstr("lights a match and throws it on the ground.");
+                addstr("lights a match and throws it on the ground. ", gamelog);
 
                 if((!(levelmap[locx][locy][locz].flag & SITEBLOCK_FIRE_END) ||
                         !(levelmap[locx][locy][locz].flag & SITEBLOCK_FIRE_PEAK) ||
@@ -2962,9 +3032,10 @@ char talkInCombat(Creature &a, Creature &tk) {
                         !(levelmap[locx][locy][locz].flag & SITEBLOCK_DEBRIS)) && !LCSrandom(10)) {
                     levelmap[locx][locy][locz].flag |= SITEBLOCK_FIRE_START;
                     move(17, 1);
-                    addstr("The carpet smolders, then bursts into flame.");
+                    addstr("The carpet smolders, then bursts into flame.", gamelog);
+                    gamelog.newline();
                     move(18, 1);
-                    addstr("Perhaps that was a bad idea...");
+                    addstr("Perhaps that was a bad idea...", gamelog);
                 }
 
                 break;
@@ -2975,34 +3046,36 @@ char talkInCombat(Creature &a, Creature &tk) {
             if(a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" ||
                     a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR" ||
                     a.get_armor().get_itemtypename() == "SWATARMOR")
-                addstr("\"The situation is under control.\"");
+                addstr("\"The situation is under control.\"", gamelog);
             else if (a.get_armor().get_itemtypename() == "ARMOR_BUNKERGEAR") {
                 if(siteonfire)
-                    addstr("\"Fire! Evacuate immediately!\"");
+                    addstr("\"Fire! Evacuate immediately!\"", gamelog);
                 else
-                    addstr("\"Everything's in check.\"");
+                    addstr("\"Everything's in check.\"", gamelog);
             }
 
             else if(a.get_armor().get_itemtypename() == "ARMOR_LABCOAT")
-                addstr("\"Make way, I'm a doctor!\"");
+                addstr("\"Make way, I'm a doctor!\"", gamelog);
 
             else if(a.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM")
-                addstr("\"Non-targets please leave the site.\"");
+                addstr("\"Non-targets please leave the site.\"", gamelog);
 
             else if(a.get_armor().get_itemtypename() == "ARMOR_MITHRIL") {
-                addstr(a.name);
-                addstr(" engraves ");
+                addstr(a.name, gamelog);
+                addstr(" engraves ", gamelog);
                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
-                addstr("Elbereth");     //Fanciful multicolor message
+                addstr("Elbereth", gamelog);     //Fanciful multicolor message
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                addstr(" on the floor.");
+                addstr(" on the floor.", gamelog);
             } else {
-                addstr(a.name);
-                addstr(" talks like a Conservative");
+                addstr(a.name, gamelog);
+                addstr(" talks like a Conservative ", gamelog);
                 move(17, 1);
-                addstr("and pretends to belong here.");
+                addstr("and pretends to belong here.", gamelog);
             }
         }
+
+        gamelog.newline();
 
         refresh();
         getch();
@@ -3032,16 +3105,16 @@ char talkInCombat(Creature &a, Creature &tk) {
             move(16, 1);
 
             if(encounter[e].type == CREATURE_HICK) {
-                addstr("But ");
-                addstr(encounter[e].name);
-                addstr(" weren't born yesterday.");
+                addstr("But ", gamelog);
+                addstr(encounter[e].name, gamelog);
+                addstr(" weren't born yesterday.", gamelog);
             } else {
-                addstr(encounter[e].name);
+                addstr(encounter[e].name, gamelog);
 
                 if(law[LAW_FREESPEECH] == ALIGN_ARCHCONSERVATIVE)
-                    addstr(" is not fooled by that [act].");
+                    addstr(" is not fooled by that [act].", gamelog);
                 else
-                    addstr(" is not fooled by that crap.");
+                    addstr(" is not fooled by that crap.", gamelog);
             }
 
             refresh();
@@ -3051,7 +3124,7 @@ char talkInCombat(Creature &a, Creature &tk) {
 
             set_color(COLOR_GREEN, COLOR_BLACK, 1);
             move(16, 1);
-            addstr("The Enemy is fooled and departs.");
+            addstr("The Enemy is fooled and departs.", gamelog);
 
             refresh();
             getch();
@@ -3062,10 +3135,13 @@ char talkInCombat(Creature &a, Creature &tk) {
                     delenc(e, 0);
             }
         }
+
+        gamelog.newline();
     } else {
         move(14, 1);
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-        addstr("The Squad is arrested.");
+        addstr("The Squad is arrested.", gamelog);
+        gamelog.newline();
         getch();
 
         int stolen = 0;
@@ -3233,21 +3309,23 @@ char heyMisterDog(Creature &a, Creature &tk) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(10, 1);
-    addstr(activesquad->squad[bestp]->name);
-    addstr(" says, ");
+    addstr(activesquad->squad[bestp]->name, gamelog);
+    addstr(" says, ", gamelog);
     move(11, 1);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
-    addstr(pitch);
+    addstr(pitch, gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(13, 1);
-    addstr(tk.name);
-    addstr(" says, ");
+    addstr(tk.name, gamelog);
+    addstr(" says, ", gamelog);
     move(14, 1);
     set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    addstr(response);
+    addstr(response, gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
@@ -3403,21 +3481,23 @@ char heyMisterMonster(Creature &a, Creature &tk) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(10, 1);
-    addstr(activesquad->squad[bestp]->name);
-    addstr(" says, ");
+    addstr(activesquad->squad[bestp]->name, gamelog);
+    addstr(" says, ", gamelog);
     move(11, 1);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
-    addstr(pitch);
+    addstr(pitch, gamelog);
+    gamelog.newline();
     refresh();
     getch();
 
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(13, 1);
-    addstr(tk.name);
-    addstr(" says, ");
+    addstr(tk.name, gamelog);
+    addstr(" says, ", gamelog);
     move(14, 1);
     set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    addstr(response);
+    addstr(response, gamelog);
+    gamelog.newline();
     refresh();
     getch();
 

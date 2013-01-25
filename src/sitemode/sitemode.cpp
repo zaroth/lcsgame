@@ -75,18 +75,20 @@ void fight_subdued(void) {
     clearcommandarea();
     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
     move(16, 1);
-    addstr("The police subdue and arrest the squad.");
+    addstr("The police subdue and arrest the squad.", gamelog);
+    gamelog.newline();
 
     if(hostagefreed > 0) {
         move(17, 1);
-        addstr("Your hostage");
+        addstr("Your hostage", gamelog);
 
         if(hostagefreed > 1)
-            addstr("s are free.");
+            addstr("s are free.", gamelog);
         else
-            addstr(" is free.");
+            addstr(" is free.", gamelog);
     }
 
+    gamelog.newline();
     refresh();
     getch();
 }
@@ -1333,14 +1335,15 @@ void mode_site(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("You free ");
+                    addstr("You free ", gamelog);
 
                     if(followers > 1)
-                        addstr("some Oppressed Liberals");
+                        addstr("some Oppressed Liberals", gamelog);
                     else
-                        addstr("an Oppressed Liberal");
+                        addstr("an Oppressed Liberal", gamelog);
 
-                    addstr(" from the Conservatives.");
+                    addstr(" from the Conservatives.", gamelog);
+                    gamelog.newline();
 
                     if(actgot < followers) {
                         refresh();
@@ -1352,15 +1355,16 @@ void mode_site(void) {
                         move(16, 1);
 
                         if(actgot == 0 && followers > 1)
-                            addstr("They all leave");
+                            addstr("They all leave", gamelog);
                         else if(followers - actgot > 1)
-                            addstr("Some leave");
+                            addstr("Some leave", gamelog);
                         else if(actgot == 0)
-                            addstr("The Liberal leaves");
+                            addstr("The Liberal leaves", gamelog);
                         else
-                            addstr("One Liberal leaves");
+                            addstr("One Liberal leaves", gamelog);
 
-                        addstr(" you, feeling safer getting out alone.");
+                        addstr(" you, feeling safer getting out alone.", gamelog);
+                        gamelog.newline();
                     }
 
                     refresh();
@@ -1802,9 +1806,10 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 0);
                             move(16, 1);
-                            addstr("You find: ");
+                            addstr("You find: ", gamelog);
                             move(17, 1);
-                            addstr(s.c_str());
+                            addstr(s.c_str(), gamelog);
+                            gamelog.newline();
                             getch(); //wait for key press before clearing.
                         }
                     }
@@ -1945,7 +1950,8 @@ void mode_site(void) {
                         clearmessagearea();
                         set_color(COLOR_CYAN, COLOR_BLACK, 1);
                         move(16, 1);
-                        addstr("The squad sneaks past the conservatives!");
+                        addstr("The squad sneaks past the conservatives!", gamelog);
+                        gamelog.newline();
                         getch();
                     } else
                         enemyattack();
@@ -2165,7 +2171,8 @@ void mode_site(void) {
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(16, 1);
-                        addstr("The vault door is impenetrable.");
+                        addstr("The vault door is impenetrable.", gamelog);
+                        gamelog.newline();
 
                         refresh();
                         getch();
@@ -2190,7 +2197,8 @@ void mode_site(void) {
 
                                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                 move(16, 1);
-                                addstr("You try the door, but it is locked.");
+                                addstr("You try the door, but it is locked.", gamelog);
+                                gamelog.newline();
                                 move(17, 1);
                                 addstr("Try to pick the lock? (Yes or No)");
 
@@ -2234,12 +2242,13 @@ void mode_site(void) {
 
                                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                 move(16, 1);
-                                addstr("You shake the handle but it is ");
+                                addstr("You shake the handle but it is ", gamelog);
 
                                 if(has_security == true)
-                                    addstr("still ");
+                                    addstr("still ", gamelog);
 
-                                addstr("locked.");
+                                addstr("locked.", gamelog);
+                                gamelog.newline();
                                 move(17, 1);
                                 addstr("Force it open? (Yes or No)");
 
@@ -2264,7 +2273,8 @@ void mode_site(void) {
                                             clearmessagearea(false);
                                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                             move(16, 1);
-                                            addstr("An alarm sounds!");
+                                            addstr("An alarm sounds!", gamelog);
+                                            gamelog.newline();
                                             sitealarm = 1;
                                             refresh();
                                             getch();
@@ -2292,7 +2302,8 @@ void mode_site(void) {
                                 clearmessagearea(false);
                                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                 move(16, 1);
-                                addstr("An alarm sounds!");
+                                addstr("An alarm sounds!", gamelog);
+                                gamelog.newline();
                                 sitealarm = 1;
                                 refresh();
                                 getch();
@@ -2344,7 +2355,8 @@ void mode_site(void) {
 
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("The CCS has been broken!");
+                    addstr("The CCS has been broken!", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -2780,9 +2792,10 @@ void mode_site(void) {
 
                         set_color(COLOR_GREEN, COLOR_BLACK, 1);
                         move(16, 1);
-                        addstr("The Conservatives have shrunk back under");
+                        addstr("The Conservatives have shrunk back under ", gamelog);
                         move(17, 1);
-                        addstr("the power of your Liberal Convictions!");
+                        addstr("the power of your Liberal Convictions!", gamelog);
+                        gamelog.newline();
 
                         refresh();
                         getch();
@@ -2804,7 +2817,8 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The computer has been unplugged.");
+                            addstr("The computer has been unplugged.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2812,7 +2826,8 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The computer is occupied.");
+                            addstr("The computer is occupied.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2830,7 +2845,8 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("Some people are hiding under the table.");
+                            addstr("Some people are hiding under the table.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2840,7 +2856,8 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The table is occupied.");
+                            addstr("The table is occupied.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2855,7 +2872,8 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The bench is empty.");
+                            addstr("The bench is empty.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2863,7 +2881,8 @@ void mode_site(void) {
                             clearmessagearea();
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The there are people sitting here.");
+                            addstr("There are people sitting here.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2901,11 +2920,12 @@ void mode_site(void) {
                             move(16, 1);
 
                             if(law[LAW_FREESPEECH] != ALIGN_ARCHCONSERVATIVE)
-                                addstr("Damn! ");
+                                addstr("Damn! ", gamelog);
                             else
-                                addstr("[Rats!] ");
+                                addstr("[Rats!] ", gamelog);
 
-                            addstr("The CEO must have fled to a panic room.");
+                            addstr("The CEO must have fled to a panic room.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2915,7 +2935,8 @@ void mode_site(void) {
                                 clearmessagearea(false);
                                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                 move(16, 1);
-                                addstr("The CEO is in his study.");
+                                addstr("The CEO is in his study.", gamelog);
+                                gamelog.newline();
                                 levelmap[locx][locy][locz].special = -1;
                                 refresh();
                                 getch();
@@ -2932,7 +2953,8 @@ void mode_site(void) {
                                 clearmessagearea(false);
                                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                                 move(16, 1);
-                                addstr("The CEO's study lies empty.");
+                                addstr("The CEO's study lies empty.", gamelog);
+                                gamelog.newline();
                                 levelmap[locx][locy][locz].special = -1;
                                 refresh();
                                 getch();
@@ -2949,7 +2971,8 @@ void mode_site(void) {
                             clearmessagearea(false);
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The landlord is out of the office.");
+                            addstr("The landlord is out of the office.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -2957,7 +2980,8 @@ void mode_site(void) {
                             clearmessagearea(false);
                             set_color(COLOR_WHITE, COLOR_BLACK, 1);
                             move(16, 1);
-                            addstr("The landlord is in.");
+                            addstr("The landlord is in.", gamelog);
+                            gamelog.newline();
                             levelmap[locx][locy][locz].special = -1;
                             refresh();
                             getch();
@@ -3009,25 +3033,27 @@ void mode_site(void) {
 
                             if(numenc == 1) {
                                 if(squadmoved)
-                                    addstr("There is someone up ahead.");
+                                    addstr("There is someone up ahead.", gamelog);
                                 else
-                                    addstr("There is someone passing by.");
+                                    addstr("There is someone passing by.", gamelog);
                             } else if(numenc <= 3) {
                                 if(squadmoved)
-                                    addstr("There are a few people up ahead.");
+                                    addstr("There are a few people up ahead.", gamelog);
                                 else
-                                    addstr("There are a few people passing by.");
+                                    addstr("There are a few people passing by.", gamelog);
                             } else if(numenc <= 6) {
                                 if(squadmoved)
-                                    addstr("There is a group of people up ahead.");
+                                    addstr("There is a group of people up ahead.", gamelog);
                                 else
-                                    addstr("There is a group of people passing by.");
+                                    addstr("There is a group of people passing by.", gamelog);
                             } else {
                                 if(squadmoved)
-                                    addstr("There is a crowd of people up ahead.");
+                                    addstr("There is a crowd of people up ahead.", gamelog);
                                 else
-                                    addstr("There is a crowd of people passing by.");
+                                    addstr("There is a crowd of people passing by.", gamelog);
                             }
+
+                            gamelog.newline();
 
                             refresh();
                             getch();
@@ -3105,12 +3131,14 @@ void resolvesite(void) {
                     pool[p]->flag &= ~CREATUREFLAG_SLEEPER;
                     erase();
                     move(8, 1);
-                    addstr("Sleeper ");
-                    addstr(pool[p]->name);
-                    addstr(" has been outed by your bold attack!");
+                    addstr("Sleeper ", gamelog);
+                    addstr(pool[p]->name, gamelog);
+                    addstr(" has been outed by your bold attack!", gamelog);
+                    gamelog.newline();
 
                     move(10, 1);
-                    addstr("The Liberal is now at your command as a normal squad member.");
+                    addstr("The Liberal is now at your command as a normal squad member.", gamelog);
+                    gamelog.newline();
 
                     pool[p]->base = activesquad->squad[0]->base;
                     pool[p]->location = pool[p]->base;

@@ -117,7 +117,7 @@ void show_interrogation_sidebar( Creature *cr, Creature *a ) {
         addstr(a->name);
         addstr(".");
     } else if(rapport[a->id] > -1) {
-        addstr("The Conservative is uncooperative");
+        addstr("The Conservative is uncooperative ");
         move(++y, 40);
         addstr("toward ");
         addstr(a->name);
@@ -188,8 +188,9 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(8, 1);
-                    addstr(cr->name);
-                    addstr(" has escaped!");
+                    addstr(cr->name, gamelog);
+                    addstr(" has escaped!", gamelog);
+                    gamelog.nextMessage();
                     location[cr->location]->siege.timeuntillocated = 3;
                     refresh();
                     getch();
@@ -446,12 +447,13 @@ void tendhostage(Creature *cr, char &clearformess) {
             erase();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(0, 0);
-            addstr("The Final Education of ");
-            addstr(cr->name);
-            addstr(": Day ");
+            addstr("The Final Education of ", gamelog);
+            addstr(cr->name, gamelog);
+            addstr(": Day ", gamelog);
             char num[20];
             itoa(cr->joindays, num, 10);
-            addstr(num);
+            addstr(num, gamelog);
+            gamelog.newline();
 
             a = NULL;
 
@@ -471,30 +473,30 @@ void tendhostage(Creature *cr, char &clearformess) {
                 stat_kills++;
                 move(y, 0);
                 y++;
-                addstr(a->name);
-                addstr(" executes ");
-                addstr(cr->name);
-                addstr(" by ");
+                addstr(a->name, gamelog);
+                addstr(" executes ", gamelog);
+                addstr(cr->name, gamelog);
+                addstr(" by ", gamelog);
 
                 switch(LCSrandom(5)) {
                 case 0:
-                    addstr("strangling it to death.");
+                    addstr("strangling it to death.", gamelog);
                     break;
 
                 case 1:
-                    addstr("beating it to death.");
+                    addstr("beating it to death.", gamelog);
                     break;
 
                 case 2:
-                    addstr("burning photos of Reagan in front of it.");
+                    addstr("burning photos of Reagan in front of it.", gamelog);
                     break;
 
                 case 3:
-                    addstr("telling it that taxes have been increased.");
+                    addstr("telling it that taxes have been increased.", gamelog);
                     break;
 
                 case 4:
-                    addstr("telling it its parents wanted to abort it.");
+                    addstr("telling it its parents wanted to abort it.", gamelog);
                     break;
                 }
 
@@ -503,50 +505,55 @@ void tendhostage(Creature *cr, char &clearformess) {
                 getch();
 
                 if(LCSrandom(a->get_attribute(ATTRIBUTE_HEART, false)) > LCSrandom(3)) {
+                    gamelog.newline();
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
                     move(y, 0);
                     y++;
-                    addstr(a->name);
-                    addstr(" feels sick to the stomach afterward and ");
+                    addstr(a->name, gamelog);
+                    addstr(" feels sick to the stomach afterward and ", gamelog);
                     a->adjust_attribute(ATTRIBUTE_HEART, -1);
                     move(y, 0);
                     y++;
 
                     switch(LCSrandom(4)) {
                     case 0:
-                        addstr("throws up in a trash can.");
+                        addstr("throws up in a trash can.", gamelog);
                         break;
 
                     case 1:
-                        addstr("gets drunk, eventually falling asleep.");
+                        addstr("gets drunk, eventually falling asleep.", gamelog);
                         break;
 
                     case 2:
-                        addstr("curls up in a ball, crying softly.");
+                        addstr("curls up in a ball, crying softly.", gamelog);
                         break;
 
                     case 3:
-                        addstr("shoots up and collapses in a heap on the floor.");
+                        addstr("shoots up and collapses in a heap on the floor.", gamelog);
                         break;
                     }
                 } else if(!LCSrandom(3)) {
+                    gamelog.newline();
                     set_color(COLOR_CYAN, COLOR_BLACK, 1);
                     move(y, 0);
                     y++;
-                    addstr(a->name);
-                    addstr(" grows colder.");
+                    addstr(a->name, gamelog);
+                    addstr(" grows colder.", gamelog);
                     a->adjust_attribute(ATTRIBUTE_WISDOM, +1);
                 }
+
+                gamelog.nextMessage();
             } else {
                 set_color(COLOR_YELLOW, COLOR_BLACK, 0);
                 move(y, 0);
                 y++;
-                addstr("There is no one able to get up the nerve to");
+                addstr("There is no one able to get up the nerve to ", gamelog);
                 move(y, 0);
                 y++;
-                addstr("execute ");
-                addstr(cr->name);
-                addstr(" in cold blood.");
+                addstr("execute ", gamelog);
+                addstr(cr->name, gamelog);
+                addstr(" in cold blood.", gamelog);
+                gamelog.nextMessage();
 
                 //Interrogation will continue as planned, with
                 //these restrictions:
@@ -587,30 +594,33 @@ void tendhostage(Creature *cr, char &clearformess) {
         erase();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(0, 0);
-        addstr("The Education of ");
-        addstr(cr->name);
-        addstr(": Day ");
+        addstr("The Education of ", gamelog);
+        addstr(cr->name, gamelog);
+        addstr(": Day ", gamelog);
         char num[20];
         itoa(cr->joindays, num, 10);
-        addstr(num);
+        addstr(num, gamelog);
+        gamelog.newline();
         y = 2;
 
         move(y, 0);
-        addstr("The Automaton");
+        addstr("The Automaton", gamelog);
 
         if(techniques[TECHNIQUE_RESTRAIN]) { // Restraint
-            addstr(" is tied hands and feet to a metal chair");
+            addstr(" is tied hands and feet to a metal chair", gamelog);
             y++;
             move(y, 0);
-            addstr("in the middle of a back room.");
+            addstr("in the middle of a back room.", gamelog);
             y++;
+            gamelog.newline();
 
             attack += 5;
         } else {
-            addstr(" is locked in a back room");
+            addstr(" is locked in a back room ", gamelog);
             y++;
             move(y, 0);
-            addstr("converted into a makeshift cell.");
+            addstr("converted into a makeshift cell.", gamelog);
+            gamelog.newline();
             y++;
         }
 
@@ -623,7 +633,8 @@ void tendhostage(Creature *cr, char &clearformess) {
 
             y++;
 
-            addstr("It is subjected to dangerous hallucinogens.");
+            addstr("It is subjected to dangerous hallucinogens.", gamelog);
+            gamelog.newline();
 
             attack += 10 + a->get_armor().get_interrogation_drugbonus();
 
@@ -637,9 +648,10 @@ void tendhostage(Creature *cr, char &clearformess) {
                 refresh();
                 getch();
                 move(y++, 0);
-                addstr("It is a lethal overdose in ");
-                addstr(cr->name);
-                addstr("'s weakened state.");
+                addstr("It is a lethal overdose in ", gamelog);
+                addstr(cr->name, gamelog);
+                addstr("'s weakened state.", gamelog);
+                gamelog.newline();
                 cr->die();
             }
 
@@ -676,88 +688,89 @@ void tendhostage(Creature *cr, char &clearformess) {
                 //Extremely bad for rapport with lead interrogator
                 rapport[a->id] -= 3;
 
-                addstr(a->name);
+                addstr(a->name, gamelog);
 
                 switch(LCSrandom(6)) {
                 case 0:
-                    addstr(" reenacts scenes from Abu Ghraib");
+                    addstr(" reenacts scenes from Abu Ghraib", gamelog);
                     break;
 
                 case 1:
-                    addstr(" whips the Automaton with a steel cable");
+                    addstr(" whips the Automaton with a steel cable", gamelog);
                     break;
 
                 case 2:
-                    addstr(" holds the hostage's head under water");
+                    addstr(" holds the hostage's head under water", gamelog);
                     break;
 
                 case 3:
-                    addstr(" pushes needles under the Automaton's fingernails");
+                    addstr(" pushes needles under the Automaton's fingernails", gamelog);
                     break;
 
                 case 4:
-                    addstr(" beats the hostage with a metal bat");
+                    addstr(" beats the hostage with a metal bat", gamelog);
                     break;
 
                 case 5:
-                    addstr(" beats the hostage with a belt");
+                    addstr(" beats the hostage with a belt", gamelog);
                     break;
                 }
 
-                addstr(",");
+                addstr(", ", gamelog);
                 y++;
                 move(y, 0);
-                addstr("screaming \"");
+                addstr("screaming \"", gamelog);
                 int i = 0;
 
                 while(i < 2) {
                     switch(LCSrandom(10)) {
                     case 0:
-                        addstr("I hate you");
+                        addstr("I hate you", gamelog);
                         break;
 
                     case 1:
-                        addstr("Does it hurt?");
+                        addstr("Does it hurt?", gamelog);
                         break;
 
                     case 2:
-                        addstr("Nobody loves you");
+                        addstr("Nobody loves you", gamelog);
                         break;
 
                     case 3:
-                        addstr("God hates you");
+                        addstr("God hates you", gamelog);
                         break;
 
                     case 4:
-                        addstr("Don't fuck with me");
+                        addstr("Don't fuck with me", gamelog);
                         break;
 
                     case 5:
-                        addstr("This is Liberalism");
+                        addstr("This is Liberalism", gamelog);
                         break;
 
                     case 6:
-                        addstr("Convert, bitch");
+                        addstr("Convert, bitch", gamelog);
                         break;
 
                     case 7:
-                        addstr("I'm going to kill you");
+                        addstr("I'm going to kill you", gamelog);
                         break;
 
                     case 8:
-                        addstr("Do you love me?");
+                        addstr("Do you love me?", gamelog);
                         break;
 
                     case 9:
-                        addstr("I am your God");
+                        addstr("I am your God", gamelog);
                         break;
                     }
 
                     if(++i < 2)
-                        addstr("! ");
+                        addstr("! ", gamelog);
                 }
 
-                addstr("!\" in its face.");
+                addstr("!\" in its face.", gamelog);
+                gamelog.newline();
 
                 if(cr->get_attribute(ATTRIBUTE_HEART, true) > 1)
                     cr->adjust_attribute(ATTRIBUTE_HEART, -1);
@@ -766,162 +779,163 @@ void tendhostage(Creature *cr, char &clearformess) {
                     cr->adjust_attribute(ATTRIBUTE_WISDOM, -1);
             } else {
                 if(temppool.size() == 1) {
-                    addstr(temppool[0]->name);
-                    addstr(" beats");
+                    addstr(temppool[0]->name, gamelog);
+                    addstr(" beats", gamelog);
                 } else if(temppool.size() == 2) {
-                    addstr(temppool[0]->name);
-                    addstr(" and ");
-                    addstr(temppool[1]->name);
-                    addstr(" beat");
+                    addstr(temppool[0]->name, gamelog);
+                    addstr(" and ", gamelog);
+                    addstr(temppool[1]->name, gamelog);
+                    addstr(" beat", gamelog);
                 } else {
                     addstr(cr->name);
-                    addstr("'s guards beat");
+                    addstr("'s guards beat", gamelog);
                 }
 
-                addstr(" the Automaton");
+                addstr(" the Automaton", gamelog);
 
                 if(techniques[TECHNIQUE_PROPS]) {
                     switch(LCSrandom(6)) {
                     case 0:
-                        addstr(" with a giant stuffed elephant");
+                        addstr(" with a giant stuffed elephant", gamelog);
                         break;
 
                     case 1:
-                        addstr(" while draped in a Confederate flag");
+                        addstr(" while draped in a Confederate flag", gamelog);
                         break;
 
                     case 2:
-                        addstr(" with a cardboard cutout of Reagan");
+                        addstr(" with a cardboard cutout of Reagan", gamelog);
                         break;
 
                     case 3:
-                        addstr(" with a King James Bible");
+                        addstr(" with a King James Bible", gamelog);
                         break;
 
                     case 4:
-                        addstr(" with fists full of money");
+                        addstr(" with fists full of money", gamelog);
                         break;
 
                     case 5:
-                        addstr(" with Conservative propaganda on the walls");
+                        addstr(" with Conservative propaganda on the walls", gamelog);
                         break;
                     }
                 }
 
-                addstr(",");
+                addstr(", ", gamelog);
                 y++;
                 move(y, 0);
 
                 switch(LCSrandom(4)) {
                 case 0:
-                    addstr("scream");
+                    addstr("scream", gamelog);
                     break;
 
                 case 1:
-                    addstr("yell");
+                    addstr("yell", gamelog);
                     break;
 
                 case 2:
-                    addstr("shout");
+                    addstr("shout", gamelog);
                     break;
 
                 case 3:
-                    addstr("holler");
+                    addstr("holler", gamelog);
                     break;
                 }
 
-                addstr("ing \"");
+                addstr("ing \"", gamelog);
                 int i = 0;
 
                 while(i < 3) {
                     switch(LCSrandom(20)) {
                     case 0:
-                        addstr("McDonalds");
+                        addstr("McDonalds", gamelog);
                         break;
 
                     case 1:
-                        addstr("Microsoft");
+                        addstr("Microsoft", gamelog);
                         break;
 
                     case 2:
-                        addstr("Bill Gates");
+                        addstr("Bill Gates", gamelog);
                         break;
 
                     case 3:
-                        addstr("Wal-Mart");
+                        addstr("Wal-Mart", gamelog);
                         break;
 
                     case 4:
-                        addstr("George W. Bush");
+                        addstr("George W. Bush", gamelog);
                         break;
 
                     case 5:
-                        addstr("ExxonMobil");
+                        addstr("ExxonMobil", gamelog);
                         break;
 
                     case 6:
-                        addstr("Trickle-down economics");
+                        addstr("Trickle-down economics", gamelog);
                         break;
 
                     case 7:
-                        addstr("Family values");
+                        addstr("Family values", gamelog);
                         break;
 
                     case 8:
-                        addstr("Conservatism");
+                        addstr("Conservatism", gamelog);
                         break;
 
                     case 9:
-                        addstr("War on Drugs");
+                        addstr("War on Drugs", gamelog);
                         break;
 
                     case 10:
-                        addstr("War on Terror");
+                        addstr("War on Terror", gamelog);
                         break;
 
                     case 11:
-                        addstr("Ronald Reagan");
+                        addstr("Ronald Reagan", gamelog);
                         break;
 
                     case 12:
-                        addstr("Rush Limbaugh");
+                        addstr("Rush Limbaugh", gamelog);
                         break;
 
                     case 13:
-                        addstr("Tax cuts");
+                        addstr("Tax cuts", gamelog);
                         break;
 
                     case 14:
-                        addstr("Military spending");
+                        addstr("Military spending", gamelog);
                         break;
 
                     case 15:
-                        addstr("Ann Coulter");
+                        addstr("Ann Coulter", gamelog);
                         break;
 
                     case 16:
-                        addstr("Deregulation");
+                        addstr("Deregulation", gamelog);
                         break;
 
                     case 17:
-                        addstr("Police");
+                        addstr("Police", gamelog);
                         break;
 
                     case 18:
-                        addstr("Corporations");
+                        addstr("Corporations", gamelog);
                         break;
 
                     case 19:
-                        addstr("Wiretapping");
+                        addstr("Wiretapping", gamelog);
                         break;
 
                     }
 
                     if(++i < 3)
-                        addstr("! ");
+                        addstr("! ", gamelog);
                 }
 
-                addstr("!\" in its face.");
+                addstr("!\" in its face.", gamelog);
+                gamelog.newline();
             }
 
             y++;
@@ -935,28 +949,32 @@ void tendhostage(Creature *cr, char &clearformess) {
             if(!(cr->attribute_check(ATTRIBUTE_HEALTH, forceroll))) {
                 if(cr->skill_check(SKILL_RELIGION, forceroll)) {
                     move(y, 0);
-                    addstr(cr->name);
+                    addstr(cr->name, gamelog);
 
                     if(!techniques[TECHNIQUE_DRUGS]) {
                         switch(LCSrandom(2)) {
                         case 0:
-                            addstr(" prays...");
+                            addstr(" prays...", gamelog);
                             break;
 
                         case 1:
-                            addstr(" cries out for God.");
+                            addstr(" cries out for God.", gamelog);
                             break;
                         }
+
+                        gamelog.newline();
                     } else {
                         switch(LCSrandom(2)) {
                         case 0:
-                            addstr(" takes solace in the personal appearance of God.");
+                            addstr(" takes solace in the personal appearance of God.", gamelog);
                             break;
 
                         case 1:
-                            addstr(" appears to be having a religious experience.");
+                            addstr(" appears to be having a religious experience.", gamelog);
                             break;
                         }
+
+                        gamelog.newline();
                     }
 
                     y++;
@@ -965,45 +983,47 @@ void tendhostage(Creature *cr, char &clearformess) {
                           cr->get_attribute(ATTRIBUTE_HEART, true) * 3 +
                           cr->get_attribute(ATTRIBUTE_HEALTH, true) * 3) {
                     move(y++, 0);
-                    addstr(cr->name);
+                    addstr(cr->name, gamelog);
 
                     switch(LCSrandom(4)) {
                     case 0:
-                        addstr(" screams helplessly for ");
+                        addstr(" screams helplessly for ", gamelog);
 
                         if(techniques[TECHNIQUE_DRUGS])
-                            addstr("John Lennon's mercy.");
+                            addstr("John Lennon's mercy.", gamelog);
                         else if(cr->get_skill(SKILL_RELIGION))
-                            addstr("God's mercy.");
+                            addstr("God's mercy.", gamelog);
                         else
-                            addstr("mommy.");
+                            addstr("mommy.", gamelog);
 
                         break;
 
                     case 1:
                         if(techniques[TECHNIQUE_RESTRAIN])
-                            addstr(" goes limp in the restraints.");
+                            addstr(" goes limp in the restraints.", gamelog);
                         else
-                            addstr(" curls up in the corner and doesn't move.");
+                            addstr(" curls up in the corner and doesn't move.", gamelog);
 
                         break;
 
                     case 2:
                         if(techniques[TECHNIQUE_DRUGS] && !LCSrandom(5))
-                            addstr(" barks helplessly.");
+                            addstr(" barks helplessly.", gamelog);
                         else
-                            addstr(" cries helplessly.");
+                            addstr(" cries helplessly.", gamelog);
 
                         break;
 
                     case 3:
                         if(techniques[TECHNIQUE_DRUGS] && !LCSrandom(3))
-                            addstr(" wonders about apples.");
+                            addstr(" wonders about apples.", gamelog);
                         else
-                            addstr(" wonders about death.");
+                            addstr(" wonders about death.", gamelog);
 
                         break;
                     }
+
+                    gamelog.newline();
 
                     if(cr->get_attribute(ATTRIBUTE_HEART, false) > 1)
                         cr->adjust_attribute(ATTRIBUTE_HEART, -1);
@@ -1025,27 +1045,30 @@ void tendhostage(Creature *cr, char &clearformess) {
                         refresh();
                         getch();
                         move(y++, 0);
-                        addstr(a->name);
-                        addstr(" beats information out of the pathetic thing.");
+                        addstr(a->name, gamelog);
+                        addstr(" beats information out of the pathetic thing.", gamelog);
+                        gamelog.newline();
                         move(y++, 0);
                         refresh();
                         getch();
 
                         if(location[cr->worklocation]->type <= SITE_RESIDENTIAL_SHELTER)
-                            addstr("Unfortunately, none of it is useful to the LCS.");
+                            addstr("Unfortunately, none of it is useful to the LCS.", gamelog);
                         else {
-                            addstr("A detailed map has been created of ");
-                            addstr(location[cr->worklocation]->name);
-                            addstr(".");
+                            addstr("A detailed map has been created of ", gamelog);
+                            addstr(location[cr->worklocation]->name, gamelog);
+                            addstr(".", gamelog);
                         }
 
+                        gamelog.newline();
                         location[cr->worklocation]->interrogated = 1;
                         location[cr->worklocation]->hidden = 0;
                     }
                 } else {
                     move(y, 0);
-                    addstr(cr->name);
-                    addstr(" seems to be getting the message.");
+                    addstr(cr->name, gamelog);
+                    addstr(" seems to be getting the message.", gamelog);
+                    gamelog.newline();
                     y++;
 
                     if(cr->juice > 0) {
@@ -1072,12 +1095,14 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                     if(cr->get_attribute(ATTRIBUTE_HEALTH, false) > 1) {
                         cr->adjust_attribute(ATTRIBUTE_HEALTH, -1);
-                        addstr(cr->name);
-                        addstr(" is badly hurt.");
+                        addstr(cr->name, gamelog);
+                        addstr(" is badly hurt.", gamelog);
+                        gamelog.newline();
                     } else {
                         cr->set_attribute(ATTRIBUTE_HEALTH, 0);
-                        addstr(cr->name);
-                        addstr("'s weakened body crumbles under the brutal assault.");
+                        addstr(cr->name, gamelog);
+                        addstr("'s weakened body crumbles under the brutal assault.", gamelog);
+                        gamelog.newline();
                         cr->die();
                     }
 
@@ -1085,8 +1110,9 @@ void tendhostage(Creature *cr, char &clearformess) {
                 }
             } else {
                 move(y, 0);
-                addstr(cr->name);
-                addstr(" takes it well.");
+                addstr(cr->name, gamelog);
+                addstr(" takes it well.", gamelog);
+                gamelog.newline();
                 y++;
             }
 
@@ -1098,35 +1124,38 @@ void tendhostage(Creature *cr, char &clearformess) {
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
                     move(y, 0);
                     y++;
-                    addstr(a->name);
-                    addstr(" feels sick to the stomach afterward and ");
+                    addstr(a->name, gamelog);
+                    addstr(" feels sick to the stomach afterward and ", gamelog);
                     a->adjust_attribute(ATTRIBUTE_HEART, -1);
                     move(y, 0);
                     y++;
 
                     switch(LCSrandom(4)) {
                     case 0:
-                        addstr("throws up in a trash can.");
+                        addstr("throws up in a trash can.", gamelog);
                         break;
 
                     case 1:
-                        addstr("gets drunk, eventually falling asleep.");
+                        addstr("gets drunk, eventually falling asleep.", gamelog);
                         break;
 
                     case 2:
-                        addstr("curls up in a ball, crying softly.");
+                        addstr("curls up in a ball, crying softly.", gamelog);
                         break;
 
                     case 3:
-                        addstr("shoots up and collapses in a heap on the floor.");
+                        addstr("shoots up and collapses in a heap on the floor.", gamelog);
                         break;
                     }
+
+                    gamelog.newline();
                 } else if(!LCSrandom(3)) {
                     set_color(COLOR_CYAN, COLOR_BLACK, 1);
                     move(y, 0);
                     y++;
-                    addstr(a->name);
-                    addstr(" grows colder.");
+                    addstr(a->name, gamelog);
+                    addstr(" grows colder.", gamelog);
+                    gamelog.newline();
                     a->adjust_attribute(ATTRIBUTE_WISDOM, +1);
                 }
 
@@ -1145,78 +1174,81 @@ void tendhostage(Creature *cr, char &clearformess) {
 
             y += 1;
             move(y, 0);
-            addstr(a->name);
+            addstr(a->name, gamelog);
 
             if(techniques[TECHNIQUE_PROPS]) { //props
                 attack += 10;
 
                 switch(LCSrandom(9)) {
                 case 0:
-                    addstr(" plays violent video games with ");
+                    addstr(" plays violent video games with ", gamelog);
                     break;
 
                 case 1:
-                    addstr(" reads Origin of the Species to ");
+                    addstr(" reads Origin of the Species to ", gamelog);
                     break;
 
                 case 2:
-                    addstr(" burns flags in front of ");
+                    addstr(" burns flags in front of ", gamelog);
                     break;
 
                 case 3:
-                    addstr(" explores an elaborate political fantasy with ");
+                    addstr(" explores an elaborate political fantasy with ", gamelog);
                     break;
 
                 case 4:
-                    addstr(" watches controversial avant-garde films with ");
+                    addstr(" watches controversial avant-garde films with ", gamelog);
                     break;
 
                 case 5:
-                    addstr(" plays the anime film Bible Black for ");
+                    addstr(" plays the anime film Bible Black for ", gamelog);
                     break;// Yes, this is a porno.
 
                 case 6:
-                    addstr(" watches a documentary about Emmett Till with ");
+                    addstr(" watches a documentary about Emmett Till with ", gamelog);
                     break;
 
                 case 7:
-                    addstr(" watches Michael Moore films with ");
+                    addstr(" watches Michael Moore films with ", gamelog);
                     break;
 
                 case 8:
-                    addstr(" listens to Liberal radio shows with ");
+                    addstr(" listens to Liberal radio shows with ", gamelog);
                     break;
                 }
+
+                gamelog.newline();
             } else {
                 char str[75];
 
                 switch(LCSrandom(4)) {
                 case 0:
-                    addstr(" talks about ");
+                    addstr(" talks about ", gamelog);
                     getviewsmall(str, LCSrandom(VIEWNUM - 3));
-                    addstr(str);
-                    addstr(" with ");
+                    addstr(str, gamelog);
+                    addstr(" with ", gamelog);
                     break;
 
                 case 1:
-                    addstr(" argues about ");
+                    addstr(" argues about ", gamelog);
                     getviewsmall(str, LCSrandom(VIEWNUM - 3));
-                    addstr(str);
-                    addstr(" with ");
+                    addstr(str, gamelog);
+                    addstr(" with ", gamelog);
                     break;
 
                 case 2:
-                    addstr(" tries to expose the true Liberal side of ");
+                    addstr(" tries to expose the true Liberal side of ", gamelog);
                     break;
 
                 case 3:
-                    addstr(" attempts to recruit ");
+                    addstr(" attempts to recruit ", gamelog);
                     break;
                 }
             }
 
-            addstr(cr->name);
-            addstr(".");
+            addstr(cr->name, gamelog);
+            addstr(".", gamelog);
+            gamelog.newline();
             y++;
 
             //Hallucinogenic drugs:
@@ -1232,125 +1264,133 @@ void tendhostage(Creature *cr, char &clearformess) {
                     switch(LCSrandom(4)) {
                     case 0:
                         addstr(cr->name);
-                        addstr(" takes the drug-induced hallucinations with stoicism.");
+                        addstr(" takes the drug-induced hallucinations with stoicism.", gamelog);
                         break;
 
                     case 1:
                         addstr(cr->name);
-                        addstr(" mutters its initials over and over again.");
+                        addstr(" mutters its initials over and over again.", gamelog);
                         break;
 
                     case 2:
                         addstr(cr->name);
-                        addstr(" babbles continuous numerical sequences.");
+                        addstr(" babbles continuous numerical sequences.", gamelog);
                         break;
 
                     case 3:
                         addstr(cr->name);
-                        addstr(" manages to remain grounded through the hallucinations.");
+                        addstr(" manages to remain grounded through the hallucinations.", gamelog);
                         break;
                     }
+
+                    gamelog.newline();
                 } else if((rapport[a->id] > 1 && !LCSrandom(3)) || !LCSrandom(10)) {
                     rapport_temp = 10;
 
                     switch(LCSrandom(4)) {
                     case 0:
-                        addstr(cr->name);
-                        addstr(" hallucinates and sees ");
-                        addstr(a->name);
-                        addstr(" as an angel.");
+                        addstr(cr->name, gamelog);
+                        addstr(" hallucinates and sees ", gamelog);
+                        addstr(a->name, gamelog);
+                        addstr(" as an angel.", gamelog);
                         break;
 
                     case 1:
                         addstr(cr->name);
-                        addstr(" realizes with joy that ");
-                        addstr(a->name);
-                        addstr(" is Ronald Reagan!");
+                        addstr(" realizes with joy that ", gamelog);
+                        addstr(a->name, gamelog);
+                        addstr(" is Ronald Reagan!", gamelog);
                         break;
 
                     case 2:
-                        addstr(cr->name);
-                        addstr(" stammers and ");
-                        techniques[TECHNIQUE_RESTRAIN] ? addstr("talks about hugging ") : addstr("hugs ");
-                        addstr(a->name);
-                        addstr(".");
+                        addstr(cr->name, gamelog);
+                        addstr(" stammers and ", gamelog);
+                        techniques[TECHNIQUE_RESTRAIN] ? addstr("talks about hugging ", gamelog) : addstr("hugs ", gamelog);
+                        addstr(a->name, gamelog);
+                        addstr(".", gamelog);
                         break;
 
                     case 3:
-                        addstr(cr->name);
-                        addstr(" begs ");
-                        addstr(a->name);
-                        addstr(" to let the colors stay forever.");
+                        addstr(cr->name, gamelog);
+                        addstr(" begs ", gamelog);
+                        addstr(a->name, gamelog);
+                        addstr(" to let the colors stay forever.", gamelog);
                         break;
                     }
+
+                    gamelog.newline();
                 } else if((rapport[a->id] < -1 && LCSrandom(3)) || !LCSrandom(5)) {
                     attack = 0;
 
                     switch(LCSrandom(4)) {
                     case 0:
-                        addstr(cr->name);
-                        addstr(" screams in horror as ");
-                        addstr(a->name);
-                        addstr(" turns into an alien.");
+                        addstr(cr->name, gamelog);
+                        addstr(" screams in horror as ", gamelog);
+                        addstr(a->name, gamelog);
+                        addstr(" turns into an alien.", gamelog);
                         break;
 
                     case 1:
-                        addstr(cr->name);
+                        addstr(cr->name, gamelog);
 
                         if(!techniques[TECHNIQUE_RESTRAIN])
-                            addstr(" curls up and");
+                            addstr(" curls up and", gamelog);
 
-                        addstr(" begs for the nightmare to end.");
+                        addstr(" begs for the nightmare to end.", gamelog);
                         break;
 
                     case 2:
-                        addstr(cr->name);
-                        addstr(" watches ");
-                        addstr(a->name);
-                        addstr(" shift from one demonic form to another.");
+                        addstr(cr->name, gamelog);
+                        addstr(" watches ", gamelog);
+                        addstr(a->name, gamelog);
+                        addstr(" shift from one demonic form to another.", gamelog);
                         break;
 
                     case 3:
                         if(rapport[a->id] < -3) {
-                            addstr(cr->name);
-                            addstr(" begs Hitler to stay and kill ");
-                            addstr(a->name);
-                            addstr(".");
+                            addstr(cr->name, gamelog);
+                            addstr(" begs Hitler to stay and kill ", gamelog);
+                            addstr(a->name, gamelog);
+                            addstr(".", gamelog);
                         } else {
-                            addstr(cr->name);
-                            addstr(" screams for ");
-                            addstr(a->name);
-                            addstr(" to stop looking like Hitler.");
+                            addstr(cr->name, gamelog);
+                            addstr(" screams for ", gamelog);
+                            addstr(a->name, gamelog);
+                            addstr(" to stop looking like Hitler.", gamelog);
                         }
 
                         break;
                     }
+
+                    gamelog.newline();
                 } else {
                     switch(LCSrandom(4)) {
                     case 0:
-                        addstr(cr->name);
-                        addstr(" comments on the swirling light ");
-                        addstr(a->name);
-                        addstr(" is radiating.");
+                        addstr(cr->name, gamelog);
+                        addstr(" comments on the swirling light ", gamelog);
+                        addstr(a->name, gamelog);
+                        addstr(" is radiating.", gamelog);
                         break;
 
                     case 1:
-                        addstr(cr->name);
-                        addstr(" can't stop looking at the moving colors.");
+                        addstr(cr->name, gamelog);
+                        addstr(" can't stop looking at the moving colors.", gamelog);
                         break;
 
                     case 2:
-                        addstr(cr->name);
-                        addstr(" laughs hysterically at ");
-                        addstr(a->name);
-                        addstr("'s altered appearance.");
+                        addstr(cr->name, gamelog);
+                        addstr(" laughs hysterically at ", gamelog);
+                        addstr(a->name, gamelog);
+                        addstr("'s altered appearance.", gamelog);
                         break;
 
                     case 3:
-                        addstr(cr->name);
-                        addstr(" barks and woofs like a dog.");
+                        addstr(cr->name, gamelog);
+                        addstr(" barks and woofs like a dog.", gamelog);
                         break;
                     }
+
+                    gamelog.newline();
                 }
             }
 
@@ -1363,25 +1403,25 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 switch(LCSrandom(4)) {
                 case 0:
-                    addstr(cr->name);
-                    addstr(" plays mind games with ");
-                    addstr(a->name);
-                    addstr(".");
+                    addstr(cr->name, gamelog);
+                    addstr(" plays mind games with ", gamelog);
+                    addstr(a->name, gamelog);
+                    addstr(".", gamelog);
                     break;
 
                 case 1:
-                    addstr(cr->name);
-                    addstr(" knows how this works, and won't budge.");
+                    addstr(cr->name, gamelog);
+                    addstr(" knows how this works, and won't budge.", gamelog);
                     break;
 
                 case 2:
-                    addstr(cr->name);
-                    addstr(" asks if Liberal mothers would approve of this.");
+                    addstr(cr->name, gamelog);
+                    addstr(" asks if Liberal mothers would approve of this.", gamelog);
                     break;
 
                 case 3:
-                    addstr(cr->name);
-                    addstr(" seems resistant to this form of interrogation.");
+                    addstr(cr->name, gamelog);
+                    addstr(" seems resistant to this form of interrogation.", gamelog);
                     break;
                 }
 
@@ -1391,125 +1431,130 @@ void tendhostage(Creature *cr, char &clearformess) {
             //just alienate them and make them cynical
             else if(techniques[TECHNIQUE_BEAT] || rapport_temp < -2) {
                 move(y, 0);
-                addstr(cr->name);
+                addstr(cr->name, gamelog);
 
                 switch(LCSrandom(7)) {
                 case 0:
-                    addstr(" babbles mindlessly.");
+                    addstr(" babbles mindlessly.", gamelog);
                     break;
 
                 case 1:
-                    addstr(" just whimpers.");
+                    addstr(" just whimpers.", gamelog);
                     break;
 
                 case 2:
-                    addstr(" cries helplessly.");
+                    addstr(" cries helplessly.", gamelog);
                     break;
 
                 case 3:
-                    addstr(" is losing faith in the world.");
+                    addstr(" is losing faith in the world.", gamelog);
                     break;
 
                 case 4:
-                    addstr(" only grows more distant.");
+                    addstr(" only grows more distant.", gamelog);
                     break;
 
                 case 5:
-                    addstr(" is too terrified to even speak to ");
+                    addstr(" is too terrified to even speak to ", gamelog);
                     addstr(a->name);
                     addstr(".");
                     break;
 
                 case 6:
-                    addstr(" just hates the LCS even more.");
+                    addstr(" just hates the LCS even more.", gamelog);
                     break;
                 }
+
+                gamelog.newline();
 
                 if(a->skill_check(SKILL_SEDUCTION, DIFFICULTY_CHALLENGING)) {
                     //show_interrogation_sidebar(cr,a);
                     getch();
                     move(++y, 0);
-                    addstr(a->name);
+                    addstr(a->name, gamelog);
 
                     switch(LCSrandom(7)) {
                     case 0:
-                        addstr(" consoles the Conservative automaton.");
+                        addstr(" consoles the Conservative automaton.", gamelog);
                         break;
 
                     case 1:
-                        addstr(" shares some chocolates.");
+                        addstr(" shares some chocolates.", gamelog);
                         break;
 
                     case 2:
-                        addstr(" provides a shoulder to cry on.");
+                        addstr(" provides a shoulder to cry on.", gamelog);
                         break;
 
                     case 3:
-                        addstr(" understands ");
-                        addstr(cr->name);
-                        addstr("'s pain.");
+                        addstr(" understands ", gamelog);
+                        addstr(cr->name, gamelog);
+                        addstr("'s pain.", gamelog);
                         break;
 
                     case 4:
-                        addstr("'s heart opens to the poor Conservative.");
+                        addstr("'s heart opens to the poor Conservative.", gamelog);
                         break;
 
                     case 5:
-                        addstr(" helps the poor thing to come to terms with captivity.");
+                        addstr(" helps the poor thing to come to terms with captivity.", gamelog);
                         break;
 
                     case 6:
-                        addstr("'s patience and kindness leaves the Conservative confused.");
+                        addstr("'s patience and kindness leaves the Conservative confused.", gamelog);
                         break;
                     }
 
+                    gamelog.newline();
                     rapport[a->id] += 0.7f;
 
                     if(rapport[a->id] > 3) {
                         //show_interrogation_sidebar(cr,a);
                         getch();
                         move(++y, 0);
-                        addstr(cr->name);
+                        addstr(cr->name, gamelog);
 
                         switch(LCSrandom(7)) {
                         case 0:
-                            addstr(" emotionally clings to ");
-                            addstr(a->name);
-                            addstr("'s sympathy.");
+                            addstr(" emotionally clings to ", gamelog);
+                            addstr(a->name, gamelog);
+                            addstr("'s sympathy.", gamelog);
                             break;
 
                         case 1:
-                            addstr(" begs ");
-                            addstr(a->name);
-                            addstr(" for help.");
+                            addstr(" begs ", gamelog);
+                            addstr(a->name, gamelog);
+                            addstr(" for help.", gamelog);
                             break;
 
                         case 2:
-                            addstr(" promises to be good.");
+                            addstr(" promises to be good.", gamelog);
                             break;
 
                         case 3:
-                            addstr(" reveals childhood pains.");
+                            addstr(" reveals childhood pains.", gamelog);
                             break;
 
                         case 4:
-                            addstr(" thanks ");
-                            addstr(a->name);
-                            addstr(" for being merciful.");
+                            addstr(" thanks ", gamelog);
+                            addstr(a->name, gamelog);
+                            addstr(" for being merciful.", gamelog);
                             break;
 
                         case 5:
-                            addstr(" cries in ");
-                            addstr(a->name);
-                            addstr("'s arms.");
+                            addstr(" cries in ", gamelog);
+                            addstr(a->name, gamelog);
+                            addstr("'s arms.", gamelog);
                             break;
 
                         case 6:
-                            addstr(" really likes ");
-                            addstr(a->name);
-                            addstr(".");
+                            addstr(" really likes ", gamelog);
+                            addstr(a->name, gamelog);
+                            addstr(".", gamelog);
                             break;
                         }
+
+                        gamelog.newline();
 
                         if(rapport[a->id] > 5)
                             turned = 1;
@@ -1528,28 +1573,30 @@ void tendhostage(Creature *cr, char &clearformess) {
                 switch(LCSrandom(4)) {
                 case 0:
                     addstr(a->name);
-                    addstr(" is unable to shake ");
-                    addstr(cr->name);
-                    addstr("'s religious conviction.");
+                    addstr(" is unable to shake ", gamelog);
+                    addstr(cr->name, gamelog);
+                    addstr("'s religious conviction.", gamelog);
                     break;
 
                 case 1:
-                    addstr(cr->name);
-                    addstr(" will never be broken so long as God grants it strength.");
+                    addstr(cr->name, gamelog);
+                    addstr(" will never be broken so long as God grants it strength.", gamelog);
                     break;
 
                 case 2:
-                    addstr(a->name);
-                    addstr("'s efforts to question ");
-                    addstr(cr->name);
-                    addstr("'s faith seem futile.");
+                    addstr(a->name, gamelog);
+                    addstr("'s efforts to question ", gamelog);
+                    addstr(cr->name, gamelog);
+                    addstr("'s faith seem futile.", gamelog);
                     break;
 
                 case 3:
-                    addstr(cr->name);
-                    addstr(" calmly explains the Conservative tenets of its faith.");
+                    addstr(cr->name, gamelog);
+                    addstr(" calmly explains the Conservative tenets of its faith.", gamelog);
                     break;
                 }
+
+                gamelog.newline();
 
                 a->train(SKILL_RELIGION, cr->get_skill(SKILL_RELIGION) * 4);
                 y++;
@@ -1560,29 +1607,31 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 switch(LCSrandom(4)) {
                 case 0:
-                    addstr(cr->name);
-                    addstr(" will never be moved by ");
-                    addstr(a->name);
-                    addstr("'s pathetic economic ideals.");
+                    addstr(cr->name, gamelog);
+                    addstr(" will never be moved by ", gamelog);
+                    addstr(a->name, gamelog);
+                    addstr("'s pathetic economic ideals.", gamelog);
                     break;
 
                 case 1:
-                    addstr(cr->name);
-                    addstr(" wishes a big company would just buy the LCS and shut it down.");
+                    addstr(cr->name, gamelog);
+                    addstr(" wishes a big company would just buy the LCS and shut it down.", gamelog);
                     break;
 
                 case 2:
-                    addstr(cr->name);
-                    addstr(" explains to ");
-                    addstr(a->name);
-                    addstr(" why communism failed.");
+                    addstr(cr->name, gamelog);
+                    addstr(" explains to ", gamelog);
+                    addstr(a->name, gamelog);
+                    addstr(" why communism failed.", gamelog);
                     break;
 
                 case 3:
-                    addstr(cr->name);
-                    addstr(" mumbles incoherently about Reaganomics.");
+                    addstr(cr->name, gamelog);
+                    addstr(" mumbles incoherently about Reaganomics.", gamelog);
                     break;
                 }
+
+                gamelog.newline();
 
                 a->train(SKILL_BUSINESS, cr->get_skill(SKILL_BUSINESS) * 4);
                 y++;
@@ -1593,31 +1642,33 @@ void tendhostage(Creature *cr, char &clearformess) {
 
                 switch(LCSrandom(4)) {
                 case 0:
-                    addstr(cr->name);
-                    addstr(" wonders what mental disease has possessed ");
-                    addstr(a->name);
-                    addstr(".");
+                    addstr(cr->name, gamelog);
+                    addstr(" wonders what mental disease has possessed ", gamelog);
+                    addstr(a->name, gamelog);
+                    addstr(".", gamelog);
                     break;
 
                 case 1:
-                    addstr(cr->name);
-                    addstr(" explains why nuclear energy is safe.");
+                    addstr(cr->name, gamelog);
+                    addstr(" explains why nuclear energy is safe.", gamelog);
                     break;
 
                 case 2:
-                    addstr(cr->name);
-                    addstr(" makes Albert Einstein faces at ");
-                    addstr(a->name);
-                    addstr(".");
+                    addstr(cr->name, gamelog);
+                    addstr(" makes Albert Einstein faces at ", gamelog);
+                    addstr(a->name, gamelog);
+                    addstr(".", gamelog);
                     break;
 
                 case 3:
-                    addstr(cr->name);
-                    addstr(" pities ");
-                    addstr(a->name);
-                    addstr("'s blind ignorance of science.");
+                    addstr(cr->name, gamelog);
+                    addstr(" pities ", gamelog);
+                    addstr(a->name, gamelog);
+                    addstr("'s blind ignorance of science.", gamelog);
                     break;
                 }
+
+                gamelog.newline();
 
                 a->train(SKILL_SCIENCE, cr->get_skill(SKILL_SCIENCE) * 4);
                 y++;
@@ -1648,48 +1699,51 @@ void tendhostage(Creature *cr, char &clearformess) {
                     turned = 1;
 
                 move(y, 0);
-                addstr(cr->name);
+                addstr(cr->name, gamelog);
 
                 switch(LCSrandom(5)) {
                 case 0:
-                    addstr("'s Conservative beliefs are shaken.");
+                    addstr("'s Conservative beliefs are shaken.", gamelog);
                     break;
 
                 case 1:
-                    addstr(" quietly considers these ideas.");
+                    addstr(" quietly considers these ideas.", gamelog);
                     break;
 
                 case 2:
-                    addstr(" is beginning to see Liberal reason.");
+                    addstr(" is beginning to see Liberal reason.", gamelog);
                     break;
 
                 case 3:
-                    addstr(" has a revelation of understanding.");
+                    addstr(" has a revelation of understanding.", gamelog);
                     break;
 
                 case 4:
-                    addstr(" grudgingly admits sympathy for LCS ideals.");
+                    addstr(" grudgingly admits sympathy for LCS ideals.", gamelog);
                     break;
                 }
 
+                gamelog.newline();
                 y++;
 
                 if(location[cr->worklocation]->interrogated == 0 && !LCSrandom(5)) {
                     y++;
                     move(y++, 0);
-                    addstr(cr->name);
-                    addstr(" reveals details about the ");
-                    addstr(location[cr->worklocation]->name);
-                    addstr(".");
+                    addstr(cr->name, gamelog);
+                    addstr(" reveals details about the ", gamelog);
+                    addstr(location[cr->worklocation]->name, gamelog);
+                    addstr(".", gamelog);
+                    gamelog.newline();
                     move(y++, 0);
 
                     if(location[cr->worklocation]->type <= SITE_RESIDENTIAL_SHELTER)
-                        addstr("Unfortunately, none of it is useful to the LCS.");
+                        addstr("Unfortunately, none of it is useful to the LCS.", gamelog);
                     else {
-                        addstr(a->name);
-                        addstr(" was able to create a map of the site with this information.");
+                        addstr(a->name), gamelog;
+                        addstr(" was able to create a map of the site with this information.", gamelog);
                     }
 
+                    gamelog.newline();
                     location[cr->worklocation]->interrogated = 1;
                     location[cr->worklocation]->hidden = 0;
                 }
@@ -1701,8 +1755,9 @@ void tendhostage(Creature *cr, char &clearformess) {
                 rapport[a->id] += 0.2f;
 
                 move(y, 0);
-                addstr(cr->name);
-                addstr(" holds firm.");
+                addstr(cr->name, gamelog);
+                addstr(" holds firm.", gamelog);
+                gamelog.newline();
                 y++;
             }
             //Target actually wins the argument so successfully that the Liberal
@@ -1715,10 +1770,11 @@ void tendhostage(Creature *cr, char &clearformess) {
                 a->adjust_attribute(ATTRIBUTE_WISDOM, +1);
 
                 move(y, 0);
-                addstr(cr->name);
-                addstr(" turns the tables on ");
-                addstr(a->name);
-                addstr("!");
+                addstr(cr->name, gamelog);
+                addstr(" turns the tables on ", gamelog);
+                addstr(a->name, gamelog);
+                addstr("!", gamelog);
+                gamelog.newline();
                 y++;
 
                 //show_interrogation_sidebar(cr,a);
@@ -1726,8 +1782,9 @@ void tendhostage(Creature *cr, char &clearformess) {
                 getch();
 
                 move(y, 0);
-                addstr(a->name);
-                addstr(" has been tainted with wisdom!");
+                addstr(a->name, gamelog);
+                addstr(" has been tainted with wisdom!", gamelog);
+                gamelog.newline();
                 y++;
             }
 
@@ -1753,35 +1810,38 @@ void tendhostage(Creature *cr, char &clearformess) {
             //can't commit suicide if restrained
             if(LCSrandom(6) || techniques[TECHNIQUE_RESTRAIN]) {
                 set_color(COLOR_MAGENTA, COLOR_BLACK, 0);
-                addstr(cr->name);
+                addstr(cr->name, gamelog);
 
                 //can't cut self if restrained
                 switch(LCSrandom(5 - techniques[TECHNIQUE_RESTRAIN])) {
                 case 0:
-                    addstr(" mutters about death.");
+                    addstr(" mutters about death.", gamelog);
                     break;
 
                 case 1:
-                    addstr(" broods darkly.");
+                    addstr(" broods darkly.", gamelog);
                     break;
 
                 case 2:
-                    addstr(" has lost hope of rescue.");
+                    addstr(" has lost hope of rescue.", gamelog);
                     break;
 
                 case 3:
-                    addstr(" is making peace with God.");
+                    addstr(" is making peace with God.", gamelog);
                     break;
 
                 case 4:
-                    addstr(" is bleeding from self-inflicted wounds.");
+                    addstr(" is bleeding from self-inflicted wounds.", gamelog);
                     cr->blood -= LCSrandom(15) + 10;
                     break;
                 }
+
+                gamelog.newline();
             } else {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
-                addstr(cr->name);
-                addstr(" has committed suicide.");
+                addstr(cr->name, gamelog);
+                addstr(" has committed suicide.", gamelog);
+                gamelog.newline(); //TODO: Next message?
                 cr->die();
             }
 
@@ -1801,15 +1861,15 @@ void tendhostage(Creature *cr, char &clearformess) {
             y++;
             move(y, 0);
             set_color(COLOR_RED, COLOR_BLACK, 1);
-            addstr(cr->name);
-            addstr(" is dead");
+            addstr(cr->name, gamelog);
+            addstr(" is dead", gamelog);
 
             if(a) {
-                addstr(" under ");
-                addstr(a->name);
-                addstr("'s interrogation.");
+                addstr(" under ", gamelog);
+                addstr(a->name, gamelog);
+                addstr("'s interrogation.", gamelog);
             } else
-                addstr(".");
+                addstr(".", gamelog);
 
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             y++;
@@ -1819,43 +1879,46 @@ void tendhostage(Creature *cr, char &clearformess) {
 
             if(a) {
                 if(LCSrandom(a->get_attribute(ATTRIBUTE_HEART, false))) {
+                    gamelog.newline();
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
                     move(y, 0);
                     y++;
-                    addstr(a->name);
-                    addstr(" feels sick to the stomach afterward and ");
+                    addstr(a->name, gamelog);
+                    addstr(" feels sick to the stomach afterward and ", gamelog);
                     a->adjust_attribute(ATTRIBUTE_HEART, -1);
                     move(y, 0);
                     y++;
 
                     switch(LCSrandom(4)) {
                     case 0:
-                        addstr("throws up in a trash can.");
+                        addstr("throws up in a trash can.", gamelog);
                         break;
 
                     case 1:
-                        addstr("gets drunk, eventually falling asleep.");
+                        addstr("gets drunk, eventually falling asleep.", gamelog);
                         break;
 
                     case 2:
-                        addstr("curls up in a ball, crying softly.");
+                        addstr("curls up in a ball, crying softly.", gamelog);
                         break;
 
                     case 3:
-                        addstr("shoots up and collapses in a heap on the floor.");
+                        addstr("shoots up and collapses in a heap on the floor.", gamelog);
                         break;
                     }
                 } else if(!LCSrandom(3)) {
+                    gamelog.newline();
                     set_color(COLOR_CYAN, COLOR_BLACK, 1);
                     move(y, 0);
                     y++;
-                    addstr(a->name);
-                    addstr(" grows colder.");
+                    addstr(a->name, gamelog);
+                    addstr(" grows colder.", gamelog);
                     a->adjust_attribute(ATTRIBUTE_WISDOM, +1);
                 }
             }
         }
 
+        gamelog.nextMessage();
         delete[] _attack;
     }
     #ifdef AUTOENLIGHTEN
@@ -1869,13 +1932,14 @@ void tendhostage(Creature *cr, char &clearformess) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         y++;
         move(y, 0);
-        addstr("The Automaton has been Enlightened!   Your Liberal ranks are swelling!");
+        addstr("The Automaton has been Enlightened!   Your Liberal ranks are swelling!", gamelog);
 
         if(cr->get_attribute(ATTRIBUTE_HEART, true) > 7 &&
                 cr->get_attribute(ATTRIBUTE_WISDOM, true) > 2 &&
                 !LCSrandom(4) && (cr->flag & CREATUREFLAG_KIDNAPPED)) {
             move(++y, 0);
-            addstr("The conversion is convincing enough that the police no longer consider it a kidnapping.");
+            gamelog.newline();
+            addstr("The conversion is convincing enough that the police no longer consider it a kidnapping.", gamelog);
             //Actually liberalized -- they'll clean up the kidnapping story
             cr->flag &= ~CREATUREFLAG_MISSING;
             cr->flag &= ~CREATUREFLAG_KIDNAPPED;
@@ -1895,18 +1959,20 @@ void tendhostage(Creature *cr, char &clearformess) {
         stat_recruits++;
 
         if(location[cr->worklocation]->interrogated == 0 || location[cr->worklocation]->hidden == 1) {
+            gamelog.newline();
             move(y, 0);
-            addstr(cr->name);
-            addstr(" reveals details about the ");
-            addstr(location[cr->worklocation]->name);
-            addstr(".");
+            addstr(cr->name, gamelog);
+            addstr(" reveals details about the ", gamelog);
+            addstr(location[cr->worklocation]->name, gamelog);
+            addstr(".", gamelog);
+            gamelog.newline();
             move(++y, 0);
 
             if(location[cr->worklocation]->type <= SITE_RESIDENTIAL_SHELTER)
-                addstr("Unfortunately, none of it is useful to the LCS.");
+                addstr("Unfortunately, none of it is useful to the LCS.", gamelog);
             else {
-                addstr(a->name);
-                addstr(" was able to create a map of the site with this information.");
+                addstr(a->name, gamelog);
+                addstr(" was able to create a map of the site with this information.", gamelog);
             }
 
             location[cr->worklocation]->interrogated = 1;
@@ -1922,13 +1988,16 @@ void tendhostage(Creature *cr, char &clearformess) {
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             y = 1;
             move(y, 0);
-            addstr(cr->name);
-            addstr("'s disappearance has not yet been reported.");
+            gamelog.newline();
+            addstr(cr->name, gamelog);
+            addstr("'s disappearance has not yet been reported.", gamelog);
             y += 2;
 
             sleeperize_prompt(*cr, *a, y);
 
             cr->flag &= ~CREATUREFLAG_MISSING;
+
+            gamelog.nextMessage();
 
             return;
         }
@@ -1945,6 +2014,8 @@ void tendhostage(Creature *cr, char &clearformess) {
             }
         }
     }
+
+    gamelog.nextMessage();
 
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(24, 0);

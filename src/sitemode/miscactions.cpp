@@ -104,37 +104,38 @@ char unlock(short type, char &actual) {
             clearmessagearea(false);
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
-            addstr(activesquad->squad[p]->name);
-            addstr(" ");
+            addstr(activesquad->squad[p]->name, gamelog);
+            addstr(" ", gamelog);
 
             switch(type) {
             case UNLOCK_DOOR:
-                addstr("unlocks the door");
+                addstr("unlocks the door", gamelog);
                 break;
 
             case UNLOCK_CAGE_HARD:
             case UNLOCK_CAGE:
-                addstr("unlocks the cage");
+                addstr("unlocks the cage", gamelog);
                 break;
 
             case UNLOCK_SAFE:
-                addstr("cracks the safe");
+                addstr("cracks the safe", gamelog);
                 break;
 
             case UNLOCK_ARMORY:
-                addstr("opens the armory");
+                addstr("opens the armory", gamelog);
                 break;
 
             case UNLOCK_CELL:
-                addstr("unlocks the cell");
+                addstr("unlocks the cell", gamelog);
                 break;
 
             case UNLOCK_VAULT:
-                addstr("cracks the combo locks");
+                addstr("cracks the combo locks", gamelog);
                 break;
             }
 
-            addstr("!");
+            addstr("!", gamelog);
+            gamelog.newline();
 
             for(int j = 0; j < 6; j++) { //If people witness a successful unlock, they learn a little bit.
                 if(j == p)
@@ -165,15 +166,17 @@ char unlock(short type, char &actual) {
                 if(activesquad->squad[p]->skill_check(SKILL_SECURITY, difficulty)) {
                     activesquad->squad[p]->train(SKILL_SECURITY, 10);
 
-                    addstr(activesquad->squad[p]->name);
-                    addstr(" is close, but can't quite get the lock open.");
+                    addstr(activesquad->squad[p]->name, gamelog);
+                    addstr(" is close, but can't quite get the lock open.", gamelog);
+                    gamelog.newline();
                     break;
                 }
             }
 
             if (i == 3) {
-                addstr(activesquad->squad[p]->name);
-                addstr(" can't figure the lock out.");
+                addstr(activesquad->squad[p]->name, gamelog);
+                addstr(" can't figure the lock out.", gamelog);
+                gamelog.newline();
             }
 
             refresh();
@@ -186,7 +189,8 @@ char unlock(short type, char &actual) {
         clearmessagearea();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You can't find anyone to do the job.");
+        addstr("You can't find anyone to do the job.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
     }
@@ -269,24 +273,25 @@ char bash(short type, char &actual) {
         clearmessagearea(false);
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr(activesquad->squad[maxp]->name);
-        addstr(" ");
+        addstr(activesquad->squad[maxp]->name, gamelog);
+        addstr(" ", gamelog);
 
         switch(type) {
         case BASH_DOOR:
             if(crowable)
-                addstr("uses a crowbar on the door");
+                addstr("uses a crowbar on the door", gamelog);
             else if(activesquad->squad[maxp]->get_weapon().get_bashstrengthmod() > 1)
-                addstr("smashes in the door");
+                addstr("smashes in the door", gamelog);
             else if(activesquad->squad[maxp]->flag & CREATUREFLAG_WHEELCHAIR)
-                addstr("rams open the door");
+                addstr("rams open the door", gamelog);
             else
-                addstr("kicks in the door");
+                addstr("kicks in the door", gamelog);
 
             break;
         }
 
-        addstr("!");
+        addstr("!", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -307,7 +312,8 @@ char bash(short type, char &actual) {
             sitealarm = 1;
             move(17, 1);
             set_color(COLOR_RED, COLOR_BLACK, 1);
-            addstr("Alarms go off!");
+            addstr("Alarms go off!", gamelog);
+            gamelog.newline();
             refresh();
             getch();
         }
@@ -318,19 +324,20 @@ char bash(short type, char &actual) {
         clearmessagearea(false);
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr(activesquad->squad[maxp]->name);
+        addstr(activesquad->squad[maxp]->name, gamelog);
 
         switch(type) {
         case BASH_DOOR:
             if(activesquad->squad[maxp]->flag & CREATUREFLAG_WHEELCHAIR)
-                addstr(" rams into the door");
+                addstr(" rams into the door", gamelog);
             else
-                addstr(" kicks the door");
+                addstr(" kicks the door", gamelog);
 
             break;
         }
 
-        addstr("!");
+        addstr("!", gamelog);
+        gamelog.newline();
         refresh();
         getch();
 
@@ -394,18 +401,19 @@ char hack(short type, char &actual) {
             clearmessagearea();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
-            addstr(activesquad->squad[hacker]->name);
+            addstr(activesquad->squad[hacker]->name, gamelog);
 
             switch(type) {
             case HACK_SUPERCOMPUTER:
-                addstr(" has burned a disk of top secret files!");
+                addstr(" has burned a disk of top secret files!", gamelog);
                 break;
 
             case HACK_VAULT:
-                addstr(" has disabled the second layer of security!");
+                addstr(" has disabled the second layer of security!", gamelog);
                 break;
             }
 
+            gamelog.newline();
             refresh();
             getch();
 
@@ -415,18 +423,19 @@ char hack(short type, char &actual) {
             clearmessagearea();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
-            addstr(activesquad->squad[hacker]->name);
+            addstr(activesquad->squad[hacker]->name, gamelog);
 
             switch(type) {
             case HACK_SUPERCOMPUTER:
-                addstr(" couldn't bypass the supercomputer security.");
+                addstr(" couldn't bypass the supercomputer security.", gamelog);
                 break;
 
             case HACK_VAULT:
-                addstr(" couldn't bypass the vault's electronic lock.");
+                addstr(" couldn't bypass the vault's electronic lock.", gamelog);
                 break;
             }
 
+            gamelog.newline();
             refresh();
             getch();
 
@@ -437,7 +446,8 @@ char hack(short type, char &actual) {
         clearmessagearea();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You can't find anyone to do the job.");
+        addstr("You can't find anyone to do the job.", gamelog);
+        gamelog.newline();
 
         if(blind) {
             // Screen readers FTW. Honestly, it should just be a handicap
@@ -447,7 +457,8 @@ char hack(short type, char &actual) {
             refresh();
             getch();
             move(17, 1);
-            addstr("Including the BLIND HACKER you brought.");
+            addstr("Including the BLIND HACKER you brought.", gamelog);
+            gamelog.newline();
         }
 
         refresh();
@@ -477,9 +488,10 @@ char radio_broadcast(void) {
         clearmessagearea();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("The Conservatives in the room hurry the Squad, so");
+        addstr("The Conservatives in the room hurry the Squad, so ", gamelog);
         move(17, 1);
-        addstr("the broadcast never happens.");
+        addstr("the broadcast never happens.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -491,117 +503,119 @@ char radio_broadcast(void) {
     clearmessagearea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(16, 1);
-    addstr("The Squad takes control of the microphone and");
+    addstr("The Squad takes control of the microphone and ", gamelog);
     move(17, 1);
     int viewhit = LCSrandom(VIEWNUM);
 
     switch(viewhit) {
     case VIEW_GAY:
-        addstr("discusses homosexual rights.");
+        addstr("discusses homosexual rights.", gamelog);
         break;
 
     case VIEW_DEATHPENALTY:
-        addstr("examines the death penalty.");
+        addstr("examines the death penalty.", gamelog);
         break;
 
     case VIEW_TAXES:
-        addstr("discusses the tax code.");
+        addstr("discusses the tax code.", gamelog);
         break;
 
     case VIEW_NUCLEARPOWER:
-        addstr("runs down nuclear power.");
+        addstr("runs down nuclear power.", gamelog);
         break;
 
     case VIEW_ANIMALRESEARCH:
-        addstr("discusses the horrors of animal research.");
+        addstr("discusses the horrors of animal research.", gamelog);
         break;
 
     case VIEW_POLICEBEHAVIOR:
-        addstr("goes over cases of police brutality.");
+        addstr("goes over cases of police brutality.", gamelog);
         break;
 
     case VIEW_TORTURE:
-        addstr("discusses prisoner abuse and torture.");
+        addstr("discusses prisoner abuse and torture.", gamelog);
         break;
 
     case VIEW_INTELLIGENCE:
-        addstr("debates privacy law.");
+        addstr("debates privacy law.", gamelog);
         break;
 
     case VIEW_FREESPEECH:
-        addstr("talks about free speech.");
+        addstr("talks about free speech.", gamelog);
         break;
 
     case VIEW_GENETICS:
-        addstr("discusses the implications of genetic research.");
+        addstr("discusses the implications of genetic research.", gamelog);
         break;
 
     case VIEW_JUSTICES:
-        addstr("talks about the record of a Conservative judge.");
+        addstr("talks about the record of a Conservative judge.", gamelog);
         break;
 
     case VIEW_GUNCONTROL:
-        addstr("talks about gun control.");
+        addstr("talks about gun control.", gamelog);
         break;
 
     case VIEW_SWEATSHOPS:
-        addstr("brings details about sweatshops to light.");
+        addstr("brings details about sweatshops to light.", gamelog);
         break;
 
     case VIEW_POLLUTION:
-        addstr("does a show on industrial pollution.");
+        addstr("does a show on industrial pollution.", gamelog);
         break;
 
     case VIEW_CORPORATECULTURE:
-        addstr("jokes about corporate culture.");
+        addstr("jokes about corporate culture.", gamelog);
         break;
 
     case VIEW_CEOSALARY:
-        addstr("gives examples of CEO excesses.");
+        addstr("gives examples of CEO excesses.", gamelog);
         break;
 
     case VIEW_WOMEN:
-        addstr("discusses abortion.");
+        addstr("discusses abortion.", gamelog);
         break;// "Performs an abortion live on the air."
 
     // Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
     case VIEW_CIVILRIGHTS:
-        addstr("debates affirmative action.");
+        addstr("debates affirmative action.", gamelog);
         break;
 
     case VIEW_DRUGS:
-        addstr("has a frank talk about drugs.");
+        addstr("has a frank talk about drugs.", gamelog);
         break;
 
     case VIEW_IMMIGRATION:
-        addstr("examines the issue of immigration.");
+        addstr("examines the issue of immigration.", gamelog);
         break;
 
     case VIEW_MILITARY:
-        addstr("talks about militarism in modern culture.");
+        addstr("talks about militarism in modern culture.", gamelog);
         break;
 
     case VIEW_AMRADIO:
-        addstr("discusses other AM radio shows.");
+        addstr("discusses other AM radio shows.", gamelog);
         break;
 
     case VIEW_CABLENEWS:
-        addstr("talks about Cable News.");
+        addstr("talks about Cable News.", gamelog);
         break;
 
     case VIEW_LIBERALCRIMESQUAD:
-        addstr("lets people know about the Liberal Crime Squad.");
+        addstr("lets people know about the Liberal Crime Squad.", gamelog);
         break;
 
     default:
     case VIEW_LIBERALCRIMESQUADPOS:
-        addstr("extols the virtues of the Liberal Crime Squad.");
+        addstr("extols the virtues of the Liberal Crime Squad.", gamelog);
         break;
 
     case VIEW_CONSERVATIVECRIMESQUAD:
-        addstr("demonizes the Conservative Crime Squad.");
+        addstr("demonizes the Conservative Crime Squad.", gamelog);
         break;
     }
+
+    gamelog.newline();
 
     refresh();
     getch();
@@ -646,21 +660,23 @@ char radio_broadcast(void) {
     move(16, 1);
 
     if(segmentpower < 25)
-        addstr("The Squad sounds wholly insane.");
+        addstr("The Squad sounds wholly insane.", gamelog);
     else if(segmentpower < 35)
-        addstr("The show really sucks.");
+        addstr("The show really sucks.", gamelog);
     else if(segmentpower < 45)
-        addstr("It is a very boring hour.");
+        addstr("It is a very boring hour.", gamelog);
     else if(segmentpower < 55)
-        addstr("It is mediocre radio.");
+        addstr("It is mediocre radio.", gamelog);
     else if(segmentpower < 70)
-        addstr("The show was all right.");
+        addstr("The show was all right.", gamelog);
     else if(segmentpower < 85)
-        addstr("The Squad put on a good show.");
+        addstr("The Squad put on a good show.", gamelog);
     else if(segmentpower < 100)
-        addstr("It was thought-provoking, even humorous.");
+        addstr("It was thought-provoking, even humorous.", gamelog);
     else
-        addstr("It was the best hour of AM radio EVER.");
+        addstr("It was the best hour of AM radio EVER.", gamelog);
+
+    gamelog.newline();
 
     refresh();
     getch();
@@ -684,118 +700,120 @@ char radio_broadcast(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("The hostage ");
-                    addstr(activesquad->squad[p]->prisoner->name);
-                    addstr(" is forced on to");
+                    addstr("The hostage ", gamelog);
+                    addstr(activesquad->squad[p]->prisoner->name, gamelog);
+                    addstr(" is forced on to ", gamelog);
                     move(17, 1);
 
                     switch(viewhit) {
                     case VIEW_GAY:
-                        addstr("discuss homosexual rights.");
+                        addstr("discuss homosexual rights.", gamelog);
                         break;
 
                     case VIEW_DEATHPENALTY:
-                        addstr("examine the death penalty.");
+                        addstr("examine the death penalty.", gamelog);
                         break;
 
                     case VIEW_TAXES:
-                        addstr("discuss the tax code.");
+                        addstr("discuss the tax code.", gamelog);
                         break;
 
                     case VIEW_NUCLEARPOWER:
-                        addstr("run down nuclear power.");
+                        addstr("run down nuclear power.", gamelog);
                         break;
 
                     case VIEW_ANIMALRESEARCH:
-                        addstr("discuss the horrors of animal research.");
+                        addstr("discuss the horrors of animal research.", gamelog);
                         break;
 
                     case VIEW_POLICEBEHAVIOR:
-                        addstr("go over cases of police brutality.");
+                        addstr("go over cases of police brutality.", gamelog);
                         break;
 
                     case VIEW_TORTURE:
-                        addstr("discuss prisoner abuse and torture.");
+                        addstr("discuss prisoner abuse and torture.", gamelog);
                         break;
 
                     case VIEW_INTELLIGENCE:
-                        addstr("debate privacy law.");
+                        addstr("debate privacy law.", gamelog);
                         break;
 
                     case VIEW_FREESPEECH:
-                        addstr("talk about free speech.");
+                        addstr("talk about free speech.", gamelog);
                         break;
 
                     case VIEW_GENETICS:
-                        addstr("discuss the implications of genetic research.");
+                        addstr("discuss the implications of genetic research.", gamelog);
                         break;
 
                     case VIEW_JUSTICES:
-                        addstr("talk about the record of a Conservative judge.");
+                        addstr("talk about the record of a Conservative judge.", gamelog);
                         break;
 
                     case VIEW_GUNCONTROL:
-                        addstr("talk about gun control.");
+                        addstr("talk about gun control.", gamelog);
                         break;
 
                     case VIEW_SWEATSHOPS:
-                        addstr("bring details about sweatshops to light.");
+                        addstr("bring details about sweatshops to light.", gamelog);
                         break;
 
                     case VIEW_POLLUTION:
-                        addstr("do a show on industrial pollution.");
+                        addstr("do a show on industrial pollution.", gamelog);
                         break;
 
                     case VIEW_CORPORATECULTURE:
-                        addstr("joke about corporate culture.");
+                        addstr("joke about corporate culture.", gamelog);
                         break;
 
                     case VIEW_CEOSALARY:
-                        addstr("give examples of CEO excesses.");
+                        addstr("give examples of CEO excesses.", gamelog);
                         break;
 
                     case VIEW_WOMEN:
-                        addstr("discuss abortion.");
+                        addstr("discuss abortion.", gamelog);
                         break;// "Performs an abortion live on the air."
 
                     // Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
                     case VIEW_CIVILRIGHTS:
-                        addstr("debate affirmative action.");
+                        addstr("debate affirmative action.", gamelog);
                         break;
 
                     case VIEW_DRUGS:
-                        addstr("have a frank talk about drugs.");
+                        addstr("have a frank talk about drugs.", gamelog);
                         break;
 
                     case VIEW_IMMIGRATION:
-                        addstr("examine the issue of immigration.");
+                        addstr("examine the issue of immigration.", gamelog);
                         break;
 
                     case VIEW_MILITARY:
-                        addstr("talk about militarism in modern culture.");
+                        addstr("talk about militarism in modern culture.", gamelog);
                         break;
 
                     case VIEW_AMRADIO:
-                        addstr("discuss other AM radio shows.");
+                        addstr("discuss other AM radio shows.", gamelog);
                         break;
 
                     case VIEW_CABLENEWS:
-                        addstr("talk about Cable News.");
+                        addstr("talk about Cable News.", gamelog);
                         break;
 
                     case VIEW_LIBERALCRIMESQUAD:
-                        addstr("let people know about the Liberal Crime Squad.");
+                        addstr("let people know about the Liberal Crime Squad.", gamelog);
                         break;
 
                     default:
                     case VIEW_LIBERALCRIMESQUADPOS:
-                        addstr("extol the virtues of the Liberal Crime Squad.");
+                        addstr("extol the virtues of the Liberal Crime Squad.", gamelog);
                         break;
 
                     case VIEW_CONSERVATIVECRIMESQUAD:
-                        addstr("demonize the Conservative Crime Squad.");
+                        addstr("demonize the Conservative Crime Squad.", gamelog);
                         break;
                     }
+
+                    gamelog.newline();
 
                     usegmentpower = 10; //FAME BONUS
                     usegmentpower += activesquad->squad[p]->prisoner->get_attribute(ATTRIBUTE_INTELLIGENCE, true);
@@ -817,8 +835,9 @@ char radio_broadcast(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr(activesquad->squad[p]->prisoner->name);
-                    addstr(", the hostage, is kept off-air.");
+                    addstr(activesquad->squad[p]->prisoner->name, gamelog);
+                    addstr(", the hostage, is kept off-air.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -834,9 +853,11 @@ char radio_broadcast(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("Moderates at the station appreciated the show.");
+        addstr("Moderates at the station appreciated the show.", gamelog);
+        gamelog.newline();
         move(17, 1);
-        addstr("They no longer feel alienated.");
+        addstr("They no longer feel alienated.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -848,9 +869,10 @@ char radio_broadcast(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("Security is waiting for the Squad");
+        addstr("Security is waiting for the Squad ", gamelog);
         move(17, 1);
-        addstr("after the show!");
+        addstr("after the show!", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -871,9 +893,10 @@ char radio_broadcast(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("The show was so good that security listened to it");
+        addstr("The show was so good that security listened to it ", gamelog);
         move(17, 1);
-        addstr("at their desks.  The Squad might yet escape.");
+        addstr("at their desks.  The Squad might yet escape.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -902,9 +925,10 @@ char news_broadcast(void) {
         clearmessagearea();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("The Conservatives in the room hurry the Squad, so");
+        addstr("The Conservatives in the room hurry the Squad, so ", gamelog);
         move(17, 1);
-        addstr("the broadcast never happens.");
+        addstr("the broadcast never happens.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -916,117 +940,119 @@ char news_broadcast(void) {
     clearmessagearea();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
     move(16, 1);
-    addstr("The Squad steps in front of the cameras and");
+    addstr("The Squad steps in front of the cameras and ", gamelog);
     move(17, 1);
     int viewhit = LCSrandom(VIEWNUM);
 
     switch(viewhit) {
     case VIEW_GAY:
-        addstr("discusses homosexual rights.");
+        addstr("discusses homosexual rights.", gamelog);
         break;
 
     case VIEW_DEATHPENALTY:
-        addstr("examines the death penalty.");
+        addstr("examines the death penalty.", gamelog);
         break;
 
     case VIEW_TAXES:
-        addstr("discusses the tax code.");
+        addstr("discusses the tax code.", gamelog);
         break;
 
     case VIEW_NUCLEARPOWER:
-        addstr("runs down nuclear power.");
+        addstr("runs down nuclear power.", gamelog);
         break;
 
     case VIEW_ANIMALRESEARCH:
-        addstr("discusses the horrors of animal research.");
+        addstr("discusses the horrors of animal research.", gamelog);
         break;
 
     case VIEW_POLICEBEHAVIOR:
-        addstr("goes over cases of police brutality.");
+        addstr("goes over cases of police brutality.", gamelog);
         break;
 
     case VIEW_TORTURE:
-        addstr("discusses prisoner abuse and torture.");
+        addstr("discusses prisoner abuse and torture.", gamelog);
         break;
 
     case VIEW_INTELLIGENCE:
-        addstr("debates privacy law.");
+        addstr("debates privacy law.", gamelog);
         break;
 
     case VIEW_FREESPEECH:
-        addstr("talks about free speech.");
+        addstr("talks about free speech.", gamelog);
         break;
 
     case VIEW_GENETICS:
-        addstr("discusses the implications of genetic research.");
+        addstr("discusses the implications of genetic research.", gamelog);
         break;
 
     case VIEW_JUSTICES:
-        addstr("talks about the record of a Conservative judge.");
+        addstr("talks about the record of a Conservative judge.", gamelog);
         break;
 
     case VIEW_GUNCONTROL:
-        addstr("talks about gun control.");
+        addstr("talks about gun control.", gamelog);
         break;
 
     case VIEW_SWEATSHOPS:
-        addstr("brings details about sweatshops to light.");
+        addstr("brings details about sweatshops to light.", gamelog);
         break;
 
     case VIEW_POLLUTION:
-        addstr("does a show on industrial pollution.");
+        addstr("does a show on industrial pollution.", gamelog);
         break;
 
     case VIEW_CORPORATECULTURE:
-        addstr("jokes about corporate culture.");
+        addstr("jokes about corporate culture.", gamelog);
         break;
 
     case VIEW_CEOSALARY:
-        addstr("gives examples of CEO excesses.");
+        addstr("gives examples of CEO excesses.", gamelog);
         break;
 
     case VIEW_WOMEN:
-        addstr("discusses abortion.");
+        addstr("discusses abortion.", gamelog);
         break;// "Performs an abortion live on the air."
 
     // Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
     case VIEW_CIVILRIGHTS:
-        addstr("debates affirmative action.");
+        addstr("debates affirmative action.", gamelog);
         break;
 
     case VIEW_DRUGS:
-        addstr("has a frank talk about drugs.");
+        addstr("has a frank talk about drugs.", gamelog);
         break;
 
     case VIEW_IMMIGRATION:
-        addstr("examines the issue of immigration.");
+        addstr("examines the issue of immigration.", gamelog);
         break;
 
     case VIEW_MILITARY:
-        addstr("talks about militarism in modern culture.");
+        addstr("talks about militarism in modern culture.", gamelog);
         break;
 
     case VIEW_AMRADIO:
-        addstr("discusses other AM radio shows.");
+        addstr("discusses other AM radio shows.", gamelog);
         break;
 
     case VIEW_CABLENEWS:
-        addstr("talks about Cable News.");
+        addstr("talks about Cable News.", gamelog);
         break;
 
     case VIEW_LIBERALCRIMESQUAD:
-        addstr("lets people know about the Liberal Crime Squad.");
+        addstr("lets people know about the Liberal Crime Squad.", gamelog);
         break;
 
     default:
     case VIEW_LIBERALCRIMESQUADPOS:
-        addstr("extols the virtues of the Liberal Crime Squad.");
+        addstr("extols the virtues of the Liberal Crime Squad.", gamelog);
         break;
 
     case VIEW_CONSERVATIVECRIMESQUAD:
-        addstr("demonizes the Conservative Crime Squad.");
+        addstr("demonizes the Conservative Crime Squad.", gamelog);
         break;
     }
+
+    gamelog.newline();
 
     refresh();
     getch();
@@ -1070,21 +1096,23 @@ char news_broadcast(void) {
     move(16, 1);
 
     if(segmentpower < 25)
-        addstr("The Squad looks completely insane.");
+        addstr("The Squad looks completely insane.", gamelog);
     else if(segmentpower < 35)
-        addstr("The show really sucks.");
+        addstr("The show really sucks.", gamelog);
     else if(segmentpower < 45)
-        addstr("It is a very boring hour.");
+        addstr("It is a very boring hour.", gamelog);
     else if(segmentpower < 55)
-        addstr("It is mediocre TV.");
+        addstr("It is mediocre TV.", gamelog);
     else if(segmentpower < 70)
-        addstr("The show was all right.");
+        addstr("The show was all right.", gamelog);
     else if(segmentpower < 85)
-        addstr("The Squad put on a good show.");
+        addstr("The Squad put on a good show.", gamelog);
     else if(segmentpower < 100)
-        addstr("It was thought-provoking, even humorous.");
+        addstr("It was thought-provoking, even humorous.", gamelog);
     else
-        addstr("It was the best hour of Cable TV EVER.");
+        addstr("It was the best hour of Cable TV EVER.", gamelog);
+
+    gamelog.newline();
 
     refresh();
     getch();
@@ -1108,118 +1136,120 @@ char news_broadcast(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr("The hostage ");
-                    addstr(activesquad->squad[p]->prisoner->name);
-                    addstr(" is forced on to");
+                    addstr("The hostage ", gamelog);
+                    addstr(activesquad->squad[p]->prisoner->name, gamelog);
+                    addstr(" is forced on to ", gamelog);
                     move(17, 1);
 
                     switch(viewhit) {
                     case VIEW_GAY:
-                        addstr("discuss homosexual rights.");
+                        addstr("discuss homosexual rights.", gamelog);
                         break;
 
                     case VIEW_DEATHPENALTY:
-                        addstr("examine the death penalty.");
+                        addstr("examine the death penalty.", gamelog);
                         break;
 
                     case VIEW_TAXES:
-                        addstr("discuss the tax code.");
+                        addstr("discuss the tax code.", gamelog);
                         break;
 
                     case VIEW_NUCLEARPOWER:
-                        addstr("run down nuclear power.");
+                        addstr("run down nuclear power.", gamelog);
                         break;
 
                     case VIEW_ANIMALRESEARCH:
-                        addstr("discuss the horrors of animal research.");
+                        addstr("discuss the horrors of animal research.", gamelog);
                         break;
 
                     case VIEW_POLICEBEHAVIOR:
-                        addstr("go over cases of police brutality.");
+                        addstr("go over cases of police brutality.", gamelog);
                         break;
 
                     case VIEW_TORTURE:
-                        addstr("discuss prisoner abuse and torture.");
+                        addstr("discuss prisoner abuse and torture.", gamelog);
                         break;
 
                     case VIEW_INTELLIGENCE:
-                        addstr("debate privacy law.");
+                        addstr("debate privacy law.", gamelog);
                         break;
 
                     case VIEW_FREESPEECH:
-                        addstr("talk about free speech.");
+                        addstr("talk about free speech.", gamelog);
                         break;
 
                     case VIEW_GENETICS:
-                        addstr("discuss the implications of genetic research.");
+                        addstr("discuss the implications of genetic research.", gamelog);
                         break;
 
                     case VIEW_JUSTICES:
-                        addstr("talk about the record of a Conservative judge.");
+                        addstr("talk about the record of a Conservative judge.", gamelog);
                         break;
 
                     case VIEW_GUNCONTROL:
-                        addstr("talk about gun control.");
+                        addstr("talk about gun control.", gamelog);
                         break;
 
                     case VIEW_SWEATSHOPS:
-                        addstr("bring details about sweatshops to light.");
+                        addstr("bring details about sweatshops to light.", gamelog);
                         break;
 
                     case VIEW_POLLUTION:
-                        addstr("do a show on industrial pollution.");
+                        addstr("do a show on industrial pollution.", gamelog);
                         break;
 
                     case VIEW_CORPORATECULTURE:
-                        addstr("joke about corporate culture.");
+                        addstr("joke about corporate culture.", gamelog);
                         break;
 
                     case VIEW_CEOSALARY:
-                        addstr("give examples of CEO excesses.");
+                        addstr("give examples of CEO excesses.", gamelog);
                         break;
 
                     case VIEW_WOMEN:
-                        addstr("discuss abortion.");
+                        addstr("discuss abortion.", gamelog);
                         break;// "Performs an abortion live on the air."
 
                     // Get [LAWFLAG_SPEECH], [LAWFLAG_MURDER], [LAWFLAG_DISTURBANCE] -- LK
                     case VIEW_CIVILRIGHTS:
-                        addstr("debate affirmative action.");
+                        addstr("debate affirmative action.", gamelog);
                         break;
 
                     case VIEW_DRUGS:
-                        addstr("have a frank talk about drugs.");
+                        addstr("have a frank talk about drugs.", gamelog);
                         break;
 
                     case VIEW_IMMIGRATION:
-                        addstr("examine the issue of immigration.");
+                        addstr("examine the issue of immigration.", gamelog);
                         break;
 
                     case VIEW_MILITARY:
-                        addstr("talk about militarism in modern culture.");
+                        addstr("talk about militarism in modern culture.", gamelog);
                         break;
 
                     case VIEW_AMRADIO:
-                        addstr("discuss other AM radio shows.");
+                        addstr("discuss other AM radio shows.", gamelog);
                         break;
 
                     case VIEW_CABLENEWS:
-                        addstr("talk about Cable News.");
+                        addstr("talk about Cable News.", gamelog);
                         break;
 
                     case VIEW_LIBERALCRIMESQUAD:
-                        addstr("let people know about the Liberal Crime Squad.");
+                        addstr("let people know about the Liberal Crime Squad.", gamelog);
                         break;
 
                     default:
                     case VIEW_LIBERALCRIMESQUADPOS:
-                        addstr("extol the virtues of the Liberal Crime Squad.");
+                        addstr("extol the virtues of the Liberal Crime Squad.", gamelog);
                         break;
 
                     case VIEW_CONSERVATIVECRIMESQUAD:
-                        addstr("demonize the Conservative Crime Squad.");
+                        addstr("demonize the Conservative Crime Squad.", gamelog);
                         break;
                     }
+
+                    gamelog.newline();
 
                     usegmentpower = 10; //FAME BONUS
                     usegmentpower += activesquad->squad[p]->prisoner->get_attribute(ATTRIBUTE_INTELLIGENCE, true);
@@ -1241,8 +1271,9 @@ char news_broadcast(void) {
 
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(16, 1);
-                    addstr(activesquad->squad[p]->prisoner->name);
-                    addstr(", the hostage, is kept off-air.");
+                    addstr(activesquad->squad[p]->prisoner->name, gamelog);
+                    addstr(", the hostage, is kept off-air.", gamelog);
+                    gamelog.newline();
 
                     refresh();
                     getch();
@@ -1258,9 +1289,11 @@ char news_broadcast(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("Moderates at the station appreciated the show.");
+        addstr("Moderates at the station appreciated the show.", gamelog);
+        gamelog.newline();
         move(17, 1);
-        addstr("They no longer feel alienated.");
+        addstr("They no longer feel alienated.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -1272,9 +1305,10 @@ char news_broadcast(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("Security is waiting for the Squad");
+        addstr("Security is waiting for the Squad ", gamelog);
         move(17, 1);
-        addstr("after the show!");
+        addstr("after the show!", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -1295,16 +1329,17 @@ char news_broadcast(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("The show was so ");
+        addstr("The show was so ", gamelog);
 
         if(segmentpower < 50)
-            addstr("hilarious");
+            addstr("hilarious", gamelog);
         else
-            addstr("entertaining");
+            addstr("entertaining", gamelog);
 
-        addstr(" that security watched it");
+        addstr(" that security watched it ", gamelog);
         move(17, 1);
-        addstr("at their desks.  The Squad might yet escape.");
+        addstr("at their desks.  The Squad might yet escape.", gamelog);
+        gamelog.newline();
 
         refresh();
         getch();
@@ -1365,9 +1400,10 @@ void partyrescue(short special) {
 
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             move(16, 1);
-            addstr("You've rescued ");
-            addstr(waiting_for_rescue[pl]->name);
-            addstr(" from the Conservatives.");
+            addstr("You've rescued ", gamelog);
+            addstr(waiting_for_rescue[pl]->name, gamelog);
+            addstr(" from the Conservatives.", gamelog);
+            gamelog.newline();
 
             printparty();
             refresh();
@@ -1395,36 +1431,38 @@ void partyrescue(short special) {
 
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(16, 1);
-                        addstr("You've rescued ");
-                        addstr(waiting_for_rescue[pl]->name);
-                        addstr(" from the Conservatives.");
+                        addstr("You've rescued ", gamelog);
+                        addstr(waiting_for_rescue[pl]->name, gamelog);
+                        addstr(" from the Conservatives.", gamelog);
+                        gamelog.newline();
 
                         refresh();
                         getch();
 
                         clearmessagearea();
                         move(16, 1);
-                        addstr(waiting_for_rescue[pl]->name);
-                        addstr(" ");
+                        addstr(waiting_for_rescue[pl]->name, gamelog);
+                        addstr(" ", gamelog);
 
                         switch(LCSrandom(3)) {
                         case 0:
-                            addstr("was tortured recently");
+                            addstr("was tortured recently ", gamelog);
                             break;
 
                         case 1:
-                            addstr("was beaten severely yesterday");
+                            addstr("was beaten severely yesterday ", gamelog);
                             break;
 
                         case 2:
-                            addstr("was on a hunger strike");
+                            addstr("was on a hunger strike ", gamelog);
                             break;
                         }
 
                         move(17, 1);
-                        addstr("so ");
-                        addstr(activesquad->squad[p]->name);
-                        addstr(" will have to haul a Liberal.");
+                        addstr("so ", gamelog);
+                        addstr(activesquad->squad[p]->name, gamelog);
+                        addstr(" will have to haul a Liberal.", gamelog);
+                        gamelog.newline();
 
                         waiting_for_rescue[pl]->location = -1;
                         waiting_for_rescue[pl]->base = activesquad->squad[p]->base;
@@ -1451,22 +1489,26 @@ void partyrescue(short special) {
         clearmessagearea();
         set_color(COLOR_YELLOW, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("There's nobody left to carry ");
-        addstr(waiting_for_rescue[0]->name);
-        addstr(".");
+        addstr("There's nobody left to carry ", gamelog);
+        addstr(waiting_for_rescue[0]->name, gamelog);
+        addstr(".", gamelog);
+        gamelog.newline();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(17, 1);
-        addstr("You'll have to come back later.");
+        addstr("You'll have to come back later.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
     } else if(waiting_for_rescue.size() > 1) {
         clearmessagearea();
         set_color(COLOR_YELLOW, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("There's nobody left to carry the others.");
+        addstr("There's nobody left to carry the others.", gamelog);
+        gamelog.newline();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(17, 1);
-        addstr("You'll have to come back later.");
+        addstr("You'll have to come back later.", gamelog);
+        gamelog.newline();
         refresh();
         getch();
     }
