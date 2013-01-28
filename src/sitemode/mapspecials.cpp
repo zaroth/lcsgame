@@ -2237,7 +2237,7 @@ void special_security(bool metaldetect) {
                     rejected = REJECTED_SECONDRATECLOTHES;
 
             // Suspicious weapons? Gone
-            if(!autoadmit && weaponcheck(*activesquad->squad[s]) > 0, metaldetect)
+            if(!autoadmit && weaponcheck(*activesquad->squad[s], metaldetect) > 0)
                 if(rejected > REJECTED_WEAPONS)
                     rejected = REJECTED_WEAPONS;
 
