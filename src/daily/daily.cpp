@@ -1257,6 +1257,7 @@ void dispersalcheck(char &clearformess) {
                     if(pool[p]->location == -1 || location[pool[p]->location]->renting == RENTING_NOCONTROL) {
                         delete pool[p];
                         pool.erase(pool.begin() + p);
+                        --p;
                     }
                 }
             }
