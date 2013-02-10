@@ -166,23 +166,27 @@ void displaysinglead(bool liberalguardian, char addplace[2][3], short *storyx_s,
                 break;
 
             case 5: {
-                strcat(ad, "&c");
+                strcpy(ad, "&c");
 
                 switch(LCSrandom(5)) {
                 case 0:
-                    strcpy(ad, "Searching For Love");
+                    strcat(ad, "Searching For Love");
+                    break;
 
                 case 1:
-                    strcpy(ad, "Seeking Love");
+                    strcat(ad, "Seeking Love");
+                    break;
 
                 case 2:
-                    strcpy(ad, "Are You Lonely?");
+                    strcat(ad, "Are You Lonely?");
+                    break;
 
                 case 3:
-                    strcpy(ad, "Looking For Love");
+                    strcat(ad, "Looking For Love");
+                    break;
 
                 case 4:
-                    strcpy(ad, "Soulmate Wanted");
+                    strcat(ad, "Soulmate Wanted");
                     break;
                 }
 
@@ -210,7 +214,7 @@ void displaysinglead(bool liberalguardian, char addplace[2][3], short *storyx_s,
             }
             }
         } else {
-            switch(4) { // Liberal Guardian Ads
+            switch(LCSrandom(4)) { // Liberal Guardian Ads
             case 0:
                 strcpy(ad, "&cWant Organic?&r&r");
                 strcat(ad, "&cVisit The Vegan&r");
@@ -222,8 +226,8 @@ void displaysinglead(bool liberalguardian, char addplace[2][3], short *storyx_s,
                 char numyears_s [10];
                 itoa (numyears, numyears_s, 10);
                 strcpy(ad, "&cLiberal Defense Lawyer&r");
-                strcpy(ad, "&c");
-                strcpy(ad, numyears_s);
+                strcat(ad, "&c");
+                strcat(ad, numyears_s);
                 strcat(ad, " Years Experience&r&r");
                 strcat(ad, "&cCall Today&r");
                 break;
@@ -237,20 +241,23 @@ void displaysinglead(bool liberalguardian, char addplace[2][3], short *storyx_s,
                 break;
 
             case 3: {
-                strcat(ad, "&c");
+                strcpy(ad, "&c");
 
                 switch(LCSrandom(4)) {
                 case 0:
-                    strcpy(ad, "Searching For Love");
+                    strcat(ad, "Searching For Love");
+                    break;
 
                 case 1:
-                    strcpy(ad, "Seeking Love");
+                    strcat(ad, "Seeking Love");
+                    break;
 
                 case 2:
-                    strcpy(ad, "Are You Lonely?");
+                    strcat(ad, "Are You Lonely?");
+                    break;
 
                 case 3:
-                    strcpy(ad, "Looking For Love");
+                    strcat(ad, "Looking For Love");
                     break;
                 }
 
