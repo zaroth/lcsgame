@@ -155,15 +155,24 @@ void Shop::browse_halfscreen(squadst &customers, int &buyer) const {
             if (available_options[p]->letter_defined_)
                 addch(available_options[p]->showletter());
             else {
+                // Find an available letter to use for this ware.
                 bool done = false;
 
                 while (taken_letters < 27 && !done) {
                     done = true;
 
+                    if ('a' + taken_letters == 'b' || // Letters used by the shop UI are disallowed.
+                            'a' + taken_letters == 'e' ||
+                            ('a' + taken_letters == 's' && allow_selling_) ||
+                            ('a' + taken_letters == 'm' && sell_masks_)) {
+                        ++taken_letters;
+                        done = false;
+                        continue;
+                    }
+
                     for (unsigned i = 0; i < available_options.size(); ++i) {
-                        if (available_options[i]->letter_defined_ && 'a' + taken_letters == available_options[i]->letter_) {
-                            available_options[p]->letter_ = 'a' + taken_letters;
-                            //available_options[p]->letter_defined_ = true;
+                        if (available_options[i]->letter_defined_ &&
+                                'a' + taken_letters == available_options[i]->letter_) {
                             ++taken_letters;
                             done = false;
                             break;
@@ -171,6 +180,7 @@ void Shop::browse_halfscreen(squadst &customers, int &buyer) const {
                     }
                 }
 
+                available_options[p]->letter_ = 'a' + taken_letters;
                 addch('A' + taken_letters);
                 ++taken_letters;
             }

@@ -20,6 +20,7 @@ void build_site(std::string name);
 class configSiteCommand : public configurable {
   public:
     void virtual build() = 0;
+    virtual ~configSiteCommand() {}
   private:
 };
 
