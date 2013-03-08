@@ -700,7 +700,7 @@ void printblock(int x, int y, int z, int px, int py) {
         addstr("TRAP!");
     } else if(levelmap[x][y][z].siegeflag & SIEGEFLAG_UNIT_DAMAGED) {
         set_color(COLOR_RED, backcolor, 0, blink);
-        move(py + 2, px + 1);
+        move(py + 2, px);
         addstr("enemy");
     } else if(levelmap[x][y][z].special != -1) {
         set_color(COLOR_YELLOW, backcolor, 1, blink);
