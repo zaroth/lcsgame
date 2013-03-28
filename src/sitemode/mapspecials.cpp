@@ -2719,6 +2719,8 @@ void special_bank_teller(void) {
 }
 
 void special_bank_money(void) {
+    static int swat_counter = 0;
+
     clearmessagearea(false);
     set_color(COLOR_GREEN, COLOR_BLACK, 1);
     move(16, 1);
@@ -2730,6 +2732,9 @@ void special_bank_money(void) {
     activesquad->loot.push_back(new Money(20000));
     sitecrime += 20;
 
+    if(postalarmtimer <= 80)
+        swat_counter = 0;
+
     if(!sitealarm && sitealarmtimer != 0)
         sitealarmtimer = 0;
     else if(!sitealarm && !LCSrandom(2))
@@ -2738,12 +2743,19 @@ void special_bank_money(void) {
         postalarmtimer += 20;
     else if(sitealarm && postalarmtimer <= 80 && LCSrandom(2))
         postalarmtimer = 81;
-    else if(sitealarm && postalarmtimer > 80 && LCSrandom(2)) {
+    else if(sitealarm && postalarmtimer > 80 && LCSrandom(2) && swat_counter < 2) {
+
         refresh();
         getch();
         move(17, 1);
-        addstr("A SWAT team storms the vault!!", gamelog);
+
+        if(swat_counter > 0)
+            addstr("Another SWAT team moves in!!", gamelog);
+        else
+            addstr("A SWAT team storms the vault!!", gamelog);
+
         gamelog.newline();
+        swat_counter += 1;
 
         int swatnum = 9;
 
