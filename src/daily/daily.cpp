@@ -611,14 +611,27 @@ void advanceday(char &clearformess, char canseethings) {
             continue;
 
         if (pool[p]->location == -1) {
-//Had a crash bug on the siege check. Location was -1, probably set by 'partyrescue' and not reset during to messy violent chase.
-//This may prevent crashes.
+            //Had a crash bug on the siege check. Location was -1, probably set by 'partyrescue' and not reset during to messy violent chase.
+            //This may prevent crashes.
             pool[p]->location = pool[p]->base;
         }
 
         //CLEAR ACTIONS FOR PEOPLE UNDER SIEGE
-        if(location[pool[p]->location]->siege.siege)
-            pool[p]->activity.type = ACTIVITY_NONE;
+        if(location[pool[p]->location]->siege.siege) {
+            switch(pool[p]->activity.type) {
+            case ACTIVITY_HOSTAGETENDING:
+            case ACTIVITY_TEACH_POLITICS:
+            case ACTIVITY_TEACH_FIGHTING:
+            case ACTIVITY_TEACH_COVERT:
+            case ACTIVITY_HEAL:
+            case ACTIVITY_REPAIR_ARMOR:
+                break;
+
+            default:
+                pool[p]->activity.type = ACTIVITY_NONE;
+                break;
+            }
+        }
 
         switch(pool[p]->activity.type) {
         case ACTIVITY_REPAIR_ARMOR:
