@@ -2641,6 +2641,7 @@ void special_bank_vault(void) {
 
                                 pool[p]->location = pool[p]->base = activesquad->squad[0]->base;
                                 pool[p]->flag &= ~CREATUREFLAG_SLEEPER;
+                                pool[p]->activity.type = ACTIVITY_NONE;
                                 pool[p]->crimes_suspected[LAWFLAG_BANKROBBERY]++;
 
                                 break;
