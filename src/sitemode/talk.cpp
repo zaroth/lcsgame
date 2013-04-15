@@ -1588,6 +1588,7 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
 
         Creature *newcr = new Creature;
         *newcr = tk;
+        newcr->namecreature();
 
         newcr->location = a.location;
         newcr->base = a.base;
