@@ -768,6 +768,10 @@ void getview(char *str, short view) {
         strcat(str, "Torture");
         break;
 
+    case VIEW_PRISONS:
+        strcat(str, "The Prison System");
+        break;
+
     case VIEW_INTELLIGENCE:
         strcat(str, "Privacy");
         break;
@@ -879,6 +883,10 @@ void getviewsmall(char *str, short view) {
 
     case VIEW_TORTURE:
         strcat(str, "torture");
+        break;
+
+    case VIEW_PRISONS:
+        strcat(str, "the prison system");
         break;
 
     case VIEW_INTELLIGENCE:
@@ -1046,6 +1054,10 @@ void getlaw(char *str, int l) {
 
     case LAW_TORTURE:
         addstr("Human Rights");
+        break;
+
+    case LAW_PRISONS:
+        addstr("Prison Regulation");
         break;
     }
 }
