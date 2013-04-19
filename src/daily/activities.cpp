@@ -744,6 +744,14 @@ void survey(Creature *cr) {
 
             break;
 
+        case VIEW_PRISONS:
+            if(attitude[VIEW_PRISONS] > 50)
+                addstr("stopping the prisoners' suffering.");
+            else
+                addstr("putting the prisoners in line.");
+
+            break;
+
         //case VIEW_POLITICALVIOLENCE:
         //   if(attitude[VIEW_POLITICALVIOLENCE]>50)addstr("taking strong action.");
         //   else addstr("political terrorism.");
@@ -1046,7 +1054,10 @@ void survey(Creature *cr) {
                 addstr("held the Conservative Crime Squad in contempt");
                 break;
 
-            //case VIEW_PRISONS:addstr("wanted to end prisoner abuse and torture");break;
+            case VIEW_PRISONS:
+                addstr("wanted to end prisoner abuse and torture");
+                break;
+
             case VIEW_AMRADIO:
                 addstr("do not like AM radio");
                 break;

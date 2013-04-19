@@ -1792,6 +1792,10 @@ char talkAboutIssues(Creature &a, Creature &tk) {
         case LAW_TORTURE:
             addstr("\"Torture is bad!\"", gamelog);
             break;
+
+        case LAW_PRISONS:
+            addstr("\"Prisoners don't have freedom!\"", gamelog);
+            break;
         }
     } else if(issue_too_liberal) {
         switch(lw) {
@@ -1877,6 +1881,10 @@ char talkAboutIssues(Creature &a, Creature &tk) {
 
         case LAW_TORTURE:
             addstr("\"Some conservatives support torture.\"", gamelog);
+            break;
+
+        case LAW_PRISONS:
+            addstr("\"Prisons still exist.\"", gamelog);
             break;
         }
     } else {
@@ -2020,6 +2028,13 @@ char talkAboutIssues(Creature &a, Creature &tk) {
             move(y, 1);
             y++;
             addstr("the government torture and abuse human beings on our behalf.\"", gamelog);
+            break;
+
+        case LAW_PRISONS:
+            addstr("\"The prison system doesn't help criminals by providing rehabilitation, so ", gamelog);
+            move(y, 1);
+            y++;
+            addstr("when they get released, they mostly become criminals again.\"", gamelog);
             break;
         }
     }
@@ -2297,6 +2312,10 @@ char talkAboutIssues(Creature &a, Creature &tk) {
 
                 case LAW_TORTURE:
                     addstr("\"The terrorists would do worse to us.\"", gamelog);
+                    break;
+
+                case LAW_PRISONS:
+                    addstr("\"Criminals deserve what they get in prison.\"", gamelog);
                     break;
                 }
             } else {

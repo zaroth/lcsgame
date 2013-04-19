@@ -784,6 +784,17 @@ void elections(char clearformess, char canseethings) {
                     addstr("Permit Strong Tactics in Interrogations");
 
                 break;
+
+            case LAW_PRISONS:
+                if(propdir[c] == 1) {
+                    if(law[LAW_PRISONS] == 1)
+                        addstr("Establish Prison Rehabilitation");
+                    else
+                        addstr("Improve Prison Conditions");
+                } else
+                    addstr("Increase Prison Security");
+
+                break;
             }
 
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -1727,6 +1738,17 @@ void supremecourt(char clearformess, char canseethings) {
                     addstr("Permit Strong Tactics in Interrogations");
 
                 break;
+
+            case LAW_PRISONS:
+                if(scasedir[c] == 1) {
+                    if(law[LAW_PRISONS] == 1)
+                        addstr("Mandate Prison Rehabilitation");
+                    else
+                        addstr("Expand Prisoners' Rights");
+                } else
+                    addstr("Limit Prisoners' Rights");
+
+                break;
             }
 
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -2270,10 +2292,20 @@ void congress(char clearformess, char canseethings) {
                     addstr("Permit Strong Tactics in Interrogations");
 
                 break;
+
+            case LAW_PRISONS:
+                if(billdir[c] == 1) {
+                    if(law[LAW_PRISONS] == 1)
+                        addstr("Establish Prison Rehabilitation");
+                    else
+                        addstr("Improve Prison Conditions");
+                } else
+                    addstr("Increase Prison Security");
+
+                break;
             }
 
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
-
             refresh();
         }
     }
@@ -2836,6 +2868,9 @@ int publicmood(int l) {
 
     case LAW_GUNCONTROL:
         return attitude[VIEW_GUNCONTROL];
+
+    case LAW_PRISONS:
+        return attitude[VIEW_PRISONS];
 
     case LAW_ELECTIONS:
     default: { //eg. -1

@@ -1830,9 +1830,6 @@ void majornewspaper(char &clearformess, char canseethings) {
             if(ns->view == VIEW_TORTURE)
                 continue;
 
-            if(ns->view == VIEW_GUNCONTROL)
-                continue;
-
             //if(ns->view==VIEW_POLITICALVIOLENCE)continue;
 
             //NO ABORTION
@@ -2464,6 +2461,7 @@ void majornewspaper(char &clearformess, char canseethings) {
                     change_public_opinion(VIEW_DEATHPENALTY, power, colored, power * 10);
                     change_public_opinion(VIEW_DRUGS, power, colored, power * 10);
                     change_public_opinion(VIEW_TORTURE, power, colored, power * 10);
+                    change_public_opinion(VIEW_PRISONS, power, colored, power * 10);
                     break;
 
                 case SITE_GOVERNMENT_ARMYBASE:

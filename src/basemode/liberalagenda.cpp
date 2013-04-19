@@ -328,6 +328,10 @@ char liberalagenda(char won) {
                     addstr("Human Rights");
                     break;
 
+                case LAW_PRISONS:
+                    addstr("Prison Regulation");
+                    break;
+
                 case LAW_TAX:
                     addstr("Tax Structure");
                     break;
@@ -440,7 +444,6 @@ char liberalagenda(char won) {
                     if(won == -1)
                         addstr("Women have been stripped of the right to vote.");
                     else if(law[l] == ALIGN_ARCHCONSERVATIVE)
-//                     addstr("Women are regularly treated as second-class citizens.");
                         addstr("Women are second-class citizens.");
                     else if(law[l] == -1)
                         addstr("Non-discrimination laws do not apply to gender.");
@@ -546,6 +549,22 @@ char liberalagenda(char won) {
                         addstr("The government strongly enforces a ban on torture.");
                     else
                         addstr("The country is respected as an international leader on Moral Interrogation Practices.");
+
+                    break;
+
+                case LAW_PRISONS:
+                    if(won == -1)
+                        addstr("Prisoners aren't even considered people by the law.");
+                    else if(law[l] == ALIGN_ARCHCONSERVATIVE)
+                        addstr("Prisoners are often subject to torture and slave labor.");
+                    else if(law[l] == -1)
+                        addstr("Prisoners suffer from horrible conditions and lack of basic rights.");
+                    else if(law[l] == 0)
+                        addstr("Prisoners receive basic rights and services.");
+                    else if(law[l] == 1)
+                        addstr("The prisons are regulated to protect prisoners' rights.");
+                    else
+                        addstr("The prisons are targeted at rehabilitation, rather than punishment.");
 
                     break;
 
@@ -1030,14 +1049,11 @@ char confirmdisband(void) { // The (current) issue that the masses are most
                 }
 
                 cleangonesquads();
-
                 disbandtime = year;
-
                 return 1;
             }
         } else
             break;
-
     } while(1);
 
     return 0;

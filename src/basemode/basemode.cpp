@@ -353,6 +353,10 @@ void mode_base(void) {
                     addstr("Human Rights");
                     break;
 
+                case LAW_PRISONS:
+                    addstr("Prison Regulation");
+                    break;
+
                 case LAW_TAX:
                     addstr("Tax Structure");
                     break;
