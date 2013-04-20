@@ -265,6 +265,7 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
 
     /* Law enforcement block */
     case CREATURE_DEATHSQUAD:
+        libpower[VIEW_PRISONS] += power;
         libpower[VIEW_DEATHPENALTY] += power;
 
     case CREATURE_SWAT:
@@ -274,6 +275,7 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
         libpower[VIEW_DRUGS] += power;
         libpower[VIEW_TORTURE] += power;
         libpower[VIEW_GUNCONTROL] += power;
+        libpower[VIEW_PRISONS] += power;
         break;
 
     /* Prison block */
@@ -284,12 +286,14 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
         libpower[VIEW_DEATHPENALTY] += power;
         libpower[VIEW_DRUGS] += power;
         libpower[VIEW_TORTURE] += power;
+        libpower[VIEW_PRISONS] += power;
         break;
 
     /* Intelligence block */
     case CREATURE_AGENT:
         libpower[VIEW_INTELLIGENCE] += power;
         libpower[VIEW_TORTURE] += power;
+        libpower[VIEW_PRISONS] += power;
         libpower[VIEW_FREESPEECH] += power;
         break;
 

@@ -2445,6 +2445,7 @@ void majornewspaper(char &clearformess, char canseethings) {
 
                 case SITE_GOVERNMENT_POLICESTATION:
                     change_public_opinion(VIEW_POLICEBEHAVIOR, power, colored, power * 10);
+                    change_public_opinion(VIEW_PRISONS, power, colored, power * 10);
                     change_public_opinion(VIEW_DRUGS, power, colored, power * 10);
                     break;
 
@@ -2472,6 +2473,7 @@ void majornewspaper(char &clearformess, char canseethings) {
                 case SITE_GOVERNMENT_INTELLIGENCEHQ:
                     change_public_opinion(VIEW_INTELLIGENCE, power, colored, power * 10);
                     change_public_opinion(VIEW_TORTURE, power, colored, power * 10);
+                    change_public_opinion(VIEW_PRISONS, power, colored, power * 10);
                     break;
 
                 case SITE_INDUSTRY_SWEATSHOP:

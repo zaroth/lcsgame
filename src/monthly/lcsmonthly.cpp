@@ -599,6 +599,7 @@ void printnews(short li, short newspaper) {
         case 5:
             addstr("documenting gladiatorial matches held between prisoners by guards.", gamelog);
             change_public_opinion(VIEW_DEATHPENALTY, 50);
+            change_public_opinion(VIEW_PRISONS, 20);
             break;
         }
 
@@ -673,6 +674,7 @@ void printnews(short li, short newspaper) {
 
         change_public_opinion(VIEW_LIBERALCRIMESQUAD, 10);
         change_public_opinion(VIEW_LIBERALCRIMESQUADPOS, 10);
+        change_public_opinion(VIEW_PRISONS, 50);
 
         switch(LCSrandom(4)) {
         case 0:

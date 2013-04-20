@@ -106,6 +106,10 @@ static void getissueeventstring(char *str) {
         strcat(str, "a government inquiry into military interrogations");
         break;
 
+    case VIEW_PRISONS:
+        strcat(str, "a documentary on the prisoners' suffering");
+        break;
+
     case VIEW_INTELLIGENCE:
         strcat(str, "a documentary on privacy rights");
         break;

@@ -536,6 +536,10 @@ char radio_broadcast(void) {
         addstr("discusses prisoner abuse and torture.", gamelog);
         break;
 
+    case VIEW_PRISONS:
+        addstr("discusses the prison system's flaws.", gamelog);
+        break;
+
     case VIEW_INTELLIGENCE:
         addstr("debates privacy law.", gamelog);
         break;
@@ -732,6 +736,10 @@ char radio_broadcast(void) {
 
                     case VIEW_TORTURE:
                         addstr("discuss prisoner abuse and torture.", gamelog);
+                        break;
+
+                    case VIEW_PRISONS:
+                        addstr("discuss the prison system's flaws.", gamelog);
                         break;
 
                     case VIEW_INTELLIGENCE:
@@ -973,6 +981,10 @@ char news_broadcast(void) {
         addstr("discusses prisoner abuse and torture.", gamelog);
         break;
 
+    case VIEW_PRISONS:
+        addstr("discusses the prison system's flaws.", gamelog);
+        break;
+
     case VIEW_INTELLIGENCE:
         addstr("debates privacy law.", gamelog);
         break;
@@ -1168,6 +1180,10 @@ char news_broadcast(void) {
 
                     case VIEW_TORTURE:
                         addstr("discuss prisoner abuse and torture.", gamelog);
+                        break;
+
+                    case VIEW_PRISONS:
+                        addstr("discusses the prison system's flaws.", gamelog);
                         break;
 
                     case VIEW_INTELLIGENCE:
