@@ -197,14 +197,14 @@ void locheader(void) {
     move(0, 0);
 
     if(activesquad != NULL && activesquad->squad[0]->location != -1) {
-        addlocationname(location[activesquad->squad[0]->location]);
+        addstr(location[activesquad->squad[0]->location]->getname());
         addstr(", ");
     } else {
         if(selectedsiege == -1) {
             addstr("No Squad Selected");
             addstr(", ");
         } else {
-            addlocationname(location[selectedsiege]);
+            addstr(location[selectedsiege]->getname());
             addstr(", ");
         }
     }
@@ -562,8 +562,7 @@ void printlocation(long loc) {
         addstr("You are not under siege...  yet.");
     }
 
-    if(location[loc]->type == SITE_INDUSTRY_WAREHOUSE ||
-            location[loc]->type == SITE_BUSINESS_CRACKHOUSE) {
+    if(location[loc]->can_be_upgraded()) {
         if(numbereating(loc) > 0) {
             if(fooddaysleft(loc)) {
                 if(fooddaysleft(loc) < 4) {
@@ -1869,40 +1868,6 @@ void makedelimiter(int y, int x) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(y, x);
     addstr("--------------------------------------------------------------------------------");
-}
-
-
-
-/* print location name (is aware of business fronts) */
-void addlocationname(locationst *loc) {
-    if(loc->front_business != -1)
-        addstr(loc->front_name);
-    else
-        addstr(loc->name);
-}
-
-/* print location name (is aware of business fronts) (uses gamelog) */
-void addlocationname(locationst *loc, Log &log) {
-    if(loc->front_business != -1)
-        addstr(loc->front_name, log);
-    else
-        addstr(loc->name, log);
-}
-
-/* print location's shortname (is aware of business fronts) */
-void addshortname (locationst *loc) {
-    if (loc->front_business != -1)
-        addstr (loc->front_shortname);
-    else
-        addstr (loc->shortname);
-}
-
-/* print location's shortname (is aware of business fronts) (uses gamelog) */
-void addshortname (locationst *loc, Log &log) {
-    if (loc->front_business != -1)
-        addstr (loc->front_shortname, log);
-    else
-        addstr (loc->shortname, log);
 }
 
 /* prints a character's health description (One Leg, Liberal, NearDETH...) */

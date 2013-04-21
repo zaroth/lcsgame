@@ -328,7 +328,7 @@ void stopevil(void) {
     }
 
     for(l = 0; l < location.size(); l++) {
-        //locationst* loc2 = location[l]; //what was this for?
+        //Location* loc2 = location[l]; //what was this for?
         if(location[l]->parent == loc && location[l]->renting == RENTING_CCS && !location[l]->hidden)
             temploc.push_back(l);
     }
@@ -350,7 +350,7 @@ void stopevil(void) {
         if(loc != -1) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(8, 0);
-            addlocationname(location[loc]);
+            addstr(location[loc]->getname());
         }
 
         /*move(12,50);
@@ -392,7 +392,7 @@ void stopevil(void) {
             addch(y - 10 + (int)'A');
             addstr(" - ");
 
-            addlocationname(location[temploc[p]]);
+            addstr(location[temploc[p]]->getname());
 
             if(temploc[p] == activesquad->squad[0]->location) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -817,7 +817,7 @@ void investlocation(void) {
 
                         break;
                     }
-                } while (duplicatelocation(*location[loc]));
+                } while (location[loc]->duplicatelocation());
             }
         }
     } while(1);

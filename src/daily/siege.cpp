@@ -53,7 +53,7 @@ make it more likely to be raided:
 /* Currently, it only works when you confront a siege and then fail. */
 void resolvesafehouses(void) {
     for(int l = 0; l < location.size(); l++) {
-        //locationst* d_loc = location[l];
+        //Location* d_loc = location[l];
         //int d_renting = d_loc->renting;
         if(location[l]->renting >= 0 && location[l]->siege.siege) {
             cleangonesquads();
@@ -210,7 +210,7 @@ void siegecheck(char canseethings) {
 
                 for(int pl = 0; pl < pool.size(); pl++) {
                     if(pool[pl]->flag & CREATUREFLAG_SLEEPER &&
-                            pool[pl]->location != -1 && // <- this must be executed before the line below it
+                            pool[pl]->location != -1 &&
                             location[pool[pl]->location]->type == SITE_GOVERNMENT_POLICESTATION) {
                         //if(pool[pl]->infiltration*100>LCSrandom(50))
                         {
@@ -227,7 +227,7 @@ void siegecheck(char canseethings) {
                     addstr("You have received advance warning from your sleepers regarding ", gamelog);
                     move(9, 1);
                     addstr("an imminent police raid on ", gamelog);
-                    addlocationname(location[l]);
+                    addstr(location[l]->getname());
                     addstr(".", gamelog);
                     gamelog.newline();
 
@@ -274,7 +274,7 @@ void siegecheck(char canseethings) {
 
                     move(8, 1);
                     addstr("The police have surrounded the ", gamelog);
-                    addlocationname(location[l], gamelog);
+                    addstr(location[l]->getname(), gamelog);
                     addstr("!", gamelog);
                     gamelog.newline();
                     location[l]->siege.underattack = 0;
@@ -324,7 +324,7 @@ void siegecheck(char canseethings) {
 
                     move(8, 1);
                     addstr("The cops have raided the ", gamelog);
-                    addlocationname(location[l], gamelog);
+                    addstr(location[l]->getname(), gamelog);
                     addstr(", an unoccupied safehouse.", gamelog);
                     gamelog.newline();
 
@@ -412,7 +412,7 @@ void siegecheck(char canseethings) {
                     addstr("are hiring mercenaries to attack ", gamelog);
 
                     if(ceosleepercount)
-                        addstr(location[l]->name, gamelog);
+                        addstr(location[l]->getname(), gamelog);
                     else
                         addstr("the LCS", gamelog);
 
@@ -432,7 +432,7 @@ void siegecheck(char canseethings) {
 
                 move(8, 1);
                 addstr("Corporate mercenaries are raiding the ", gamelog);
-                addlocationname(location[l], gamelog);
+                addstr(location[l]->getname(), gamelog);
                 addstr("!", gamelog);
                 gamelog.nextMessage();
 
@@ -467,7 +467,7 @@ void siegecheck(char canseethings) {
                         }
                     }
 
-                    if(ccssleepercount > 1) {
+                    if(ccssleepercount > 0) {
                         erase();
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
@@ -491,7 +491,7 @@ void siegecheck(char canseethings) {
 
                     move(8, 1);
                     addstr("A screeching truck pulls up to ", gamelog);
-                    addlocationname(location[l], gamelog);
+                    addstr(location[l]->getname(), gamelog);
                     addstr("!", gamelog);
                     gamelog.newline();
 
@@ -616,7 +616,7 @@ void siegecheck(char canseethings) {
                     addstr("A sleeper agent has reported that the CIA is planning ", gamelog);
                     move(9, 1);
                     addstr("to launch an attack on ", gamelog);
-                    addstr(location[l]->name, gamelog);
+                    addstr(location[l]->getname(), gamelog);
                     addstr(".", gamelog);
                     gamelog.nextMessage();
 
@@ -633,7 +633,7 @@ void siegecheck(char canseethings) {
 
                 move(8, 1);
                 addstr("Unmarked black vans are surrounding the ", gamelog);
-                addlocationname(location[l], gamelog);
+                addstr(location[l]->getname(), gamelog);
                 addstr("!", gamelog);
                 gamelog.newline();
 
@@ -675,7 +675,7 @@ void siegecheck(char canseethings) {
                 addstr("Masses dissatisfied with your lack of respect for AM Radio ", gamelog);
                 move(9, 1);
                 addstr("are storming the ", gamelog);
-                addlocationname(location[l], gamelog);
+                addstr(location[l]->getname(), gamelog);
                 addstr("!", gamelog);
                 gamelog.nextMessage();
 
@@ -698,7 +698,7 @@ void siegecheck(char canseethings) {
                 addstr("Masses dissatisfied with your lack of respect for Cable News ", gamelog);
                 move(9, 1);
                 addstr("are storming the ", gamelog);
-                addlocationname(location[l], gamelog);
+                addstr(location[l]->getname(), gamelog);
                 addstr("!", gamelog);
                 gamelog.nextMessage();
 
@@ -757,7 +757,7 @@ void siegecheck(char canseethings) {
 
                 move(8, 1);
                 addstr("Screaming fire engines pull up to the ", gamelog);
-                addlocationname(location[l], gamelog);
+                addstr(location[l]->getname(), gamelog);
                 addstr("!", gamelog);
                 gamelog.newline();
 
@@ -803,7 +803,7 @@ void siegecheck(char canseethings) {
 
                 move(8, 1);
                 addstr("The Firemen have raided the ", gamelog);
-                addlocationname(location[l], gamelog);
+                addstr(location[l]->getname(), gamelog);
                 addstr(", an unoccupied safehouse.", gamelog);
                 gamelog.newline();
 
@@ -902,9 +902,6 @@ void siegeturn(char clearformess) {
             continue;  // Vacationers don't count
 
         liberalcount[pool[p]->location]++;
-        //Get the best cooking skill for each location
-        //if(food_prep[pool[p]->location]<pool[p]->get_skill(SKILL_COOKING))
-        //   food_prep[pool[p]->location]=pool[p]->get_skill(SKILL_COOKING);
     }
 
     for(l = 0; l < location.size(); l++) {
@@ -950,7 +947,7 @@ void siegeturn(char clearformess) {
                  move(8,1);
                  addstr("The LCS has no money for food.");
                  move(10,1);
-                 addlocationname(location[l]);
+                 addstr(location[l]->getname());
                  addstr(" has been abandoned.");
                  move(12,1);
                  addstr("The Liberals will return to the homeless shelter for handouts.");
@@ -971,7 +968,7 @@ void siegeturn(char clearformess) {
 
                 move(8, 1);
                 addstr("Conservatives have raided the ", gamelog);
-                addlocationname(location[l], gamelog);
+                addstr(location[l]->getname(), gamelog);
                 addstr(", an unoccupied safehouse.", gamelog);
                 gamelog.newline();
 
@@ -2054,7 +2051,7 @@ void giveup(void) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(1, 1);
         addstr("Everyone in the ", gamelog);
-        addlocationname(location[loc], gamelog);
+        addstr(location[loc]->getname(), gamelog);
         addstr(" is slain.", gamelog);
         gamelog.newline();
         refresh();
@@ -2209,7 +2206,7 @@ char sally_forth_aux(int loc) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(0, 0);
-        addlocationname(location[loc]);
+        addstr(location[loc]->getname());
 
         // Player's party
         if(partyalive == 0)

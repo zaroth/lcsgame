@@ -121,7 +121,7 @@ char chasesequence(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(0, 0);
-        addlocationname(location[chaseseq.location]);
+        addstr(location[chaseseq.location]->getname());
 
         //PRINT PARTY
         if(partyalive == 0)
@@ -508,7 +508,7 @@ char footchase(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(0, 0);
-        addlocationname(location[chaseseq.location]);
+        addstr(location[chaseseq.location]->getname());
 
         //PRINT PARTY
         if(partyalive == 0)
