@@ -641,6 +641,8 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
     case CREATURE_VETERAN:
         GIVE_GENDER_MALE;
         strcpy(cr.name, "Army Veteran");
+        weapon = new Weapon(*weapontype[getweapontype("WEAPON_COMBATKNIFE")]);
+        cr.give_weapon(*weapon, NULL);
         cr.money = LCSrandom(21) + 20;
         cr.infiltration = 0.1f * LCSrandom(4);
         cr.juice = LCSrandom(100);
@@ -1654,7 +1656,7 @@ void makecreature(Creature &cr, short type) { //Lots of temporary solution in th
             cr.take_clips(c, 4);
             cr.reload(false);
         } else {
-            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_KNIFE")]);
+            Weapon w = Weapon(*weapontype[getweapontype("WEAPON_COMBATKNIFE")]);
             cr.give_weapon(w, NULL);
         }
 
