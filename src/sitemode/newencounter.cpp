@@ -93,7 +93,7 @@ void prepareencounter(short type, char sec) {
 
     if(location[cursite]->renting == RENTING_CCS) {
         creaturearray[CREATURE_CCS_VIGILANTE] += 50;
-        creaturearray[CREATURE_CCS_ARCHCONSERVATIVE] += endgamestate;
+        //creaturearray[CREATURE_CCS_ARCHCONSERVATIVE]+=endgamestate;
         creaturearray[CREATURE_PROSTITUTE] += 5;
         creaturearray[CREATURE_CRACKHEAD] += 5;
         creaturearray[CREATURE_PRIEST] += 5;
@@ -1471,9 +1471,7 @@ char addsiegeencounter(char type) {
 
                 default:
                     if(location[cursite]->renting == RENTING_CCS) {
-                        if(!LCSrandom(12))
-                            makecreature(encounter[e], CREATURE_CCS_ARCHCONSERVATIVE);
-                        else if(!LCSrandom(11))
+                        if(!LCSrandom(11))
                             makecreature(encounter[e], CREATURE_CCS_MOLOTOV);
                         else if(!LCSrandom(10))
                             makecreature(encounter[e], CREATURE_CCS_SNIPER);

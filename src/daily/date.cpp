@@ -656,7 +656,13 @@ char completedate(datest &d, int p, char &clearformess) {
                     move(18, 0);
                     addstr("to the corporate slave's throat!", gamelog);
                     gamelog.newline();
-                    bonus = 2;
+
+                    if(pool[p]->get_weapon().can_take_hostages())
+                        bonus = 5;
+                    else
+                        bonus = -1;  // Conservative emboldened by the fact that you're trying
+
+                    // to kidnap them with a gavel or some shit like that
                 } else {
                     addstr(" seizes the Conservative swine from behind and warns it", gamelog);
                     move(18, 0);
@@ -667,6 +673,8 @@ char completedate(datest &d, int p, char &clearformess) {
                         addstr("not to [resist]!", gamelog);
 
                     gamelog.newline();
+
+                    bonus += pool[p]->get_skill(SKILL_HANDTOHAND) - 1;
                 }
 
                 refresh();
@@ -689,7 +697,7 @@ char completedate(datest &d, int p, char &clearformess) {
                         d.date[e]->type != CREATURE_CCS_SNIPER &&
                         d.date[e]->type != CREATURE_MERC &&
                         LCSrandom(15)) ||
-                        LCSrandom(1 + bonus)) {
+                        LCSrandom(2 + bonus)) {
 
                     set_color(COLOR_GREEN, COLOR_BLACK, 1);
                     move(20, 0);

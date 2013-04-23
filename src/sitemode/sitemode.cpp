@@ -108,6 +108,7 @@ void mode_site(short loc) {
 
     if(!location[loc]->siege.siege) {
         ccs_siege_kills = 0;
+        ccs_boss_kills = 0;
 
         //Low profile site action?
         if(activesquad->stance == SQUADSTANCE_ANONYMOUS)
@@ -890,6 +891,10 @@ void mode_site(void) {
 
                     case SPECIAL_BANK_MONEY:
                         special_bank_money();
+                        break;
+
+                    case SPECIAL_CCS_BOSS:
+                        special_ccs_boss();
                         break;
                     }
                 } else if(!(levelmap[locx][locy][locz].flag & (SITEBLOCK_GRAFFITI | SITEBLOCK_BLOODY2)) &&
@@ -2158,6 +2163,7 @@ void mode_site(void) {
                 case SPECIAL_CAFE_COMPUTER:
                 case SPECIAL_PARK_BENCH:
                 case SPECIAL_BANK_TELLER:
+                case SPECIAL_CCS_BOSS:
                     makespecial = levelmap[locx][locy][locz].special;
                     newenc = 1;
                     break;
@@ -2177,7 +2183,9 @@ void mode_site(void) {
                 }
 
                 //BAIL UPON VICTORY (version 2 -- defeated CCS safehouse)
-                if(ccs_siege_kills >= 12 && !location[cursite]->siege.siege && location[cursite]->renting == RENTING_CCS) {
+                if(ccs_boss_kills >= 1 &&
+                        !location[cursite]->siege.siege &&
+                        location[cursite]->renting == RENTING_CCS) {
                     //DEAL WITH PRISONERS AND STOP BLEEDING
                     for(p = 0; p < 6; p++) {
                         if(activesquad->squad[p] == NULL)
@@ -2855,6 +2863,10 @@ void mode_site(void) {
                         special_bank_teller();
                         break;
 
+                    case SPECIAL_CCS_BOSS:
+                        special_ccs_boss();
+                        break;
+
                     default:
                         bool squadmoved = false;
 
@@ -2866,7 +2878,7 @@ void mode_site(void) {
                                  location[cursite]->type == SITE_RESIDENTIAL_TENEMENT ||
                                  location[cursite]->type == SITE_RESIDENTIAL_APARTMENT_UPSCALE)) {
                             if(LCSrandom(3))
-                                break;  // Rarely encounter someone in apartments. (Was LCSrandom(5), seemed too easy to burgle people all day.)
+                                break;  // Rarely encounter someone in apartments.
                         }
 
                         prepareencounter(sitetype, location[cursite]->highsecurity);

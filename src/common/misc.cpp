@@ -272,31 +272,31 @@ void sextype(char *str) {
 /* generate a vanity plate for the squad. */
 /*void vanity(char *str)
 {
-        strcpy(str,"");
+   strcpy(str,"");
 
-        switch(LCSrandom(20))
-                {
-                        case 0:strcat(str,"ABORTN");break;
-                        case 1:strcat(str,"LCS-"LCSrandom(50)+1);break;
-                        case 2:strcat(str,"LIB4LYFE");break;
-                        case 3:strcat(str,"");break;
-                        case 4:strcat(str,"");break;
-                        case 5:strcat(str,"");break;
-                        case 6:strcat(str,"");break;
-                        case 7:strcat(str,"");break;
-                        case 8:strcat(str,"");break;
-                        case 9:strcat(str,"");break;
-                        case 10:strcat(str,"");break;
-                        case 11:strcat(str,"");break;
-                        case 12:strcat(str,"");break;
-                        case 13:strcat(str,"");break;
-                        case 14:strcat(str,"");break;
-                        case 15:strcat(str,"");break;
-                        case 16:strcat(str,"");break;
-                        case 17:strcat(str,"");break;
-                        case 18:strcat(str,"");break;
-                        case 19:strcat(str,"");break;
-                }
+   switch(LCSrandom(20))
+   {
+   case 0:strcat(str,"ABORTN");break;
+   case 1:strcat(str,"LCS-"LCSrandom(50)+1);break;
+   case 2:strcat(str,"LIB4LYFE");break;
+   case 3:strcat(str,"");break;
+   case 4:strcat(str,"");break;
+   case 5:strcat(str,"");break;
+   case 6:strcat(str,"");break;
+   case 7:strcat(str,"");break;
+   case 8:strcat(str,"");break;
+   case 9:strcat(str,"");break;
+   case 10:strcat(str,"");break;
+   case 11:strcat(str,"");break;
+   case 12:strcat(str,"");break;
+   case 13:strcat(str,"");break;
+   case 14:strcat(str,"");break;
+   case 15:strcat(str,"");break;
+   case 16:strcat(str,"");break;
+   case 17:strcat(str,"");break;
+   case 18:strcat(str,"");break;
+   case 19:strcat(str,"");break;
+   }
 }
 */
 
@@ -418,213 +418,163 @@ void plate(char *str) {
 }
 
 /* pick a random state */
-void makestate(char *str) {
-    strcpy(str, "");
+const char *statename(int i) {
+    if(i < 0)
+        i = LCSrandom(50);
 
     switch(LCSrandom(50)) {
     case 0:
-        addstr("Alabama");
-        break;
+        return "Alabama";
 
     case 1:
-        addstr("Alaska");
-        break;
+        return "Alaska";
 
     case 2:
-        addstr("Arkansas");
-        break;
+        return "Arkansas";
 
     case 3:
-        addstr("Arizona");
-        break;
+        return "Arizona";
 
     case 4:
-        addstr("California");
-        break;
+        return "California";
 
     case 5:
-        addstr("Colorado");
-        break;
+        return "Colorado";
 
     case 6:
-        addstr("Connecticut");
-        break;
+        return "Connecticut";
 
     case 7:
-        addstr("Delaware");
-        break;
+        return "Delaware";
 
     case 8:
-        addstr("Florida");
-        break;
+        return "Florida";
 
     case 9:
-        addstr("Georgia");
-        break;
+        return "Georgia";
 
     case 10:
-        addstr("Hawaii");
-        break;
+        return "Hawaii";
 
     case 11:
-        addstr("Idaho");
-        break;
+        return "Idaho";
 
     case 12:
-        addstr("Illinois");
-        break;
+        return "Illinois";
 
     case 13:
-        addstr("Indiana");
-        break;
+        return "Indiana";
 
     case 14:
-        addstr("Iowa");
-        break;
+        return "Iowa";
 
     case 15:
-        addstr("Kansas");
-        break;
+        return "Kansas";
 
     case 16:
-        addstr("Kentucky");
-        break;
+        return "Kentucky";
 
     case 17:
-        addstr("Louisiana");
-        break;
+        return "Louisiana";
 
     case 18:
-        addstr("Maine");
-        break;
+        return "Maine";
 
     case 19:
-        addstr("Maryland");
-        break;
+        return "Maryland";
 
     case 20:
-        addstr("Massachusetts");
-        break;
+        return "Massachusetts";
 
     case 21:
-        addstr("Michigan");
-        break;
+        return "Michigan";
 
     case 22:
-        addstr("Minnesota");
-        break;
+        return "Minnesota";
 
     case 23:
-        addstr("Mississippi");
-        break;
+        return "Mississippi";
 
     case 24:
-        addstr("Missouri");
-        break;
+        return "Missouri";
 
     case 25:
-        addstr("Montana");
-        break;
+        return "Montana";
 
     case 26:
-        addstr("Nebraska");
-        break;
+        return "Nebraska";
 
     case 27:
-        addstr("Nevada");
-        break;
+        return "Nevada";
 
     case 28:
-        addstr("New Hampshire");
-        break;
+        return "New Hampshire";
 
     case 29:
-        addstr("New Jersey");
-        break;
+        return "New Jersey";
 
     case 30:
-        addstr("New Mexico");
-        break;
+        return "New Mexico";
 
     case 31:
-        addstr("New York");
-        break;
+        return "New York";
 
     case 32:
-        addstr("North Carolina");
-        break;
+        return "North Carolina";
 
     case 33:
-        addstr("North Dakota");
-        break;
+        return "North Dakota";
 
     case 34:
-        addstr("Ohio");
-        break;
+        return "Ohio";
 
     case 35:
-        addstr("Oklahoma");
-        break;
+        return "Oklahoma";
 
     case 36:
-        addstr("Oregon");
-        break;
+        return "Oregon";
 
     case 37:
-        addstr("Pennsylvania");
-        break;
+        return "Pennsylvania";
 
     case 38:
-        addstr("Rhode Island");
-        break;
+        return "Rhode Island";
 
     case 39:
-        addstr("South Carolina");
-        break;
+        return "South Carolina";
 
     case 40:
-        addstr("South Dakota");
-        break;
+        return "South Dakota";
 
     case 41:
-        addstr("Tennessee");
-        break;
+        return "Tennessee";
 
     case 42:
-        addstr("Texas");
-        break;
+        return "Texas";
 
     case 43:
-        addstr("Utah");
-        break;
+        return "Utah";
 
     case 44:
-        addstr("Vermont");
-        break;
+        return "Vermont";
 
     case 45:
-        addstr("Virginia");
-        break;
+        return "Virginia";
 
     case 46:
-        addstr("Washington");
-        break;
+        return "Washington";
 
     case 47:
-        addstr("West Virginia");
-        break;
+        return "West Virginia";
 
     case 48:
-        addstr("Wisconsin");
-        break;
+        return "Wisconsin";
 
     case 49:
-        addstr("Wyoming");
-        break;
+        return "Wyoming";
 
     default:
-        strcat(str, "Hohoq");
-        break; // The Areas of My Expertise -- John Hodgman
+        return "Hohoq"; // The Areas of My Expertise -- John Hodgman
     }
 }
 

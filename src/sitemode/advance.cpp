@@ -407,8 +407,12 @@ void advancecreature(Creature &cr) {
                 if(location[cursite]->siege.siege && cr.animalgloss == ANIMALGLOSS_TANK)
                     location[cursite]->siege.tanks--;
 
-                if(location[cursite]->renting == RENTING_CCS)
+                if(location[cursite]->renting == RENTING_CCS) {
+                    if(cr.type == CREATURE_CCS_ARCHCONSERVATIVE)
+                        ccs_boss_kills++;
+
                     ccs_siege_kills++;
+                }
             }
 
             if(cr.squadid == -1) {
@@ -462,8 +466,12 @@ void advancecreature(Creature &cr) {
                 if(location[cursite]->siege.siege && cr.animalgloss == ANIMALGLOSS_TANK)
                     location[cursite]->siege.tanks--;
 
-                if(location[cursite]->renting == RENTING_CCS)
+                if(location[cursite]->renting == RENTING_CCS) {
+                    if(cr.type == CREATURE_CCS_ARCHCONSERVATIVE)
+                        ccs_boss_kills++;
+
                     ccs_siege_kills++;
+                }
             }
 
             if(cr.squadid == -1) {

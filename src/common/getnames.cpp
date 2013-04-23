@@ -638,7 +638,7 @@ void getrecruitcreature(char *str, int type) {
         break;
 
     case CREATURE_CCS_ARCHCONSERVATIVE:
-        strcat(str, "CCS Boss");
+        strcat(str, "CCS Officer");
         break;
 
     case CREATURE_POLITICALACTIVIST:

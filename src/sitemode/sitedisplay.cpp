@@ -76,10 +76,8 @@ void printsitemap(int x, int y, int z) {
     }
 
     for(yscreen = 9; yscreen < 24; yscreen++) {
-        move(yscreen, 79);
-        addch('|');
         move(yscreen, 53);
-        addch('|');
+        addstr("|                         |");
     }
 
     // Display the map
@@ -209,6 +207,10 @@ void printsitemap(int x, int y, int z) {
 
     case SPECIAL_BANK_MONEY:
         strcpy(str, "Oh Wow So Much Money");
+        break;
+
+    case SPECIAL_CCS_BOSS:
+        strcpy(str, "CCS Boss");
         break;
 
     default:
@@ -839,6 +841,10 @@ void printblock(int x, int y, int z, int px, int py) {
 
         case SPECIAL_BANK_MONEY:
             addstr("MONEY");
+            break;
+
+        case SPECIAL_CCS_BOSS:
+            addstr("BOSS!");
             break;
         }
     }

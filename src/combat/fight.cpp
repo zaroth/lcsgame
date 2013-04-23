@@ -54,16 +54,6 @@ void youattack(void) {
         if(!activesquad->squad[p]->alive)
             continue;
 
-        int thisweapon = weaponcheck(*activesquad->squad[p]);
-
-        // Illegal weapon crimes disabled
-        /*if((thisweapon==-1||thisweapon==2) &&                      // Illegal weapon
-            activesquad->squad[p]->weapon->is_ranged() &&            // Ranged
-            activesquad->squad[p]->weapon->get_ammoamount()!=0)      // Not out of ammo
-        {
-           criminalize(*activesquad->squad[p],LAWFLAG_GUNUSE); // Criminalize for firing illegal weapon
-        }*/
-
         vector<int> dangerous_enemies;
         vector<int> enemies;
         vector<int> non_enemies;
@@ -1283,8 +1273,12 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                         if(location[cursite]->siege.siege && t.animalgloss == ANIMALGLOSS_TANK)
                             location[cursite]->siege.tanks--;
 
-                        if(location[cursite]->renting == RENTING_CCS)
+                        if(location[cursite]->renting == RENTING_CCS) {
+                            if(target->type == CREATURE_CCS_ARCHCONSERVATIVE)
+                                ccs_boss_kills++;
+
                             ccs_siege_kills++;
+                        }
                     }
 
                     if(target->squadid == -1 &&

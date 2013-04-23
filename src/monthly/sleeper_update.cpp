@@ -601,7 +601,7 @@ void sleeper_spy(Creature &cr, char &clearformess, char canseethings, int *libpo
 
     case CREATURE_CCS_ARCHCONSERVATIVE:
         if(!location[homes]->siege.siege && canseethings) {
-            if(LCSrandom(5) || ccsexposure >= CCSEXPOSURE_LCSGOTDATA)
+            if(ccsexposure >= CCSEXPOSURE_LCSGOTDATA)
                 break;
 
             Item *it = new Loot(*loottype[getloottype("LOOT_CCS_BACKERLIST")]);
@@ -617,9 +617,9 @@ void sleeper_spy(Creature &cr, char &clearformess, char canseethings, int *libpo
             addstr("The disk is stashed at the homeless shelter.", gamelog);
             gamelog.nextMessage();
             pause = true;
+            ccsexposure = CCSEXPOSURE_LCSGOTDATA;
         }
 
-        break;
         break;
     }
 
@@ -675,8 +675,11 @@ void sleeper_embezzle(Creature &cr, char &clearformess, char canseethings, int *
     int income;
 
     switch(cr.type) {
-    case CREATURE_SCIENTIST_EMINENT:
     case CREATURE_CORPORATE_CEO:
+        income = static_cast<int>(50000 * cr.infiltration);
+        break;
+
+    case CREATURE_SCIENTIST_EMINENT:
     case CREATURE_CORPORATE_MANAGER:
     case CREATURE_BANK_MANAGER:
         income = static_cast<int>(5000 * cr.infiltration);
