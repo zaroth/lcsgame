@@ -720,6 +720,7 @@ enum SpecialBlocks {
     SPECIAL_BANK_VAULT,
     SPECIAL_BANK_TELLER,
     SPECIAL_BANK_MONEY,
+    SPECIAL_CCS_BOSS,
     SPECIALNUM,
     SPECIAL_NONE = -1
 };
@@ -855,7 +856,7 @@ class Location {
     bool duplicatelocation();
     bool can_be_upgraded();
     bool part_of_justice_system();
-    char *Location::getname(bool shortname = false);
+    char *getname(bool shortname = false);
     void rename(const char *name, const char *shortname);
 };
 
@@ -1481,8 +1482,8 @@ void sextype(char *str);
 void chooseLetterOrNumber(char *str, int type);
 /* generate a non-vanity plate for the squad. */
 void plate(char *str);
-/* pick a random state */
-void makestate(char *str);
+/* name of a state (random state, by default) */
+const char *statename(int state = -1);
 /* endgame - converts an integer into a roman numeral for amendments */
 void romannumeral(int amendnum);
 
@@ -1707,6 +1708,7 @@ void special_security_secondvisit(void);
 void special_bank_teller(void);
 void special_bank_money(void);
 void special_bank_vault(void);
+void special_ccs_boss(void);
 
 /*
  talk.cpp
