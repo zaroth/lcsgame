@@ -2963,7 +2963,7 @@ char stealcar(Creature &cr, char &clearformess) {
 
             if(c == 'x' || c == ESC || c == 10) {
                 delete v;
-                return 1;
+                return 0;
             }
         } while(1);
 
