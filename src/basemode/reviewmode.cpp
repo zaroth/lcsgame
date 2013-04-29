@@ -57,10 +57,8 @@ void review(void) {
                 addstr(" - ");
                 addstr(squad[p]->name);
 
-                move(y, 31);
-
                 if(squad[p]->squad[0] != NULL && squad[p]->squad[0]->location != -1)
-                    addstr(location[squad[p]->squad[0]->location]->getname(true));
+                    mvaddstr(y, 31, location[squad[p]->squad[0]->location]->getname(true));
 
                 move(y, 51);
 
@@ -1183,7 +1181,7 @@ void assemblesquad(squadst *cursquad) {
 
             if(c2 >= 'a' && c2 <= 's') {
                 int p = page * 19 + (int)(c2 - 'a');
-//Create a temporary squad from which to view this character - even if they already have a squad.
+                //Create a temporary squad from which to view this character - even if they already have a squad.
                 squadst *oldactivesquad = activesquad;
                 int oldSquadID = temppool[p]->squadid;
                 //create a temp squad containing just this liberal
@@ -1361,6 +1359,8 @@ void squadlessbaseassign(void) {
             if(temppool[p]->base == temppool[p]->location &&
                     location[temppool[p]->base]->siege.siege)
                 set_color(COLOR_RED, COLOR_BLACK, 1);
+            else if(location[temppool[p]->base]->city != location[temploc[selectedbase]]->city)
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);
             else
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
@@ -1369,8 +1369,7 @@ void squadlessbaseassign(void) {
             addstr(" - ");
             addstr(temppool[p]->name);
 
-            move(y, 25);
-            addstr(location[temppool[p]->base]->getname(true));
+            mvaddstr(y, 25, location[temppool[p]->base]->getname(true, true));
 
             if(location[temppool[p]->base]->siege.siege)
                 addstr(" <Under Siege>");
@@ -1391,15 +1390,15 @@ void squadlessbaseassign(void) {
             move(y, 51);
             addch(y + '1' - 2);
             addstr(" - ");
-            addstr(location[temploc[p]]->getname(true));
+            addstr(location[temploc[p]]->getname(true, true));
 
             y++;
         }
 
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(22, 0);
-        addstr("Press a Letter to assign a Base.  Press a Number to select a Base.");
+        mvaddstr(21, 0, "Press a Letter to assign a Base.  Press a Number to select a Base.");
+        mvaddstr(22, 0, "Liberals must be moved in squads to transfer between cities.");
 
         if(temppool.size() > 19) {
             move(23, 0);
@@ -1438,9 +1437,10 @@ void squadlessbaseassign(void) {
         if(c >= 'a' && c <= 's') {
             int p = page_lib * 19 + (int)(c - 'a');
 
-            // Assign new base, IF the selected letter is a liberal, AND the Liberal is not stuck in a siege
+            // Assign new base, IF the selected letter is a liberal, AND the Liberal is not under siege or in a different city
             if(p < temppool.size()
-                    && !(temppool[p]->base == temppool[p]->location && location[temppool[p]->base]->siege.siege))
+                    && !(temppool[p]->base == temppool[p]->location && location[temppool[p]->base]->siege.siege)
+                    && !(location[temppool[p]->base]->city != location[temploc[selectedbase]]->city))
                 temppool[p]->base = temploc[selectedbase];
         }
 

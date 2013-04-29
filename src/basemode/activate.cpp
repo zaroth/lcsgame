@@ -120,7 +120,7 @@ void activate(void) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
             move(y, 42);
-            addstr(location[temppool[p]->location]->getname(true));
+            addstr(location[temppool[p]->location]->getname(true, true));
 
             move(y, 57);
             // Let's add some color here...
@@ -1364,8 +1364,7 @@ void select_tendhostage(Creature *cr) {
             else
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
-            move(y, 42);
-            addstr(location[temppool[p]->location]->getname(true));
+            mvaddstr(y, 42, location[temppool[p]->location]->getname(true, true));
 
             move(y, 57);
             set_color(COLOR_MAGENTA, COLOR_BLACK, 1);

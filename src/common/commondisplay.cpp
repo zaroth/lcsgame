@@ -197,14 +197,14 @@ void locheader(void) {
     move(0, 0);
 
     if(activesquad != NULL && activesquad->squad[0]->location != -1) {
-        addstr(location[activesquad->squad[0]->location]->getname());
+        addstr(location[activesquad->squad[0]->location]->getname(false, true));
         addstr(", ");
     } else {
         if(selectedsiege == -1) {
             addstr("No Squad Selected");
             addstr(", ");
         } else {
-            addstr(location[selectedsiege]->getname());
+            addstr(location[selectedsiege]->getname(false, true));
             addstr(", ");
         }
     }
@@ -2171,9 +2171,31 @@ void addpagestr() {
 }
 
 
-/* A wrapper to addstr() which logs the input and then calls addstr to draw it. */
+/* Various wrappers to addstr() and mvaddstr() which handle permutations of:
+   - Including or not including the gamelog for external message logging
+   - std::string or c-style char arrays */
 int addstr(const char *text, Log &log) {
-    log.record(text); //Log the input.
+    log.record(text);
+    return addstr(text);
+}
 
-    return addstr(text); //Call addstr() and returns its return value.
+int mvaddstr(int y, int x, const char *text, Log &log) {
+    log.record(text);
+    return mvaddstr(y, x, text);
+}
+
+int addstr(std::string text) {
+    return addstr(text.c_str());
+}
+
+int addstr(std::string text, Log &log) {
+    return addstr(text.c_str(), log);
+}
+
+int mvaddstr(int y, int x, std::string text) {
+    return mvaddstr(y, x, text.c_str());
+}
+
+int mvaddstr(int y, int x, std::string text, Log &log) {
+    return mvaddstr(y, x, text.c_str(), log);
 }

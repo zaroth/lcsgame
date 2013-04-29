@@ -137,7 +137,7 @@ void youattack(void) {
     }
 
     for(int e = 0; e < ENCMAX; e++) {
-        if(encounter[e].enemy()) {
+        if(encounter[e].exists && encounter[e].alive && encounter[e].enemy()) {
             sitealarm = 1;
             break;
         }
@@ -2086,7 +2086,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
 
 /* modifies a combat roll based on the creature's critical injuries */
 void healthmodroll(int &aroll, Creature &a) {
-    if(a.special[SPECIALWOUND_RIGHTEYE] != 1)
+    if (a.special[SPECIALWOUND_RIGHTEYE] != 1)
         aroll -= LCSrandom(2);
 
     if(a.special[SPECIALWOUND_LEFTEYE] != 1)

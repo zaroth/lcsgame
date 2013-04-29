@@ -404,6 +404,49 @@ void advanceday(char &clearformess, char canseethings) {
 
             //GO PLACES
             switch(location[squad[sq]->activity.arg]->type) {
+            case SITE_CITY_NEW_YORK:
+            case SITE_CITY_SEATTLE:
+            case SITE_CITY_LOS_ANGELES:
+            case SITE_CITY_CHICAGO:
+            case SITE_CITY_DETROIT:
+            case SITE_CITY_ATLANTA:
+            case SITE_CITY_MIAMI:
+            case SITE_CITY_WASHINGTON_DC:
+                if(clearformess)
+                    erase();
+                else
+                    makedelimiter(8, 0);
+
+                move(8, 1);
+                addstr(squad[sq]->name, gamelog);
+                addstr(" has departed for ", gamelog);
+                addstr(location[squad[sq]->activity.arg]->getname(), gamelog);
+                addstr(".", gamelog);
+                gamelog.nextMessage();
+
+                refresh();
+                getch();
+
+                for(int l = 0; l < location.size(); l++) {
+                    if(location[l]->city == location[squad[sq]->activity.arg]->type &&
+                            location[l]->type == SITE_RESIDENTIAL_SHELTER) {
+                        // Base at new city's homeless shelter
+                        basesquad(squad[sq], l);
+                        locatesquad(squad[sq], l);
+                    }
+                }
+
+                /*for(int s=0; s<6; s++)
+                {
+                   if(squad[sq]->squad[s])
+                      squad[sq]->squad[s]->travel_time = 5;
+                   else
+                      break;
+                }*/
+
+                clearformess = 1;
+                break;
+
             case SITE_BUSINESS_DEPTSTORE:
             case SITE_BUSINESS_HALLOWEEN:
             case SITE_BUSINESS_PAWNSHOP:
@@ -485,7 +528,7 @@ void advanceday(char &clearformess, char canseethings) {
                 clearformess = 1;
                 break;
 
-            default: {
+            default:
                 if(clearformess)
                     erase();
                 else
@@ -551,7 +594,6 @@ void advanceday(char &clearformess, char canseethings) {
 
                 clearformess = 1;
                 break;
-            }
             }
 
             squad[sq]->activity.type = ACTIVITY_NONE;

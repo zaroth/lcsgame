@@ -607,8 +607,7 @@ void equipmentbaseassign(void) {
             addstr(" - ");
             addstr(temploot[p]->equip_title().c_str());
 
-            move(y, 25);
-            addstr(temploot2[temploot[p]]->getname(true));
+            mvaddstr(y, 25, temploot2[temploot[p]]->getname(true));
 
             y++;
         }
