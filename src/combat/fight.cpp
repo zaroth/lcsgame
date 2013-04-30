@@ -110,8 +110,8 @@ void youattack(void) {
 
             sitestory->crime.push_back(CRIME_ATTACKED);
 
-            // Charge with assault if (a) first strike, or (b) hit enemy
-            if(!wasalarm || beforeblood > encounter[target].blood) {
+            // Charge with assault if first strike
+            if(sitealarm && (!wasalarm || (beforeblood > encounter[target].blood && beforeblood == 100))) {
                 if(!activesquad->squad[p]->is_armed())
                     criminalize(*activesquad->squad[p], LAWFLAG_ASSAULT);
                 else
@@ -1321,7 +1321,8 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
                     }
 
                     if(target->squadid == -1 &&
-                            (target->animalgloss != ANIMALGLOSS_ANIMAL || law[LAW_ANIMALRESEARCH] == 2)) {
+                            (target->animalgloss != ANIMALGLOSS_ANIMAL || law[LAW_ANIMALRESEARCH] == 2) &&
+                            !sneak_attack) {
                         sitecrime += 10;
                         sitestory->crime.push_back(CRIME_KILLEDSOMEBODY);
 

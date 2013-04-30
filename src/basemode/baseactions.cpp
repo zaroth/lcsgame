@@ -390,10 +390,30 @@ void stopevil(void) {
            break;
         }*/
 
+        temploc.clear();
+
+        for(l = 0; l < location.size(); l++) {
+            if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
+                temploc.push_back(l);
+        }
+
+        for(l = 0; l < location.size(); l++) {
+            if(location[l]->parent == loc && location[l]->renting == RENTING_CCS && !location[l]->hidden)
+                temploc.push_back(l);
+        }
+
+        for(l = 0; l < location.size(); l++) {
+            if(location[l]->parent == loc && location[l]->renting == RENTING_NOCONTROL && !location[l]->hidden)
+                temploc.push_back(l);
+        }
+
 
         int y = 10;
 
         for(p = page * 11; p < temploc.size() && p < page * 11 + 11; p++) {
+            if(p == -1)
+                break;
+
             Location *this_location = location[temploc[p]];
 
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -525,48 +545,20 @@ void stopevil(void) {
                 if((loc == -1 || location[loc]->city != squad_location->city) && !havecar)
                     loc = oldloc;
 
-                temploc.clear();
+                int subcount = 0;
 
-                for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
-                        temploc.push_back(l);
-                }
+                for(l = 0; l < location.size(); l++)
+                    if(location[l]->parent == loc)
+                        subcount++;
 
-                for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting == RENTING_CCS && !location[l]->hidden)
-                        temploc.push_back(l);
-                }
-
-                for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting == RENTING_NOCONTROL && !location[l]->hidden)
-                        temploc.push_back(l);
-                }
-
-                if(temploc.size() == 0 || (loc >= 0 && location[loc]->city != squad_location->city)) {
+                if(subcount == 0 || (loc >= 0 && location[loc]->city != squad_location->city)) {
                     if(!location[loc]->closed &&
                             ((location[loc]->area == squad_location->area && location[loc]->city == squad_location->city) || havecar)) {
                         activesquad->activity.type = ACTIVITY_VISIT;
                         activesquad->activity.arg = loc;
                         return;
-                    } else {
+                    } else
                         loc = oldloc;
-                        temploc.clear();
-
-                        for(l = 0; l < location.size(); l++) {
-                            if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
-                                temploc.push_back(l);
-                        }
-
-                        for(l = 0; l < location.size(); l++) {
-                            if(location[l]->parent == loc && location[l]->renting == RENTING_CCS && !location[l]->hidden)
-                                temploc.push_back(l);
-                        }
-
-                        for(l = 0; l < location.size(); l++) {
-                            if(location[l]->parent == loc && location[l]->renting == RENTING_NOCONTROL && !location[l]->hidden)
-                                temploc.push_back(l);
-                        }
-                    }
                 }
             }
         }
@@ -579,25 +571,13 @@ void stopevil(void) {
         }*/
 
         if(c == 10 || c == ESC) {
-            if(loc != -1 && (location[loc]->city != location[loc]->type || location[loc]->city != squad_location->city)) {
+            if(loc != -1 && (location[loc]->city != location[loc]->type || location[loc]->city != squad_location->city))
                 loc = location[loc]->parent;
-                temploc.clear();
-
-                for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting >= 0)
-                        temploc.push_back(l);
-                }
-
-                for(l = 0; l < location.size(); l++) {
-                    if(location[l]->parent == loc && location[l]->renting == RENTING_NOCONTROL)
-                        temploc.push_back(l);
-                }
-            } else {
+            else {
                 activesquad->activity.type = ACTIVITY_NONE; // Clear squad activity
                 break;
             }
         }
-
     } while(1);
 }
 
