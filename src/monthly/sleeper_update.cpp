@@ -649,13 +649,9 @@ void sleeper_embezzle(Creature &cr, char &clearformess, char canseethings, int *
             refresh();
             getch();
 
-            int ps;
-
-            for(ps = 0; location[ps]->type != SITE_GOVERNMENT_POLICESTATION; ps++);
-
             cr.crimes_suspected[LAWFLAG_COMMERCE]++;
             removesquadinfo(cr);
-            cr.location = ps;
+            cr.location = find_police_station(cr);
             cr.drop_weapons_and_clips(NULL);
             cr.activity.type = ACTIVITY_NONE;
             cr.flag &= ~CREATUREFLAG_SLEEPER;
@@ -713,13 +709,9 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
             refresh();
             getch();
 
-            int ps;
-
-            for(ps = 0; location[ps]->type != SITE_GOVERNMENT_POLICESTATION; ps++);
-
             cr.crimes_suspected[LAWFLAG_THEFT]++;
             removesquadinfo(cr);
-            cr.location = ps;
+            cr.location = find_police_station(cr);
             cr.drop_weapons_and_clips(NULL);
             cr.activity.type = ACTIVITY_NONE;
             cr.flag &= ~CREATUREFLAG_SLEEPER;

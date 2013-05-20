@@ -381,37 +381,37 @@ void mode_base(void) {
         int safenumber = 0;
 
         for(l = 0; l < location.size(); l++) {
-            if(location[l]->renting >= 0)
+            if(location[l]->is_lcs_safehouse())
                 safenumber++;
         }
 
-        siegest *siege = NULL;
+        Location *loc = NULL;
 
         if(selectedsiege != -1)
-            siege = &location[selectedsiege]->siege;
+            loc = location[selectedsiege];
 
-        if (activesquad != NULL && activesquad->squad[0]->location != -1)
-            siege = &location[activesquad->squad[0]->location]->siege;
+        if(activesquad != NULL && activesquad->squad[0]->location != -1)
+            loc = location[activesquad->squad[0]->location];
+
+        siegest *siege = NULL;
+
+        if(loc)
+            siege = &loc->siege;
 
         char sieged = 0;
-
-        if(siege != NULL)
-            sieged = siege->siege;
-
         char underattack = 0;
 
         if(siege != NULL) {
+            sieged = siege->siege;
+
             if(sieged)
                 underattack = siege->underattack;
         }
 
         char haveflag = 0;
 
-        if(selectedsiege != -1)
-            haveflag = location[selectedsiege]->haveflag;
-
-        if(activesquad != NULL && activesquad->squad[0]->location != -1)
-            haveflag = location[activesquad->squad[0]->location]->haveflag;
+        if(loc)
+            haveflag = loc->haveflag;
 
         // Count people at each location
         int *num_present = new int[location.size()];
@@ -482,10 +482,8 @@ void mode_base(void) {
                     addstr("Under Siege");
                     int stock = 1;
 
-                    if(selectedsiege != -1)
-                        stock = location[selectedsiege]->compound_stores;
-                    else if(activesquad != NULL && activesquad->squad[0]->location != -1)
-                        stock = location[activesquad->squad[0]->location]->compound_stores;
+                    if(loc)
+                        stock = loc->compound_stores;
 
                     if(!stock)
                         addstr(" (No Food)");
@@ -796,7 +794,7 @@ void mode_base(void) {
                 sl = 0;
 
             for(int l = sl; l < location.size(); l++) {
-                if(location[l]->renting >= 0) {
+                if(location[l]->is_lcs_safehouse()) {
                     selectedsiege = l;
                     break;
                 } else if(l == location.size() - 1)
@@ -807,11 +805,6 @@ void mode_base(void) {
         if(c == 'e' && partysize > 0 && !underattack && activesquad->squad[0]->location != -1) {
             party_status = -1;
             equip(location[activesquad->squad[0]->location]->loot, -1);
-            /*if(location[activesquad->squad[0]->location]->renting>=0)
-            {
-               equip(activesquad->loot,activesquad->squad[0]->location);
-            }
-            else equip(activesquad->loot,-1);*/
         }
 
         if(c == 'r' && pool.size() > 0)
@@ -943,15 +936,11 @@ void mode_base(void) {
                     change_public_opinion(VIEW_FREESPEECH, 5, 1, 90);
                 }
             }
-        } else if(c == 'p' && ledger.get_funds() >= 20 && !sieged &&
-                  (selectedsiege != -1 || activesquad != NULL)) {
+        } else if(c == 'p' && ledger.get_funds() >= 20 && !sieged && loc) {
             ledger.subtract_funds(20, EXPENSE_COMPOUND);
 
-            if(selectedsiege != -1)
-                location[selectedsiege]->haveflag = 1;
-
-            if(activesquad != NULL)
-                location[activesquad->squad[0]->base]->haveflag = 1;
+            if(loc)
+                loc->haveflag = 1;
 
             stat_buys++;
         }

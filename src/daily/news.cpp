@@ -380,6 +380,50 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
 
     displayads(ns, liberalguardian, storyx_s, storyx_e, it2);
 
+    const char *city;
+
+    if(multipleCityMode && ns.loc != -1) {
+        Location *ns_site = find_site_in_city(location[ns.loc]->city, -1);
+
+        switch(ns_site->type) {
+        case SITE_CITY_SEATTLE:
+            city = "Seattle, WA";
+            break;
+
+        case SITE_CITY_NEW_YORK:
+            city = "New York, NY";
+            break;
+
+        case SITE_CITY_LOS_ANGELES:
+            city = "Los Angeles, CA";
+            break;
+
+        case SITE_CITY_CHICAGO:
+            city = "Chicago, IL";
+            break;
+
+        case SITE_CITY_DETROIT:
+            city = "Detroit, MI";
+            break;
+
+        case SITE_CITY_ATLANTA:
+            city = "Atlanta, GA";
+            break;
+
+        case SITE_CITY_MIAMI:
+            city = "Miami, FL";
+            break;
+
+        case SITE_CITY_WASHINGTON_DC:
+            city = "Washington DC";
+            break;
+
+        default:
+            city = lcityname;
+        }
+    } else
+        city = lcityname;
+
     switch(ns.type) {
     case NEWSSTORY_MAJOREVENT:
         displaymajoreventstory(ns, story, storyx_s, storyx_e);
@@ -411,7 +455,7 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
             displaystoryheader(ns, liberalguardian, y, header);
         }
 
-        strcpy(story, lcityname);
+        strcpy(story, city);
         strcat(story, " - ");
 
         switch(ns.type) {
@@ -1092,7 +1136,7 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
             }
         }
 
-        strcpy(story, lcityname);
+        strcpy(story, city);
         strcat(story, " - ");
 
         if(ns.crime[1] > 2) {
@@ -1272,7 +1316,7 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
             }
         }
 
-        strcpy(story, lcityname);
+        strcpy(story, city);
         strcat(story, " - The disappearance of ");
         strcat(story, ns.cr->propername);
         strcat(story, " is now considered a kidnapping, ");

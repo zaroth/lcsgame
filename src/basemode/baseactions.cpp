@@ -323,10 +323,12 @@ void stopevil(void) {
     int loc = -1;
 
     // Start at the city level, rather than the absolute top
-    for(l = 0; l < location.size(); l++) {
-        if(location[l]->type == squad_location->city) {
-            loc = l;
-            break;
+    if(multipleCityMode) {
+        for(l = 0; l < location.size(); l++) {
+            if(location[l]->type == squad_location->city) {
+                loc = l;
+                break;
+            }
         }
     }
 
@@ -440,7 +442,7 @@ void stopevil(void) {
             } else if(this_location->highsecurity) {
                 set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
                 addstr(" (High Security)");
-            } else if(this_location->type == squad_location->city) {
+            } else if(multipleCityMode && this_location->type == squad_location->city) {
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
                 addstr(" (Current Location)");
             } else if(this_location->area != squad_location->area && !havecar) {
@@ -479,7 +481,7 @@ void stopevil(void) {
                 addstr("%");
             }
 
-            if(this_location->city == this_location->type) {
+            if(multipleCityMode && this_location->city == this_location->type) {
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
                 mvaddstr(y, 50, this_location->city_description());
             }
@@ -487,7 +489,7 @@ void stopevil(void) {
             y++;
         }
 
-        if(loc != -1 && location[loc]->type == location[loc]->city) {
+        if(multipleCityMode && loc != -1 && location[loc]->type == location[loc]->city) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             mvaddch(y, 0, y - 10 + (int)'A');
             addstr(" - Travel to a Different City");
@@ -517,7 +519,7 @@ void stopevil(void) {
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(24, 1);
 
-        if((loc == -1) || (location[loc]->type == squad_location->city))
+        if((loc == -1) || (multipleCityMode && location[loc]->type == squad_location->city))
             addstr("Enter - The squad is not yet Liberal enough.");
         else
             addstr("Enter - Back one step.");
@@ -542,7 +544,7 @@ void stopevil(void) {
                 int oldloc = loc;
                 loc = temploc[sq];
 
-                if((loc == -1 || location[loc]->city != squad_location->city) && !havecar)
+                if((loc == -1 || (multipleCityMode && location[loc]->city != squad_location->city)) && !havecar)
                     loc = oldloc;
 
                 int subcount = 0;
@@ -551,7 +553,7 @@ void stopevil(void) {
                     if(location[l]->parent == loc)
                         subcount++;
 
-                if(subcount == 0 || (loc >= 0 && location[loc]->city != squad_location->city)) {
+                if(subcount == 0 || (multipleCityMode && loc >= 0 && location[loc]->city != squad_location->city)) {
                     if(!location[loc]->closed &&
                             ((location[loc]->area == squad_location->area && location[loc]->city == squad_location->city) || havecar)) {
                         activesquad->activity.type = ACTIVITY_VISIT;
@@ -571,7 +573,7 @@ void stopevil(void) {
         }*/
 
         if(c == 10 || c == ESC) {
-            if(loc != -1 && (location[loc]->city != location[loc]->type || location[loc]->city != squad_location->city))
+            if(multipleCityMode && loc != -1 && (location[loc]->city != location[loc]->type || location[loc]->city != squad_location->city))
                 loc = location[loc]->parent;
             else {
                 activesquad->activity.type = ACTIVITY_NONE; // Clear squad activity
@@ -593,14 +595,20 @@ void investlocation(void) {
         locheader();
         printlocation(loc);
 
-        if(!(location[loc]->compound_walls & COMPOUND_BASIC)) {
+        if(location[loc]->can_be_fortified()) {
             if(ledger.get_funds() >= 2000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
             move(8, 1);
-            addstr("W - Fortify the Compound for a Siege ($2000)");
+
+            if(location[loc]->type == SITE_OUTDOOR_BUNKER)
+                addstr("W - Repair the Bunker Fortifications ($2000)");
+            else if(location[loc]->type == SITE_RESIDENTIAL_BOMBSHELTER)
+                addstr("W - Fortify the Bomb Shelter Entrances ($2000)");
+            else
+                addstr("W - Fortify the Compound for a Siege ($2000)");
         }
 
         if(!(location[loc]->compound_walls & COMPOUND_CAMERAS)) {
@@ -613,7 +621,7 @@ void investlocation(void) {
             addstr("C - Place Security Cameras around the Compound ($2000)");
         }
 
-        if(!(location[loc]->compound_walls & COMPOUND_TRAPS)) {
+        if(location[loc]->can_be_trapped()) {
             if(ledger.get_funds() >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -623,7 +631,7 @@ void investlocation(void) {
             addstr("B - Place Booby Traps throughout the Compound ($3000)");
         }
 
-        if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS)) {
+        if(location[loc]->can_install_tanktraps()) {
             if(ledger.get_funds() >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -671,7 +679,7 @@ void investlocation(void) {
             addstr("P - Buy a Printing Press to start your own newspaper ($3000)");
         }
 
-        if(location[loc]->front_business == -1) {
+        if(location[loc]->can_have_businessfront()) {
             if(ledger.get_funds() >= 3000)
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
             else
@@ -699,7 +707,7 @@ void investlocation(void) {
             break;
 
         if(c == 'w') {
-            if(!(location[loc]->compound_walls & COMPOUND_BASIC) && ledger.get_funds() >= 2000) {
+            if(location[loc]->can_be_fortified() && ledger.get_funds() >= 2000) {
                 ledger.subtract_funds(2000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_BASIC;
             }
@@ -713,14 +721,14 @@ void investlocation(void) {
         }
 
         if(c == 'b') {
-            if(!(location[loc]->compound_walls & COMPOUND_TRAPS) && ledger.get_funds() >= 3000) {
+            if(location[loc]->can_be_trapped() && ledger.get_funds() >= 3000) {
                 ledger.subtract_funds(3000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_TRAPS;
             }
         }
 
         if(c == 't') {
-            if(!(location[loc]->compound_walls & COMPOUND_TANKTRAPS) && ledger.get_funds() >= 3000) {
+            if(location[loc]->can_install_tanktraps() && ledger.get_funds() >= 3000) {
                 ledger.subtract_funds(3000, EXPENSE_COMPOUND);
                 location[loc]->compound_walls |= COMPOUND_TANKTRAPS;
             }
@@ -760,7 +768,7 @@ void investlocation(void) {
         }
 
         if(c == 'f') {
-            if(location[loc]->front_business == -1 && ledger.get_funds() >= 3000) {
+            if(location[loc]->can_have_businessfront() && ledger.get_funds() >= 3000) {
                 ledger.subtract_funds(3000, EXPENSE_COMPOUND);
 
                 do {

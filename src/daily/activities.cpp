@@ -1122,7 +1122,7 @@ void attemptarrest(Creature &liberal, const char *string, int clearformess) {
     }
 
     chaseseq.clean();
-    chaseseq.location = 0;
+    chaseseq.location = location[liberal.location]->parent;
     footchase(liberal);
 }
 
@@ -1164,23 +1164,6 @@ int checkforarrest(Creature &liberal, const char *string, int clearformess) {
 // *JDSRETURN*
 void funds_and_trouble(char &clearformess) {
     int s;
-    //FIND A POLICE STATION
-    //and a clinic too
-    //and a homeless shelter three!
-    int ps = -1;
-    int clinic = -1;
-    int shelter = -1;
-
-    for(int l = 0; l < location.size(); l++) {
-        if(location[l]->type == SITE_GOVERNMENT_POLICESTATION)
-            ps = l;
-
-        if(location[l]->type == SITE_HOSPITAL_CLINIC)
-            clinic = l;
-
-        if(location[l]->type == SITE_RESIDENTIAL_SHELTER)
-            shelter = l;
-    }
 
     //ACTIVITIES FOR INDIVIDUALS
     vector<Creature *> trouble;
@@ -1266,7 +1249,7 @@ void funds_and_trouble(char &clearformess) {
             break;
 
         case ACTIVITY_CLINIC:
-            hospitalize(clinic, *pool[p]);
+            hospitalize(find_clinic(*pool[p]), *pool[p]);
             pool[p]->activity.type = ACTIVITY_NONE;
             break;
 
@@ -1291,10 +1274,10 @@ void funds_and_trouble(char &clearformess) {
             break;
 
         case ACTIVITY_SLEEPER_JOINLCS:
-            if(!location[shelter]->siege.siege) {
+            if(!location[find_homeless_shelter(*pool[p])]->siege.siege) {
                 pool[p]->activity.type = ACTIVITY_NONE;
                 pool[p]->flag &= ~CREATUREFLAG_SLEEPER;
-                pool[p]->location = pool[p]->base = shelter;
+                pool[p]->location = pool[p]->base = find_homeless_shelter(*pool[p]);
             }
         }
     }
@@ -2025,7 +2008,7 @@ void funds_and_trouble(char &clearformess) {
 
                 removesquadinfo(*prostitutes[p]);
                 prostitutes[p]->carid = -1;
-                prostitutes[p]->location = ps;
+                prostitutes[p]->location = find_police_station(*prostitutes[p]);
                 prostitutes[p]->drop_weapons_and_clips(NULL);
                 prostitutes[p]->activity.type = ACTIVITY_NONE;
                 criminalize(*prostitutes[p], LAWFLAG_PROSTITUTION);
@@ -3165,7 +3148,7 @@ char stealcar(Creature &cr, char &clearformess) {
 
                 //FOOT CHASE
                 chaseseq.clean();
-                chaseseq.location = 0;
+                chaseseq.location = location[cr.location]->parent;
                 newsstoryst *ns = new newsstoryst;
                 ns->type = NEWSSTORY_CARTHEFT;
                 newsstory.push_back(ns);
@@ -3481,7 +3464,7 @@ char stealcar(Creature &cr, char &clearformess) {
 
                 //FOOT CHASE
                 chaseseq.clean();
-                chaseseq.location = 0;
+                chaseseq.location = location[cr.location]->parent;
                 newsstoryst *ns = new newsstoryst;
                 ns->type = NEWSSTORY_CARTHEFT;
                 newsstory.push_back(ns);
@@ -3537,7 +3520,7 @@ char stealcar(Creature &cr, char &clearformess) {
         v->add_heat(14 + v->steal_extraheat());
 
         chaseseq.clean();
-        chaseseq.location = 0;
+        chaseseq.location = location[cr.location]->parent;
         int chaselev = !LCSrandom(13 - windowdamage);
 
         if(chaselev > 0 || (v->vtypeidname() == "POLICECAR" && LCSrandom(2))) { //Identify police cruiser. Temporary solution? -XML

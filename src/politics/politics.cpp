@@ -786,13 +786,13 @@ void elections(char clearformess, char canseethings) {
                 break;
 
             case LAW_PRISONS:
-                if(propdir[c] == 1) {
+                if(propdir[p] == 1) {
                     if(law[LAW_PRISONS] == 1)
                         addstr("Establish Prison Rehabilitation");
                     else
                         addstr("Improve Prison Conditions");
                 } else
-                    addstr("Increase Prison Security");
+                    addstr("Enhance Prison Security");
 
                 break;
             }

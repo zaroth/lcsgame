@@ -2871,12 +2871,8 @@ void capturecreature(Creature &t) {
             for(int i = 0; i < LAWFLAGNUM; i++)
                 t.crimes_suspected[i] = 0;
         }
-    } else {
-        for(int l = 0; l < location.size(); l++) {
-            if(location[l]->type == SITE_GOVERNMENT_POLICESTATION)
-                t.location = l;
-        }
-    }
+    } else
+        t.location = find_police_station(cursite);
 
     t.squadid = -1;
 }

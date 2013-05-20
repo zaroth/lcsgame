@@ -46,21 +46,6 @@ void advanceday(char &clearformess, char canseethings) {
     for(p = 0; p < pool.size(); p++)
         pool[p]->carid = -1;
 
-    //SHUFFLE AROUND THE SQUADLESS
-    int homes = -1;
-
-    for(int l = 0; l < location.size(); l++) {
-        if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
-            homes = l;
-            break;
-        }
-    }
-
-    if (homes == -1) {
-        //TODO: Error unable to find location
-        homes = 0;
-    }
-
     // Aging
     for(p = 0; p < pool.size(); p++) {
         pool[p]->stunned = 0; // For lack of a better place, make stunning expire here
@@ -135,7 +120,7 @@ void advanceday(char &clearformess, char canseethings) {
         // but don't evacuate people already under siege. - wisq
         if(pool[p]->location != pool[p]->base &&
                 location[pool[p]->base]->siege.siege)
-            pool[p]->base = homes;
+            pool[p]->base = find_homeless_shelter(*pool[p]);
 
         pool[p]->location = pool[p]->base;
     }
@@ -427,22 +412,12 @@ void advanceday(char &clearformess, char canseethings) {
                 refresh();
                 getch();
 
-                for(int l = 0; l < location.size(); l++) {
-                    if(location[l]->city == location[squad[sq]->activity.arg]->type &&
-                            location[l]->type == SITE_RESIDENTIAL_SHELTER) {
-                        // Base at new city's homeless shelter
-                        basesquad(squad[sq], l);
-                        locatesquad(squad[sq], l);
-                    }
-                }
-
-                /*for(int s=0; s<6; s++)
                 {
-                   if(squad[sq]->squad[s])
-                      squad[sq]->squad[s]->travel_time = 5;
-                   else
-                      break;
-                }*/
+                    int l = find_homeless_shelter(squad[sq]->activity.arg);
+                    // Base at new city's homeless shelter
+                    basesquad(squad[sq], l);
+                    locatesquad(squad[sq], l);
+                }
 
                 clearformess = 1;
                 break;
@@ -990,16 +965,9 @@ void advanceday(char &clearformess, char canseethings) {
 
                     location[l]->renting = RENTING_NOCONTROL;
 
+                    int hs = find_homeless_shelter(l);
+
                     //MOVE ALL ITEMS AND SQUAD MEMBERS
-                    int hs = 0;
-
-                    for(l2 = 0; l2 < location.size(); l2++) {
-                        if(location[l2]->type == SITE_RESIDENTIAL_SHELTER) {
-                            hs = l2;
-                            break;
-                        }
-                    }
-
                     for(int p = 0; p < pool.size(); p++) {
                         if(pool[p]->location == l)
                             pool[p]->location = hs;
@@ -1076,19 +1044,7 @@ void advanceday(char &clearformess, char canseethings) {
                 pool[p]->dating = date[d]->timeleft;
 
                 if(date[d]->timeleft == 0) {
-                    int hs = -1;
-
-                    for(int l = 0; l < location.size(); l++) {
-                        if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
-                            hs = l;
-                            break;
-                        }
-                    }
-
-                    if (hs == -1) {
-                        //TODO: Error unable to find location
-                        hs = 0;
-                    }
+                    int hs = find_homeless_shelter(*pool[p]);
 
                     if(location[pool[p]->base]->siege.siege)
                         pool[p]->base = hs;
@@ -1186,6 +1142,7 @@ void advanceday(char &clearformess, char canseethings) {
 
                 newsstoryst *ns = new newsstoryst;
                 ns->type = NEWSSTORY_KIDNAPREPORT;
+                ns->loc = pool[p]->location;
                 ns->cr = pool[p];
                 newsstory.push_back(ns);
             }
@@ -1441,19 +1398,10 @@ void dispersalcheck(char &clearformess) {
                     delete pool[p];
                     pool.erase(pool.begin() + p);
                 } else {
-                    int hs = 0;
-
-                    for(int l = 0; l < location.size(); l++) {
-                        if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
-                            hs = l;
-                            break;
-                        }
-                    }
-
                     pool[p]->location = -1;
 
                     if(!(pool[p]->flag & CREATUREFLAG_SLEEPER)) //Sleepers end up in shelter otherwise.
-                        pool[p]->base = hs;
+                        pool[p]->base = find_homeless_shelter(*pool[p]);
 
                     pool[p]->activity.type = ACTIVITY_NONE;
                     pool[p]->hiding = -1; // Hide indefinitely
@@ -1630,15 +1578,6 @@ void advancelocations(void) {
             location[l]->closed--;
 
             if(location[l]->closed == 0) {
-                if(location[l]->type == SITE_GOVERNMENT_POLICESTATION)
-                    policestation_closed = 0;
-
-                if(location[l]->type == SITE_MEDIA_AMRADIO)
-                    amradio_closed = 0;
-
-                if(location[l]->type == SITE_MEDIA_CABLENEWS)
-                    cablenews_closed = 0;
-
                 //Clean up graffiti, patch up walls, restore fire damage
                 location[l]->changes.clear();
 
