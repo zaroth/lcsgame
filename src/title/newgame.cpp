@@ -356,7 +356,7 @@ void makecharacter(void) {
 
         move(12, 30);
         set_color(COLOR_BLACK, COLOR_BLACK, 1);
-        addstr(" (Press E to toggle childhood)");
+        addstr(" (Press D to toggle childhood)");
 
         if(!multipleCityMode) {
             move(14, 2);
@@ -365,7 +365,7 @@ void makecharacter(void) {
             addstr(lcityname);
             move(14, 30);
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
-            addstr(" (Press D to relocate)");
+            addstr(" (Press E to relocate)");
         }
 
         move(17, 4);
