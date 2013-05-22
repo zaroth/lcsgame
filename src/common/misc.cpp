@@ -651,3 +651,17 @@ void romannumeral(int amendnum) {
         addch('I');
     }
 }
+
+/*
+   Select one string randomly from a table of strings, e.g.
+   const char *strtbl[] = {"abc", "d", "efgh"};
+   SelectRandomString(strtbl, 3);
+*/
+const char *selectRandomString(const char **string_table, int table_size) {
+    int roll;
+
+    roll = LCSrandom(table_size);
+
+    return(string_table[roll]);
+}
+
