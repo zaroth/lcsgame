@@ -1645,27 +1645,24 @@ char dodgedrive(void) {
 
 
 void crashfriendlycar(int v) {
+    static const char *car_crash_modes[] = {
+        " slams into a building!",
+        " skids out and crashes!",
+        " hits a parked car and flips over!"
+    };
+    static const char *car_crash_fatalities[] = {
+        " is crushed inside the car.",
+        "'s lifeless body smashes through the windshield.",
+        " is thrown from the car and killed instantly.",
+    };
+
     //CRASH CAR
     clearmessagearea();
     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
     move(16, 1);
     addstr("Your ", gamelog);
     addstr(chaseseq.friendcar[v]->fullname().c_str(), gamelog);
-
-    switch(LCSrandom(3)) {
-    case 0:
-        addstr(" slams into a building!", gamelog);
-        break;
-
-    case 1:
-        addstr(" skids out and crashes!", gamelog);
-        break;
-
-    case 2:
-        addstr(" hits a parked car and flips over!", gamelog);
-        break;
-    }
-
+    addstr(selectRandomString(car_crash_modes, ARRAY_ELEMENTS(car_crash_modes)), gamelog);
     gamelog.newline(); //New line it.
     printparty();
     refresh();
@@ -1710,21 +1707,7 @@ void crashfriendlycar(int v) {
                     set_color(COLOR_RED, COLOR_BLACK, 1);
                     move(16, 1);
                     addstr(activesquad->squad[p]->prisoner->name, gamelog);
-
-                    switch(LCSrandom(3)) {
-                    case 0:
-                        addstr(" is crushed inside the car.", gamelog);
-                        break;
-
-                    case 1:
-                        addstr("'s lifeless body smashes through the windshield.", gamelog);
-                        break;
-
-                    case 2:
-                        addstr(" is thrown from the car and killed instantly.", gamelog);
-                        break;
-                    }
-
+                    addstr(selectRandomString(car_crash_fatalities, ARRAY_ELEMENTS(car_crash_fatalities)), gamelog);
                     gamelog.newline(); //New line.
                     printparty();
                     refresh();
