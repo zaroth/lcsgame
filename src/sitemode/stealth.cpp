@@ -175,6 +175,14 @@ char alienationcheck(char mistake) {
 
 /* checks if conservatives see through your disguise */
 void disguisecheck(int timer) {
+    static const char *blew_stealth_check[] = {
+        " coughs.",
+        " accidentally mumbles the slogan.",
+        " paces uneasily.",
+        " stares at the Conservatives.",
+        " laughs nervously."
+    };
+
     int weapon = 0;
     int squadsize = 0;
     bool forcecheck = false;
@@ -366,29 +374,7 @@ void disguisecheck(int timer) {
                 move(16, 1);
 
                 addstr(activesquad->squad[blew_it]->name, gamelog);
-
-                switch(LCSrandom(5)) {
-                case 0:
-                    addstr(" coughs.", gamelog);
-                    break;
-
-                case 1:
-                    addstr(" accidentally mumbles the slogan.", gamelog);
-                    break;
-
-                case 2:
-                    addstr(" paces uneasily.", gamelog);
-                    break;
-
-                case 3:
-                    addstr(" stares at the Conservatives.", gamelog);
-                    break;
-
-                case 4:
-                    addstr(" laughs nervously.", gamelog);
-                    break;
-                }
-
+                addstr(selectRandomString(blew_stealth_check, ARRAY_ELEMENTS(blew_stealth_check)), gamelog);
                 gamelog.newline();
 
                 getch();
