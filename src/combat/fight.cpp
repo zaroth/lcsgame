@@ -228,6 +228,29 @@ void youattack(void) {
 
 
 void enemyattack(void) {
+    static const char *escape_crawling[] = {
+        " crawls off moaning...",
+        " crawls off whimpering...",
+        " crawls off trailing blood...",
+        " crawls off screaming...",
+        " crawls off crying...",
+        " crawls off sobbing...",
+        " crawls off whispering...",
+        " crawls off praying...",
+        " crawls off cursing..."
+    };
+
+    static const char *escape_running[] = {
+        " makes a break for it!",
+        " escapes crying!",
+        " runs away!",
+        " gets out of there!",
+        " runs hollering!",
+        " bolts out of there!",
+        " runs away screaming!",
+    };
+
+
     foughtthisround = 1;
 
     goodguyattack = false;
@@ -307,75 +330,10 @@ void enemyattack(void) {
                                 (encounter[e].wound[BODYPART_LEG_RIGHT] & WOUND_CLEANOFF) ||
                                 (encounter[e].wound[BODYPART_LEG_LEFT] & WOUND_NASTYOFF) ||
                                 (encounter[e].wound[BODYPART_LEG_LEFT] & WOUND_CLEANOFF) ||
-                                (encounter[e].blood < 45)) {
-                            switch(LCSrandom(9)) {
-                            case 0:
-                                addstr(" crawls off moaning...", gamelog);
-                                break;
-
-                            case 1:
-                                addstr(" crawls off whimpering...", gamelog);
-                                break;
-
-                            case 2:
-                                addstr(" crawls off trailing blood...", gamelog);
-                                break;
-
-                            case 3:
-                                addstr(" crawls off screaming...", gamelog);
-                                break;
-
-                            case 4:
-                                addstr(" crawls off crying...", gamelog);
-                                break;
-
-                            case 5:
-                                addstr(" crawls off sobbing...", gamelog);
-                                break;
-
-                            case 6:
-                                addstr(" crawls off whispering...", gamelog);
-                                break;
-
-                            case 7:
-                                addstr(" crawls off praying...", gamelog);
-                                break;
-
-                            case 8:
-                                addstr(" crawls off cursing...", gamelog);
-                                break;
-                            }
-                        } else {
-                            switch(LCSrandom(7)) {
-                            case 0:
-                                addstr(" makes a break for it!", gamelog);
-                                break;
-
-                            case 1:
-                                addstr(" escapes crying!", gamelog);
-                                break;
-
-                            case 2:
-                                addstr(" runs away!", gamelog);
-                                break;
-
-                            case 3:
-                                addstr(" gets out of there!", gamelog);
-                                break;
-
-                            case 4:
-                                addstr(" runs hollering!", gamelog);
-                                break;
-
-                            case 5:
-                                addstr(" bolts out of there!", gamelog);
-                                break;
-
-                            case 6:
-                                addstr(" runs away screaming!", gamelog);
-                                break;
-                            }
-                        }
+                                (encounter[e].blood < 45))
+                            addstr(selectRandomString(escape_crawling, ARRAY_ELEMENTS(escape_crawling)), gamelog);
+                        else
+                            addstr(selectRandomString(escape_running, ARRAY_ELEMENTS(escape_running)), gamelog);
 
                         gamelog.newline();
 
@@ -2202,6 +2160,60 @@ void damagemod(Creature &t, char &damtype, int &damamount,
 
 
 void specialattack(Creature &a, Creature &t, char &actual) {
+    static const char *judge_debate[]   = {
+        "debates the death penalty with",
+        "debates gay rights with",
+        "debates free speech with",
+        "debates the Second Amendment with"
+    };
+
+    static const char *conservative_ceo_debate[] = {
+        "explains the derivatives market to",
+        "justifies voodoo economics to",
+        "extols the Reagan presidency to",
+        "argues about tax cuts with",
+        "explains Conservative philosophy to",
+        "extends a dinner invitation to",
+        "offers a VP position to",
+        "shows a $1000 bill to",
+        "debates fiscal policy with",
+        "offers stock options to"
+    };
+
+    static const char *other_ceo_debate[] = {
+        "debates fiscal policy with",
+        "derides voodoo economics to",
+        "dismisses the Reagan presidency to",
+        "argues about tax cuts with",
+        "explains Liberal philosophy to"
+    };
+
+    static const char *media_debate[] = {
+        "winks at",
+        "smiles at",
+        "smirks at",
+        "chats warmly with",
+        "yells slogans at"
+    };
+
+    static const char *military_debate[] = {
+        "recites the Pledge of Allegiance to",
+        "debates national security with",
+        "debates terrorism with",
+        "preaches about veterans to",
+        "explains military spending to"
+    };
+
+    static const char *police_debate[] = {
+        "reasons with ",
+        "promises a fair trial to ",
+        "offers a kind ear to ",
+        "urges cooperation from ",
+        "offers a hug to ",
+        "suggests counseling to ",
+        "gives a teddy bear to "
+    };
+
     int resist = 0;
     char str[200];
 
@@ -2221,24 +2233,7 @@ void specialattack(Creature &a, Creature &t, char &actual) {
     switch(a.type) {
     case CREATURE_JUDGE_CONSERVATIVE:
     case CREATURE_JUDGE_LIBERAL:
-        switch(LCSrandom(4)) {
-        case 0:
-            strcat(str, "debates the death penalty with");
-            break;
-
-        case 1:
-            strcat(str, "debates gay rights with");
-            break;
-
-        case 2:
-            strcat(str, "debates free speech with");
-            break;
-
-        case 3:
-            strcat(str, "debates the Second Amendment with");
-            break;
-        }
-
+        strcat(str, selectRandomString(judge_debate, ARRAY_ELEMENTS(judge_debate)));
         strcat(str, " ");
         strcat(str, t.name);
         strcat(str, "!");
@@ -2290,69 +2285,11 @@ void specialattack(Creature &a, Creature &t, char &actual) {
 
     case CREATURE_CORPORATE_CEO:
         if(a.align == -1) {
-            switch(LCSrandom(10)) {
-            case 0:
-                strcat(str, "explains the derivatives market to");
-                break;
-
-            case 1:
-                strcat(str, "justifies voodoo economics to");
-                break;
-
-            case 2:
-                strcat(str, "extols the Reagan presidency to");
-                break;
-
-            case 3:
-                strcat(str, "argues about tax cuts with");
-                break;
-
-            case 4:
-                strcat(str, "explains Conservative philosophy to");
-                break;
-
-            case 5:
-                strcat(str, "extends a dinner invitation to");
-                break;
-
-            case 6:
-                strcat(str, "offers a VP position to");
-                break;
-
-            case 7:
-                strcat(str, "shows a $1000 bill to");
-                break;
-
-            case 8:
-                strcat(str, "debates fiscal policy with");
-                break;
-
-            case 9:
-                strcat(str, "offers stock options to");
-                break;
-            }
+            strcat(str, selectRandomString(conservative_ceo_debate,
+                                           ARRAY_ELEMENTS(conservative_ceo_debate)));
         } else {
-            switch(LCSrandom(5)) {
-            case 0:
-                strcat(str, "debates fiscal policy with");
-                break;
-
-            case 1:
-                strcat(str, "derides voodoo economics to");
-                break;
-
-            case 2:
-                strcat(str, "dismisses the Reagan presidency to");
-                break;
-
-            case 3:
-                strcat(str, "argues about tax cuts with");
-                break;
-
-            case 4:
-                strcat(str, "explains Liberal philosophy to");
-                break;
-            }
+            strcat(str, selectRandomString(other_ceo_debate,
+                                           ARRAY_ELEMENTS(other_ceo_debate)));
         }
 
         strcat(str, " ");
@@ -2372,28 +2309,8 @@ void specialattack(Creature &a, Creature &t, char &actual) {
 
     case CREATURE_RADIOPERSONALITY:
     case CREATURE_NEWSANCHOR:
-        switch(LCSrandom(5)) {
-        case 0:
-            strcat(str, "winks at");
-            break;
-
-        case 1:
-            strcat(str, "smiles at");
-            break;
-
-        case 2:
-            strcat(str, "smirks at");
-            break;
-
-        case 3:
-            strcat(str, "chats warmly with");
-            break;
-
-        case 4:
-            strcat(str, "yells slogans at");
-            break;
-        }
-
+        strcat(str, selectRandomString(media_debate,
+                                       ARRAY_ELEMENTS(media_debate)));
         strcat(str, " ");
         strcat(str, t.name);
         strcat(str, "!");
@@ -2407,29 +2324,8 @@ void specialattack(Creature &a, Creature &t, char &actual) {
         break;
 
     case CREATURE_MILITARYOFFICER:
-        switch(LCSrandom(5)) {
-        case 0:
-            strcat(str, "recites the Pledge of Allegiance to");
-            break;
-
-        case 1:
-            strcat(str, "debates national security with");
-            break;
-
-        case 2:
-            strcat(str, "debates terrorism with");
-            break;
-
-        case 3:
-            strcat(str, "preaches about veterans to");
-            break;
-
-        case 4:
-            strcat(str, "explains military spending to");
-            break;
-
-        }
-
+        strcat(str, selectRandomString(military_debate,
+                                       ARRAY_ELEMENTS(military_debate)));
         strcat(str, " ");
         strcat(str, t.name);
         strcat(str, "!");
@@ -2444,43 +2340,9 @@ void specialattack(Creature &a, Creature &t, char &actual) {
 
     case CREATURE_COP:
         if(a.enemy()) {
-            switch(LCSrandom(7)) {
-            case 0:
-                strcat(str, "reasons with ");
-                strcat(str, t.name);
-                break;
-
-            case 1:
-                strcat(str, "promises a fair trial to ");
-                strcat(str, t.name);
-                break;
-
-            case 2:
-                strcat(str, "offers a kind ear to ");
-                strcat(str, t.name);
-                break;
-
-            case 3:
-                strcat(str, "urges cooperation from ");
-                strcat(str, t.name);
-                break;
-
-            case 4:
-                strcat(str, "offers a hug to ");
-                strcat(str, t.name);
-                break;
-
-            case 5:
-                strcat(str, "suggests counseling to ");
-                strcat(str, t.name);
-                break;
-
-            case 6:
-                strcat(str, "gives a teddy bear to ");
-                strcat(str, t.name);
-                break;
-            }
-
+            strcat(str, selectRandomString(police_debate,
+                                           ARRAY_ELEMENTS(police_debate)));
+            strcat(str, t.name);
             strcat(str, "!");
 
             resist = t.attribute_roll(ATTRIBUTE_HEART);
