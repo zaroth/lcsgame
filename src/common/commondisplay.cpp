@@ -2199,3 +2199,56 @@ int mvaddstr(int y, int x, std::string text) {
 int mvaddstr(int y, int x, std::string text, Log &log) {
     return mvaddstr(y, x, text.c_str(), log);
 }
+
+/*	addstr with formatted output	*/
+int addstr_f(const char *format, ...) {
+    static char sbuf[81];
+    va_list args;
+
+    va_start (args, format);
+    vsnprintf(sbuf, 81, format, args);
+    va_end (args);
+
+    return(addstr(sbuf));
+}
+
+/*	mvaddstr with formatted output	*/
+int mvaddstr_f(int y, int x, const char *format, ...) {
+    static char sbuf[81];
+    va_list args;
+
+    va_start (args, format);
+    vsnprintf(sbuf, 81, format, args);
+    va_end (args);
+
+    return(mvaddstr(y, x, sbuf));
+}
+
+
+/*	addstr with formatted output and logging	*/
+int addstr_fl(Log &log, const char *format, ...) {
+    static char sbuf[81];
+    va_list args;
+
+    va_start (args, format);
+    vsnprintf(sbuf, 81, format, args);
+    va_end (args);
+
+    log.record(sbuf);
+
+    return(addstr(sbuf));
+}
+
+/*	mvaddstr with formatted output and logging	*/
+int mvaddstr_fl(int y, int x, Log &log, const char *format, ...) {
+    static char sbuf[81];
+    va_list args;
+
+    va_start (args, format);
+    vsnprintf(sbuf, 81, format, args);
+    va_end (args);
+
+    log.record(sbuf);
+
+    return(mvaddstr(y, x, sbuf));
+}
