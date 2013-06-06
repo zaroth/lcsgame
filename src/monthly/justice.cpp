@@ -1283,14 +1283,7 @@ void penalize(Creature &g, char lenient) {
 
 /* monthly - move a liberal to jail */
 void imprison(Creature &g) {
-    int ps = -1;
-
-    for(int l = 0; l < location.size(); l++) {
-        if(location[l]->type == SITE_GOVERNMENT_PRISON)
-            ps = l;
-    }
-
-    g.location = ps;
+    g.location = find_site_index_in_city(SITE_GOVERNMENT_PRISON, location[g.location]->city);
 }
 
 
@@ -1505,7 +1498,7 @@ char prison(Creature &g) {
 }
 
 void reeducation(Creature &g) {
-    static const char *reeducation_experiences[] {
+    static const char *reeducation_experiences[] = {
         " is subjected to rehabilitative therapy in prison.",
         " works on a prison mural about political diversity.",
         " routinely sees a Liberal therapist in prison.",

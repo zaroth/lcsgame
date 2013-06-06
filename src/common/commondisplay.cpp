@@ -79,6 +79,11 @@ void set_activity_color(long activity_type) {
         set_color(COLOR_GREEN, COLOR_BLACK, 1);
         break;
 
+    // Recruitment
+    case ACTIVITY_RECRUITING:
+        set_color(COLOR_GREEN, COLOR_BLACK, 0);
+        break;
+
     // Less exciting liberal activities
     case ACTIVITY_SLEEPER_SPY:
     case ACTIVITY_COMMUNITYSERVICE:

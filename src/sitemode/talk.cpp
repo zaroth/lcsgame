@@ -1582,6 +1582,7 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
         if(newd == NULL) {
             newd = new datest;
             newd->mac_id = a.id;
+            newd->city = location[a.location]->city;
 
             date.push_back(newd);
         }

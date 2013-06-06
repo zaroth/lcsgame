@@ -422,6 +422,13 @@ vector<Location *> loc_proxy() {
     return location;
 }
 
+std::string Creature::get_type_name() {
+    char cStr[75];
+    getrecruitcreature(cStr, this->type);
+    std::string cppStr = cStr;
+    return cppStr;
+}
+
 bool Creature::is_lcs_sleeper(void) {
     if(alive && align == ALIGN_LIBERAL && clinic == 0 &&
             dating == 0 && hiding == 0 && (flag & CREATUREFLAG_SLEEPER))
