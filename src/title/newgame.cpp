@@ -789,7 +789,7 @@ void makecharacter(void) {
             move(5, 0);
 
             if(choices || selection == 0)
-                addstr("A - I started robbing houses:  rich people only.  I was fed up with their crap."); //XXX: No theft?
+                addstr("A - I started robbing houses:  rich people only.  I was fed up with their crap.");
 
             //SKILL_SECURITY 1
             //SKILL_STEALTH 1
@@ -804,16 +804,17 @@ void makecharacter(void) {
             move(9, 0);
 
             if(choices || selection == 2)
-                addstr("C - I got a horrible job working fast food, smiling as people fed the man."); //XXX: No cooking?
+                addstr("C - I got a horrible job working fast food, smiling as people fed the man.");
 
             //ATTRIBUTE_CHARISMA 1
             //SKILL_BUSINESS 2
             move(11, 0);
 
             if(choices || selection == 3)
-                addstr("D - I let people pay me for sex.  I needed the money to survive."); //XXX: What? No heart loss?
+                addstr("D - I let people pay me for sex.  I needed the money to survive.");
 
-            //ATTRIBUTE_CHARISMA 1
+            //ATTRIBUTE_HEART -1
+            //ATTRIBUTE_CHARISMA 2
             //SKILL_SEDUCTION 2
             move(13, 0);
 
@@ -861,9 +862,8 @@ void makecharacter(void) {
             move(5, 0);
 
             if(choices || selection == 0)
-                addstr("A - stealing from Corporations.  I know they're still keeping more secrets."); //XXX: No theft?
+                addstr("A - stealing from Corporations.  I know they're still keeping more secrets.");
 
-            // Not as useful as the ones you do get
             //ATTRIBUTE_INTELLIGENCE 2
             //ATTRIBUTE_AGILITY 2
             //SKILL_SECURITY 2
@@ -877,8 +877,10 @@ void makecharacter(void) {
 
             //SKILL_RIFLE 2
             //SKILL_PISTOL 2
+            //SKILL_STREETSENSE 2
             //ATTRIBUTE_AGILITY 2
             //ATTRIBUTE_HEALTH 2
+            //ATTRIBUTE_STRENGTH 2
             // +Crack house (with stockpiled rations)
             // +A crew (four gang members with knives and pistols)
             move(9, 0);
@@ -1167,7 +1169,8 @@ void makecharacter(void) {
             }
 
             if(c == 'd') {
-                newcr->adjust_attribute(ATTRIBUTE_CHARISMA, +1);
+                newcr->adjust_attribute(ATTRIBUTE_HEART, -1);
+                newcr->adjust_attribute(ATTRIBUTE_CHARISMA, +2);
                 newcr->set_skill(SKILL_SEDUCTION, newcr->get_skill(SKILL_SEDUCTION) + (2));
             }
 
@@ -1224,8 +1227,10 @@ void makecharacter(void) {
             if(c == 'b') {
                 newcr->set_skill(SKILL_RIFLE, newcr->get_skill(SKILL_RIFLE) + (2));
                 newcr->set_skill(SKILL_PISTOL, newcr->get_skill(SKILL_PISTOL) + (2));
+                newcr->set_skill(SKILL_STREETSENSE, newcr->get_skill(SKILL_STREETSENSE) + (2));
                 newcr->adjust_attribute(ATTRIBUTE_AGILITY, +2);
                 newcr->adjust_attribute(ATTRIBUTE_HEALTH, +2);
+                newcr->adjust_attribute(ATTRIBUTE_STRENGTH, +2);
                 newcr->type = CREATURE_GANGMEMBER;
                 base = SITE_BUSINESS_CRACKHOUSE;
                 recruits = RECRUITS_GANG;
