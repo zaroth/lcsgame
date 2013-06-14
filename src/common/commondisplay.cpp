@@ -52,7 +52,7 @@ void set_alignment_color(signed char alignment, bool extended_range) {
 
     case ALIGN_LIBERAL:
         if(extended_range)
-            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+            set_color(COLOR_CYAN, COLOR_BLACK, 1);
         else
             set_color(COLOR_GREEN, COLOR_BLACK, 1);
 

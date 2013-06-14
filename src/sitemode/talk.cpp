@@ -491,7 +491,7 @@ char heyIWantToCancelMyRoom(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
         addstr("\"Put some clothes on before I call the cops.\"", gamelog);
         gamelog.newline();
@@ -504,7 +504,7 @@ char heyIWantToCancelMyRoom(Creature &a, Creature &tk) {
     move(12, 1);
     addstr(tk.name, gamelog);
     addstr(" responds, ", gamelog);
-    set_color(COLOR_BLUE, COLOR_BLACK, 1);
+    set_color(COLOR_CYAN, COLOR_BLACK, 1);
     move(13, 1);
     addstr("\"Alright. Please clear out your room.\"", gamelog);
     gamelog.newline();
@@ -570,7 +570,7 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
         addstr("\"Put some clothes on before I call the cops.\"", gamelog);
         gamelog.newline();
@@ -602,7 +602,7 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
     move(12, 1);
     addstr(tk.name, gamelog);
     addstr(" responds, ", gamelog);
-    set_color(COLOR_BLUE, COLOR_BLACK, 1);
+    set_color(COLOR_CYAN, COLOR_BLACK, 1);
     move(13, 1);
     addstr("\"It'll be $", gamelog);
     addstr(num, gamelog);
@@ -660,7 +660,7 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
             move(12, 1);
             addstr(tk.name, gamelog);
             addstr(" responds, ", gamelog);
-            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+            set_color(COLOR_CYAN, COLOR_BLACK, 1);
             move(13, 1);
             addstr("\"Rent is due by the third of every month.", gamelog);
             gamelog.newline();
@@ -698,7 +698,7 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
             move(12, 1);
             addstr(tk.name, gamelog);
             addstr(" responds, ", gamelog);
-            set_color(COLOR_BLUE, COLOR_BLACK, 1);
+            set_color(COLOR_CYAN, COLOR_BLACK, 1);
             move(13, 1);
             addstr("\"Not my problem...\"", gamelog);
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -760,7 +760,7 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
                 move(12, 1);
                 addstr(tk.name, gamelog);
                 addstr(" responds, ", gamelog);
-                set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                set_color(COLOR_CYAN, COLOR_BLACK, 1);
                 move(13, 1);
                 addstr("\"I think you'd better leave.\"", gamelog);
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -775,7 +775,7 @@ char heyIWantToRentARoom(Creature &a, Creature &tk) {
                 move(12, 1);
                 addstr(tk.name, gamelog);
                 addstr(" responds, ", gamelog);
-                set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                set_color(COLOR_CYAN, COLOR_BLACK, 1);
                 move(13, 1);
                 addstr("\"Jesus... it's yours...\"", gamelog);
                 gamelog.newline();
@@ -829,7 +829,7 @@ char heyINeedAGun(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
         addstr("\"Jesus...\"", gamelog);
         gamelog.newline();
@@ -844,7 +844,7 @@ char heyINeedAGun(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
         addstr("\"I don't sell guns, officer.\"", gamelog);
         gamelog.newline();
@@ -858,7 +858,7 @@ char heyINeedAGun(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
         addstr("\"We can talk when things are calm.\"", gamelog);
         gamelog.newline();
@@ -878,7 +878,7 @@ char heyINeedAGun(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
         addstr("\"What exactly do you need?\"", gamelog);
         gamelog.newline();
@@ -893,7 +893,7 @@ char heyINeedAGun(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
         addstr("\"Uhhh... not a good place for this.\"", gamelog);
         gamelog.newline();
@@ -955,7 +955,7 @@ char wannaHearSomethingDisturbing(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
         addstr("\"What?\"", gamelog);
         gamelog.newline();
@@ -968,7 +968,7 @@ char wannaHearSomethingDisturbing(Creature &a, Creature &tk) {
         move(12, 1);
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(13, 1);
 
         if(tk.type == CREATURE_PRISONER) {
@@ -1342,7 +1342,7 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
         y++;
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(y, 1);
         y++;
 
@@ -2071,7 +2071,7 @@ char talkAboutIssues(Creature &a, Creature &tk) {
         y++;
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         move(y, 1);
         y++;
 
@@ -2167,7 +2167,7 @@ char talkAboutIssues(Creature &a, Creature &tk) {
         y++;
         addstr(tk.name, gamelog);
         addstr(" responds, ", gamelog);
-        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
 
         if(tk.type == CREATURE_MUTANT &&
                 tk.get_attribute(ATTRIBUTE_INTELLIGENCE, true) < 3) {

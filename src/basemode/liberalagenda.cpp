@@ -140,7 +140,7 @@ char liberalagenda(char won) {
             else if(lsum < 145)
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             else if(housemake[4] < 290)
-                set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                set_color(COLOR_CYAN, COLOR_BLACK, 1);
             else
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
 
@@ -181,7 +181,7 @@ char liberalagenda(char won) {
             else if(lsum < 33)
                 set_color(COLOR_YELLOW, COLOR_BLACK, 1);
             else if(senatemake[4] < 67)
-                set_color(COLOR_BLUE, COLOR_BLACK, 1);
+                set_color(COLOR_CYAN, COLOR_BLACK, 1);
             else
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
 
