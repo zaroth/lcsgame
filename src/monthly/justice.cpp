@@ -1309,6 +1309,7 @@ void penalize(Creature &g, char lenient) {
             addstr(" in prison", gamelog);
         }
 
+        // Mash together compatible sentences.
         if((g.sentence > 0 && oldsentence > 0) ||
                 (g.sentence < 0 && oldsentence < 0)) {
             addstr(",", gamelog);
