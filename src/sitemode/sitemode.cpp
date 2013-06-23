@@ -2120,6 +2120,7 @@ void mode_site(void) {
                         }
                     }
 
+                    sitealarm = 0;
                     mode = GAMEMODE_BASE;
                     return;
                 }
