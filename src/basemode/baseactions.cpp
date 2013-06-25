@@ -573,7 +573,7 @@ void stopevil(void) {
         }*/
 
         if(c == 10 || c == ESC) {
-            if(multipleCityMode && loc != -1 && (location[loc]->city != location[loc]->type || location[loc]->city != squad_location->city))
+            if(loc != -1 && (location[loc]->city != location[loc]->type || location[loc]->city != squad_location->city))
                 loc = location[loc]->parent;
             else {
                 activesquad->activity.type = ACTIVITY_NONE; // Clear squad activity
