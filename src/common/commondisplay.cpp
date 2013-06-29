@@ -714,6 +714,10 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
         addstr(", holding ");
 
         switch(cr->prisoner->type) {
+        case CREATURE_POLITICIAN:
+            addstr("a cursing Politician");
+            break;
+
         case CREATURE_CORPORATE_CEO:
             addstr("a squirming CEO");
             break;
@@ -723,7 +727,7 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
             break;
 
         case CREATURE_NEWSANCHOR:
-            addstr("smarmy News Anchor");
+            addstr("a smarmy News Anchor");
             break;
 
         case CREATURE_SCIENTIST_EMINENT:

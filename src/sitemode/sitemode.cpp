@@ -114,6 +114,10 @@ void mode_site(short loc) {
         locy = 1;
         locz = 0;
 
+        // Second floor start of White House
+        if(location[loc]->type == SITE_GOVERNMENT_WHITE_HOUSE && levelmap[locx][locy][locz].flag & SITEBLOCK_BLOCK)
+            locz++;
+
         //check for sleeper infiltration or map knowledge
         for(int p = 0; p < pool.size(); p++) {
             if(pool[p]->base == loc || location[loc]->mapped) {
@@ -371,6 +375,10 @@ void mode_site(void) {
                 switch(location[cursite]->type) {
                 case SITE_GOVERNMENT_ARMYBASE:
                     addstr(": SOLDIERS AND TANKS RESPONDING");
+                    break;
+
+                case SITE_GOVERNMENT_WHITE_HOUSE:
+                    addstr(": SECRET SERVICE RESPONDING");
                     break;
 
                 case SITE_GOVERNMENT_INTELLIGENCEHQ:
@@ -890,6 +898,13 @@ void mode_site(void) {
 
                     case SPECIAL_CCS_BOSS:
                         special_ccs_boss();
+                        break;
+
+                    case SPECIAL_OVAL_OFFICE_NW:
+                    case SPECIAL_OVAL_OFFICE_NE:
+                    case SPECIAL_OVAL_OFFICE_SW:
+                    case SPECIAL_OVAL_OFFICE_SE:
+                        special_oval_office();
                         break;
                     }
                 } else if(!(levelmap[locx][locy][locz].flag & (SITEBLOCK_GRAFFITI | SITEBLOCK_BLOODY2)) &&
@@ -1591,6 +1606,18 @@ void mode_site(void) {
 
                             break;
 
+                        case SITE_GOVERNMENT_WHITE_HOUSE:
+                            if(!LCSrandom(20))
+                                newLootType = "LOOT_SECRETDOCUMENTS";
+                            else if(!LCSrandom(3))
+                                newLootType = "LOOT_CELLPHONE";
+                            else if(!LCSrandom(2))
+                                newLootType = "LOOT_PDA";
+                            else
+                                newLootType = "LOOT_COMPUTER";
+
+                            break;
+
                         case SITE_GOVERNMENT_ARMYBASE:
                             if(!LCSrandom(3)) {
                                 string rndWeps[] = {"WEAPON_SEMIPISTOL_9MM", "WEAPON_CARBINE_M4", "WEAPON_AUTORIFLE_M16"};
@@ -2144,7 +2171,8 @@ void mode_site(void) {
                         newenc = 0;
                 }
 
-                //LOOK FOR SPECIALS
+                // Handle special tiles that activate when you step on them
+                // (rather than those that must be manually activated)
                 long makespecial = -1;
 
                 switch(levelmap[locx][locy][locz].special) {
@@ -2160,6 +2188,10 @@ void mode_site(void) {
                 case SPECIAL_PARK_BENCH:
                 case SPECIAL_BANK_TELLER:
                 case SPECIAL_CCS_BOSS:
+                case SPECIAL_OVAL_OFFICE_NW:
+                case SPECIAL_OVAL_OFFICE_NE:
+                case SPECIAL_OVAL_OFFICE_SW:
+                case SPECIAL_OVAL_OFFICE_SE:
                     makespecial = levelmap[locx][locy][locz].special;
                     newenc = 1;
                     break;
@@ -2861,6 +2893,13 @@ void mode_site(void) {
 
                     case SPECIAL_CCS_BOSS:
                         special_ccs_boss();
+                        break;
+
+                    case SPECIAL_OVAL_OFFICE_NW:
+                    case SPECIAL_OVAL_OFFICE_NE:
+                    case SPECIAL_OVAL_OFFICE_SW:
+                    case SPECIAL_OVAL_OFFICE_SE:
+                        special_oval_office();
                         break;
 
                     default:

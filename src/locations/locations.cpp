@@ -444,6 +444,10 @@ void initlocation(Location &loc) {
         loc.rename("City Outskirts", "Outskirts");
         break;
 
+    case SITE_TRAVEL:
+        loc.rename("Travel", "Travel");
+        break;
+
     case SITE_GOVERNMENT_POLICESTATION:
         loc.rename("Police Station", "Police Station");
         break;
@@ -547,6 +551,10 @@ void initlocation(Location &loc) {
         strcpy(loc.name, str);
         strcat(loc.name, " Army Base");
         strcpy(loc.shortname, "Army Base");
+        break;
+
+    case SITE_GOVERNMENT_WHITE_HOUSE:
+        loc.rename("White House", "White House");
         break;
 
     case SITE_CORPORATE_HEADQUARTERS:

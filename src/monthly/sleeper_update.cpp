@@ -290,6 +290,10 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
         break;
 
     /* Intelligence block */
+    case CREATURE_SECRET_SERVICE:
+        libpower[VIEW_INTELLIGENCE] += power;
+        break;
+
     case CREATURE_AGENT:
         libpower[VIEW_INTELLIGENCE] += power;
         libpower[VIEW_TORTURE] += power;
@@ -405,6 +409,7 @@ void sleeper_spy(Creature &cr, char &clearformess, char canseethings, int *libpo
     bool pause = false;
 
     switch(cr.type) {
+    case CREATURE_SECRET_SERVICE:
     case CREATURE_AGENT:
 
         // Agents can leak intelligence files to you
@@ -1084,6 +1089,7 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
 
             break;
 
+        case SITE_GOVERNMENT_WHITE_HOUSE:
         case SITE_GOVERNMENT_INTELLIGENCEHQ:
             if(!LCSrandom(3)) {
                 if(!LCSrandom(4))

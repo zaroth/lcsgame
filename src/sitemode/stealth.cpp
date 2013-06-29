@@ -284,6 +284,11 @@ void disguisecheck(int timer) {
                 stealth_difficulty = DIFFICULTY_HEROIC;
                 disguise_difficulty = DIFFICULTY_AVERAGE;
                 break;
+
+            case CREATURE_SECRET_SERVICE:
+                stealth_difficulty = DIFFICULTY_FORMIDABLE;
+                disguise_difficulty = DIFFICULTY_FORMIDABLE;
+                break;
             }
 
             // Increase difficulty if Conservatives suspicious...
@@ -667,6 +672,37 @@ char hasdisguise(Creature &cr) {
                     uniformed = 1;
 
                 if(cr.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
+                    uniformed = 1;
+            }
+
+            break;
+
+        case SITE_GOVERNMENT_WHITE_HOUSE:
+            if(levelmap[locx][locy][locz].flag & SITEBLOCK_RESTRICTED) {
+                uniformed = 0;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_BLACKSUIT")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_BLACKDRESS")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_CHEAPSUIT")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_CHEAPDRESS")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_EXPENSIVESUIT")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_EXPENSIVEDRESS")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_MILITARY")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_ARMYARMOR")
                     uniformed = 1;
             }
 

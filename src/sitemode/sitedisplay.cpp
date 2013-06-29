@@ -213,6 +213,13 @@ void printsitemap(int x, int y, int z) {
         strcpy(str, "CCS Boss");
         break;
 
+    case SPECIAL_OVAL_OFFICE_NW:
+    case SPECIAL_OVAL_OFFICE_NE:
+    case SPECIAL_OVAL_OFFICE_SW:
+    case SPECIAL_OVAL_OFFICE_SE:
+        strcpy(str, "The Office of the President");
+        break;
+
     default:
         strcpy(str, "");
         break;
@@ -845,6 +852,22 @@ void printblock(int x, int y, int z, int px, int py) {
 
         case SPECIAL_CCS_BOSS:
             addstr("BOSS!");
+            break;
+
+        case SPECIAL_OVAL_OFFICE_NW:
+            mvaddstr(py, px + 3, "OV");
+            break;
+
+        case SPECIAL_OVAL_OFFICE_NE:
+            addstr("AL");
+            break;
+
+        case SPECIAL_OVAL_OFFICE_SW:
+            mvaddstr(py, px + 2, "OFF");
+            break;
+
+        case SPECIAL_OVAL_OFFICE_SE:
+            addstr("ICE");
             break;
         }
     }

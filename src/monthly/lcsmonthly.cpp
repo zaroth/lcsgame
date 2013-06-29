@@ -943,6 +943,10 @@ void fundreport(char &clearformess) {
                 strcpy(entryname, "New Cars");
                 break;
 
+            case EXPENSE_TRAVEL:
+                strcpy(entryname, "Travel");
+                break;
+
             default:
                 strcpy(entryname, "Other Expenses");
                 break;
