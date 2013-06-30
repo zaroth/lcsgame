@@ -2083,6 +2083,9 @@ char sally_forth_aux(int loc) {
     siegest siege = location[loc]->siege;
     cursite = loc;
 
+    for(int e = 0; e < ENCMAX; e++)
+        encounter[e].exists = 0;
+
     switch(siege.siegetype) {
     case SIEGE_CIA:
     case SIEGE_HICKS:
