@@ -1559,7 +1559,7 @@ bool Creature::talkreceptive() {
     case CREATURE_RETIREE:
     case CREATURE_HAIRSTYLIST:
     case CREATURE_CLERK:
-    case CREATURE_MUTANT: // What? -- LK
+    case CREATURE_MUTANT:
         return true;
     }
 
@@ -1575,15 +1575,20 @@ bool Creature::can_date(Creature &a) {
     if(animalgloss || a.animalgloss)
         return true;
 
+    // Prohibit anyone 10 or younger
     if(age < 11 || a.age < 11)
         return false;
 
     if(age < 16 || a.age < 16) {
+        // Allow 11-15 year olds only if the other partner is
+        // within 4 years age difference
         if(ABS(age - a.age) < 5)
             return true;
         else
             return false;
-    } else
+    }
+    // Allow anyone 16 or older
+    else
         return true;
 }
 
@@ -1618,7 +1623,19 @@ void UniqueCreatures::newPresident() {
     Pres_state = UNIQUECREATURE_ALIVE;
 
     //Turn into President (not just random pol)
-    strcpy(Pres_.name, execname[EXEC_PRESIDENT]);
+    int len = strlen(execname[EXEC_PRESIDENT]);
+    char *pres_last_name;
+
+    for(int i = 0; i < len; i++) {
+        if(execname[EXEC_PRESIDENT][i] == ' ') {
+            pres_last_name = execname[EXEC_PRESIDENT] + i + 1;
+            break;
+        }
+    }
+
+    strcpy(Pres_.name, "President ");
+    strcat(Pres_.name, pres_last_name);
+    strcpy(Pres_.propername, execname[EXEC_PRESIDENT]);
     Pres_.dontname = true;
 
     switch(exec[EXEC_PRESIDENT]) {
