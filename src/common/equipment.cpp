@@ -607,7 +607,7 @@ void equipmentbaseassign(void) {
             addstr(" - ");
             addstr(temploot[p]->equip_title().c_str());
 
-            mvaddstr(y, 25, temploot2[temploot[p]]->getname(true));
+            mvaddstr(y, 25, temploot2[temploot[p]]->getname(true, true));
 
             y++;
         }
@@ -623,7 +623,7 @@ void equipmentbaseassign(void) {
             move(y, 51);
             addch(y + '1' - 2);
             addstr(" - ");
-            addstr(location[temploc[p]]->getname(true));
+            addstr(location[temploc[p]]->getname(true, true));
 
             y++;
         }
