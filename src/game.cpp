@@ -218,6 +218,7 @@ short interface_pgup = '[';
 short interface_pgdn = ']';
 
 bool autosave = true;
+bool morerandom = false;
 
 int day = 1;
 
@@ -513,7 +514,7 @@ int LCSrandom(int max) {
 
 //sets seed to a random number from 0 to 2 billion
 int r_num(void) {
-    seed = (seed * 907725L + 99979777UL) % 2147483648UL;
+    seed = ((seed + morerandom * getSeed()) * 907725L + 99979777UL) % 2147483648UL;
     return seed;
 }
 

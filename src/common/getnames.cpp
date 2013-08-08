@@ -647,6 +647,10 @@ void getrecruitcreature(char *str, int type) {
         strcat(str, "Political Activist");
         break;
 
+    case CREATURE_SECRET_SERVICE:
+        strcat(str, "Secret Service");
+        break;
+
     default:
         strcat(str, "Liberal");
         break;

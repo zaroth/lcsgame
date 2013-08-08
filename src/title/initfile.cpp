@@ -38,8 +38,11 @@ void setconfigoption(string name, string value) {
             interface_pgdn = -55;
         }
     } else if(name == "autosave") {
-        if((value == "off") or (value == "0") or (value == "false"))
+        if((value == "off") or (value == "0") or (value == "false") or (value == "no"))
             autosave = false;
+    } else if(name == "random") {
+        if((value == "on") or (value == "1") or (value == "true") or (value == "yes"))
+            morerandom = true;
     }
 }
 
@@ -51,6 +54,9 @@ void loadinitfile(void) {
         int posequal;
 
         while(getline(file, str)) {
+            str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+            str.erase(std::remove(str.begin(), str.end(), '\t'), str.end());
+
             if (! str.length())
                 continue;
 

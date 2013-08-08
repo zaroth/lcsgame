@@ -1466,7 +1466,7 @@ void mode_site(void) {
                                                     "WEAPON_SYRINGE", "WEAPON_CHAIN", "WEAPON_GUITAR", "WEAPON_SPRAYCAN"
                                                    };
                                 //make sure the number of types matches the random range...
-                                newWeaponType = rndWeps[LCSrandom(8)];
+                                newWeaponType = rndWeps[LCSrandom(7)];
                             } else if(!LCSrandom(20)) {
                                 string rndArmors[] = {"ARMOR_CHEAPDRESS", "ARMOR_CHEAPSUIT", "ARMOR_CLOTHES", "ARMOR_TRENCHCOAT",
                                                       "ARMOR_WORKCLOTHES", "ARMOR_TOGA", "ARMOR_PRISONER"
@@ -1499,7 +1499,7 @@ void mode_site(void) {
                                 string rndWeps[] = {"WEAPON_BASEBALLBAT", "WEAPON_REVOLVER_38",
                                                     "WEAPON_REVOLVER_44", "WEAPON_NIGHTSTICK", "WEAPON_GUITAR"
                                                    };
-                                newWeaponType = rndWeps[LCSrandom(6)];
+                                newWeaponType = rndWeps[LCSrandom(5)];
                             } else if(!LCSrandom(20)) {
                                 string rndArmors[] = {"ARMOR_CHEAPDRESS", "ARMOR_CHEAPSUIT", "ARMOR_CLOTHES", "ARMOR_TRENCHCOAT",
                                                       "ARMOR_WORKCLOTHES", "ARMOR_CLOWNSUIT", "ARMOR_ELEPHANTSUIT", "ARMOR_DONKEYSUIT"
