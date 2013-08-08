@@ -1045,8 +1045,8 @@ void advanceday(char &clearformess, char canseethings) {
 
         // Stand up recruits if 1) recruiter does not exist, 2) recruiter was not able to return to a safehouse today
         // or 3) recruiter is dead.
-        if(p != -1 && ((pool[p]->location != -1 && location[pool[p]->location]->renting != RENTING_NOCONTROL && pool[p]->alive) ||
-                       recruit[r]->timeleft > 0)) {
+        if(p != -1 && ((pool[p]->location != -1 && location[pool[p]->location]->renting != RENTING_NOCONTROL && pool[p]->alive &&
+                        location[pool[p]->location]->city == location[recruit[r]->recruit->location]->city) || recruit[r]->timeleft > 0)) {
             //MEET WITH RECRUIT
 
             //TERMINATE NULL RECRUIT MEETINGS
@@ -1079,7 +1079,8 @@ void advanceday(char &clearformess, char canseethings) {
         if(p != -1 && ((pool[p]->location != -1 &&
                         (location[pool[p]->location]->renting != RENTING_NOCONTROL ||
                          location[pool[p]->location]->type == SITE_HOSPITAL_CLINIC ||
-                         location[pool[p]->location]->type == SITE_HOSPITAL_UNIVERSITY)) ||
+                         location[pool[p]->location]->type == SITE_HOSPITAL_UNIVERSITY) &&
+                        location[pool[p]->location]->city == date[d]->city) ||
                        date[d]->timeleft)) {
             //VACATION
             if(date[d]->timeleft > 0) {
