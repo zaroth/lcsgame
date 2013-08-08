@@ -914,8 +914,8 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
         long maxs = -1;
 
         for(int s = 0; s < SKILLNUM; s++) {
-            if(cr->get_skill(s) > max && !used[s]) {
-                max = cr->get_skill(s);
+            if((cr->get_skill(s) * 10000 + cr->get_skill_ip(s)) > max && !used[s]) {
+                max = (cr->get_skill(s) * 10000 + cr->get_skill_ip(s));
                 maxs = s;
             }
         }

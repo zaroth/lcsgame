@@ -461,7 +461,7 @@ char completedate(datest &d, int p, char &clearformess) {
         getrecruitcreature(str, d.date[e]->type);
         addstr(str, gamelog);
         addstr(", ", gamelog);
-        addstr(location[d.date[e]->worklocation]->name, gamelog);
+        addstr(location[d.date[e]->worklocation]->getname(false, true), gamelog);
         gamelog.newline();
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);

@@ -100,13 +100,15 @@ bool Location::is_city() {
         return false;
 }
 
-std::string Location::getname(bool shortname, bool include_city) {
+// shortname can be set to true (1) or false (0) for making the main part of the name short or long, but the city will be short in either case
+// but there is a third option besides true (1) and false (0): calling it with shortname as -1 makes the entire name long, including the city
+std::string Location::getname(int shortname, bool include_city) {
     std::string str;
 
     if(!multipleCityMode)
         include_city = false;
 
-    if(shortname) {
+    if(shortname >= 1) {
         if(this->front_business != -1)
             str = this->front_shortname;
         else
@@ -120,7 +122,7 @@ std::string Location::getname(bool shortname, bool include_city) {
 
     if(include_city && type != city) {
         str += ", ";
-        str += location[findlocation(city, city)]->getname(true);
+        str += location[findlocation(city, city)]->getname(shortname + 1);
     }
 
     return str;

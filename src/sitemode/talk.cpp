@@ -371,7 +371,23 @@ char talkToGeneric(Creature &a, Creature &tk) {
     move(9, 1);
     addstr(a.name);
     addstr(" talks to ");
+
+    switch(tk.align) {
+    case ALIGN_CONSERVATIVE:
+        set_color(COLOR_RED, COLOR_BLACK, 1);
+        break;
+
+    case ALIGN_LIBERAL:
+        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+        break;
+
+    case ALIGN_MODERATE:
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+        break;
+    }
+
     addstr(tk.name);
+    set_color(COLOR_WHITE, COLOR_BLACK, 1);
     add_age(tk);
     addstr(":");
 
@@ -2348,7 +2364,23 @@ char talkInCombat(Creature &a, Creature &tk) {
     move(9, 1);
     addstr(a.name, gamelog);
     addstr(" talks to ", gamelog);
+
+    switch(tk.align) {
+    case ALIGN_CONSERVATIVE:
+        set_color(COLOR_RED, COLOR_BLACK, 1);
+        break;
+
+    case ALIGN_LIBERAL:
+        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+        break;
+
+    case ALIGN_MODERATE:
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+        break;
+    }
+
     addstr(tk.name, gamelog);
+    set_color(COLOR_WHITE, COLOR_BLACK, 1);
     addstr(":", gamelog);
     gamelog.newline();
 
