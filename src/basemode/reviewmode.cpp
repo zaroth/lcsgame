@@ -586,8 +586,13 @@ void review_mode(short mode) {
                     move(22, 0);
 
                     if(temppool[p]->is_active_liberal() &&
-                            temppool[p]->hireid != -1)   // If alive and not own boss? (suicide?)
-                        addstr("R - Remove member         K - Kill member");
+                            temppool[p]->hireid != -1) { // If alive and not own boss? (suicide?)
+                        addstr("R - Remove member");
+                        int boss = getpoolcreature(temppool[p]->hireid);
+
+                        if(pool[boss]->location == temppool[p]->location)
+                            addstr("         K - Kill member");
+                    }
 
                     move(23, 0);
 
@@ -712,10 +717,10 @@ void review_mode(short mode) {
 
                                 // TODO: Depending on the crime increase heat or make seige
 
-                                if(location[pool[boss]->location]->heat > 20)
-                                    location[pool[boss]->location]->siege.timeuntillocated = 3;
+                                if(location[pool[boss]->base]->heat > 20)
+                                    location[pool[boss]->base]->siege.timeuntillocated = 3;
                                 else
-                                    location[pool[boss]->location]->heat += 20;
+                                    location[pool[boss]->base]->heat += 20;
                             }
 
                             gamelog.nextMessage(); //Write out buffer to prepare for next message.
@@ -734,6 +739,9 @@ void review_mode(short mode) {
                               temppool[p]->hireid != -1) { // If alive and not own boss? (suicide?)
                         // Kill squad member
                         int boss = getpoolcreature(temppool[p]->hireid);
+
+                        if(pool[boss]->location != temppool[p]->location)
+                            break;
 
                         move(22, 0);
                         set_color(COLOR_WHITE, COLOR_BLACK, 0);
