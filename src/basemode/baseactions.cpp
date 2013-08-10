@@ -372,7 +372,7 @@ void stopevil(void) {
 
         if(loc != -1) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            mvaddstr(8, 0, location[loc]->getname(false, true));
+            mvaddstr(8, 0, location[loc]->getname(-1, true));
         }
 
         /*mvaddstr(12,50,"Z - Toggle Squad Stance");
