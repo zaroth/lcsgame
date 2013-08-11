@@ -288,7 +288,8 @@ void makecharacter(void) {
 
     char first[3][80];
     char last[80];
-    char gender = newcr->gender_liberal = newcr->gender_conservative = GENDER_FEMALE;
+    bool male = LCSrandom(2); // whether or not starting gender is male
+    char gender = newcr->gender_liberal = newcr->gender_conservative = (male ? GENDER_MALE : GENDER_FEMALE);
     firstname(first[0], GENDER_NEUTRAL);
     firstname(first[1], GENDER_MALE);
     firstname(first[2], GENDER_FEMALE);
@@ -386,9 +387,11 @@ void makecharacter(void) {
         }
 
         if(c == 'c') {
-            if(newcr->gender_conservative == GENDER_FEMALE)
+            if((newcr->gender_conservative == GENDER_FEMALE && !male) ||
+                    (newcr->gender_conservative == GENDER_NEUTRAL && male))
                 newcr->gender_conservative = GENDER_MALE;
-            else if(newcr->gender_conservative == GENDER_MALE)
+            else if((newcr->gender_conservative == GENDER_MALE && !male) ||
+                    (newcr->gender_conservative == GENDER_FEMALE && male))
                 newcr->gender_conservative = GENDER_NEUTRAL;
             else
                 newcr->gender_conservative = GENDER_FEMALE;
@@ -1363,7 +1366,7 @@ void makecharacter(void) {
 
     pool.push_back(newcr);
 
-    make_world();
+    make_world(hasmaps);
 
     squadst *newsq = new squadst;
     newsq->id = 0;
