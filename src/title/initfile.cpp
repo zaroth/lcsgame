@@ -40,9 +40,6 @@ void setconfigoption(string name, string value) {
     } else if(name == "autosave") {
         if((value == "off") or (value == "0") or (value == "false") or (value == "no"))
             autosave = false;
-    } else if(name == "random") {
-        if((value == "on") or (value == "1") or (value == "true") or (value == "yes"))
-            morerandom = true;
     }
 }
 
