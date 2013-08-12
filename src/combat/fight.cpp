@@ -1969,6 +1969,7 @@ void attack(Creature &a, Creature &t, char mistake, char &actual, bool force_mel
             goodguyattack = !goodguyattack;
             char actual_dummy;
             attack(t, a, 0, actual_dummy, true);
+            goodguyattack = !goodguyattack;
         } else {
             if(sneak_attack) {
                 strcpy(str, t.name);
