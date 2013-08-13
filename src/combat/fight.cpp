@@ -3059,11 +3059,21 @@ char incapacitated(Creature &a, char noncombat, char &printed) {
                 break;
 
             case 35:
-                if(a.type == CREATURE_TEENAGER ||
-                        a.type == CREATURE_WORKER_FACTORY_CHILD)
+                if(a.age < 20 && !a.animalgloss)
                     addstr(" cries \"Mommy!\"");
-                else
-                    addstr(" murmurs \"What about my children?\"");
+                else switch(a.type) {
+                    case CREATURE_GENETIC:
+                        addstr(" murmurs \"What about my offspring?\"");
+                        break;
+
+                    case CREATURE_GUARDDOG:
+                        addstr(" murmurs \"What about my puppies?\"");
+                        break;
+
+                    default:
+                        addstr(" murmurs \"What about my children?\"");
+                        break;
+                    }
 
                 break;
 

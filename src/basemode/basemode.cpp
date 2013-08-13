@@ -830,58 +830,8 @@ void mode_base(void) {
                 move(7, 5);
                 addstr("Time passes...", gamelog);
                 move(9, 12);
-
-                switch(month) {
-                case 1:
-                    addstr("Jan", gamelog);
-                    break;
-
-                case 2:
-                    addstr("Feb", gamelog);
-                    break;
-
-                case 3:
-                    addstr("Mar", gamelog);
-                    break;
-
-                case 4:
-                    addstr("Apr", gamelog);
-                    break;
-
-                case 5:
-                    addstr("May", gamelog);
-                    break;
-
-                case 6:
-                    addstr("Jun", gamelog);
-                    break;
-
-                case 7:
-                    addstr("Jul", gamelog);
-                    break;
-
-                case 8:
-                    addstr("Aug", gamelog);
-                    break;
-
-                case 9:
-                    addstr("Sep", gamelog);
-                    break;
-
-                case 10:
-                    addstr("Oct", gamelog);
-                    break;
-
-                case 11:
-                    addstr("Nov", gamelog);
-                    break;
-
-                case 12:
-                    addstr("Dec", gamelog);
-                    break;
-                }
-
-                addstr(". ", gamelog);
+                addstr(getmonth(month, true), gamelog);
+                addstr(" ", gamelog);
                 move(9, 17);
                 itoa(day, num, 10);
                 addstr(num, gamelog);

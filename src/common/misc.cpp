@@ -417,12 +417,12 @@ void plate(char *str) {
     }
 }
 
-/* pick a random state */
+/* pick a random state, or give the name of the specified state */
 const char *statename(int i) {
-    if(i < 0)
+    if(i < 0 || i >= 50)
         i = LCSrandom(50);
 
-    switch(LCSrandom(50)) {
+    switch(i) {
     case 0:
         return "Alabama";
 

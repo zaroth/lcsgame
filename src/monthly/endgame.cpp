@@ -688,7 +688,7 @@ char ratify(int level, int lawview, int view, char congress, char canseethings) 
                     move(5 + s - 34, 76);
             }
 
-            if(vote == level && s != 44) {
+            if(vote == level) {
                 yesstate++;
 
                 if(canseethings)
