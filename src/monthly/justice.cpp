@@ -33,14 +33,12 @@ This file is part of Liberal Crime Squad.                                       
 void trial(Creature &g) {
     // If their old base is no longer under LCS control, wander back to the
     // homeless shelter instead.
-    if(location[g.base]->renting < 0) {
-        for(int i = 0; i < location.size(); ++i) {
-            if(location[i]->type == SITE_RESIDENTIAL_SHELTER) {
+    if(location[g.base]->renting < 0)
+        for(int i = 0; i < location.size(); i++)
+            if(location[i]->type == SITE_RESIDENTIAL_SHELTER && (!multipleCityMode || location[i]->city == location[g.base]->city)) {
                 g.base = i;
                 break;
             }
-        }
-    }
 
     g.location = g.base;
     bool breaker[LAWFLAGNUM] = {0};
@@ -81,7 +79,7 @@ void trial(Creature &g) {
     int maxsleeperskill = 0;
 
     for(int p = 0; p < pool.size(); p++) {
-        if(pool[p]->alive && (pool[p]->flag & CREATUREFLAG_SLEEPER)) {
+        if(pool[p]->alive && (pool[p]->flag & CREATUREFLAG_SLEEPER) && location[pool[p]->location]->city == location[g.location]->city) {
             if(pool[p]->type == CREATURE_JUDGE_CONSERVATIVE ||
                     pool[p]->type == CREATURE_JUDGE_LIBERAL) {
                 if(pool[p]->infiltration * 100 >= LCSrandom(100))
@@ -108,6 +106,7 @@ void trial(Creature &g) {
         addstr("Sleeper ", gamelog);
         addstr(sleeperjudge->name, gamelog);
         addstr(" reads the charges, trying to hide a smile:", gamelog);
+        g.confessions = 0; //Made sleeper judge prevent these lunatics from testifying
     } else
         addstr("The judge reads the charges:", gamelog);
 
@@ -483,7 +482,7 @@ void trial(Creature &g) {
 
     gamelog.newline();
 
-    if(g.confessions && !sleeperjudge) {     //Made sleeper judge prevent these lunatics from testifying
+    if(g.confessions) {
         move(y += 2, 1);
 
         if(g.confessions > 1) {

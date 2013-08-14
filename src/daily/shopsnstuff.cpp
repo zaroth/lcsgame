@@ -136,10 +136,9 @@ void dealership(int loc) {
 
     int partysize = 0;
 
-    for(int p = 0; p < 6; p++) {
+    for(int p = 0; p < 6; p++)
         if(activesquad->squad[p] != NULL)
             partysize++;
-    }
 
     do {
         erase();
@@ -147,24 +146,19 @@ void dealership(int loc) {
         locheader();
         printparty();
 
-        bool autoconvict = 0;
         Creature *sleepercarsalesman = NULL;
-        int maxsleeperskill = 0;
 
-        for(int p = 0; p < pool.size(); p++) {
-            if(pool[p]->alive && (pool[p]->flag & CREATUREFLAG_SLEEPER)) {
-                if(pool[p]->type == CREATURE_CARSALESMAN)
-                    sleepercarsalesman = pool[p];
-            }
-        }
+        for(int p = 0; p < pool.size(); p++)
+            if(pool[p]->alive && (pool[p]->flag & CREATUREFLAG_SLEEPER) &&
+                    pool[p]->type == CREATURE_CARSALESMAN && location[pool[p]->location]->city == location[loc]->city)
+                sleepercarsalesman = pool[p];
 
         Vehicle *car_to_sell = 0;
         int price = 0;
 
-        for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
+        for(int v = (int)vehicle.size() - 1; v >= 0; v--)
             if(vehicle[v]->id() == activesquad->squad[buyer]->carid)
                 car_to_sell = vehicle[v];
-        }
 
         if(!car_to_sell)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -227,7 +221,6 @@ void dealership(int loc) {
         int c = getch();
         translategetch(c);
 
-
         // Leave
         if(c == 10 || c == ESC)
             break;
@@ -237,12 +230,11 @@ void dealership(int loc) {
             ledger.add_funds(price, INCOME_CARS);
             delete car_to_sell;
 
-            for(int v = (int)vehicle.size() - 1; v >= 0; v--) {
+            for(int v = (int)vehicle.size() - 1; v >= 0; v--)
                 if(vehicle[v] == car_to_sell) {
                     vehicle.erase(vehicle.begin() + v);
                     break;
                 }
-            }
         }
 
         // Get a car
@@ -252,31 +244,19 @@ void dealership(int loc) {
             vector<int> availablevehicle;
             vector<string> vehicleoption;
 
-            for (int i = 0; i < vehicletype.size(); ++i) {
-                if      (vehicletype[i]->availableatshop() && (sleepercarsalesman)) {
+            for (int i = 0; i < vehicletype.size(); ++i)
+                if (vehicletype[i]->availableatshop()) {
                     availablevehicle.push_back(i);
-                    vehicleoption.push_back(vehicletype[i]->longname() + " ($" + tostring(vehicletype[i]->sleeperprice()) + ")");
-                } else if (vehicletype[i]->availableatshop()) {
-                    availablevehicle.push_back(i);
-                    vehicleoption.push_back(vehicletype[i]->longname() + " ($" + tostring(vehicletype[i]->price()) + ")");
+                    vehicleoption.push_back(vehicletype[i]->longname() + " ($" +
+                                            tostring(sleepercarsalesman ? vehicletype[i]->sleeperprice() : vehicletype[i]->price()) + ")");
                 }
-            }
 
             do {
                 carchoice = choiceprompt("Choose a vehicle", "", vehicleoption, "Vehicle",
                                          true, "We don't need a Conservative car");
 
-                if (carchoice != -1
-                        && (sleepercarsalesman)) {
-                    if (vehicletype[availablevehicle[carchoice]]->sleeperprice() > ledger.get_funds()) {
-                        set_color(COLOR_RED, COLOR_BLACK, 0);
-                        move(1, 1);
-                        addstr("You don't have enough money!");
-                        getch();
-                    } else
-                        break;
-                } else if (carchoice != -1
-                           && vehicletype[availablevehicle[carchoice]]->price() > ledger.get_funds()) {
+                if (carchoice != -1 && (sleepercarsalesman ? vehicletype[availablevehicle[carchoice]]->sleeperprice() :
+                                        vehicletype[availablevehicle[carchoice]]->price()) > ledger.get_funds()) {
                     set_color(COLOR_RED, COLOR_BLACK, 0);
                     move(1, 1);
                     addstr("You don't have enough money!");
@@ -306,10 +286,7 @@ void dealership(int loc) {
             activesquad->squad[buyer]->pref_carid = v->id();
             vehicle.push_back(v);
 
-            if(sleepercarsalesman)
-                ledger.subtract_funds(v->sleeperprice(), EXPENSE_CARS);
-            else
-                ledger.subtract_funds(v->price(), EXPENSE_CARS);
+            ledger.subtract_funds((sleepercarsalesman ? v->sleeperprice() : v->price()), EXPENSE_CARS);
         }
 
         // Reduce heat
@@ -326,16 +303,15 @@ void dealership(int loc) {
         if(c == '0')
             party_status = -1;
 
-        if(c >= '1' && c <= '6' && activesquad != NULL) {
+        if(c >= '1' && c <= '6' && activesquad != NULL)
             if(activesquad->squad[c - '1'] != NULL) {
                 if(party_status == c - '1')
                     fullstatus(party_status);
                 else
                     party_status = c - '1';
             }
-        }
 
-    } while(1);
+    } while (1);
 }
 
 
