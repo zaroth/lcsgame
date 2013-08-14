@@ -260,9 +260,7 @@ int testsquadclear(squadst &thissquad, int obase) {
         }
 
         //RETURN ALL LOOT ITEMS TO BASE
-        for(int l = 0; l < thissquad.loot.size(); l++)
-            location[obase]->loot.push_back(thissquad.loot[l]);
-
+        location[obase]->getloot(thissquad.loot);
         thissquad.loot.clear();
         return 1;
     }
@@ -426,18 +424,8 @@ void cleangonesquads(void) {
         }
         //OTHERWISE YOU CAN TAKE ITS MONEY (and other gear)
         else {
-            for(int l = squad[sq]->loot.size() - 1; l >= 0; l--) {
-                if(squad[sq]->loot[l]->is_money()) {
-                    Money *m = static_cast<Money *>(squad[sq]->loot[l]); //cast -XML
-                    ledger.add_funds(m->get_amount(), INCOME_THIEVERY);
-                    delete squad[sq]->loot[l];
-                    squad[sq]->loot.erase(squad[sq]->loot.begin() + l);
-                } else {
-                    // Empty squad inventory into base inventory
-                    location[squad[sq]->squad[0]->base]->loot.push_back(squad[sq]->loot[l]);
-                    squad[sq]->loot.erase(squad[sq]->loot.begin() + l);
-                }
-            }
+            location[squad[sq]->squad[0]->base]->getloot(squad[sq]->loot);
+            squad[sq]->loot.clear();
         }
     }
 }

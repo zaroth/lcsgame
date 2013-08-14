@@ -2668,9 +2668,7 @@ void escapesiege(char won) {
 
 //dump retrieved loot in homeless shelter - is there anywhere better to put it?
         if (activesquad && homes != -1) {
-            for(int l = 0; l < activesquad->loot.size(); l++)
-                location[homes]->loot.push_back(activesquad->loot[l]);
-
+            location[homes]->getloot(activesquad->loot);
             activesquad->loot.clear();
         }
 
