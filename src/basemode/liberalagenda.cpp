@@ -84,7 +84,12 @@ char liberalagenda(char won) {
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
 
             move(6, 0);
-            addstr("Vice President: ");
+
+            if(won != -1)
+                addstr("Vice President: ");
+            else
+                addstr("Chancellor: ");
+
             move(6, 25);
             addstr(execname[EXEC_VP]);
 
@@ -451,8 +456,10 @@ char liberalagenda(char won) {
                         addstr("Women are nominally equal under law.");
                     else if(law[l] == 1)
                         addstr("Women have substantial recourse against discrimination.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Gender equality is universally respected.");
+                    else
+                        addstr("Binary gender identities no longer exist, and gender segregation has ended.");
 
                     break;
 
@@ -467,8 +474,10 @@ char liberalagenda(char won) {
                         addstr("Pervasive racial inequality exists.");
                     else if(law[l] == 1)
                         addstr("Affirmative action is in place to counteract discrimination.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Racial equality is guaranteed and vigorously enforced.");
+                    else
+                        addstr("The very idea of \"race\" has been universally discarded as pseudoscience.");
 
                     break;
 
@@ -483,8 +492,10 @@ char liberalagenda(char won) {
                         addstr("Recreational drugs are prohibited unless medically prescribed.");
                     else if(law[l] == 1)
                         addstr("Marijuana is regulated and taxed.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Recreational drugs are regulated and taxed.");
+                    else
+                        addstr("The government distributes free recreational drugs to anyone who wants them.");
 
                     break;
 
@@ -499,8 +510,10 @@ char liberalagenda(char won) {
                         addstr("Great expense is taken to slow immigration, without success.");
                     else if(law[l] == 1)
                         addstr("The government works to accommodate potential immigrants.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Immigration is unregulated.");
+                    else
+                        addstr("There are open borders, and no distinctions between citizens and non-citizens.");
 
                     break;
 
@@ -515,8 +528,10 @@ char liberalagenda(char won) {
                         addstr("Moderate campaign finance reform is implemented.");
                     else if(law[l] == 1)
                         addstr("Election financing is transparent and well-regulated.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Election expenses are publicly funded, and voting is by ranked list.");
+                    else
+                        addstr("There is proportional representation, and over a dozen major political parties.");
 
                     break;
 
@@ -531,8 +546,10 @@ char liberalagenda(char won) {
                         addstr("Military spending is growing each year.");
                     else if(law[l] == 1)
                         addstr("Military strength is not a major priority.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("The military has been weakened significantly.");
+                    else
+                        addstr("The military has been abolished, and the entire world is at peace.");
 
                     break;
 
@@ -547,8 +564,10 @@ char liberalagenda(char won) {
                         addstr("Torture allegations still occasionally crop up.");
                     else if(law[l] == 1)
                         addstr("The government strongly enforces a ban on torture.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("The country is respected as an international leader on Moral Interrogation Practices.");
+                    else
+                        addstr("Terrorism ended after the government formally apologized to terrorist leaders.");
 
                     break;
 
@@ -563,8 +582,10 @@ char liberalagenda(char won) {
                         addstr("Prisoners receive basic rights and services.");
                     else if(law[l] == 1)
                         addstr("The prisons are regulated to protect prisoners' rights.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("The prisons are targeted at rehabilitation, rather than punishment.");
+                    else
+                        addstr("Instead of prison, criminals voluntarily attend free support groups.");
 
                     break;
 
@@ -579,8 +600,10 @@ char liberalagenda(char won) {
                         addstr("Taxes are moderate, and the code has loop-holes.");
                     else if(law[l] == 1)
                         addstr("Taxes are very high and steeply graded.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Rich people are virtually unheard of, due to taxation.");
+                    else
+                        addstr("Money no longer exists, everything is free, and everyone enjoys lives of luxury.");
 
                     break;
 
@@ -595,8 +618,10 @@ char liberalagenda(char won) {
                         addstr("Abortion is limited to early pregnancy.");
                     else if(law[l] == 1)
                         addstr("Abortion is mostly legal, but discouraged by law.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Abortion is legal.");
+                    else
+                        addstr("Free abortions are easily available at any time during pregnancy.");
 
                     break;
 
@@ -611,8 +636,10 @@ char liberalagenda(char won) {
                         addstr("Animal research is regulated with a system of licenses and certificates.");
                     else if(law[l] == 1)
                         addstr("Animal research is strictly regulated by purpose and suffering caused.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Animals are people, too.");
+                    else
+                        addstr("All species of life have equal rights as people, even bacteria.");
 
                     break;
 
@@ -627,8 +654,10 @@ char liberalagenda(char won) {
                         addstr("Law enforcement is regulated to prevent extreme misconduct.");
                     else if(law[l] == 1)
                         addstr("Law enforcement has heavy oversight and freedom-of-information requirements.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("All law enforcement positions are subject to election and recall.");
+                    else
+                        addstr("With no police, criminals follow the honor system and turn themselves in.");
 
                     break;
 
@@ -643,8 +672,10 @@ char liberalagenda(char won) {
                         addstr("Basic safeguards for medical and financial privacy are in place.");
                     else if(law[l] == 1)
                         addstr("All areas of privacy are protected with strong safeguards.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Individual privacy is sacred.");
+                    else
+                        addstr("All large organizations are prohibited from keeping any data about anyone.");
 
                     break;
 
@@ -659,8 +690,10 @@ char liberalagenda(char won) {
                         addstr("The death penalty is in effect but under scrutiny.");
                     else if(law[l] == 1)
                         addstr("The death penalty is not permitted in many circumstances.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("The death penalty is considered barbaric and never practiced.");
+                    else
+                        addstr("The death penalty, like all other harsh punishments, has been abolished.");
 
                     break;
 
@@ -675,8 +708,10 @@ char liberalagenda(char won) {
                         addstr("Nuclear power is often an energy source.");
                     else if(law[l] == 1)
                         addstr("Nuclear power is intensely regulated and seldom used.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Nuclear power is illegal.");
+                    else
+                        addstr("A global ban on nuclear power and nuclear weapons is enforced by UN inspectors.");
 
                     break;
 
@@ -691,8 +726,10 @@ char liberalagenda(char won) {
                         addstr("Industry is subject to moderate pollution regulations.");
                     else if(law[l] == 1)
                         addstr("Industry is subject to strict pollution regulations.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Industry is subject to zero-tolerance pollution regulations.");
+                    else
+                        addstr("Pollution is unheard of, and nature has reclaimed much of the land.");
 
                     break;
 
@@ -707,8 +744,10 @@ char liberalagenda(char won) {
                         addstr("Workers still require some benefits.");
                     else if(law[l] == 1)
                         addstr("Workers are fairly compensated and have benefits.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("There are universal workers' rights and a high guaranteed minimum income.");
+                    else
+                        addstr("Wage slavery has been abolished, and robots have been built to do all the work.");
 
                     break;
 
@@ -723,8 +762,10 @@ char liberalagenda(char won) {
                         addstr("Homosexuals are grudgingly tolerated but have few equal rights.");
                     else if(law[l] == 1)
                         addstr("Homosexuals have many rights shared by heterosexuals.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Homosexuals have equal rights.");
+                    else
+                        addstr("All sexual orientations are accepted, and most people are polyamorous.");
 
                     break;
 
@@ -739,8 +780,10 @@ char liberalagenda(char won) {
                         addstr("Corporations are moderately regulated, although wages are still unfair.");
                     else if(law[l] == 1)
                         addstr("Corporations are stiffly regulated, and executives are fairly compensated.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Corporations are subject to intense regulation, and there is a maximum wage law.");
+                    else
+                        addstr("Corporations have been abolished, along with the rest of capitalism.");
 
                     break;
 
@@ -755,8 +798,10 @@ char liberalagenda(char won) {
                         addstr("Free speech is tolerated.");
                     else if(law[l] == 1)
                         addstr("Free speech is encouraged.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Free speech is universally supported.");
+                    else
+                        addstr("Free speech is sacrosanct and diverse points of view are celebrated.");
 
                     break;
 
@@ -771,8 +816,10 @@ char liberalagenda(char won) {
                         addstr("Flag-burning is a misdemeanor.");
                     else if(law[l] == 1)
                         addstr("Flag-burning is legal but stigmatized.");
-                    else
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
                         addstr("Flag-burning is legal.");
+                    else
+                        addstr("Flag-burning is traditionally done on July 4th to celebrate freedom.");
 
                     break;
 
@@ -787,8 +834,10 @@ char liberalagenda(char won) {
                         addstr("A comprehensive ban on military-style weapons is in effect.");
                     else if(law[l] == 1)
                         addstr("Most guns cannot be sold to anyone outside of law enforcement.");
+                    else if(won != 1 || wincondition != WINCONDITION_ELITE)
+                        addstr("It is illegal to buy, sell, or carry a gun in public.");  //XXX: Should guns be legal in private, too? -- LK
                     else
-                        addstr("It is illegal to buy, sell, or carry a gun in public."); //XXX: Should guns be legal in private, too? -- LK
+                        addstr("All gun manufacturers have been shut down and all existing guns destroyed.");
 
                     break;
                 }

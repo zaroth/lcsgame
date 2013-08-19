@@ -34,11 +34,7 @@ void trial(Creature &g) {
     // If their old base is no longer under LCS control, wander back to the
     // homeless shelter instead.
     if(location[g.base]->renting < 0)
-        for(int i = 0; i < location.size(); i++)
-            if(location[i]->type == SITE_RESIDENTIAL_SHELTER && (!multipleCityMode || location[i]->city == location[g.base]->city)) {
-                g.base = i;
-                break;
-            }
+        g.base = find_homeless_shelter(g);
 
     g.location = g.base;
     bool breaker[LAWFLAGNUM] = {0};
@@ -926,14 +922,7 @@ void trial(Creature &g) {
                 refresh();
                 getch();
 
-                int ps = -1;
-
-                for(int l = 0; l < location.size(); l++) {
-                    if(location[l]->type == SITE_GOVERNMENT_COURTHOUSE)
-                        ps = l;
-                }
-
-                g.location = ps;
+                g.location = find_courthouse(g);
                 keeplawflags = true;
             }
             //NO RE-TRY
@@ -1503,14 +1492,8 @@ char prison(Creature &g) {
 
                 // If their old base is no longer under LCS control, wander back to the
                 // homeless shelter instead.
-                if(location[g.base]->renting < 0) {
-                    for(int i = 0; i < location.size(); ++i) {
-                        if(location[i]->type == SITE_RESIDENTIAL_SHELTER) {
-                            g.base = i;
-                            break;
-                        }
-                    }
-                }
+                if(location[g.base]->renting < 0)
+                    g.base = find_homeless_shelter(g);
 
                 g.location = g.base;
                 showed = 1;

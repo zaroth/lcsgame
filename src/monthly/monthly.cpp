@@ -490,11 +490,7 @@ void passmonth(char &clearformess, char canseethings) {
                 refresh();
                 getch();
 
-                for(int l = 0; l < location.size(); l++) {
-                    if(location[l]->type == SITE_GOVERNMENT_COURTHOUSE)
-                        pool[p]->location = l;
-                }
-
+                pool[p]->location = find_courthouse(*pool[p]);
                 Armor prisoner(*armortype[getarmortype("ARMOR_PRISONER")]);
                 pool[p]->give_armor(prisoner, NULL);
             }

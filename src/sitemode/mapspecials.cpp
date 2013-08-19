@@ -903,7 +903,7 @@ void special_courthouse_lockup(void) {
 
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(16, 1);
-        addstr("You see prisoners in the Court House jail.", gamelog);
+        addstr("You see prisoners in the Courthouse jail.", gamelog);
         gamelog.newline();
         move(17, 1);
         addstr("Free them? (Yes or No)");

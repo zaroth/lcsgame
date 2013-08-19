@@ -157,6 +157,7 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
     // Adjust power for super sleepers
     switch(cr.type) {
     case CREATURE_CORPORATE_CEO:
+    case CREATURE_POLITICIAN:
     case CREATURE_SCIENTIST_EMINENT:
         power *= 20;
         break;
@@ -177,13 +178,6 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
     default:
         power *= 2;
         break;
-    }
-
-    int homes = -1; // find homeless shelter
-
-    for(int l = 0; l < location.size(); l++) {
-        if(location[l]->type == SITE_RESIDENTIAL_SHELTER)
-            homes = l;
     }
 
     power = static_cast<int>(power * cr.infiltration);
@@ -333,11 +327,28 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
     case CREATURE_HIPPIE: // too liberal to be a proper sleeper
     case CREATURE_WORKER_FACTORY_UNION: // same
     case CREATURE_JUDGE_LIBERAL: // more again
-    case CREATURE_POLITICALACTIVIST: // ??!?!? impressive getting an LCS Member sleeper, but no effect
     case CREATURE_MUTANT:
         return;
 
     /* Miscellaneous block -- includes everyone else */
+    case CREATURE_POLITICIAN: {
+        int a = LCSrandom(VIEWNUM - 5);
+        int b = LCSrandom(VIEWNUM - 5);
+
+        while(b == a)
+            b = LCSrandom(VIEWNUM - 5);
+
+        int c = LCSrandom(VIEWNUM - 5);
+
+        while(c == a || c == b)
+            c = LCSrandom(VIEWNUM - 5);
+
+        libpower[a] += power;
+        libpower[b] += power;
+        libpower[c] += power;
+    }
+    break;
+
     case CREATURE_FIREFIGHTER:
         if(law[LAW_FREESPEECH] == -2) {
             libpower[VIEW_FREESPEECH] += power;
@@ -356,6 +367,8 @@ void sleeper_influence(Creature &cr, char &clearformess, char canseethings, int 
 **
 **********************************/
 void sleeper_spy(Creature &cr, char &clearformess, char canseethings, int *libpower) {
+    int homes = find_homeless_shelter(cr);
+
     if(LCSrandom(100) > 100 * cr.infiltration) {
         cr.juice -= 1;
 
@@ -374,13 +387,9 @@ void sleeper_spy(Creature &cr, char &clearformess, char canseethings, int *libpo
             refresh();
             getch();
 
-            int hs;
-
-            for(hs = 0; location[hs]->type != SITE_RESIDENTIAL_SHELTER; hs++);
-
             removesquadinfo(cr);
-            cr.location = hs;
-            cr.base = hs;
+            cr.location = homes;
+            cr.base = homes;
             cr.drop_weapons_and_clips(NULL);
             cr.activity.type = ACTIVITY_NONE;
             cr.flag &= ~CREATUREFLAG_SLEEPER;
@@ -399,18 +408,12 @@ void sleeper_spy(Creature &cr, char &clearformess, char canseethings, int *libpo
 
     location[cr.base]->mapped = 1;
 
-    int homes;
-
-    for(homes = 0; homes < location.size(); homes++) {
-        if(location[homes]->type == SITE_RESIDENTIAL_SHELTER)
-            break;
-    }
-
     bool pause = false;
 
     switch(cr.type) {
     case CREATURE_SECRET_SERVICE:
     case CREATURE_AGENT:
+    case CREATURE_POLITICIAN:
 
         // Agents can leak intelligence files to you
         if(!location[homes]->siege.siege && canseethings) {
@@ -683,6 +686,7 @@ void sleeper_embezzle(Creature &cr, char &clearformess, char canseethings, int *
     case CREATURE_SCIENTIST_EMINENT:
     case CREATURE_CORPORATE_MANAGER:
     case CREATURE_BANK_MANAGER:
+    case CREATURE_POLITICIAN:
         income = static_cast<int>(5000 * cr.infiltration);
         break;
 

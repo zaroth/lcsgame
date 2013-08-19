@@ -1087,7 +1087,7 @@ void advanceday(char &clearformess, char canseethings) {
                 pool[p]->dating = date[d]->timeleft;
 
                 if(date[d]->timeleft == 0) {
-                    int hs = find_site_index_in_city(SITE_RESIDENTIAL_SHELTER, date[d]->city);
+                    int hs = find_homeless_shelter(date[d]->city);
 
                     if(location[pool[p]->base]->siege.siege)
                         pool[p]->base = hs;

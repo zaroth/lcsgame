@@ -30,136 +30,135 @@ the bottom of includes.h in the top src folder.
 #include <externs.h>
 
 void getactivity(char *str, activityst &act) {
-    strcpy(str, "");
-
     switch(act.type) {
-    case ACTIVITY_HOSTAGETENDING: {
-        strcat(str, "Tending to ");
-        int pl = getpoolcreature(act.arg);
+    case ACTIVITY_HOSTAGETENDING:
+        strcpy(str, "Tending to ");
+        {
+            int pl = getpoolcreature(act.arg);
 
-        if(pl != -1)
-            strcat(str, pool[pl]->name);
-
+            if(pl != -1)
+                strcat(str, pool[pl]->name);
+            else
+                strcat(str, "a bug");
+        }
         break;
-    }
 
     case ACTIVITY_RECRUITING:
-        strcat(str, "Recruiting");
+        strcpy(str, "Recruiting");
         break;
 
     case ACTIVITY_REPAIR_ARMOR:
-        strcat(str, "Repairing Clothing");
+        strcpy(str, "Repairing Clothing");
         break;
 
     case ACTIVITY_WHEELCHAIR:
-        strcat(str, "Procuring a Wheelchair");
+        strcpy(str, "Procuring a Wheelchair");
         break;
 
     case ACTIVITY_STEALCARS:
-        strcat(str, "Stealing a Car");
+        strcpy(str, "Stealing a Car");
         break;
 
     case ACTIVITY_POLLS:
-        strcat(str, "Gathering Opinion Info");
+        strcpy(str, "Gathering Opinion Info");
         break;
 
-    case ACTIVITY_MAKE_ARMOR: {
-        strcat(str, "Making ");
+    case ACTIVITY_MAKE_ARMOR:
+        strcpy(str, "Making ");
         strcat(str, armortype[act.arg]->get_shortname().c_str());
         break;
-    }
 
     case ACTIVITY_TROUBLE:
-        strcat(str, "Causing Trouble");
+        strcpy(str, "Causing Trouble");
         break;
 
     case ACTIVITY_PROSTITUTION:
-        strcat(str, "Prostituting");
+        strcpy(str, "Prostituting");
         break;
 
     case ACTIVITY_COMMUNITYSERVICE:
-        strcat(str, "Volunteering");
+        strcpy(str, "Volunteering");
         break;
 
     case ACTIVITY_GRAFFITI:
-        strcat(str, "Making Graffiti");
+        strcpy(str, "Making Graffiti");
         break;
 
     case ACTIVITY_CCFRAUD:
-        strcat(str, "Credit Card Fraud");
+        strcpy(str, "Credit Card Fraud");
         break;
 
     case ACTIVITY_DOS_RACKET:
-        strcat(str, "Extorting Websites");
+        strcpy(str, "Extorting Websites");
         break;
 
     case ACTIVITY_DOS_ATTACKS:
-        strcat(str, "Attacking Websites");
+        strcpy(str, "Attacking Websites");
         break;
 
     case ACTIVITY_HACKING:
-        strcat(str, "Hacking Networks");
+        strcpy(str, "Hacking Networks");
         break;
 
     case ACTIVITY_SELL_TSHIRTS:
-        strcat(str, "Selling T-Shirts");
+        strcpy(str, "Selling T-Shirts");
         break;
 
     case ACTIVITY_SELL_ART:
-        strcat(str, "Selling Art");
+        strcpy(str, "Selling Art");
         break;
 
     case ACTIVITY_TEACH_POLITICS:
-        strcat(str, "Teaching Politics");
+        strcpy(str, "Teaching Politics");
         break;
 
     case ACTIVITY_TEACH_FIGHTING:
-        strcat(str, "Teaching Fighting");
+        strcpy(str, "Teaching Fighting");
         break;
 
     case ACTIVITY_TEACH_COVERT:
-        strcat(str, "Teaching Covert Ops");
+        strcpy(str, "Teaching Covert Ops");
         break;
 
     case ACTIVITY_SELL_MUSIC:
-        strcat(str, "Selling Music");
+        strcpy(str, "Selling Music");
         break;
 
     case ACTIVITY_BURY:
-        strcat(str, "Disposing of Bodies");
+        strcpy(str, "Disposing of Bodies");
         break;
 
     case ACTIVITY_DONATIONS:
-        strcat(str, "Soliciting Donations");
+        strcpy(str, "Soliciting Donations");
         break;
 
     case ACTIVITY_SELL_DRUGS:
-        strcat(str, "Selling Brownies");
+        strcpy(str, "Selling Brownies");
         break;
 
     case ACTIVITY_VISIT:
-        strcat(str, "Going to ");
+        strcpy(str, "Going to ");
         strcat(str, location[act.arg]->getname(!location[act.arg]->is_city()).c_str());
         break;
 
     case ACTIVITY_HEAL:
-        strcat(str, "Tending to Injuries");
+        strcpy(str, "Tending to Injuries");
         break;
 
     case ACTIVITY_NONE:
-        strcat(str, "Laying Low");
+        strcpy(str, "Laying Low");
         break;
 
     case ACTIVITY_WRITE_LETTERS:
-        strcat(str, "Writing letters");
+        strcpy(str, "Writing letters");
         break;
 
     case ACTIVITY_WRITE_GUARDIAN:
-        strcat(str, "Writing news");
+        strcpy(str, "Writing news");
         break;
 
     case ACTIVITY_CLINIC:
-        strcat(str, "Going to Free CLINIC");
+        strcpy(str, "Going to Free CLINIC");
         break;
 
     case ACTIVITY_STUDY_DEBATING:
@@ -179,86 +178,82 @@ void getactivity(char *str, activityst &act) {
     case ACTIVITY_STUDY_TEACHING:
     case ACTIVITY_STUDY_WRITING:
     case ACTIVITY_STUDY_LOCKSMITHING:
-        strcat(str, "Attending Classes");
+        strcpy(str, "Attending Classes");
         break;
 
     case ACTIVITY_SLEEPER_LIBERAL:
-        strcat(str, "Promoting Liberalism");
+        strcpy(str, "Promoting Liberalism");
         break;
 
     case ACTIVITY_SLEEPER_CONSERVATIVE:
-        strcat(str, "Spouting Conservatism");
+        strcpy(str, "Spouting Conservatism");
         break;
 
     case ACTIVITY_SLEEPER_SPY:
-        strcat(str, "Snooping Around");
+        strcpy(str, "Snooping Around");
         break;
 
     case ACTIVITY_SLEEPER_RECRUIT:
-        strcat(str, "Recruiting Sleepers");
+        strcpy(str, "Recruiting Sleepers");
         break;
 
     case ACTIVITY_SLEEPER_JOINLCS:
-        strcat(str, "Quitting Job");
+        strcpy(str, "Quitting Job");
         break;
 
     case ACTIVITY_SLEEPER_SCANDAL:
-        strcat(str, "Creating a Scandal");
+        strcpy(str, "Creating a Scandal");
         break;
 
     case ACTIVITY_SLEEPER_EMBEZZLE:
-        strcat(str, "Embezzling Funds");
+        strcpy(str, "Embezzling Funds");
         break;
 
     case ACTIVITY_SLEEPER_STEAL:
-        strcat(str, "Stealing Equipment");
+        strcpy(str, "Stealing Equipment");
         break;
 
     default:
-        strcat(str, "Reporting Bugs to the Dev Team");
+        strcpy(str, "Reporting Bugs to the Dev Team");
         break;
     }
 }
 
-
 void getrecruitcreature(char *str, int type) {
-    strcpy(str, "");
-
     switch(type) {
     case CREATURE_BOUNCER:
-        strcat(str, "Club Security");
+        strcpy(str, "Club Security");
         break;
 
     case CREATURE_SECURITYGUARD:
-        strcat(str, "Security Guard");
+        strcpy(str, "Security Guard");
         break;
 
     case CREATURE_SCIENTIST_LABTECH:
-        strcat(str, "Lab Tech");
+        strcpy(str, "Lab Tech");
         break;
 
     case CREATURE_SCIENTIST_EMINENT:
-        strcat(str, "Eminent Scientist");
+        strcpy(str, "Eminent Scientist");
         break;
 
     case CREATURE_CORPORATE_MANAGER:
-        strcat(str, "Corporate Manager");
+        strcpy(str, "Corporate Manager");
         break;
 
     case CREATURE_CORPORATE_CEO:
-        strcat(str, "Corporate CEO");
+        strcpy(str, "Corporate CEO");
         break;
 
     case CREATURE_POLITICIAN:
-        strcat(str, "Politician");
+        strcpy(str, "Politician");
         break;
 
     case CREATURE_WORKER_SERVANT:
-        if(law[LAW_LABOR] == -2 &&
-                law[LAW_CORPORATE] == -2)
+        if(law[LAW_LABOR] == -2 && law[LAW_CORPORATE] == -2)
             strcpy(str, "Slave");
         else
-            strcat(str, "Servant");
+            strcpy(str, "Servant");
 
         break;
 
@@ -266,398 +261,399 @@ void getrecruitcreature(char *str, int type) {
         if(law[LAW_LABOR] == 2)
             strcpy(str, "Custodian");
         else
-            strcat(str, "Janitor");
+            strcpy(str, "Janitor");
 
         break;
 
     case CREATURE_WORKER_SWEATSHOP:
-        if(law[LAW_IMMIGRATION] == 2 &&
-                law[LAW_LABOR] == 2)
+        if(law[LAW_IMMIGRATION] == 2 && law[LAW_LABOR] == 2)
             strcpy(str, "Migrant Worker");
         else
-            strcat(str, "Sweatshop Worker");
+            strcpy(str, "Sweatshop Worker");
 
         break;
 
     case CREATURE_WORKER_FACTORY_NONUNION:
-        strcat(str, "Factory Worker");
+        strcpy(str, "Factory Worker");
         break;
 
     case CREATURE_WORKER_FACTORY_CHILD:
-        strcat(str, "Child Worker");
+        strcpy(str, "Child Worker");
         break;
 
     case CREATURE_WORKER_SECRETARY:
-        strcat(str, "Secretary");
+        strcpy(str, "Secretary");
         break;
 
     case CREATURE_WORKER_FACTORY_UNION:
-        strcat(str, "Factory Worker");
+        strcpy(str, "Factory Worker");
         break;
 
     case CREATURE_LANDLORD:
-        strcat(str, "Landlord");
+        strcpy(str, "Landlord");
         break;
 
     case CREATURE_COP:
-        strcat(str, "Police Officer");
+        strcpy(str, "Police Officer");
         break;
 
     case CREATURE_SWAT:
-        strcat(str, "SWAT Officer");
+        strcpy(str, "SWAT Officer");
         break;
 
     case CREATURE_DEATHSQUAD:
-        strcat(str, "DethSquad Officer");
+        strcpy(str, "DethSquad Officer");
         break;
 
     case CREATURE_GANGUNIT:
-        strcat(str, "Police Gang Unit");
+        strcpy(str, "Police Gang Unit");
         break;
 
     case CREATURE_FIREFIGHTER:
-        strcat(str, "Fire Fighter");
+        if(law[LAW_FREESPEECH] == -2)
+            strcpy(str, "Fireman");
+        else
+            strcpy(str, "Firefighter");
+
         break;
 
     case CREATURE_PRISONGUARD:
-        strcat(str, "Prison Guard");
+        strcpy(str, "Prison Guard");
         break;
 
     case CREATURE_EDUCATOR:
-        strcat(str, "Educator");
+        strcpy(str, "Educator");
         break;
 
     case CREATURE_MERC:
-        strcat(str, "Elite Security");
+        strcpy(str, "Elite Security");
         break;
 
     case CREATURE_HICK:
-        strcat(str, "Redneck");
+        strcpy(str, "Redneck");
         break;
 
     case CREATURE_SOLDIER:
-        strcat(str, "Soldier");
+        strcpy(str, "Soldier");
         break;
 
     case CREATURE_VETERAN:
-        strcat(str, "Veteran");
+        strcpy(str, "Veteran");
         break;
 
     case CREATURE_HARDENED_VETERAN:
-        strcat(str, "Hardened Veteran");
+        strcpy(str, "Hardened Veteran");
         break;
 
     case CREATURE_JUDGE_LIBERAL:
-        strcat(str, "Judge");
+        strcpy(str, "Liberal Judge");
         break;
 
     case CREATURE_JUDGE_CONSERVATIVE:
-        strcat(str, "Judge");
+        strcpy(str, "Hangin' Judge");
         break;
 
     case CREATURE_AGENT:
-        strcat(str, "Agent");
+        strcpy(str, "Agent");
         break;
 
     case CREATURE_RADIOPERSONALITY:
-        strcat(str, "Radio Personality");
+        strcpy(str, "Radio Personality");
         break;
 
     case CREATURE_NEWSANCHOR:
-        strcat(str, "Cable News Anchor");
+        strcpy(str, "Cable News Anchor");
         break;
 
     case CREATURE_LAWYER:
-        strcat(str, "Lawyer");
+        strcpy(str, "Lawyer");
         break;
 
     case CREATURE_SEWERWORKER:
-        strcat(str, "Sewer Worker");
+        strcpy(str, "Sewer Worker");
         break;
 
     case CREATURE_COLLEGESTUDENT:
-        strcat(str, "College Student");
+        strcpy(str, "College Student");
         break;
 
     case CREATURE_MUSICIAN:
-        strcat(str, "Musician");
+        strcpy(str, "Musician");
         break;
 
     case CREATURE_MATHEMATICIAN:
-        strcat(str, "Mathematician");
+        strcpy(str, "Mathematician");
         break;
 
     case CREATURE_TEACHER:
-        strcat(str, "Teacher");
+        strcpy(str, "Teacher");
         break;
 
     case CREATURE_HSDROPOUT:
-        strcat(str, "Highschool Dropout");
+        strcpy(str, "Highschool Dropout");
         break;
 
     case CREATURE_BUM:
-        strcat(str, "Transient");
+        strcpy(str, "Transient");
         break;
 
     case CREATURE_MUTANT:
-        strcat(str, "Mutant");
+        strcpy(str, "Mutant");
         break;
 
     case CREATURE_GANGMEMBER:
-        strcat(str, "Gang Member");
+        strcpy(str, "Gang Member");
         break;
 
     case CREATURE_CRACKHEAD:
-        strcat(str, "Crack Head");
+        strcpy(str, "Crackhead");
         break;
 
     case CREATURE_PRIEST:
-        strcat(str, "Priest");
+        strcpy(str, "Priest");
         break;
 
     case CREATURE_ENGINEER:
-        strcat(str, "Engineer");
+        strcpy(str, "Engineer");
         break;
 
     case CREATURE_FASTFOODWORKER:
-        strcat(str, "Fast Food Worker");
+        strcpy(str, "Fast Food Worker");
         break;
 
     case CREATURE_TELEMARKETER:
-        strcat(str, "Telemarketer");
+        strcpy(str, "Telemarketer");
         break;
 
     case CREATURE_CARSALESMAN:
         if(law[LAW_WOMEN] == -2)
             strcpy(str, "Car Salesman");
         else
-            strcat(str, "Car Salesperson");
+            strcpy(str, "Car Salesperson");
 
         break;
 
     case CREATURE_OFFICEWORKER:
-        strcat(str, "Office Worker");
+        strcpy(str, "Office Worker");
         break;
 
     case CREATURE_FOOTBALLCOACH:
-        strcat(str, "Football Coach");
+        strcpy(str, "Football Coach");
         break;
 
     case CREATURE_PROSTITUTE:
-        strcat(str, "Prostitute");
+        strcpy(str, "Prostitute");
         break;
 
     case CREATURE_MAILMAN:
-        strcat(str, "Mail Carrier");
+        strcpy(str, "Mail Carrier");
         break;
 
     case CREATURE_GARBAGEMAN:
-        strcat(str, "Garbage Collector");
+        strcpy(str, "Garbage Collector");
         break;
 
     case CREATURE_PLUMBER:
-        strcat(str, "Plumber");
+        strcpy(str, "Plumber");
         break;
 
     case CREATURE_CHEF:
-        strcat(str, "Chef");
+        strcpy(str, "Chef");
         break;
 
     case CREATURE_CONSTRUCTIONWORKER:
-        strcat(str, "Construction Worker");
+        strcpy(str, "Construction Worker");
         break;
 
     case CREATURE_AMATEURMAGICIAN:
-        strcat(str, "Amateur Magician");
+        strcpy(str, "Amateur Magician");
         break;
 
     case CREATURE_HIPPIE:
-        strcat(str, "Hippie");
+        strcpy(str, "Hippie");
         break;
 
     case CREATURE_CRITIC_ART:
-        strcat(str, "Art Critic");
+        strcpy(str, "Art Critic");
         break;
 
     case CREATURE_CRITIC_MUSIC:
-        strcat(str, "Music Critic");
+        strcpy(str, "Music Critic");
         break;
 
     case CREATURE_AUTHOR:
-        strcat(str, "Author");
+        strcpy(str, "Author");
         break;
 
     case CREATURE_JOURNALIST:
-        strcat(str, "Journalist");
+        strcpy(str, "Journalist");
         break;
 
     case CREATURE_SOCIALITE:
-        strcat(str, "Socialite");
+        strcpy(str, "Socialite");
         break;
 
     case CREATURE_BIKER:
-        strcat(str, "Biker");
+        strcpy(str, "Biker");
         break;
 
     case CREATURE_TRUCKER:
-        strcat(str, "Trucker");
+        strcpy(str, "Trucker");
         break;
 
     case CREATURE_TAXIDRIVER:
-        strcat(str, "Taxi Driver");
+        strcpy(str, "Taxi Driver");
         break;
 
     case CREATURE_PROGRAMMER:
-        strcat(str, "Programmer");
+        strcpy(str, "Programmer");
         break;
 
     case CREATURE_NUN:
-        strcat(str, "Nun");
+        strcpy(str, "Nun");
         break;
 
     case CREATURE_RETIREE:
-        strcat(str, "Retiree");
+        strcpy(str, "Retiree");
         break;
 
     case CREATURE_PAINTER:
-        strcat(str, "Painter");
+        strcpy(str, "Painter");
         break;
 
     case CREATURE_SCULPTOR:
-        strcat(str, "Sculptor");
+        strcpy(str, "Sculptor");
         break;
 
     case CREATURE_DANCER:
-        strcat(str, "Dancer");
+        strcpy(str, "Dancer");
         break;
 
     case CREATURE_PHOTOGRAPHER:
-        strcat(str, "Photographer");
+        strcpy(str, "Photographer");
         break;
 
     case CREATURE_CAMERAMAN:
-        strcat(str, "Cameraman");
+        strcpy(str, "Cameraman");
         break;
 
     case CREATURE_HAIRSTYLIST:
-        strcat(str, "Hairstylist");
+        strcpy(str, "Hairstylist");
         break;
 
     case CREATURE_FASHIONDESIGNER:
-        strcat(str, "Fashion Designer");
+        strcpy(str, "Fashion Designer");
         break;
 
     case CREATURE_CLERK:
-        strcat(str, "Clerk");
+        strcpy(str, "Clerk");
         break;
 
     case CREATURE_THIEF:
-        strcat(str, "Professional Thief");
+        strcpy(str, "Professional Thief");
         break;
 
     case CREATURE_ACTOR:
-        strcat(str, "Actor");
+        strcpy(str, "Actor");
         break;
 
     case CREATURE_YOGAINSTRUCTOR:
-        strcat(str, "Yoga Instructor");
+        strcpy(str, "Yoga Instructor");
         break;
 
     case CREATURE_MARTIALARTIST:
-        strcat(str, "Black Belt");
+        strcpy(str, "Black Belt");
         break;
 
     case CREATURE_ATHLETE:
-        strcat(str, "Athlete");
+        strcpy(str, "Athlete");
         break;
 
     case CREATURE_TEENAGER:
-        strcat(str, "Teenager");
+        strcpy(str, "Teenager");
         break;
 
     case CREATURE_PRISONER:
-        strcat(str, "Prisoner");
+        strcpy(str, "Prisoner");
         break;
 
     case CREATURE_DOCTOR:
-        strcat(str, "Doctor");
+        strcpy(str, "Doctor");
         break;
 
     case CREATURE_PSYCHOLOGIST:
-        strcat(str, "Psychologist");
+        strcpy(str, "Psychologist");
         break;
 
     case CREATURE_NURSE:
-        strcat(str, "Nurse");
+        strcpy(str, "Nurse");
         break;
 
     case CREATURE_LOCKSMITH:
-        strcat(str, "Locksmith");
+        strcpy(str, "Locksmith");
         break;
 
     case CREATURE_MILITARYPOLICE:
-        strcat(str, "Military Police");
+        strcpy(str, "Military Police");
         break;
 
     case CREATURE_MILITARYOFFICER:
-        strcat(str, "Military Officer");
+        strcpy(str, "Military Officer");
         break;
 
     case CREATURE_SEAL:
-        strcat(str, "Navy SEAL");
+        strcpy(str, "Navy SEAL");
         break;
 
     case CREATURE_BANK_TELLER:
-        strcat(str, "Bank Teller");
+        strcpy(str, "Bank Teller");
         break;
 
     case CREATURE_BANK_MANAGER:
-        strcat(str, "Bank Manager");
+        strcpy(str, "Bank Manager");
         break;
 
     case CREATURE_GUARDDOG:
-        strcat(str, "Canine Hero");
+        strcpy(str, "Canine Hero");
         break;
 
     case CREATURE_GENETIC:
-        strcat(str, "Genetic Monster");
+        strcpy(str, "Genetic Monster");
         break;
 
     case CREATURE_TANK:
-        strcat(str, "M1 Abrams Tank");
+        strcpy(str, "M1 Abrams Tank");
         break;
 
     case CREATURE_CCS_MOLOTOV:
-        strcat(str, "Arsonist");
+        strcpy(str, "Arsonist");
         break;
 
     case CREATURE_CCS_SNIPER:
-        strcat(str, "Sniper");
+        strcpy(str, "Sniper");
         break;
 
     case CREATURE_CCS_VIGILANTE:
-        strcat(str, "Vigilante");
+        strcpy(str, "Vigilante");
         break;
 
     case CREATURE_CCS_ARCHCONSERVATIVE:
-        strcat(str, "CCS Officer");
+        strcpy(str, "CCS Officer");
         break;
 
     case CREATURE_POLITICALACTIVIST:
-        strcat(str, "Political Activist");
+        strcpy(str, "Political Activist");
         break;
 
     case CREATURE_SECRET_SERVICE:
-        strcat(str, "Secret Service");
+        strcpy(str, "Secret Service");
         break;
 
     default:
-        strcat(str, "Liberal");
+        strcpy(str, "Beta Tester");
         break;
     }
 }
-
-
 
 void gettitle(char *str, Creature &cr) {
     if(cr.align == -1) {
@@ -741,118 +737,119 @@ void gettitle(char *str, Creature &cr) {
     }
 }
 
-
 void getview(char *str, short view) {
-    strcpy(str, "");
-
     switch(view) {
     case VIEW_GAY:
-        strcat(str, "LGBT Rights");
+        strcpy(str, "LGBT Rights");
         break;
 
     case VIEW_DEATHPENALTY:
-        strcat(str, "The Death Penalty");
+        strcpy(str, "The Death Penalty");
         break;
 
     case VIEW_TAXES:
-        strcat(str, "Taxes");
+        strcpy(str, "Taxes");
         break;
 
     case VIEW_NUCLEARPOWER:
-        strcat(str, "Nuclear Power");
+        strcpy(str, "Nuclear Power");
         break;
 
     case VIEW_ANIMALRESEARCH:
-        strcat(str, "Animal Cruelty");
+        strcpy(str, "Animal Cruelty");
         break;
 
     case VIEW_POLICEBEHAVIOR:
-        strcat(str, "The Police");
+        strcpy(str, "The Police");
         break;
 
     case VIEW_TORTURE:
-        strcat(str, "Torture");
+        strcpy(str, "Torture");
         break;
 
     case VIEW_PRISONS:
-        strcat(str, "The Prison System");
+        strcpy(str, "The Prison System");
         break;
 
     case VIEW_INTELLIGENCE:
-        strcat(str, "Privacy");
+        strcpy(str, "Privacy");
         break;
 
     case VIEW_FREESPEECH:
-        strcat(str, "Free Speech");
+        strcpy(str, "Free Speech");
         break;
 
     case VIEW_GENETICS:
-        strcat(str, "Genetics");
+        strcpy(str, "Genetics");
         break;
 
     case VIEW_JUSTICES:
-        strcat(str, "The Judiciary");
+        strcpy(str, "The Judiciary");
         break;
 
     case VIEW_GUNCONTROL:
-        strcat(str, "Gun Control");
+        strcpy(str, "Gun Control");
         break;
 
     case VIEW_SWEATSHOPS:
-        strcat(str, "Labor");
+        strcpy(str, "Labor");
         break;
 
     case VIEW_POLLUTION:
-        strcat(str, "Pollution");
+        strcpy(str, "Pollution");
         break;
 
     case VIEW_CORPORATECULTURE:
-        strcat(str, "Corporate Culture");
+        strcpy(str, "Corporate Culture");
         break;
 
     case VIEW_CEOSALARY:
-        strcat(str, "CEO Compensation");
+        strcpy(str, "CEO Compensation");
         break;
 
     case VIEW_WOMEN:
-        strcat(str, "Gender Equality");
+        strcpy(str, "Gender Equality");
         break;
 
     case VIEW_CIVILRIGHTS:
-        strcat(str, "Racial Equality");
+        strcpy(str, "Racial Equality");
         break;
 
     case VIEW_DRUGS:
-        strcat(str, "Drugs");
+        strcpy(str, "Drugs");
         break;
 
     case VIEW_IMMIGRATION:
-        strcat(str, "Immigration");
+        strcpy(str, "Immigration");
         break;
 
     case VIEW_MILITARY:
-        strcat(str, "The Military");
+        strcpy(str, "The Military");
         break;
 
     case VIEW_AMRADIO:
-        strcat(str, "AM Radio");
+        strcpy(str, "AM Radio");
         break;
 
     case VIEW_CABLENEWS:
-        strcat(str, "Cable News");
+        strcpy(str, "Cable News");
         break;
 
-    //case VIEW_POLITICALVIOLENCE:strcat(str,"The Need For Action");break;
+    //case VIEW_POLITICALVIOLENCE:strcpy(str,"The Need For Action");break;
     case VIEW_LIBERALCRIMESQUAD:
-        strcat(str, "Who We Are");
+        strcpy(str, "Who We Are");
         break;
 
     case VIEW_LIBERALCRIMESQUADPOS:
-        strcat(str, "Why We Rock");
+        strcpy(str, "Why We Rock");
         break;
 
     case VIEW_CONSERVATIVECRIMESQUAD:
-        strcat(str, "The CCS Criminals");
+        strcpy(str, "The CCS Criminals");
+        break;
+
+    default:
+        strcpy(str, "Buggy Software");
         break;
     }
 }
@@ -860,116 +857,115 @@ void getview(char *str, short view) {
 
 
 void getviewsmall(char *str, short view) {
-    strcpy(str, "");
-
     switch(view) {
     case VIEW_GAY:
-        strcat(str, "LGBT rights");
+        strcpy(str, "LGBT rights");
         break;
 
     case VIEW_DEATHPENALTY:
-        strcat(str, "the death penalty");
+        strcpy(str, "the death penalty");
         break;
 
     case VIEW_TAXES:
-        strcat(str, "taxes");
+        strcpy(str, "taxes");
         break;
 
     case VIEW_NUCLEARPOWER:
-        strcat(str, "nuclear power");
+        strcpy(str, "nuclear power");
         break;
 
     case VIEW_ANIMALRESEARCH:
-        strcat(str, "animal cruelty");
+        strcpy(str, "animal cruelty");
         break;
 
     case VIEW_POLICEBEHAVIOR:
-        strcat(str, "the cops");
+        strcpy(str, "the cops");
         break;
 
     case VIEW_TORTURE:
-        strcat(str, "torture");
+        strcpy(str, "torture");
         break;
 
     case VIEW_PRISONS:
-        strcat(str, "the prison system");
+        strcpy(str, "the prison system");
         break;
 
     case VIEW_INTELLIGENCE:
-        strcat(str, "privacy");
+        strcpy(str, "privacy");
         break;
 
     case VIEW_FREESPEECH:
-        strcat(str, "free speech");
+        strcpy(str, "free speech");
         break;
 
     case VIEW_GENETICS:
-        strcat(str, "genetic research");
+        strcpy(str, "genetic research");
         break;
 
     case VIEW_JUSTICES:
-        strcat(str, "judges");
+        strcpy(str, "judges");
         break;
 
     case VIEW_GUNCONTROL:
-        strcat(str, "gun control");
+        strcpy(str, "gun control");
         break;
 
     case VIEW_SWEATSHOPS:
-        strcat(str, "labor rights");
+        strcpy(str, "labor rights");
         break;
 
     case VIEW_POLLUTION:
-        strcat(str, "pollution");
+        strcpy(str, "pollution");
         break;
 
     case VIEW_CORPORATECULTURE:
-        strcat(str, "corporations");
+        strcpy(str, "corporations");
         break;
 
     case VIEW_CEOSALARY:
-        strcat(str, "CEO compensation");
+        strcpy(str, "CEO compensation");
         break;
 
     case VIEW_WOMEN:
-        strcat(str, "gender equality");
+        strcpy(str, "gender equality");
         break;
 
     case VIEW_CIVILRIGHTS:
-        strcat(str, "racial equality");
+        strcpy(str, "racial equality");
         break;
 
     case VIEW_DRUGS:
-        strcat(str, "drugs");
+        strcpy(str, "drugs");
         break;
 
     case VIEW_IMMIGRATION:
-        strcat(str, "immigration");
+        strcpy(str, "immigration");
         break;
 
     case VIEW_MILITARY:
-        strcat(str, "the military");
+        strcpy(str, "the military");
         break;
 
     case VIEW_AMRADIO:
-        strcat(str, "AM radio");
+        strcpy(str, "AM radio");
         break;
 
     case VIEW_CABLENEWS:
-        strcat(str, "cable news");
+        strcpy(str, "cable news");
         break;
 
-    //case VIEW_POLITICALVIOLENCE:strcat(str,"the need for action");break;
+    //case VIEW_POLITICALVIOLENCE:strcpy(str,"the need for action");break;
     case VIEW_LIBERALCRIMESQUAD:
-        strcat(str, "the LCS");
-        break;
-
     case VIEW_LIBERALCRIMESQUADPOS:
-        strcat(str, "the LCS");
+        strcpy(str, "the LCS");
         break;
 
     case VIEW_CONSERVATIVECRIMESQUAD:
-        strcat(str, "the CCS");
+        strcpy(str, "the CCS");
+        break;
+
+    default:
+        strcpy(str, "bugs");
         break;
     }
 }
@@ -1035,35 +1031,39 @@ void getlaw(char *str, int l) {
         break;
 
     case LAW_WOMEN:
-        addstr("Women's Rights");
+        strcpy(str, "Women's Rights");
         break;
 
     case LAW_CIVILRIGHTS:
-        addstr("Civil Rights");
+        strcpy(str, "Civil Rights");
         break;
 
     case LAW_DRUGS:
-        addstr("Drug Law");
+        strcpy(str, "Drug Law");
         break;
 
     case LAW_IMMIGRATION:
-        addstr("Immigration");
+        strcpy(str, "Immigration");
         break;
 
     case LAW_ELECTIONS:
-        addstr("Election Reform");
+        strcpy(str, "Election Reform");
         break;
 
     case LAW_MILITARY:
-        addstr("Military Spending");
+        strcpy(str, "Military Spending");
         break;
 
     case LAW_TORTURE:
-        addstr("Human Rights");
+        strcpy(str, "Human Rights");
         break;
 
     case LAW_PRISONS:
-        addstr("Prison Regulation");
+        strcpy(str, "Prison Regulation");
+        break;
+
+    default:
+        strcpy(str, "Software Bugs");
         break;
     }
 }
@@ -1097,7 +1097,7 @@ void cityname(char *story) {
         "Orlando, FL",
         "Syracuse, NY",
         "Baltimore, MD",
-        //"Washington D.C.", // Removed because White House is modeled as a "distant location" in game
+        //"Washington, DC", // Removed because White House is modeled as a "distant location" in game
         "Memphis, TN",
         "Brooklyn, NY",
         "New Orleans, LA",
@@ -1113,7 +1113,6 @@ void cityname(char *story) {
         "El Paso, TX",
         "Baton Rouge, LA"
     };
-
     strcpy(story, selectRandomString(city_names, ARRAY_ELEMENTS(city_names)));
 }
 
@@ -1136,138 +1135,136 @@ void enter_name(char *name, int len, char *defname) {
 }
 
 void getlawflag(char *str, int type) {
-    strcpy(str, "");
-
     switch(type) {
     case LAWFLAG_KIDNAPPING:
-        strcat(str, "Kidnapping");
+        strcpy(str, "Kidnapping");
         break;
 
     case LAWFLAG_MURDER:
-        strcat(str, "Murder");
+        strcpy(str, "Murder");
         break;
 
     case LAWFLAG_THEFT:
-        strcat(str, "Theft");
+        strcpy(str, "Theft");
         break;
 
     case LAWFLAG_BREAKING:
-        strcat(str, "Breaking and entering");
+        strcpy(str, "Breaking and entering");
         break;
 
     case LAWFLAG_TERRORISM:
-        strcat(str, "Terrorism");
+        strcpy(str, "Terrorism");
         break;
 
     case LAWFLAG_JURY:
-        strcat(str, "Jury tampering");
+        strcpy(str, "Jury tampering");
         break;
 
     case LAWFLAG_TREASON:
-        strcat(str, "Treason");
+        strcpy(str, "Treason");
         break;
 
     case LAWFLAG_ESCAPED:
-        strcat(str, "Escaping prison");
+        strcpy(str, "Escaping prison");
         break;
 
     case LAWFLAG_HELPESCAPE:
-        strcat(str, "Releasing prisoners");
+        strcpy(str, "Releasing prisoners");
         break;
 
     case LAWFLAG_RESIST:
-        strcat(str, "Resisting arrest");
+        strcpy(str, "Resisting arrest");
         break;
 
     case LAWFLAG_BURNFLAG:
-        strcat(str, "Flag burning");
+        strcpy(str, "Flag burning");
         break;
 
     case LAWFLAG_SPEECH:
-        strcat(str, "Harmful speech");
+        strcpy(str, "Harmful speech");
         break;
 
     case LAWFLAG_VANDALISM:
-        strcat(str, "Vandalism");
+        strcpy(str, "Vandalism");
         break;
 
     case LAWFLAG_ASSAULT:
-        strcat(str, "Assault");
+        strcpy(str, "Assault");
         break;
 
     case LAWFLAG_ARMEDASSAULT:
-        strcat(str, "Armed assault");
+        strcpy(str, "Armed assault");
         break;
 
     case LAWFLAG_CARTHEFT:
-        strcat(str, "Grand theft auto");
+        strcpy(str, "Grand theft auto");
         break;
 
     case LAWFLAG_INFORMATION:
-        strcat(str, "Hacking");
+        strcpy(str, "Hacking");
         break;
 
     case LAWFLAG_COMMERCE:
-        strcat(str, "Electronic sabotage");
+        strcpy(str, "Electronic sabotage");
         break;
 
     case LAWFLAG_CCFRAUD:
-        strcat(str, "Credit card fraud");
+        strcpy(str, "Credit card fraud");
         break;
 
     case LAWFLAG_BROWNIES:
-        strcat(str, "Drug dealing");
+        strcpy(str, "Drug dealing");
         break;
 
     case LAWFLAG_BURIAL:
-        strcat(str, "Unlawful burial");
+        strcpy(str, "Unlawful burial");
         break;
 
     case LAWFLAG_PROSTITUTION:
-        strcat(str, "Prostitution");
+        strcpy(str, "Prostitution");
         break;
 
     case LAWFLAG_DISTURBANCE:
-        strcat(str, "Disturbing the peace");
+        strcpy(str, "Disturbing the peace");
         break;
 
     case LAWFLAG_HIREILLEGAL:
-        strcat(str, "Hiring illegal aliens");
+        strcpy(str, "Hiring illegal aliens");
         break;
 
     case LAWFLAG_RACKETEERING:
-        strcat(str, "Racketeering");
+        strcpy(str, "Racketeering");
         break;
 
     case LAWFLAG_LOITERING:
-        strcat(str, "Loitering");
+        strcpy(str, "Loitering");
         break;
 
-    //case LAWFLAG_GUNCARRY:strcat(str,"Using illegal weapons");break;
-    //case LAWFLAG_GUNUSE:strcat(str,"Firing illegal weapons");break;
+    //case LAWFLAG_GUNCARRY:strcpy(str,"Using illegal weapons");break;
+    //case LAWFLAG_GUNUSE:strcpy(str,"Firing illegal weapons");break;
     case LAWFLAG_ARSON:
-        strcat(str, "Arson");
+        strcpy(str, "Arson");
         break;
 
     case LAWFLAG_PUBLICNUDITY:
-        strcat(str, "Public nudity");
+        strcpy(str, "Public nudity");
         break;
 
     case LAWFLAG_EXTORTION:
-        strcat(str, "Extortion");
+        strcpy(str, "Extortion");
         break;
 
     case LAWFLAG_BANKROBBERY:
-        strcat(str, "Bank robbery");
+        strcpy(str, "Bank robbery");
         break;
 
     default:
-        strcpy(str, "ERROR, AR");
+        strcpy(str, "Finding bugs");
         break;
     }
 }
 
-// shortname defaults to false, Ramadan is returned if there's an error
+// shortname defaults to false
 std::string getmonth(int month, bool shortname) {
     switch(month) {
     case  1:
@@ -1307,6 +1304,6 @@ std::string getmonth(int month, bool shortname) {
         return (shortname ? "Dec." : "December");
 
     default:
-        return (shortname ? "Ram." : "Ramadan");
+        return (shortname ? "Bug." : "Bugtober");
     }
 }

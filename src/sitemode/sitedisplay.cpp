@@ -107,7 +107,7 @@ void printsitemap(int x, int y, int z) {
         break;
 
     case SPECIAL_COURTHOUSE_LOCKUP:
-        strcpy(str, "Court House Jail");
+        strcpy(str, "Courthouse Jail");
         break;
 
     case SPECIAL_COURTHOUSE_JURYROOM:

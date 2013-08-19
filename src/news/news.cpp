@@ -1261,10 +1261,10 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
             if(crime[CRIME_COURTHOUSE_LOCKUP]) {
                 if(!liberalguardian) {
                     strcat(story, "  According to sources that were at the scene, ");
-                    strcat(story, "the Liberal Crime Squad allegedly freed or attempted to free prisoners from the court house lockup.");
+                    strcat(story, "the Liberal Crime Squad allegedly freed or attempted to free prisoners from the courthouse lockup.");
                     strcat(story, "&r");
                 } else {
-                    strcat(story, "  The Liberal Crime Squad attempted to rescue innocent people from the court house lockup, ");
+                    strcat(story, "  The Liberal Crime Squad attempted to rescue innocent people from the courthouse lockup, ");
                     strcat(story, "saving them from the highly corrupt Conservative justice system.");
                     strcat(story, "&r");
                 }
