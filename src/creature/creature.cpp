@@ -1730,6 +1730,16 @@ const char *Creature::heshe() {
     return "they";
 }
 
+const char *Creature::hisher() {
+    if(gender_liberal == GENDER_MALE)
+        return "his";
+
+    if(gender_liberal == GENDER_FEMALE)
+        return "her";
+
+    return "their";
+}
+
 Weapon &Creature::weapon_none() {
     static Weapon *unarmed = new Weapon(*weapontype[getweapontype("WEAPON_NONE")]);
     return *unarmed;

@@ -321,7 +321,6 @@ void tendhostage(Creature *cr, char &clearformess) {
 
         while(1) {
             y = 2;
-            char num2[20];
 
             if(techniques[TECHNIQUE_KILL]) {
                 set_color(COLOR_RED, COLOR_BLACK, 1);
@@ -629,39 +628,118 @@ void tendhostage(Creature *cr, char &clearformess) {
         getch();
 
         if(techniques[TECHNIQUE_DRUGS]) { // Hallucinogenic drugs
-            move(y, 0);
-
-            y++;
+            move(++y, 0);
 
             addstr("It is subjected to dangerous hallucinogens.", gamelog);
             gamelog.newline();
 
-            attack += 10 + a->get_armor().get_interrogation_drugbonus();
+            int drugbonus = 10 + a->get_armor().get_interrogation_drugbonus(); // we won't apply this JUST yet
 
             //Possible permanent health damage
-            if(LCSrandom(50) < ++druguse)
+            if(LCSrandom(50) < ++druguse) {
                 cr->adjust_attribute(ATTRIBUTE_HEALTH, -1);
-
-            if(cr->get_attribute(ATTRIBUTE_HEALTH, false) == 0) {
-                y++;
-                set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+                move(++y, 0);
                 refresh();
                 getch();
-                move(y++, 0);
-                addstr("It is a lethal overdose in ", gamelog);
+
                 addstr(cr->name, gamelog);
-                addstr("'s weakened state.", gamelog);
+                addstr(" foams at the mouth and its eyes roll back in its skull.", gamelog);
                 gamelog.newline();
-                cr->die();
+                move(++y, 0);
+                refresh();
+                getch();
+
+                Creature *doctor = a; // the lead interrogator is doctor by default
+                int maxskill = doctor->get_skill(SKILL_FIRSTAID);
+
+                for(int i = 0; i < temppool.size(); ++i) // search for the best doctor
+                    if(temppool[i]->get_skill(SKILL_FIRSTAID) > maxskill) {
+                        doctor = temppool[i]; // we found a doctor
+                        maxskill = doctor->get_skill(SKILL_FIRSTAID);
+                    }
+
+                if(cr->get_attribute(ATTRIBUTE_HEALTH, false) <= 0 || !maxskill) { // he's dead, Jim
+                    if(maxskill) {
+                        // we have a real doctor but the patient is still dead anyway
+                        addstr(doctor->name, gamelog);
+                        addstr(" uses a defibrillator repeatedly but ", gamelog);
+                        addstr(cr->name, gamelog);
+                        addstr(" flatlines.", gamelog);
+                    } else {
+                        addstr(doctor->name, gamelog);
+
+                        if(law[LAW_FREESPEECH] == -2)
+                            addstr(" has a panic attack and [makes a stinky].", gamelog);
+                        else {
+                            addstr(" has a panic attack and shits ", gamelog);
+                            addstr(doctor->hisher(), gamelog);
+                            addstr(" pants.", gamelog);
+                        }
+                    }
+
+                    gamelog.newline();
+                    move(++y, 0);
+                    refresh();
+                    getch();
+                    set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+
+                    if(maxskill) {
+                        addstr("It is a lethal overdose in ", gamelog);
+                        addstr(cr->name, gamelog);
+                        addstr("'s weakened state.", gamelog);
+                    } else {
+                        addstr(cr->name, gamelog);
+                        addstr(" dies due to ", gamelog);
+                        addstr(doctor->name, gamelog);
+                        addstr("'s incompetence at first aid.", gamelog);
+                    }
+
+                    gamelog.newline();
+                    cr->die();
+                } else {
+                    addstr(doctor->name, gamelog);
+
+                    if(doctor->skill_check(SKILL_FIRSTAID, DIFFICULTY_CHALLENGING)) { // is the doctor AWESOME?
+                        doctor->train(SKILL_FIRSTAID, 5 * max(10 - doctor->get_skill(SKILL_FIRSTAID), 0), 10); // can train up to 10
+                        addstr(" deftly rescues it from cardiac arrest with a defibrillator.", gamelog); // not long enough for near-death experience
+                        gamelog.newline();
+                        move(++y, 0);
+                        refresh();
+                        getch();
+                        addstr(doctor->name, gamelog);
+                        addstr(" skillfully saves ", gamelog);
+                        addstr(cr->name, gamelog);
+                        addstr(" from any health damage.", gamelog);
+                        cr->adjust_attribute(ATTRIBUTE_HEALTH, +1); // no permanent health damage from a skilled doctor
+                        techniques[TECHNIQUE_DRUGS] = druguse = drugbonus = 0; // drugs eliminated from the system (zeroing out 3 variables with 1 line of code)
+                    } else {
+                        doctor->train(SKILL_FIRSTAID, 5 * max(5 - doctor->get_skill(SKILL_FIRSTAID), 0), 5); // can train up to 5
+                        addstr(" clumsily rescues it from cardiac arrest with a defibrillator.", gamelog);
+                        gamelog.newline();
+                        move(++y, 0);
+                        refresh();
+                        getch();
+                        addstr(cr->name, gamelog);
+
+                        if(cr->get_skill(SKILL_RELIGION)) // the patient was out long enough to have a near-death experience
+                            addstr(" had a near-death experience and met God in heaven.", gamelog);
+                        else
+                            addstr(" had a near-death experience and met John Lennon.", gamelog);
+
+                        drugbonus *= 2; // the near-death experience doubles the drug bonus, since the hostage is spaced out afterwards
+                    }
+
+                    rapport[doctor->id] += 0.5f; // rapport bonus for having life saved by doctor
+                    gamelog.newline();
+                }
             }
 
+            attack += drugbonus; // now we finally apply the drug bonus
+            move(++y, 0);
             //show_interrogation_sidebar(cr,a);
             refresh();
             getch();
         }
-
-        if(cr->get_attribute(ATTRIBUTE_HEALTH, false) <= 0)
-            cr->die();
 
         if(techniques[TECHNIQUE_BEAT] && !turned && cr->alive) { // Beating
             y += 1;
@@ -1739,7 +1817,7 @@ void tendhostage(Creature *cr, char &clearformess) {
                     if(location[cr->worklocation]->type <= SITE_RESIDENTIAL_SHELTER)
                         addstr("Unfortunately, none of it is useful to the LCS.", gamelog);
                     else {
-                        addstr(a->name), gamelog;
+                        addstr(a->name, gamelog);
                         addstr(" was able to create a map of the site with this information.", gamelog);
                     }
 

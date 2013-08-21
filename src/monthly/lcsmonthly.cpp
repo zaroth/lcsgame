@@ -53,7 +53,7 @@ void guardianupdate(char size, char power) {
     if(power < 0)
         addstr("The only readers are Conservatives, who seem to think it's funny.", gamelog);
     else if(power == 0)
-        addstr("Unfortunately, nobody seems interested."), gamelog;
+        addstr("Unfortunately, nobody seems interested.", gamelog);
     else if(power < 5)
         addstr("Very few people seem to be interested.", gamelog);
     else if(power < 50)

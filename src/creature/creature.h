@@ -437,6 +437,7 @@ class Creature {
     /* finds the cap for a particular skill */
     int skill_cap(int skill, bool use_juice);
     const char *heshe();
+    const char *hisher();
 };
 
 enum uniqueCreatureData {

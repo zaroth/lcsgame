@@ -476,15 +476,8 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
                 move(y++, 0);
                 addstr(pool[p]->name, gamelog);
                 addstr(" explains ", gamelog);
-
-                if(pool[p]->gender_liberal == GENDER_MALE)
-                    addstr("his ", gamelog);
-                else if(pool[p]->gender_liberal == GENDER_FEMALE)
-                    addstr("her ", gamelog);
-                else
-                    addstr("their ", gamelog);
-
-                addstr("views on ", gamelog);
+                addstr(pool[p]->hisher(), gamelog);
+                addstr(" views on ", gamelog);
                 getviewsmall(str, LCSrandom(VIEWNUM - 3));
                 addstr(str, gamelog);
                 addstr(".", gamelog);
