@@ -1171,6 +1171,7 @@ char setup_unicode();
 int addch_unicode(int c);
 #endif
 void set_title (char *c);
+void init_console();
 
 /*
  getnames.cpp
