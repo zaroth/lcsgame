@@ -1172,6 +1172,10 @@ int addch_unicode(int c);
 #endif
 void set_title (char *c);
 void init_console();
+#ifdef WIN32
+void begin_cleartype_fix();
+void end_cleartype_fix();
+#endif
 
 /*
  getnames.cpp
