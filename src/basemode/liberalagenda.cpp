@@ -1109,9 +1109,7 @@ char confirmdisband(void) { // The (current) issue that the masses are most
                     if(!pool[p]->alive) {
                         delete pool[p];
                         pool.erase(pool.begin() + p);
-                    }
-
-                    if(!(pool[p]->flag & CREATUREFLAG_SLEEPER)) {
+                    } else if(!(pool[p]->flag & CREATUREFLAG_SLEEPER)) {
                         removesquadinfo(*pool[p]);
                         pool[p]->hiding = -1;
                     }
