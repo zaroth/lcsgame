@@ -2417,9 +2417,15 @@ void doActivityTrouble(vector<Creature *> &trouble, char &clearformess) {
                     else
                         makedelimiter(8, 0);
 
-                    if(!LCSrandom(4))
+                    if(!LCSrandom(4)) {
+                        newsstoryst *ns = new newsstoryst;
+                        ns->type = NEWSSTORY_WANTEDARREST; // should probably create a NEWSSTORY_TROUBLEARREST and implement it fully
+                        ns->loc = -1;                    // but this will have to do for now
+                        ns->positive = 0;
+                        newsstory.push_back(ns);
+                        sitestory = ns;
                         attemptarrest(*trouble[t], "causing trouble", clearformess);
-                    else {
+                    } else {
                         set_color(COLOR_WHITE, COLOR_BLACK, 1);
                         move(8, 1);
                         addstr(trouble[t]->name, gamelog);
