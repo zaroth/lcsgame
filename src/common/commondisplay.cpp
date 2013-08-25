@@ -1284,19 +1284,24 @@ void printliberalstats(Creature &cr) {
         switch(law[LAW_GAY]) {
         case -2:
             addstr(", Freak of Nature");
+            break;
 
         case -1:
             addstr(", Ambiguous");
+            break;
 
         case 0:
         default:
             addstr(", Androgynous");
+            break;
 
         case 1:
             addstr(", Transgender");
+            break;
 
         case 2:
             addstr(", Genderqueer");
+            break;
         }
 
     // Note if there's some conflict with Conservative society's perceptions if gay rights < 1
