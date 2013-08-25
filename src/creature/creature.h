@@ -434,7 +434,6 @@ class Creature {
     bool reports_to_police() const;
     /* finds the cap for a particular skill */
     int skill_cap(int skill, bool use_juice) const;
-    char gender() const;
     const char *heshe() const;
     const char *hisher() const;
 };

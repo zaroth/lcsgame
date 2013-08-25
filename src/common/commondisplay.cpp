@@ -1125,14 +1125,10 @@ void fullstatus(int p) {
             keypad(stdscr, TRUE);
             continue;
         } else if(c == 'g') {
-            if(law[LAW_GAY] == -2) // "fixing" gender label has whole different meaning when Gay Rights is C+
-                activesquad->squad[p]->gender_liberal = activesquad->squad[p]->gender_conservative;
-            else {
-                activesquad->squad[p]->gender_liberal++;
+            activesquad->squad[p]->gender_liberal++;
 
-                if(activesquad->squad[p]->gender_liberal > 2)
-                    activesquad->squad[p]->gender_liberal = 0;
-            }
+            if(activesquad->squad[p]->gender_liberal > 2)
+                activesquad->squad[p]->gender_liberal = 0;
 
             continue;
         }
@@ -1275,39 +1271,17 @@ void printliberalstats(Creature &cr) {
     itoa(cr.age, num, 10);
     addstr(num);
 
-    // Assess their gender Liberally unless Gay Rights is C+
-    if(cr.gender() == GENDER_MALE)
+    // Assess their gender in an Elite Liberal way
+    if(cr.gender_liberal == GENDER_MALE)
         addstr(", Male");
-    else if(cr.gender() == GENDER_FEMALE)
+    else if(cr.gender_liberal == GENDER_FEMALE)
         addstr(", Female");
     else
-        switch(law[LAW_GAY]) {
-        case -2:
-            addstr(", Freak of Nature");
-            break;
+        addstr(", Genderqueer");
 
-        case -1:
-            addstr(", Ambiguous");
-            break;
-
-        case 0:
-        default:
-            addstr(", Androgynous");
-            break;
-
-        case 1:
-            addstr(", Transgender");
-            break;
-
-        case 2:
-            addstr(", Genderqueer");
-            break;
-        }
-
-    // Note if there's some conflict with Conservative society's perceptions if gay rights < 1
-    if(cr.gender_liberal != cr.gender_conservative && cr.gender() != GENDER_NEUTRAL && law[LAW_GAY] < 1)
-        addstr("*");
-
+    // DON'T Note if there's some conflict with Conservative society's perceptions
+    //if(cr.gender_liberal != cr.gender_conservative && cr.gender_liberal != GENDER_NEUTRAL)
+    //   addstr("*");
     addstr(")");
 
     move(3, 46);
