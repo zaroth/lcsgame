@@ -845,8 +845,11 @@ char heyINeedAGun(Creature &a, Creature &tk) {
         return 1;
     }
 
-    if(a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM"
-            || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR") {
+    if(a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" ||
+            a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR" ||
+            a.get_armor().get_itemtypename() == "ARMOR_SWATARMOR" ||
+            (law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2 &&
+             a.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM")) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
         addstr(tk.name, gamelog);
@@ -881,6 +884,7 @@ char heyINeedAGun(Creature &a, Creature &tk) {
     case SITE_BUSINESS_ARMSDEALER:
     case SITE_RESIDENTIAL_TENEMENT:
     case SITE_RESIDENTIAL_BOMBSHELTER:
+    case SITE_RESIDENTIAL_SHELTER:
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(12, 1);
         addstr(tk.name, gamelog);
@@ -1230,6 +1234,9 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
     if(tk.type == CREATURE_CORPORATE_CEO)
         difficulty = DIFFICULTY_HEROIC;
 
+    if(a.is_naked() && a.animalgloss != ANIMALGLOSS_ANIMAL)
+        difficulty -= 4;
+
     if(a.skill_check(SKILL_SEDUCTION, difficulty))
         succeeded = true;
 
@@ -1325,7 +1332,10 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
     a.train(SKILL_SEDUCTION, LCSrandom(5) + 2);
 
     if((a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" // Police property on armor? -XML
-            || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
+            || a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR"
+            || a.get_armor().get_itemtypename() == "ARMOR_SWATARMOR"
+            || (law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2
+                && a.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM"))
             && tk.type == CREATURE_PROSTITUTE) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(y, 1);
@@ -3094,7 +3104,7 @@ char talkInCombat(Creature &a, Creature &tk) {
 
             if(a.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" ||
                     a.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR" ||
-                    a.get_armor().get_itemtypename() == "SWATARMOR")
+                    a.get_armor().get_itemtypename() == "ARMOR_SWATARMOR")
                 addstr("\"The situation is under control.\"", gamelog);
             else if (a.get_armor().get_itemtypename() == "ARMOR_BUNKERGEAR") {
                 if(siteonfire)
