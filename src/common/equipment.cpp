@@ -100,9 +100,10 @@ void equip(vector<Item *> &loot, int loc) {
         }
 
         int x = 1, y = 10;
-        char str[200], str2[200];
+        char str[200];
+        //char str2[200];
 
-        for(int l = page * 18; l < loot.size() && l < page * 18 + 18; l++) {
+        for(int l = page * 18; l < (int)loot.size() && l < page * 18 + 18; l++) {
             string s = loot[l]->equip_title();
 
             if(loot[l]->get_number() > 1)
@@ -131,7 +132,7 @@ void equip(vector<Item *> &loot, int loc) {
         }
 
         //PAGE DOWN
-        if((page + 1) * 18 < loot.size()) {
+        if((page + 1) * 18 < (int)loot.size()) {
             move(17, 53);
             addnextpagestr();
         }
@@ -183,7 +184,7 @@ void equip(vector<Item *> &loot, int loc) {
             if (increaseammo || decreaseammo)
                 slot = -999;
             else {
-                if(slot < 0 || slot >= loot.size()) {
+                if(slot < 0 || slot >= (int)loot.size()) {
                     // Out of range.
                     continue;
                 } else if (!loot[slot]->is_weapon()
@@ -258,7 +259,7 @@ void equip(vector<Item *> &loot, int loc) {
 
                         slot = -1;
 
-                        for (int sl = 0; sl < loot.size(); sl++) {
+                        for (int sl = 0; sl < (int)loot.size(); sl++) {
                             if ((loot[sl]->is_clip() && squaddie->get_weapon().acceptable_ammo(*loot[sl]))) {
                                 slot = sl;
                                 break;
@@ -298,23 +299,19 @@ void equip(vector<Item *> &loot, int loc) {
                         Weapon *w = static_cast<Weapon *>(loot[slot]); //cast -XML
                         squaddie->give_weapon(*w, &loot);
 
-                        if(loot[slot]->empty()) {
-                            delete loot[slot];
-                            loot.erase(loot.begin() + slot);
-                        }
+                        if(loot[slot]->empty())
+                            delete_and_remove(loot, slot);
 
-                        if(page * 18 >= loot.size() && page != 0)
+                        if(page * 18 >= (int)loot.size() && page != 0)
                             page--;
                     } else if(loot[slot]->is_armor()) {
                         Armor *a = static_cast<Armor *>(loot[slot]); //cast -XML
                         squaddie->give_armor(*a, &loot);
 
-                        if(loot[slot]->empty()) {
-                            delete loot[slot];
-                            loot.erase(loot.begin() + slot);
-                        }
+                        if(loot[slot]->empty())
+                            delete_and_remove(loot, slot);
 
-                        if(page * 18 >= loot.size() && page != 0)
+                        if(page * 18 >= (int)loot.size() && page != 0)
                             page--;
                     } else if(loot[slot]->is_clip() && armok) {
                         int space = 9 - squaddie->count_clips();
@@ -342,12 +339,10 @@ void equip(vector<Item *> &loot, int loc) {
 
                             squaddie->take_clips(*loot[slot], amount);
 
-                            if(loot[slot]->empty()) {
-                                delete loot[slot];
-                                loot.erase(loot.begin() + slot);
-                            }
+                            if(loot[slot]->empty())
+                                delete_and_remove(loot, slot);
 
-                            if(page * 18 >= loot.size() && page != 0)
+                            if(page * 18 >= (int)loot.size() && page != 0)
                                 page--;
                         }
                     }
@@ -419,7 +414,7 @@ void equip(vector<Item *> &loot, int loc) {
             page--;
 
         //PAGE DOWN
-        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < loot.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < (int)loot.size())
             page++;
 
     } while(1);
@@ -443,9 +438,10 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
         printparty();
 
         int x = 1, y = 10;
-        char str[200], str2[200];
+        char str[200];
+        //char str2[200];
 
-        for(int l = page * 18; l < source.size() && l < page * 18 + 18; l++) {
+        for(int l = page * 18; l < (int)source.size() && l < page * 18 + 18; l++) {
             if(selected[l])
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
             else
@@ -489,7 +485,7 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
         }
 
         //PAGE DOWN
-        if((page + 1) * 18 < source.size()) {
+        if((page + 1) * 18 < (int)source.size()) {
             move(17, 53);
             addnextpagestr();
         }
@@ -508,7 +504,7 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
         if(c >= 'a' && c <= 'r') {
             int slot = c - 'a' + page * 18;
 
-            if(slot >= 0 && slot < source.size()) {
+            if(slot >= 0 && slot < (int)source.size()) {
                 if(selected[slot])
                     selected[slot] = 0;
                 else {
@@ -528,7 +524,7 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
             page--;
 
         //PAGE DOWN
-        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < source.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < (int)source.size())
             page++;
 
     } while(1);
@@ -549,40 +545,29 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
     consolidateloot(dest);
 }
 
-
-
 /* equipment - assign new bases to the equipment */
 void equipmentbaseassign(void) {
-    int p = 0;
-    int l = 0;
+    int p = 0, l = 0, page_loot = 0, page_loc = 0, selectedbase = 0;
     bool sortbytype = false;
     vector<Item *> temploot;
     map<Item *, Location *> temploot2;
 
-    for(l = 0; l < location.size(); l++) {
-        for(int l2 = 0; l2 < location[l]->loot.size(); l2++) {
+    for(l = 0; l < (int)location.size(); l++)
+        for(int l2 = 0; l2 < (int)location[l]->loot.size(); l2++)
             if (!location[l]->siege.siege) {
                 temploot.push_back(location[l]->loot[l2]);
                 temploot2[location[l]->loot[l2]] = location[l];
             }
-        }
-    }
 
     vector<int> temploc;
 
-    for(l = 0; l < location.size(); l++) {
+    for(l = 0; l < (int)location.size(); l++)
         if(location[l]->renting >= 0)
             if (!location[l]->siege.siege)
                 temploc.push_back(l);
-    }
 
     if(temploc.size() == 0)
         return;
-
-    int page_loot = 0;
-    int page_loc = 0;
-
-    int selectedbase = 0;
 
     do {
         erase();
@@ -598,9 +583,9 @@ void equipmentbaseassign(void) {
         addstr("NEW LOCATION");
 
         int y = 2;
-        char str[80];
 
-        for(p = page_loot * 19; p < temploot.size() && p < page_loot * 19 + 19; p++) {
+        //char str[80];
+        for(p = page_loot * 19; p < (int)temploot.size() && p < page_loot * 19 + 19; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch(y + 'A' - 2);
@@ -614,7 +599,7 @@ void equipmentbaseassign(void) {
 
         y = 2;
 
-        for(p = page_loc * 9; p < temploc.size() && p < page_loc * 9 + 9; p++) {
+        for(p = page_loc * 9; p < (int)temploc.size() && p < page_loc * 9 + 9; p++) {
             if(p == selectedbase)
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
             else
@@ -661,7 +646,7 @@ void equipmentbaseassign(void) {
             page_loot--;
 
         //PAGE DOWN
-        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page_loot + 1) * 19 < temploot.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page_loot + 1) * 19 < (int)temploot.size())
             page_loot++;
 
         //PAGE UP
@@ -669,7 +654,7 @@ void equipmentbaseassign(void) {
             page_loc--;
 
         //PAGE DOWN
-        if(c == '.' && (page_loc + 1) * 9 < temploc.size())
+        if(c == '.' && (page_loc + 1) * 9 < (int)temploc.size())
             page_loc++;
 
         //Toggle sorting method
@@ -682,8 +667,8 @@ void equipmentbaseassign(void) {
                 //Sort by location
                 temploot.clear();
 
-                for(l = 0; l < location.size(); l++) {
-                    for(int l2 = 0; l2 < location[l]->loot.size(); l2++) {
+                for(l = 0; l < (int)location.size(); l++) {
+                    for(int l2 = 0; l2 < (int)location[l]->loot.size(); l2++) {
                         if (!location[l]->siege.siege)
                             temploot.push_back(location[l]->loot[l2]);
                     }
@@ -694,9 +679,9 @@ void equipmentbaseassign(void) {
         if(c >= 'a' && c <= 's') {
             int p = page_loot * 19 + (int)(c - 'a');
 
-            if(p < temploot.size()) {
+            if(p < (int)temploot.size()) {
                 // Search through the old base's stuff for this item
-                for(int l2 = 0; l2 < temploot2[temploot[p]]->loot.size(); l2++) {
+                for(int l2 = 0; l2 < (int)temploot2[temploot[p]]->loot.size(); l2++) {
                     // Remove it from that inventory and move it to the new one
                     if(temploot2[temploot[p]]->loot[l2] == temploot[p]) {
                         temploot2[temploot[p]]->loot.erase(temploot2[temploot[p]]->loot.begin() + l2);
@@ -710,7 +695,7 @@ void equipmentbaseassign(void) {
         if(c >= '1' && c <= '9') {
             int p = page_loc * 9 + (int)(c - '1');
 
-            if(p < temploc.size())
+            if(p < (int)temploc.size())
                 selectedbase = p;
         }
 
@@ -718,18 +703,18 @@ void equipmentbaseassign(void) {
         // using Shift + a number key.
         const char upnums[] = {'!', '@', '#', '$', '%', '^', '&', '*', '('};
 
-        for(int upnumi = 0; upnumi < sizeof(upnums); upnumi++) {
+        for(int upnumi = 0; upnumi < (int)sizeof(upnums); upnumi++) {
             if(c == upnums[upnumi]) {
                 // Set base location
                 int basechoice = page_loc * 9 + upnumi;
 
-                if(basechoice < temploc.size()) {
+                if(basechoice < (int)temploc.size()) {
                     selectedbase = basechoice;
 
                     // Search through the old base's stuff for this item
-                    for(int p = 0; p < temploot.size(); p++) {
+                    for(int p = 0; p < (int)temploot.size(); p++) {
                         // Search through the old base's stuff for this item
-                        for(int l2 = 0; l2 < temploot2[temploot[p]]->loot.size(); l2++) {
+                        for(int l2 = 0; l2 < (int)temploot2[temploot[p]]->loot.size(); l2++) {
                             // Remove it from that inventory and move it to the new one
                             if(temploot2[temploot[p]]->loot[l2] == temploot[p]) {
                                 temploot2[temploot[p]]->loot.erase(temploot2[temploot[p]]->loot.begin() + l2);
@@ -760,8 +745,7 @@ void consolidateloot(vector<Item *> &loot) {
             loot[l2]->merge(*loot[l]);
 
             if (loot[l]->empty()) {
-                delete loot[l];
-                loot.erase(loot.begin() + l);
+                delete_and_remove(loot, l);
                 break;
             }
         }
@@ -785,7 +769,7 @@ char squadhasitem(squadst &sq, const string &type) {
         }
     }
 
-    for(int l = 0; l < sq.loot.size(); l++) {
+    for(int l = 0; l < (int)sq.loot.size(); l++) {
         if(sq.loot[l]->get_itemtypename() != type)
             continue;
 

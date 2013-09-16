@@ -39,7 +39,7 @@ This file is part of Liberal Crime Squad.                                       
 void majornewspaper(char &clearformess, char canseethings) {
     clearformess = true;
 
-    int i;
+    //int i;
     int n = 0;
 
     generate_random_event_news_stories();
@@ -55,18 +55,16 @@ void majornewspaper(char &clearformess, char canseethings) {
         display_newspaper();
 
     //DELETE STORIES
-    for(n = 0; n < newsstory.size(); n++) {
+    for(n = 0; n < (int)newsstory.size(); n++)
         handle_public_opinion_impact(*newsstory[n]);
-        delete newsstory[n];
-    }
 
-    newsstory.clear();
+    delete_and_clear(newsstory);
 }
 
 void display_newspaper() {
     int writers = liberal_guardian_writing_power();
 
-    for(int n = 0; n < newsstory.size(); n++) {
+    for(int n = 0; n < (int)newsstory.size(); n++) {
         bool liberalguardian = 0;
         int header = -1;
 
@@ -205,8 +203,7 @@ void clean_up_empty_news_stories() {
         // Squad site action stories without crimes
         if(newsstory[n]->type == NEWSSTORY_SQUAD_SITE &&
                 newsstory[n]->crime.size() == 0) {
-            delete newsstory[n];
-            newsstory.erase(newsstory.begin() + n);
+            delete_and_remove(newsstory, n);
             continue;
         }
 
@@ -219,7 +216,7 @@ void clean_up_empty_news_stories() {
                 newsstory[n]->type == NEWSSTORY_BURIALARREST) {
             char conf = 0;
 
-            for(int c = 0; c < newsstory[n]->crime.size(); c++) {
+            for(int c = 0; c < (int)newsstory[n]->crime.size(); c++) {
                 if(newsstory[n]->crime[c] == CRIME_KILLEDSOMEBODY) {
                     conf = 1;
                     break;
@@ -227,8 +224,7 @@ void clean_up_empty_news_stories() {
             }
 
             if(!conf) {
-                delete newsstory[n];
-                newsstory.erase(newsstory.begin() + n);
+                delete_and_remove(newsstory, n);
                 continue;
             }
         }
@@ -241,8 +237,7 @@ void clean_up_empty_news_stories() {
                 newsstory[n]->type == NEWSSTORY_SQUAD_KILLED_SIEGEATTACK ||
                 newsstory[n]->type == NEWSSTORY_SQUAD_KILLED_SIEGEESCAPE) &&
                 newsstory[n]->siegetype != SIEGE_POLICE) {
-            delete newsstory[n];
-            newsstory.erase(newsstory.begin() + n);
+            delete_and_remove(newsstory, n);
             continue;
         }
     }
@@ -257,8 +252,7 @@ void assign_page_numbers_to_newspaper_stories() {
                 ((newsstory[n]->priority < 50 &&
                   newsstory[n]->claimed == 0) ||
                  newsstory[n]->priority < 4)) {
-            delete newsstory[n];
-            newsstory.erase(newsstory.begin() + n);
+            delete_and_remove(newsstory, n);
             continue;
         }
 
@@ -275,7 +269,7 @@ void assign_page_numbers_to_newspaper_stories() {
         int maxn = -1;
         int maxp = -1;
 
-        for(int n = 0; n < newsstory.size(); n++) {
+        for(int n = 0; n < (int)newsstory.size(); n++) {
             if(newsstory[n]->priority > maxp &&
                     newsstory[n]->page == -1) {
                 maxn = n;
@@ -396,7 +390,7 @@ void handle_public_opinion_impact(const newsstoryst &ns) {
         impact /= 4;
 
     // Impact gun control issue
-    change_public_opinion(VIEW_GUNCONTROL, abs(impact) / 10, 0, abs(impact) * 10);
+    change_public_opinion(VIEW_GUNCONTROL, ABS(impact) / 10, 0, ABS(impact) * 10);
 
     if(ns.loc == -1)
         return;
@@ -511,7 +505,7 @@ void handle_public_opinion_impact(const newsstoryst &ns) {
         break;
     }
 
-    for(i = 0; i < issues.size(); i++)
+    for(i = 0; i < (int)issues.size(); i++)
         change_public_opinion(issues[i], impact, squad_responsible, impact * 10);
 }
 
@@ -546,7 +540,7 @@ void setpriority(newsstoryst &ns) {
         memset(crime, 0, CRIMENUM * sizeof(int));
 
         // Record all the crimes in this story
-        for(int c = 0; c < ns.crime.size(); c++)
+        for(int c = 0; c < (int)ns.crime.size(); c++)
             crime[ns.crime[c]]++;
 
         // Cap publicity for more than ten repeats of an action of some type
@@ -973,7 +967,7 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
             int crime[CRIMENUM];
             std::memset(crime, 0, sizeof(int)*CRIMENUM);
 
-            for(int c = 0; c < ns.crime.size(); c++)
+            for(int c = 0; c < (int)ns.crime.size(); c++)
                 crime[ns.crime[c]]++;
 
             if(crime[CRIME_KILLEDSOMEBODY] > 1) {
@@ -1013,7 +1007,7 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
             int crime[CRIMENUM];
             std::memset(crime, 0, sizeof(int)*CRIMENUM);
 
-            for(int c = 0; c < ns.crime.size(); c++)
+            for(int c = 0; c < (int)ns.crime.size(); c++)
                 crime[ns.crime[c]]++;
 
             strcat(story, "A routine arrest went horribly wrong yesterday, ");
@@ -1139,7 +1133,7 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
             memset(crime, 0, sizeof(int)*CRIMENUM);
             int typesum = 0;
 
-            for(int c = 0; c < ns.crime.size(); c++) {
+            for(int c = 0; c < (int)ns.crime.size(); c++) {
                 // Count crimes of each type
                 crime[ns.crime[c]]++;
 
@@ -1854,72 +1848,60 @@ void displaystory(newsstoryst &ns, bool liberalguardian, int header) {
 void loadgraphics(void) {
     int picnum, dimx, dimy;
 
-    int numbytes;
+    //int numbytes;
     FILE *h;
 
-    h = LCSOpenFile("largecap.cpc", "rb", LCSIO_PRE_ART);
+    if((h = LCSOpenFile("largecap.cpc", "rb", LCSIO_PRE_ART)) != NULL) {
 
-    if(h != NULL) {
+        /*numbytes=*/fread(&picnum, sizeof(int), 1, h);
+        /*numbytes=*/fread(&dimx, sizeof(int), 1, h);
+        /*numbytes=*/fread(&dimy, sizeof(int), 1, h);
 
-        numbytes = fread(&picnum, sizeof(int), 1, h);
-        numbytes = fread(&dimx, sizeof(int), 1, h);
-        numbytes = fread(&dimy, sizeof(int), 1, h);
-
-        for(int p = 0; p < picnum; p++) {
-            for(int x = 0; x < dimx; x++) {
+        for(int p = 0; p < picnum; p++)
+            for(int x = 0; x < dimx; x++)
                 for(int y = 0; y < dimy; y++)
-                    numbytes = fread(&bigletters[p][x][y][0], sizeof(char), 4, h);
-            }
-        }
+                    /*numbytes=*/
+                    fread(&bigletters[p][x][y][0], sizeof(char), 4, h);
 
         LCSCloseFile(h);
     }
 
-    h = LCSOpenFile("newstops.cpc", "rb", LCSIO_PRE_ART);
+    if((h = LCSOpenFile("newstops.cpc", "rb", LCSIO_PRE_ART)) != NULL) {
 
-    if(h != NULL) {
+        /*numbytes=*/fread(&picnum, sizeof(int), 1, h);
+        /*numbytes=*/fread(&dimx, sizeof(int), 1, h);
+        /*numbytes=*/fread(&dimy, sizeof(int), 1, h);
 
-        numbytes = fread(&picnum, sizeof(int), 1, h);
-        numbytes = fread(&dimx, sizeof(int), 1, h);
-        numbytes = fread(&dimy, sizeof(int), 1, h);
-
-        for(int p = 0; p < picnum; p++) {
-            for(int x = 0; x < dimx; x++) {
+        for(int p = 0; p < picnum; p++)
+            for(int x = 0; x < dimx; x++)
                 for(int y = 0; y < dimy; y++)
-                    numbytes = fread(&newstops[p][x][y][0], sizeof(char), 4, h);
-            }
-        }
+                    /*numbytes=*/
+                    fread(&newstops[p][x][y][0], sizeof(char), 4, h);
 
         LCSCloseFile(h);
     }
 
+    if((h = LCSOpenFile("newspic.cpc", "rb", LCSIO_PRE_ART)) != NULL) {
 
-    h = LCSOpenFile("newspic.cpc", "rb", LCSIO_PRE_ART);
+        /*numbytes=*/fread(&picnum, sizeof(int), 1, h);
+        /*numbytes=*/fread(&dimx, sizeof(int), 1, h);
+        /*numbytes=*/fread(&dimy, sizeof(int), 1, h);
 
-    if(h != NULL) {
-
-        numbytes = fread(&picnum, sizeof(int), 1, h);
-        numbytes = fread(&dimx, sizeof(int), 1, h);
-        numbytes = fread(&dimy, sizeof(int), 1, h);
-
-        for(int p = 0; p < picnum; p++) {
-            for(int x = 0; x < dimx; x++) {
+        for(int p = 0; p < picnum; p++)
+            for(int x = 0; x < dimx; x++)
                 for(int y = 0; y < dimy; y++)
-                    numbytes = fread(&newspic[p][x][y][0], sizeof(char), 4, h);
-            }
-        }
+                    /*numbytes=*/
+                    fread(&newspic[p][x][y][0], sizeof(char), 4, h);
 
         LCSCloseFile(h);
     }
 }
 
-
-
 void displaycenterednewsfont(const char *str, int y) {
     int width = -1;
     int s;
 
-    for(s = 0; s < strlen(str); s++) {
+    for(s = 0; s < (int)strlen(str); s++) {
         if(str[s] >= 'A' && str[s] <= 'Z')
             width += 6;
         else if(str[s] == '\'')
@@ -1930,7 +1912,7 @@ void displaycenterednewsfont(const char *str, int y) {
 
     int x = 39 - width / 2;
 
-    for(s = 0; s < strlen(str); s++) {
+    for(s = 0; s < (int)strlen(str); s++) {
         if((str[s] >= 'A' && str[s] <= 'Z') || str[s] == '\'') {
             int p;
 
@@ -1944,7 +1926,7 @@ void displaycenterednewsfont(const char *str, int y) {
             if(str[s] == '\'')
                 lim = 4;
 
-            if(s == strlen(str) - 1)
+            if(s == (int)strlen(str) - 1)
                 lim--;
 
             for(int x2 = 0; x2 < lim; x2++) {
@@ -1986,16 +1968,12 @@ void displaycenterednewsfont(const char *str, int y) {
     }
 }
 
-
-
 void displaycenteredsmallnews(const char *str, int y) {
     int x = 39 - ((strlen(str) - 1) >> 1);
     move(y, x);
     set_color(COLOR_BLACK, COLOR_WHITE, 0);
     addstr(str);
 }
-
-
 
 void displaynewspicture(int p, int y) {
     for(int x2 = 0; x2 < 78; x2++) {
@@ -2011,12 +1989,6 @@ void displaynewspicture(int p, int y) {
         }
     }
 }
-
-
-
-
-
-
 
 /* news - draws the specified block of text to the screen */
 void displaynewsstory(char *story, short *storyx_s, short *storyx_e, int y) {
@@ -2036,7 +2008,7 @@ void displaynewsstory(char *story, short *storyx_s, short *storyx_e, int y) {
     char iscentered = 0;
     int i = 0;
 
-    while(curpos < strlen(story) && cury < 25) {
+    while(curpos < (int)strlen(story) && cury < 25) {
         content = 0;
         totalwidth = 0;
         addstrcur = 0;
@@ -2051,7 +2023,7 @@ void displaynewsstory(char *story, short *storyx_s, short *storyx_e, int y) {
             continue;
         }
 
-        for(i = curpos; i < strlen(story); i++) {
+        for(i = curpos; i < (int)strlen(story); i++) {
             if(story[i] == '&' && story[i + 1] != '&') {
                 i++;
 
@@ -2094,7 +2066,7 @@ void displaynewsstory(char *story, short *storyx_s, short *storyx_e, int y) {
             }
         }
 
-        if(i == strlen(story))
+        if(i == (int)strlen(story))
             addstring[addstrcur] = '\x0';
 
         if(strlen(addstring) > 0 && content) {
@@ -2102,7 +2074,7 @@ void displaynewsstory(char *story, short *storyx_s, short *storyx_e, int y) {
             char silent = 1;
             vector<int> spacex;
 
-            for(int s2 = 0; s2 < strlen(addstring); s2++) {
+            for(int s2 = 0; s2 < (int)strlen(addstring); s2++) {
                 if(addstring[s2] == ' ') {
                     if(!silent) {
                         silent = 1;
@@ -2117,10 +2089,10 @@ void displaynewsstory(char *story, short *storyx_s, short *storyx_e, int y) {
                 }
             }
 
-            while(!endparagraph && words > 1 && strlen(addstring) < length && !iscentered) {
+            while(!endparagraph && words > 1 && (int)strlen(addstring) < length && !iscentered) {
                 int csp = spacex[LCSrandom(spacex.size())];
 
-                for(int x = 0; x < spacex.size(); x++) {
+                for(int x = 0; x < (int)spacex.size(); x++) {
                     if(spacex[x] > csp)
                         spacex[x]++;
                 }
@@ -2148,7 +2120,7 @@ void displaynewsstory(char *story, short *storyx_s, short *storyx_e, int y) {
 
     set_color(COLOR_BLACK, COLOR_WHITE, 0);
 
-    for(int t = 0; t < text.size(); t++) {
+    for(int t = 0; t < (int)text.size(); t++) {
         if(y + t >= 25)
             break;
 
@@ -2284,7 +2256,7 @@ newsstoryst *new_major_event() {
 int liberal_guardian_writing_power() {
     int power = 0;
 
-    for(int i = 0; i < pool.size(); i++) {
+    for(int i = 0; i < (int)pool.size(); i++) {
         if(pool[i]->alive && pool[i]->activity.type == ACTIVITY_WRITE_GUARDIAN) {
             if(pool[i]->location != -1 &&
                     location[pool[i]->location]->compound_walls & COMPOUND_PRINTINGPRESS) {
@@ -2367,7 +2339,7 @@ newsstoryst *ccs_fbi_raid_story() {
     endgamestate = ENDGAME_CCS_DEFEATED;
 
     // arrest or kill ccs sleepers
-    for(int p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < (int)pool.size(); p++) {
         if(pool[p]->flag & CREATUREFLAG_SLEEPER) {
             if(pool[p]->type == CREATURE_CCS_VIGILANTE || pool[p]->type == CREATURE_CCS_ARCHCONSERVATIVE ||
                     pool[p]->type == CREATURE_CCS_MOLOTOV || pool[p]->type == CREATURE_CCS_SNIPER) {
@@ -2379,7 +2351,7 @@ newsstoryst *ccs_fbi_raid_story() {
     }
 
     // hide ccs safehouses
-    for(int l = 0; l < location.size(); l++) {
+    for(int l = 0; l < (int)location.size(); l++) {
         if(location[l]->renting == RENTING_CCS) {
             location[l]->renting = RENTING_NOCONTROL;
             location[l]->hidden = true;

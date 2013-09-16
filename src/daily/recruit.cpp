@@ -24,7 +24,7 @@ This file is part of Liberal Crime Squad.                                       
 
 
 /* recruit struct constructor */
-recruitst::recruitst() : task(0), timeleft(0), level(0), eagerness1(0) {
+recruitst::recruitst() : timeleft(0), level(0), eagerness1(0), task(0) {
     //Has heard of the LCS
     if((int)LCSrandom(100) < attitude[VIEW_LIBERALCRIMESQUAD]) {
         //Likes the LCS
@@ -466,7 +466,7 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
                 addstr(" shares ", gamelog);
                 strcpy(str, "");
                 getissueeventstring(str);
-                addstr(str), gamelog;
+                addstr(str, gamelog);
                 addstr(".", gamelog);
                 gamelog.newline();
 
@@ -486,10 +486,10 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
                 getch();
             }
 
-            bool success = 0;
+            //bool success=0;
 
             if(pool[p]->skill_check(SKILL_PERSUASION, difficulty)) {
-                success = 1;
+                //success=1;
                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
 
                 if(r.level < 127)

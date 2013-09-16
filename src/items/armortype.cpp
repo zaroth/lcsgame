@@ -4,44 +4,31 @@ ArmorType::ArmorType(MCD_STR xmlstring)
     : ItemType(xmlstring),
       make_difficulty_(0), make_price_(0), deathsquad_legality_(false),
       can_get_bloody_(true), can_get_damaged_(true),
-      armor_body_(0), armor_head_(0), armor_limbs_(0), fireprotection_(false),
-      cover_head_(false), cover_body_(true), cover_arms_(true), cover_legs_(true),
-      conceal_face_(false), stealth_value_(0),
-      shortname_("UNDEF"), shortname_defined_(false), shortname_future_defined_(false),
+      stealth_value_(0), armor_body_(0), armor_head_(0), armor_limbs_(0), fireprotection_(false),
+      cover_head_(false), cover_body_(true), cover_arms_(true), cover_legs_(true), conceal_face_(false),
+      shortname_("UNDEF"), shortname_future_("UNDEF"), shortname_defined_(false), shortname_future_defined_(false),
       interrogation_basepower_(0), interrogation_assaultbonus_(0), interrogation_drugbonus_(0),
       professionalism_(2), conceal_weaponsize_(5),
-      mask_(false), surprise_mask_(false) {
+      mask_(false), surprise_mask_(false), description_("UNDEF") {
     init(xmlstring);
 }
 
 ArmorType::ArmorType(const ArmorType &base, MCD_STR xmlstring)
-    : ItemType(base, xmlstring) {
-    make_difficulty_ = base.make_difficulty_;
-    make_price_ = base.make_price_;
-    deathsquad_legality_ = base.deathsquad_legality_;
-    armor_body_ = base.armor_body_;
-    armor_head_ = base.armor_head_;
-    armor_limbs_ = base.armor_limbs_;
-    fireprotection_ = base.fireprotection_;
-    cover_head_ = base.cover_head_;
-    cover_body_ = base.cover_body_;
-    cover_arms_ = base.cover_arms_;
-    cover_legs_ = base.cover_legs_;
-    conceal_face_ = base.conceal_face_;
-    shortname_ = base.shortname_;
-    shortname_future_ = base.shortname_future_;
-    shortname_defined_ = base.shortname_defined_;
-    shortname_future_defined_ = base.shortname_future_defined_;
-    interrogation_basepower_ = base.interrogation_basepower_;
-    interrogation_assaultbonus_ = base.interrogation_assaultbonus_;
-    interrogation_drugbonus_ = base.interrogation_drugbonus_;
-    professionalism_ = base.professionalism_;
-    conceal_weaponsize_ = base.conceal_weaponsize_;
-    stealth_value_ = base.stealth_value_;
-    mask_ = base.mask_;
-    surprise_mask_ = base.surprise_mask_;
-    description_ = base.description_;
+    : ItemType(base, xmlstring),
+      make_difficulty_(base.make_difficulty_), make_price_(base.make_price_), deathsquad_legality_(base.deathsquad_legality_),
+      can_get_bloody_(base.can_get_bloody_), can_get_damaged_(base.can_get_damaged_),
+      stealth_value_(base.stealth_value_), armor_body_(base.armor_body_), armor_head_(base.armor_head_), armor_limbs_(base.armor_limbs_),
+      fireprotection_(base.fireprotection_),
+      cover_head_(base.cover_head_), cover_body_(base.cover_body_), cover_arms_(base.cover_arms_), cover_legs_(base.cover_legs_),
+      conceal_face_(base.conceal_face_),
+      shortname_(base.shortname_), shortname_future_(base.shortname_future_), shortname_defined_(base.shortname_defined_),
+      shortname_future_defined_(base.shortname_future_defined_),
+      interrogation_basepower_(base.interrogation_basepower_), interrogation_assaultbonus_(base.interrogation_assaultbonus_),
+      interrogation_drugbonus_(base.interrogation_drugbonus_),
+      professionalism_(base.professionalism_), conceal_weaponsize_(base.conceal_weaponsize_),
+      mask_(base.mask_), surprise_mask_(base.surprise_mask_), description_(base.description_)
 
+{
     init(xmlstring);
 }
 

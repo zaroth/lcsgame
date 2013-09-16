@@ -82,7 +82,7 @@ void loadinitfile(void) {
 
             posequal = str.find('=');
 
-            if(posequal == string::npos)
+            if(posequal == (int)string::npos)
                 continue;
 
             setconfigoption(str.substr(0, posequal), str.substr(posequal + 1));

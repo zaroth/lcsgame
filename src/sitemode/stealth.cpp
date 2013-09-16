@@ -94,7 +94,7 @@ char alienationcheck(char mistake) {
     char alienate = 0;
     char alienatebig = 0;
 
-    char sneak = 0;
+    //char sneak=0;
 
     int oldsitealienate = sitealienate;
 
@@ -186,7 +186,7 @@ void disguisecheck(int timer) {
     int weapon = 0;
     int squadsize = 0;
     bool forcecheck = false;
-    int weaponar[6] = {0};
+    //int weaponar[6]={0};
 
     bool spotted = false;
     int blew_it = -1;
@@ -209,8 +209,7 @@ void disguisecheck(int timer) {
         if(thisweapon > weapon)
             weapon = thisweapon;
 
-        if(thisweapon == 2)
-            weaponar[i] = 1;
+        //if(thisweapon==2)weaponar[i]=1;
     }
 
     // Nothing suspicious going on here
@@ -533,7 +532,7 @@ char weaponcheck(const Creature &cr, bool metaldetect) {
     bool suspicious = cr.get_weapon().is_suspicious();
     bool concealed = cr.weapon_is_concealed();
     char incharacter = weapon_in_character(cr.get_weapon().get_itemtypename(), cr.get_armor().get_itemtypename());
-    bool illegal = cr.get_weapon().get_legality() < law[LAW_GUNCONTROL];
+    //bool illegal = cr.get_weapon().get_legality() < law[LAW_GUNCONTROL];
 
     // If your disguise is inappropriate to the current location,
     // then being in character isn't sufficient

@@ -24,7 +24,7 @@ void activate_sleepers(void) {
     vector<Creature *> temppool;
 
     // Comb the pool of Liberals for sleeper agents
-    for(int p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < (int)pool.size(); p++) {
         // Select only sleepers that can work
         if(pool[p]->alive == true &&
                 pool[p]->flag & CREATUREFLAG_SLEEPER &&
@@ -65,7 +65,7 @@ void activate_sleepers(void) {
 
         int y = 2;
 
-        for(int p = page * 9; p < temppool.size() && p < page * 9 + 9; p++) {
+        for(int p = page * 9; p < (int)temppool.size() && p < page * 9 + 9; p++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(y, 0);
             addch((y - 2) / 2 + 'A');
@@ -128,13 +128,13 @@ void activate_sleepers(void) {
             page--;
 
         //PAGE DOWN
-        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 9 < temppool.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 9 < (int)temppool.size())
             page++;
 
         if(c >= 'a' && c <= 's') {
             int p = page * 9 + (int)(c - 'a');
 
-            if(p < temppool.size())
+            if(p < (int)temppool.size())
                 activate_sleeper(temppool[p]);
         }
 
@@ -152,7 +152,7 @@ void activate_sleepers(void) {
 void activate_sleeper(Creature *cr) {
     int state = 0;
     int choice = 0;
-    char havedead = 0;
+    //char havedead=0;
 
     do {
         erase();
@@ -323,7 +323,7 @@ void activate_sleeper(Creature *cr) {
         }
 
         if(state == 'c') {
-            activityst oact = cr->activity;
+            //activityst oact=cr->activity;
             cr->activity.type = ACTIVITY_SLEEPER_JOINLCS;
         }
 

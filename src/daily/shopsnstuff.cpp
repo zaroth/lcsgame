@@ -129,8 +129,8 @@ void pawnshop(int loc) {
 /* active squad visits the car dealership */
 void dealership(int loc) {
     short buyer = 0;
-    int l;
-    char str[80];
+    //int l;
+    //char str[80];
 
     locatesquad(activesquad, loc);
 
@@ -148,7 +148,7 @@ void dealership(int loc) {
 
         Creature *sleepercarsalesman = NULL;
 
-        for(int p = 0; p < pool.size(); p++)
+        for(int p = 0; p < (int)pool.size(); p++)
             if(pool[p]->alive && (pool[p]->flag & CREATUREFLAG_SLEEPER) &&
                     pool[p]->type == CREATURE_CARSALESMAN && location[pool[p]->location]->city == location[loc]->city)
                 sleepercarsalesman = pool[p];
@@ -228,11 +228,10 @@ void dealership(int loc) {
         //Sell the car
         if(c == 's' && car_to_sell) {
             ledger.add_funds(price, INCOME_CARS);
-            delete car_to_sell;
 
             for(int v = (int)vehicle.size() - 1; v >= 0; v--)
                 if(vehicle[v] == car_to_sell) {
-                    vehicle.erase(vehicle.begin() + v);
+                    delete_and_remove(vehicle, v);
                     break;
                 }
         }
@@ -244,7 +243,7 @@ void dealership(int loc) {
             vector<int> availablevehicle;
             vector<string> vehicleoption;
 
-            for (int i = 0; i < vehicletype.size(); ++i)
+            for (int i = 0; i < (int)vehicletype.size(); ++i)
                 if (vehicletype[i]->availableatshop()) {
                     availablevehicle.push_back(i);
                     vehicleoption.push_back(vehicletype[i]->longname() + " ($" +

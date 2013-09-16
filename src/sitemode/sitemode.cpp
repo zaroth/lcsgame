@@ -31,26 +31,16 @@ This file is part of Liberal Crime Squad.                                       
 
 void fight_subdued(void) {
     int p;
-    int ps = find_police_station(chaseseq.location);
+    //int ps=find_police_station(chaseseq.location);
 
-    for(int v = 0; v < chaseseq.friendcar.size(); v++) {
-        for(int v2 = (int)vehicle.size() - 1; v2 >= 0; v2--) {
-            if(vehicle[v2] == chaseseq.friendcar[v]) {
-                delete vehicle[v2];
-                vehicle.erase(vehicle.begin() + v2);
-            }
-        }
-    }
-
-    chaseseq.friendcar.clear();
+    delete_and_clear(chaseseq.friendcar, vehicle);
     int hostagefreed = 0;
     int stolen = 0;
 
     // Police assess stolen goods in inventory
-    for(int l = 0; l < activesquad->loot.size(); l++) {
+    for(int l = 0; l < (int)activesquad->loot.size(); l++)
         if(activesquad->loot[l]->is_loot())
             stolen++;
-    }
 
     for(p = 0; p < 6; p++) {
         if(activesquad->squad[p] == NULL)
@@ -61,10 +51,9 @@ void fight_subdued(void) {
         activesquad->squad[p] = NULL;
     }
 
-    for(p = 0; p < pool.size(); p++) {
+    for(p = 0; p < (int)pool.size(); p++)
         for(int w = 0; w < BODYPARTNUM; w++)
             pool[p]->wound[w] &= ~WOUND_BLEEDING;
-    }
 
     clearmessagearea();
     clearcommandarea();
@@ -119,20 +108,16 @@ void mode_site(short loc) {
             locz++;
 
         //check for sleeper infiltration or map knowledge
-        for(int p = 0; p < pool.size(); p++) {
+        for(int p = 0; p < (int)pool.size(); p++)
             if(pool[p]->base == loc || location[loc]->mapped) {
                 //make entire site known
-                for(int x = 0; x < MAPX; x++) {
-                    for(int y = 0; y < MAPY; y++) {
+                for(int x = 0; x < MAPX; x++)
+                    for(int y = 0; y < MAPY; y++)
                         for(int z = 0; z < MAPZ; z++)
                             levelmap[x][y][z].flag |= SITEBLOCK_KNOWN;
-                    }
-                }
 
                 break;
             }
-        }
-
     } else {
         sitealarm = 1;
 
@@ -141,9 +126,9 @@ void mode_site(short loc) {
         location[loc]->siege.tanks = 0;
 
         //PLACE YOU
-        int maxy = 0;
+        //int maxy=0;
 
-        for(int x = 0; x < MAPX; x++) {
+        for(int x = 0; x < MAPX; x++)
             for(int y = 0; y < MAPY; y++) {
                 for(int z = 0; z < MAPZ; z++) {
                     if(!(location[loc]->siege.lights_off))
@@ -153,20 +138,15 @@ void mode_site(short loc) {
                     levelmap[x][y][z].flag &= ~SITEBLOCK_LOOT;
                 }
 
-                if(!(levelmap[x][y][0].flag & (SITEBLOCK_BLOCK | SITEBLOCK_DOOR)))
-                    maxy = y;
+                //if(!(levelmap[x][y][0].flag & (SITEBLOCK_BLOCK|SITEBLOCK_DOOR)))maxy=y;
             }
-        }
 
         //Cops have tanks; firemen have fire.
         if(location[loc]->siege.siegetype == SIEGE_FIREMEN) {
-            short firesstarted = 0;
-            short firex = LCSrandom(MAPX);
-            short firey = LCSrandom(MAPY);
+            int firesstarted = 0, firex, firey;
 
             do {
-                firex = LCSrandom(MAPX);
-                firey = LCSrandom(MAPY);
+                firex = LCSrandom(MAPX), firey = LCSrandom(MAPY);
                 firesstarted++;
                 levelmap[firex][firey][0].flag |= SITEBLOCK_FIRE_START;
 
@@ -250,8 +230,7 @@ void mode_site(short loc) {
 }
 
 void mode_site(void) {
-    int p, u;
-    int x;
+    int p, u, x;
 
     if(activesquad == NULL)
         return;
@@ -272,9 +251,7 @@ void mode_site(void) {
     int encounter_timer = 0;
 
     do {
-        int partysize = 0;
-        int partyalive = 0;
-        int hostages = 0;
+        int partysize = 0, partyalive = 0, hostages = 0, encsize = 0, freeable = 0, enemy = 0, majorenemy = 0, talkers = 0;
 
         for(p = 0; p < 6; p++) {
             if(activesquad->squad[p] != NULL)
@@ -288,12 +265,6 @@ void mode_site(void) {
             if(activesquad->squad[p]->prisoner && activesquad->squad[p]->prisoner->align != ALIGN_LIBERAL)
                 hostages++;
         }
-
-        int encsize = 0;
-        int freeable = 0;
-        int enemy = 0;
-        int majorenemy = 0;
-        int talkers = 0;
 
         for(int e = 0; e < ENCMAX; e++) {
             if(encounter[e].exists) {
@@ -333,7 +304,7 @@ void mode_site(void) {
 
         int libnum = 0;
 
-        for(p = 0; p < pool.size(); p++) {
+        for(p = 0; p < (int)pool.size(); p++) {
             if(pool[p]->align == 1 &&
                     pool[p]->alive &&
                     pool[p]->location == cursite &&
@@ -1811,7 +1782,7 @@ void mode_site(void) {
                                         w->get_itemtypename() == "WEAPON_FLAMETHROWER") { //Make weapon property? -XML
                                     vector<int> cti;
 
-                                    for(int ct = 0; ct < cliptype.size(); ++ct) {
+                                    for(int ct = 0; ct < (int)cliptype.size(); ++ct) {
                                         if(w->acceptable_ammo(*cliptype[ct]))
                                             cti.push_back(ct);
                                     }
@@ -1825,8 +1796,7 @@ void mode_site(void) {
                             activesquad->loot.push_back(item);
                         }
 
-                        char str[200];
-
+                        //char str[200];
                         if (item) {
                             string s = item->equip_title();
                             clearmessagearea();
@@ -1844,7 +1814,7 @@ void mode_site(void) {
                 }
 
                 //MAKE GROUND LOOT INTO MISSION LOOT
-                for(int l = 0; l < groundloot.size(); l++)
+                for(int l = 0; l < (int)groundloot.size(); l++)
                     activesquad->loot.push_back(groundloot[l]);
 
                 groundloot.clear();
@@ -1855,7 +1825,7 @@ void mode_site(void) {
                     disguisecheck(encounter_timer);
 
                 if(tookground) {
-                    int maxsleightofhand = 0;
+                    //int maxsleightofhand=0;
                     int beststealer = 0;
                     juiceparty(1, 200);
                     alienationcheck(0);
@@ -1931,7 +1901,7 @@ void mode_site(void) {
 
                 //ENEMIES SHOULD GET FREE SHOTS NOW
                 if(enemy && sitealarm) {
-                    bool snuck_away = true;
+                    //bool snuck_away = true;
                     int e;
 
                     // Try to sneak past
@@ -2114,7 +2084,7 @@ void mode_site(void) {
                         }
 
                         //Clear all bleeding and prison escape flags
-                        for(p = 0; p < pool.size(); p++) {
+                        for(p = 0; p < (int)pool.size(); p++) {
                             pool[p]->flag &= ~CREATUREFLAG_JUSTESCAPED;
 
                             for(int w = 0; w < BODYPARTNUM; w++)
@@ -2236,7 +2206,7 @@ void mode_site(void) {
                         }
                     }
 
-                    for(p = 0; p < pool.size(); p++) {
+                    for(p = 0; p < (int)pool.size(); p++) {
                         pool[p]->flag &= ~CREATUREFLAG_JUSTESCAPED;
 
                         for(int w = 0; w < BODYPARTNUM; w++)
@@ -2304,7 +2274,7 @@ void mode_site(void) {
 
                     int sx = 0, sy = 0, sz = 0;
 
-                    for(u = 0; u < unitx.size(); u++) {
+                    for(u = 0; u < (int)unitx.size(); u++) {
                         // don't leave tile if player is here
                         if(unitx[u] == locx &&
                                 unity[u] == locy &&
@@ -2485,7 +2455,7 @@ void mode_site(void) {
                     // End Heavy Units
                     */
 
-                    for(u = 0; u < unitx.size(); u++) {
+                    for(u = 0; u < (int)unitx.size(); u++) {
                         sz = 0;
 
                         switch(LCSrandom(4)) {
@@ -2522,14 +2492,11 @@ void mode_site(void) {
                                     levelmap[sx][sy][sz].flag &= ~SITEBLOCK_KLOCK;
                                     levelmap[sx][sy][sz].flag &= ~SITEBLOCK_CLOCK;
                                 } else {
-                                    char conf = 1;
+                                    //char conf=1;
 
                                     //BLOCK PASSAGE
-                                    if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_UNIT)
-                                        conf = 0;
-
-                                    if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_HEAVYUNIT)
-                                        conf = 0;
+                                    //if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_UNIT)conf=0;
+                                    //if(levelmap[sx][sy][sz].siegeflag & SIEGEFLAG_HEAVYUNIT)conf=0;
                                 }
                             }
                         }
@@ -2673,7 +2640,7 @@ void mode_site(void) {
                             }
                         }
 
-                        for(p = 0; p < pool.size(); p++) {
+                        for(p = 0; p < (int)pool.size(); p++) {
                             pool[p]->flag &= ~CREATUREFLAG_JUSTESCAPED;
 
                             for(int w = 0; w < BODYPARTNUM; w++)
@@ -2986,10 +2953,7 @@ void mode_site(void) {
 
                 if(locx != olocx || locy != olocy || locz != olocz) {
                     //NUKE GROUND LOOT
-                    for(int l = 0; l < groundloot.size(); l++)
-                        delete groundloot[l];
-
-                    groundloot.clear();
+                    delete_and_clear(groundloot);
 
                     //MOVE BLOOD
                     if(levelmap[olocx][olocy][olocz].flag & SITEBLOCK_BLOODY2)
@@ -3029,7 +2993,7 @@ void resolvesite(void) {
 
         // Out sleepers
         if(location[cursite]->renting == RENTING_CCS) {
-            for(int p = 0; p < pool.size(); p++) {
+            for(int p = 0; p < (int)pool.size(); p++) {
                 if(pool[p]->flag & CREATUREFLAG_SLEEPER &&
                         pool[p]->location == cursite) {
                     pool[p]->flag &= ~CREATUREFLAG_SLEEPER;
@@ -3071,7 +3035,7 @@ void open_door(bool restricted) {
     bool locked = levelmap[locx][locy][locz].flag & SITEBLOCK_LOCKED;
     bool alarmed = levelmap[locx][locy][locz].flag & SITEBLOCK_ALARMED;
     bool vault_door = levelmap[locx][locy][locz].flag & SITEBLOCK_METAL;
-    bool known_locked = levelmap[locx][locy][locz].flag & SITEBLOCK_KLOCK;
+    //bool known_locked = levelmap[locx][locy][locz].flag & SITEBLOCK_KLOCK;
     bool cant_unlock = levelmap[locx][locy][locz].flag & SITEBLOCK_CLOCK;
 
     if(vault_door) {

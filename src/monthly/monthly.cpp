@@ -75,13 +75,13 @@ void passmonth(char &clearformess, char canseethings) {
     }
 
     //CLEAR RENT EXEMPTIONS
-    for(l = 0; l < location.size(); l++)
+    for(l = 0; l < (int)location.size(); l++)
         location[l]->newrental = 0;
 
     //YOUR PAPER AND PUBLIC OPINION AND STUFF
     vector<int> nploc;
 
-    for(l = 0; l < location.size(); l++) {
+    for(l = 0; l < (int)location.size(); l++) {
         if((location[l]->compound_walls & COMPOUND_PRINTINGPRESS) &&
                 !location[l]->siege.siege &&
                 location[l]->renting != RENTING_CCS)
@@ -104,7 +104,7 @@ void passmonth(char &clearformess, char canseethings) {
 
             if(loottype[loottypeindex]->get_idname() == "LOOT_INTHQDISK" || //For special edition xml file? -XML
                     loottype[loottypeindex]->get_idname() == "LOOT_SECRETDOCUMENTS") {
-                for(int l = 0; l < nploc.size(); l++)
+                for(int l = 0; l < (int)nploc.size(); l++)
                     criminalizepool(LAWFLAG_TREASON, -1, nploc[l]);
             }
         }
@@ -125,7 +125,7 @@ void passmonth(char &clearformess, char canseethings) {
     }
 
     //Manage graffiti
-    for(int l = 0; l < location.size(); l++) { // Check each location
+    for(int l = 0; l < (int)location.size(); l++) { // Check each location
         for(int c = location[l]->changes.size() - 1; c >= 0; c--) { // Each change to the map
             if(location[l]->changes[c].flag == SITEBLOCK_GRAFFITI ||
                     location[l]->changes[c].flag == SITEBLOCK_GRAFFITI_CCS ||
@@ -177,9 +177,9 @@ void passmonth(char &clearformess, char canseethings) {
 
     int mediabalance = 0;
     int issuebalance[VIEWNUM - 5];
-    int stimulus = 0;
-    double cost = 0;
-    double tax = 0;
+    //int stimulus=0;
+    //double cost=0;
+    //double tax=0;
 
     //PUBLIC OPINION NATURAL MOVES
     for(v = 0; v < VIEWNUM; v++) {
@@ -231,7 +231,7 @@ void passmonth(char &clearformess, char canseethings) {
     // Seduction monthly experience stipends for those liberals
     // who have been getting it on with their love slaves/masters
     // in the background
-    for(int s = 0; s < pool.size(); s++) {
+    for(int s = 0; s < (int)pool.size(); s++) {
         pool[s]->train(SKILL_SEDUCTION, loveslaves(*pool[s]) * 5);
 
         if(pool[s]->flag & CREATUREFLAG_LOVESLAVE)
@@ -387,8 +387,7 @@ void passmonth(char &clearformess, char canseethings) {
                 getch();
 
                 removesquadinfo(*pool[p]);
-                delete pool[p];
-                pool.erase(pool.begin() + p);
+                delete_and_remove(pool, p);
                 continue;
             } else if(pool[p]->flag & CREATUREFLAG_ILLEGALALIEN && law[LAW_IMMIGRATION] != 2) {
                 set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
@@ -407,8 +406,7 @@ void passmonth(char &clearformess, char canseethings) {
                 getch();
 
                 removesquadinfo(*pool[p]);
-                delete pool[p];
-                pool.erase(pool.begin() + p);
+                delete_and_remove(pool, p);
                 continue;
             } else {
                 //TRY TO GET RACKETEERING CHARGE
@@ -473,8 +471,7 @@ void passmonth(char &clearformess, char canseethings) {
 
                         removesquadinfo(*pool[p]);
 
-                        delete pool[p];
-                        pool.erase(pool.begin() + p);
+                        delete_and_remove(pool, p);
                         continue; //no trial for this person; skip to next person
                     }
 
@@ -512,8 +509,7 @@ void passmonth(char &clearformess, char canseethings) {
             removesquadinfo(*pool[p]);
             pool[p]->die();
             pool[p]->location = -1;
-            //delete pool[p];
-            //pool.erase(pool.begin() + p);
+            //delete_and_remove(pool.p]);
         }
     }
 
@@ -527,7 +523,7 @@ void passmonth(char &clearformess, char canseethings) {
     fundreport(clearformess);
 
     //HEAL CLINIC PEOPLE
-    for(p = 0; p < pool.size(); p++) {
+    for(p = 0; p < (int)pool.size(); p++) {
         if(disbanding)
             break;
 
@@ -602,12 +598,12 @@ void passmonth(char &clearformess, char canseethings) {
                     location[pool[p]->location]->type == SITE_HOSPITAL_CLINIC) {
                 int hospital;
 
-                for(hospital = 0; hospital < location.size(); ++hospital) {
+                for(hospital = 0; hospital < (int)location.size(); ++hospital) {
                     if(location[hospital]->type == SITE_HOSPITAL_UNIVERSITY)
                         break;
                 }
 
-                if(hospital != location.size()) {
+                if(hospital != (int)location.size()) {
                     pool[p]->location = hospital;
                     set_color(COLOR_WHITE, COLOR_BLACK, 1);
                     move(8, 1);
@@ -640,7 +636,7 @@ void passmonth(char &clearformess, char canseethings) {
 
                 int hs = -1;
 
-                for(int l = 0; l < location.size(); l++) {
+                for(int l = 0; l < (int)location.size(); l++) {
                     if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
                         hs = l;
                         break;
@@ -668,7 +664,7 @@ void passmonth(char &clearformess, char canseethings) {
 void updateworld_laws(short *law, short *oldlaw) {
     if((law[LAW_DEATHPENALTY] == -2 || oldlaw[LAW_DEATHPENALTY] == -2) &&
             law[LAW_DEATHPENALTY] != oldlaw[LAW_DEATHPENALTY]) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_GOVERNMENT_PRISON)   // Prison or re-ed camp?
                 initlocation(*location[l]);
 
@@ -678,7 +674,7 @@ void updateworld_laws(short *law, short *oldlaw) {
     }
 
     if(law[LAW_GUNCONTROL] == 2 && oldlaw[LAW_GUNCONTROL] < 2) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_BUSINESS_PAWNSHOP)   // Do they mention guns in the title?
                 initlocation(*location[l]);
         }
@@ -686,7 +682,7 @@ void updateworld_laws(short *law, short *oldlaw) {
 
     if((law[LAW_POLICEBEHAVIOR] == -2 || oldlaw[LAW_POLICEBEHAVIOR] == -2) &&
             law[LAW_POLICEBEHAVIOR] != oldlaw[LAW_POLICEBEHAVIOR]) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_GOVERNMENT_PRISON)   // Prison or re-ed camp?
                 initlocation(*location[l]);
 
@@ -697,7 +693,7 @@ void updateworld_laws(short *law, short *oldlaw) {
 
     if((law[LAW_FREESPEECH] == -2 || oldlaw[LAW_FREESPEECH] == -2) &&
             law[LAW_FREESPEECH] != oldlaw[LAW_FREESPEECH]) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_GOVERNMENT_FIRESTATION)   // Fire station or Fireman HQ?
                 initlocation(*location[l]);
         }
@@ -705,7 +701,7 @@ void updateworld_laws(short *law, short *oldlaw) {
 
     if((law[LAW_PRIVACY] == -2 || oldlaw[LAW_PRIVACY] == -2) &&
             law[LAW_PRIVACY] != oldlaw[LAW_PRIVACY]) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_GOVERNMENT_INTELLIGENCEHQ)   // Intelligence HQ or min. of love?
                 initlocation(*location[l]);
         }
@@ -713,7 +709,7 @@ void updateworld_laws(short *law, short *oldlaw) {
 
     if((law[LAW_CORPORATE] == -2 || oldlaw[LAW_CORPORATE] == -2) &&
             law[LAW_CORPORATE] != oldlaw[LAW_CORPORATE]) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_CORPORATE_HOUSE)   // CEO house or CEO Castle?
                 initlocation(*location[l]);
         }
@@ -721,7 +717,7 @@ void updateworld_laws(short *law, short *oldlaw) {
 
     if((law[LAW_TAX] == -2 || oldlaw[LAW_TAX] == -2) &&
             law[LAW_TAX] != oldlaw[LAW_TAX]) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_CORPORATE_HOUSE)   // CEO house or CEO Castle?
                 initlocation(*location[l]);
         }
@@ -729,7 +725,7 @@ void updateworld_laws(short *law, short *oldlaw) {
 
     if((law[LAW_DRUGS] == 2 || oldlaw[LAW_DRUGS] == 2) &&
             law[LAW_DRUGS] != oldlaw[LAW_DRUGS]) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_BUSINESS_CRACKHOUSE // Crack House, or Recreational Drugs Center?
                     && location[l]->renting < 0)   // Only rename locations not under LCS control, to avoid switching names around under the player
                 initlocation(*location[l]);
@@ -738,7 +734,7 @@ void updateworld_laws(short *law, short *oldlaw) {
 
     if((law[LAW_NUCLEARPOWER] == 2 || oldlaw[LAW_NUCLEARPOWER] == 2) &&
             law[LAW_NUCLEARPOWER] != oldlaw[LAW_NUCLEARPOWER]) {
-        for(int l = 0; l < location.size(); l++) {
+        for(int l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == SITE_INDUSTRY_NUCLEAR)   // Nuclear Power Plant, or Nuclear Waste Center?
                 initlocation(*location[l]);
         }

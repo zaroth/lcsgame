@@ -118,7 +118,6 @@ int Creature::skill_cap(int skill, bool use_juice) const {
 
 std::string Skill::get_name(int skill_type) {
     switch(skill_type) {
-
     case SKILL_HANDTOHAND:
         return "Martial Arts";
 
@@ -285,17 +284,8 @@ Creature &Creature::operator=(const Creature &rhs) {
     if (this != &rhs) {
         delete weapon;
         delete armor;
-
-        for (int i = 0; i < clips.size(); ++i)
-            delete clips[i];
-
-        clips.clear();
-
-        for (int i = 0; i < extra_throwing_weapons.size(); ++i)
-            delete extra_throwing_weapons[i];
-
-        extra_throwing_weapons.clear();
-
+        delete_and_clear(clips);
+        delete_and_clear(extra_throwing_weapons);
         copy(rhs);
     }
 
@@ -330,10 +320,10 @@ void Creature::copy(const Creature &org) {
     else
         armor = NULL;
 
-    for (unsigned i = 0; i < org.extra_throwing_weapons.size(); ++i)
+    for (int i = 0; i < (int)org.extra_throwing_weapons.size(); i++)
         extra_throwing_weapons.push_back(new Weapon(*org.extra_throwing_weapons[i]));
 
-    for (unsigned i = 0; i < org.clips.size(); ++i)
+    for (int i = 0; i < (int)org.clips.size(); i++)
         clips.push_back(new Clip(*org.clips[i]));
 
     strcpy(name, org.name);
@@ -390,26 +380,17 @@ void Creature::copy(const Creature &org) {
 Creature::~Creature() {
     delete weapon;
     delete armor;
-
-    while (!clips.empty()) {
-        delete clips.back();
-        clips.pop_back();
-    }
-
-    while (!extra_throwing_weapons.empty()) {
-        delete extra_throwing_weapons.back();
-        extra_throwing_weapons.pop_back();
-    }
+    delete_and_clear(clips);
+    delete_and_clear(extra_throwing_weapons);
 
     if(prisoner != NULL) {
         int p;
 
-        for(p = 0; p < pool.size(); p++) {
+        for(p = 0; p < (int)pool.size(); p++)
             if(prisoner == pool[p])
                 break;
-        }
 
-        if(p != pool.size())
+        if(p != (int)pool.size())
             delete prisoner;
     }
 
@@ -439,10 +420,9 @@ bool Creature::kidnap_resistant() const {
     case CREATURE_PRISONGUARD:
     case CREATURE_EDUCATOR:
         return true;
-
-    default:
-        return false;
     }
+
+    return false;
 }
 
 bool Creature::reports_to_police() const {
@@ -456,10 +436,9 @@ bool Creature::reports_to_police() const {
     case CREATURE_PRISONGUARD:
     case CREATURE_EDUCATOR:
         return true;
-
-    default:
-        return false;
     }
+
+    return false;
 }
 
 // Alternative name for the location global, used in Creature:: methods
@@ -475,29 +454,20 @@ std::string Creature::get_type_name() const {
 }
 
 bool Creature::is_lcs_sleeper(void) const {
-    if(alive && align == ALIGN_LIBERAL && clinic == 0 &&
-            dating == 0 && hiding == 0 && (flag & CREATUREFLAG_SLEEPER))
-        return true;
-    else
-        return false;
+    return(alive && align == ALIGN_LIBERAL && clinic == 0 &&
+           dating == 0 && hiding == 0 && (flag & CREATUREFLAG_SLEEPER));
 }
 
 bool Creature::is_imprisoned(void) const {
-    if(alive && clinic == 0 && dating == 0 && hiding == 0 &&
-            !(flag & CREATUREFLAG_SLEEPER) &&
-            loc_proxy()[this->location]->part_of_justice_system())
-        return true;
-    else
-        return false;
+    return(alive && clinic == 0 && dating == 0 && hiding == 0 &&
+           !(flag & CREATUREFLAG_SLEEPER) &&
+           loc_proxy()[this->location]->part_of_justice_system());
 }
 
 bool Creature::is_active_liberal(void) const {
-    if(alive && align == ALIGN_LIBERAL && clinic == 0 && dating == 0 &&
-            hiding == 0 && !(flag & CREATUREFLAG_SLEEPER) &&
-            !loc_proxy()[this->location]->part_of_justice_system())
-        return true;
-    else
-        return false;
+    return(alive && align == ALIGN_LIBERAL && clinic == 0 && dating == 0 &&
+           hiding == 0 && !(flag & CREATUREFLAG_SLEEPER) &&
+           !loc_proxy()[this->location]->part_of_justice_system());
 }
 
 void Creature::creatureinit(void) {
@@ -510,13 +480,22 @@ void Creature::creatureinit(void) {
     gender_liberal = gender_conservative = LCSrandom(2) + 1;
     birthday_month = LCSrandom(12) + 1;
 
-    if(birthday_month == 4 || birthday_month == 6 ||
-            birthday_month == 9 || birthday_month == 11)
+    switch(birthday_month) {
+    case 4:
+    case 6:
+    case 9:
+    case 11:
         birthday_day = LCSrandom(30) + 1;
-    else if(birthday_month == 2)
+        break;
+
+    case 2:
         birthday_day = LCSrandom(28) + 1;
-    else
+        break;
+
+    default:
         birthday_day = LCSrandom(31) + 1;
+        break;
+    }
 
     carid = -1;
     is_driver = 0;
@@ -601,20 +580,15 @@ void Creature::creatureinit(void) {
 }
 
 Creature::Creature(const char *inputXml)
-    : armor(NULL), weapon(NULL), prisoner(NULL) {
+    : weapon(NULL), armor(NULL), prisoner(NULL) {
     CMarkup xml;
     xml.SetDoc(inputXml);
     xml.FindElem();
     xml.IntoElem();
 
-    int attributesi = 0;
-    int skillsi = 0;
-    int skill_experiencei = 0;
-    int woundi = 0;
-    int speciali = 0;
-    int crimesi = 0;
+    int attributesi = 0, skillsi = 0, skill_experiencei = 0, woundi = 0, speciali = 0, crimesi = 0;
 
-    while (xml.FindElem()) {
+    while(xml.FindElem()) {
         std::string tag = xml.GetTagName();
 
         if (tag == "attribute" && attributesi < ATTNUM)
@@ -626,7 +600,7 @@ Creature::Creature(const char *inputXml)
         else if (tag == "weapon") {
             Weapon w(xml.GetSubDoc().c_str());
 
-            if (getweapontype(w.get_itemtypename()) != -1)   //Check weapon is a valid type.
+            if (getweapontype(w.get_itemtypename()) != -1) //Check weapon is a valid type.
                 give_weapon(w, NULL);
         } else if (tag == "armor") {
             armor = new Armor(xml.GetSubDoc().c_str());
@@ -767,13 +741,13 @@ string Creature::showXml() const {
     xml.AddElem("creature");
     xml.IntoElem();
 
-    for (int i = 0; i < ATTNUM; ++i)
+    for (int i = 0; i < ATTNUM; i++)
         xml.AddSubDoc(attributes[i].showXml());
 
-    for (int i = 0; i < SKILLNUM; ++i)
+    for (int i = 0; i < SKILLNUM; i++)
         xml.AddSubDoc(skills[i].showXml());
 
-    for (int i = 0; i < SKILLNUM; ++i)
+    for (int i = 0; i < SKILLNUM; i++)
         xml.AddElem("skill_experience", skill_experience[i]);  //Bad, relies on their order in the xml file. -XML
 
     if (weapon != NULL)
@@ -825,10 +799,10 @@ string Creature::showXml() const {
     xml.AddElem("forceinc", forceinc);
     xml.AddElem("stunned", stunned);
 
-    for (int i = 0; i < extra_throwing_weapons.size(); ++i)
+    for (int i = 0; i < (int)extra_throwing_weapons.size(); i++)
         xml.AddSubDoc(extra_throwing_weapons[i]->showXml());
 
-    for (int i = 0; i < clips.size(); ++i)
+    for (int i = 0; i < (int)clips.size(); i++)
         xml.AddSubDoc(clips[i]->showXml());
 
     xml.AddElem("has_thrown_weapon", has_thrown_weapon);
@@ -836,15 +810,15 @@ string Creature::showXml() const {
     xml.AddElem("juice", juice);
     xml.AddElem("income", income);
 
-    for (int i = 0; i < BODYPARTNUM; ++i) //Bad, relies on their order in the xml file. -XML
+    for (int i = 0; i < BODYPARTNUM; i++) //Bad, relies on their order in the xml file. -XML
         xml.AddElem("wound", wound[i]);
 
     xml.AddElem("blood", blood);
 
-    for (int i = 0; i < SPECIALWOUNDNUM; ++i) //Bad, relies on their order in the xml file. -XML
+    for (int i = 0; i < SPECIALWOUNDNUM; i++) //Bad, relies on their order in the xml file. -XML
         xml.AddElem("special", special[i]);
 
-    for (int i = 0; i < LAWFLAGNUM; ++i) //Bad, relies on their order in the xml file. -XML
+    for (int i = 0; i < LAWFLAGNUM; i++) //Bad, relies on their order in the xml file. -XML
         xml.AddElem("crimes_suspected", crimes_suspected[i]);
 
     xml.AddElem("heat", heat);
@@ -1053,7 +1027,7 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
             ret = static_cast<int>(ret * 0.8);  // Punk
         else if(juice >= 10) {
             if(juice < 50)
-                ret = static_cast<int>(ret += 1);  // Activist
+                ret += 1;  // Activist
             else if(juice < 100)
                 ret = static_cast<int>(ret * 1.1 + 2);  // Socialist Threat
             else if(juice < 200)
@@ -1126,14 +1100,12 @@ int Creature::roll_check(int skill) {
         // Keep the top three dice
         if(i < 3)
             roll[i] = newroll;
-        else {
-            for(int j = 0; j < 3; j++) {
+        else
+            for(int j = 0; j < 3; j++)
                 if(newroll > roll[j]) {
                     roll[j] = newroll;
                     break;
                 }
-            }
-        }
     }
 
     for(int i = 0; i < 3; i++)
@@ -1197,7 +1169,7 @@ int Creature::skill_roll(int skill) const {
     switch(skill) {
     // most attributes get halved when applied to skills, capped by relative skill level...
     default:
-        adjusted_attribute_value = min(attribute_value / 2, skill_value + 3);
+        adjusted_attribute_value = MIN(attribute_value / 2, skill_value + 3);
         break;
 
     // ...and some may be so specialized that they ignore attributes, instead counting skill double
@@ -1283,73 +1255,63 @@ int Creature::skill_roll(int skill) const {
     }
 
     #ifdef SHOWMECHANICS
-    {
-        move(8, 1);
-        char str[10];
-        addstr(" SkillRoll(");
-        addstr(Skill::get_name(skill).c_str());
-        addstr(", Skill Value ");
-        itoa(skills[skill].value, str, 10);
+    move(8, 1);
+    char str[10];
+    addstr(" SkillRoll(");
+    addstr(Skill::get_name(skill).c_str());
+    addstr(", Skill Value ");
+    itoa(skills[skill].value, str, 10);
+    addstr(str);
+    addstr(", ");
+
+    if(return_value == 0)
+        addstr("automatic failure");
+    else {
+        addstr("Adjusted Attribute Value ");
+        itoa(adjusted_attribute_value, str, 10);
         addstr(str);
-        addstr(", ");
-
-        if(return_value == 0)
-            addstr("automatic failure");
-        else {
-            addstr("Adjusted Attribute Value ");
-            itoa(adjusted_attribute_value, str, 10);
-            addstr(str);
-            addstr(", Outcome of ");
-            itoa(return_value, str, 10);
-            addstr(str);
-        }
-
-        addstr(")");
-        getch();
+        addstr(", Outcome of ");
+        itoa(return_value, str, 10);
+        addstr(str);
     }
+
+    addstr(")");
+    getch();
     #endif
     return return_value;
 }
 
 bool Creature::skill_check(int skill, int difficulty) const {
     #ifdef SHOWMECHANICS
-    {
-        move(8, 1);
-        char str[10];
-        addstr(" SkillCheck(");
-        addstr(Skill::get_name(skill).c_str());
+    move(8, 1);
+    char str[10];
+    addstr(" SkillCheck(");
+    addstr(Skill::get_name(skill).c_str());
 
-        if(difficulty < 21) {
-            addstr(", Difficulty ");
-            itoa(difficulty, str, 10);
-            addstr(str);
-        } else
-            addstr(", IMPOSSIBLE");
+    if(difficulty < 21) {
+        addstr(", Difficulty ");
+        itoa(difficulty, str, 10);
+        addstr(str);
+    } else
+        addstr(", IMPOSSIBLE");
 
-        addstr(")");
-        getch();
-    }
+    addstr(")");
+    getch();
     #endif
     return(skill_roll(skill) >= difficulty);
 }
 
 void Creature::stop_hauling_me() {
-    for(int p = 0; p < pool.size(); p++) {
-        if(pool[p]->prisoner == this)
+    for(int p = 0; p < (int)pool.size(); p++)if(pool[p]->prisoner == this)
             pool[p]->prisoner = NULL;
-    }
 }
 
 void Creature::train(int trainedskill, int experience, int upto) {
     // Do we allow animals to gain skills? Right now, yes
     //if(animalgloss==ANIMALGLOSS_ANIMAL)return;
 
-    // Don't give experience if already maxed out
-    if(skill_cap(trainedskill, true) <= skills[trainedskill].value || upto <= skills[trainedskill].value)
-        return;
-
-    // Don't give experience if requested to give none
-    if(experience == 0)
+    // Don't give experience if already maxed out or requested to give none
+    if(skill_cap(trainedskill, true) <= skills[trainedskill].value || upto <= skills[trainedskill].value || experience == 0)
         return;
 
     // Skill gain scaled by ability in the area
@@ -1394,7 +1356,7 @@ bool Creature::enemy() const {
         return true;
     else {
         if(type == CREATURE_COP && align == ALIGN_MODERATE) {
-            for(int i = 0; i < pool.size(); i++) {
+            for(int i = 0; i < (int)pool.size(); i++) {
                 if(pool[i] == this)
                     return false;
             }
@@ -1405,7 +1367,6 @@ bool Creature::enemy() const {
 
     return false;
 }
-
 
 /* turns a creature into a conservative */
 void conservatise(Creature &cr) {
@@ -1425,8 +1386,6 @@ void conservatise(Creature &cr) {
     }
 }
 
-
-
 /* turns a creature into a liberal */
 void liberalize(Creature &cr, bool rename) {
     if(cr.align == ALIGN_CONSERVATIVE && cr.juice > 0)
@@ -1437,7 +1396,7 @@ void liberalize(Creature &cr, bool rename) {
     if(cr.id == uniqueCreatures.CEO().id)
         uniqueCreatures.newCEO();
 
-    if(rename) {
+    if(rename)
         switch(cr.type) {
         case CREATURE_WORKER_FACTORY_NONUNION:
             strcpy(cr.name, "New Union Worker");
@@ -1446,7 +1405,6 @@ void liberalize(Creature &cr, bool rename) {
 //          strcpy(cr.name,"Enlightened Judge");
 //          break;
         }
-    }
 }
 
 /* gives a CCS member a cover name */
@@ -1457,7 +1415,7 @@ void nameCCSMember(Creature &cr) {
         strcpy(cr.name, "Soldier");
     else if(cr.get_armor().get_itemtypename() == "ARMOR_HEAVYARMOR")
         strcpy(cr.name, "CCS Heavy");
-    else if(cr.get_weapon().get_itemtypename() == "WEAPON_SHOTGUN_PUMP" || LCSrandom(2)) {
+    else if(cr.get_weapon().get_itemtypename() == "WEAPON_SHOTGUN_PUMP" || LCSrandom(2))
         switch(LCSrandom(5)) {
         case 0:
             strcpy(cr.name, "Country Boy");
@@ -1479,7 +1437,7 @@ void nameCCSMember(Creature &cr) {
             strcpy(cr.name, "Yokel");
             break;
         }
-    } else {
+    else
         switch(LCSrandom(9)) {
         case 0:
             strcpy(cr.name, "Biker");
@@ -1517,14 +1475,10 @@ void nameCCSMember(Creature &cr) {
             strcpy(cr.name, "Hairstylist");
             break;
         }
-    }
 }
 
 /* are they interested in talking about the issues? */
 bool Creature::talkreceptive() const {
-    if(enemy())
-        return false;
-
     switch(type) {
     case CREATURE_WORKER_SERVANT:
     case CREATURE_WORKER_JANITOR:
@@ -1552,13 +1506,11 @@ bool Creature::talkreceptive() const {
     case CREATURE_HAIRSTYLIST:
     case CREATURE_CLERK:
     case CREATURE_MUTANT:
-        return true;
+        return !enemy();
     }
 
     return false;
 }
-
-#define ABS(x) ((x)<0)?(-x):(x)
 
 /* are the characters close enough in age to date? */
 bool Creature::can_date(const Creature &a) const {
@@ -1571,22 +1523,17 @@ bool Creature::can_date(const Creature &a) const {
     if(age < 11 || a.age < 11)
         return false;
 
-    if(age < 16 || a.age < 16) {
-        // Allow 11-15 year olds only if the other partner is
-        // within 4 years age difference
-        if(ABS(age - a.age) < 5)
-            return true;
-        else
-            return false;
-    }
+    // Allow 11-15 year olds only if the other partner is
+    // within 4 years age difference
+    if(age < 16 || a.age < 16)
+        return DIFF(age, a.age) < 5;
+
     // Allow anyone 16 or older
-    else
-        return true;
+    return true;
 }
 
 void Creature::die() {
-    alive = 0;
-    blood = 0;
+    alive = 0, blood = 0;
 
     if(id == uniqueCreatures.CEO().id)
         uniqueCreatures.newCEO();
@@ -1605,36 +1552,19 @@ void UniqueCreatures::initialize() {
 
 void UniqueCreatures::newCEO() {
     makecreature(CEO_, CREATURE_CORPORATE_CEO);
-    CEO_ID = CEO_.id;
-    CEO_state = UNIQUECREATURE_ALIVE;
+    CEO_ID = CEO_.id, CEO_state = UNIQUECREATURE_ALIVE;
 }
 
 void UniqueCreatures::newPresident() {
     makecreature(Pres_, CREATURE_POLITICIAN);
-    Pres_ID = Pres_.id;
-    Pres_state = UNIQUECREATURE_ALIVE;
-
+    Pres_ID = Pres_.id, Pres_state = UNIQUECREATURE_ALIVE, Pres_.dontname = true;
     //Turn into President (not just random pol)
-    int len = strlen(execname[EXEC_PRESIDENT]);
-    char *pres_last_name;
-
-    for(int i = 0; i < len; i++) {
-        if(execname[EXEC_PRESIDENT][i] == ' ') {
-            pres_last_name = execname[EXEC_PRESIDENT] + i + 1;
-            break;
-        }
-    }
-
-    strcpy(Pres_.name, "President ");
-    strcat(Pres_.name, pres_last_name);
+    std::string pres_name = execname[EXEC_PRESIDENT];
+    strcpy(Pres_.name, ("President " + pres_name.substr(pres_name.find(' ') + 1)).data());
     strcpy(Pres_.propername, execname[EXEC_PRESIDENT]);
-    Pres_.dontname = true;
 
     switch(exec[EXEC_PRESIDENT]) {
-    case ALIGN_ARCHCONSERVATIVE:
-    case ALIGN_CONSERVATIVE:
-        break;
-
+    // we don't do anything for ALIGN_ARCHCONSERVATIVE or ALIGN_CONSERVATIVE so having them here is unnecessary
     case ALIGN_MODERATE:
         Pres_.align = ALIGN_MODERATE;
         Pres_.set_attribute(ATTRIBUTE_WISDOM, Pres_.get_attribute(ATTRIBUTE_WISDOM, false) / 2);
@@ -1814,10 +1744,8 @@ bool Creature::reload(bool wasteful) {
             && (wasteful || get_weapon().get_ammoamount() == 0)) {
         r = weapon->reload(*clips.front());
 
-        if (clips.front()->empty()) {
-            delete clips.front();
-            clips.pop_front();
-        }
+        if (clips.front()->empty())
+            delete_and_remove(clips, 0);
     } else
         r = false;
 
@@ -1830,10 +1758,8 @@ bool Creature::ready_another_throwing_weapon() {
     if (!extra_throwing_weapons.empty()) {
         weapon = extra_throwing_weapons.front()->split(1);
 
-        if (extra_throwing_weapons.front()->empty()) {
-            delete extra_throwing_weapons.front();
-            extra_throwing_weapons.pop_front();
-        }
+        if (extra_throwing_weapons.front()->empty())
+            delete_and_remove(extra_throwing_weapons, 0);
 
         r = true;
     }
@@ -1891,11 +1817,7 @@ void Creature::give_weapon(Weapon &w, vector<Item *> *lootpile) {
         } else {
             if (lootpile == NULL) {
                 delete weapon;
-
-                while (!extra_throwing_weapons.empty()) {
-                    delete extra_throwing_weapons.back();
-                    extra_throwing_weapons.pop_back();
-                }
+                delete_and_clear(extra_throwing_weapons);
             } else {
                 lootpile->push_back(weapon);
 
@@ -1909,10 +1831,8 @@ void Creature::give_weapon(Weapon &w, vector<Item *> *lootpile) {
 
             if (lootpile == NULL) {
                 for (int i = clips.size() - 1; i >= 0; --i) {
-                    if (!weapon->acceptable_ammo(*clips[i])) {
-                        delete clips[i];
-                        clips.erase(clips.begin() + i);
-                    }
+                    if (!weapon->acceptable_ammo(*clips[i]))
+                        delete_and_remove(clips, i);
                 }
             } else {
                 for (int i = clips.size() - 1; i >= 0; --i) {

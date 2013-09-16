@@ -324,7 +324,7 @@ void stopevil(void) {
 
     // Start at the city level, rather than the absolute top
     if(multipleCityMode) {
-        for(l = 0; l < location.size(); l++) {
+        for(l = 0; l < (int)location.size(); l++) {
             if(location[l]->type == squad_location->city) {
                 loc = l;
                 break;
@@ -335,17 +335,17 @@ void stopevil(void) {
     vector<long> temploc;
 
     // 1. LCS safe houses
-    for(l = 0; l < location.size(); l++)
+    for(l = 0; l < (int)location.size(); l++)
         if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
             temploc.push_back(l);
 
     // 2. CCS safe houses
-    for(l = 0; l < location.size(); l++)
+    for(l = 0; l < (int)location.size(); l++)
         if(location[l]->parent == loc && location[l]->renting == RENTING_CCS && !location[l]->hidden)
             temploc.push_back(l);
 
     // 3. Other sites
-    for(l = 0; l < location.size(); l++)
+    for(l = 0; l < (int)location.size(); l++)
         if(location[l]->parent == loc && location[l]->renting == RENTING_NOCONTROL && !location[l]->hidden)
             temploc.push_back(l);
 
@@ -406,17 +406,17 @@ void stopevil(void) {
 
         temploc.clear();
 
-        for(l = 0; l < location.size(); l++) {
+        for(l = 0; l < (int)location.size(); l++) {
             if(location[l]->parent == loc && location[l]->renting >= 0 && !location[l]->hidden)
                 temploc.push_back(l);
         }
 
-        for(l = 0; l < location.size(); l++) {
+        for(l = 0; l < (int)location.size(); l++) {
             if(location[l]->parent == loc && location[l]->renting == RENTING_CCS && !location[l]->hidden)
                 temploc.push_back(l);
         }
 
-        for(l = 0; l < location.size(); l++) {
+        for(l = 0; l < (int)location.size(); l++) {
             if(location[l]->parent == loc && location[l]->renting == RENTING_NOCONTROL && !location[l]->hidden)
                 temploc.push_back(l);
         }
@@ -424,7 +424,7 @@ void stopevil(void) {
 
         int y = 10;
 
-        for(p = page * 11; p < temploc.size() && p < page * 11 + 11; p++) {
+        for(p = page * 11; p < (int)temploc.size() && p < page * 11 + 11; p++) {
             if(p == -1)
                 break;
 
@@ -537,7 +537,7 @@ void stopevil(void) {
         }
 
         //PAGE DOWN
-        if((page + 1) * 11 < temploc.size()) {
+        if((page + 1) * 11 < (int)temploc.size()) {
             move(20, 60);
             addnextpagestr();
         }
@@ -560,13 +560,13 @@ void stopevil(void) {
             page--;
 
         //PAGE DOWN
-        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 11 < temploc.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 11 < (int)temploc.size())
             page++;
 
         if(c >= 'a' && c <= 'k') {
             int sq = page * 11 + (int)(c - 'a');
 
-            if(sq < temploc.size() && sq >= 0) {
+            if(sq < (int)temploc.size() && sq >= 0) {
                 int oldloc = loc;
                 loc = temploc[sq];
 
@@ -575,7 +575,7 @@ void stopevil(void) {
 
                 int subcount = 0;
 
-                for(l = 0; l < location.size(); l++)
+                for(l = 0; l < (int)location.size(); l++)
                     if(location[l]->parent == loc)
                         subcount++;
 
@@ -994,7 +994,7 @@ void setvehicles(void) {
         int x = 1, y = 10;
         char str[200];
 
-        for(l = page * 18; l < vehicle.size() && l < page * 18 + 18; l++) {
+        for(l = page * 18; l < (int)vehicle.size() && l < page * 18 + 18; l++) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
             for(p = 0; p < 6; p++) {
@@ -1008,7 +1008,7 @@ void setvehicles(void) {
                 }
             }
 
-            for(p = 0; p < pool.size(); p++) {
+            for(p = 0; p < (int)pool.size(); p++) {
                 if(pool[p]->squadid != -1 && pool[p]->alive &&
                         pool[p]->pref_carid == vehicle[l]->id() && pool[p]->squadid != activesquad->id) {
                     set_color(COLOR_YELLOW, COLOR_BLACK, 1);
@@ -1039,7 +1039,7 @@ void setvehicles(void) {
         }
 
         //PAGE DOWN
-        if((page + 1) * 18 < vehicle.size()) {
+        if((page + 1) * 18 < (int)vehicle.size()) {
             move(17, 53);
             addnextpagestr();
         }
@@ -1068,7 +1068,7 @@ void setvehicles(void) {
         if(c >= 'A' && c <= 'R') {
             int slot = c - 'A' + page * 18;
 
-            if(slot >= 0 && slot < vehicle.size()) {
+            if(slot >= 0 && slot < (int)vehicle.size()) {
                 bool choice = true;
 
                 if (activesquad->squad[0]) {
@@ -1112,7 +1112,7 @@ void setvehicles(void) {
         if(c >= 'a' && c <= 'r') {
             int slot = c - 'a' + page * 18;
 
-            if(slot >= 0 && slot < vehicle.size()) {
+            if(slot >= 0 && slot < (int)vehicle.size()) {
                 bool choice = true;
 
                 if (activesquad->squad[0]) {
@@ -1174,7 +1174,7 @@ void setvehicles(void) {
             page--;
 
         //PAGE DOWN
-        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < vehicle.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < (int)vehicle.size())
             page++;
 
     } while(1);

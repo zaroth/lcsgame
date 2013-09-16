@@ -138,7 +138,7 @@ void displaysinglead(bool liberalguardian, char addplace[2][3], short *storyx_s,
             case 3: {
                 int caryear = year - LCSrandom(15);
                 int carprice = LCSrandom(16) + 15;
-                int carprice2 = LCSrandom(1000);
+                //int carprice2 = LCSrandom(1000);
                 strcpy(ad, "&cQuality Pre-Owned&r");
                 strcat(ad, "&cVehicles&r");
                 strcat(ad, "&c");
@@ -326,7 +326,7 @@ void displayads(newsstoryst &ns, bool liberalguardian, short *storyx_s, short *s
             adnumber += LCSrandom(2) + 1;
     }
 
-    char addplace[2][3] = {0, 0, 0, 0, 0, 0};
+    char addplace[2][3] = {{0, 0, 0}, {0, 0, 0}};
 
     if(adnumber > 6)
         adnumber = 6;

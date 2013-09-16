@@ -20,7 +20,7 @@
 #define SiteShortname(Y)         strcpy(site->shortname, Y);
 
 Location *find_site_by_id(int id) {
-    for(int i = 0; i < location.size(); i++)
+    for(int i = 0; i < (int)location.size(); i++)
         if(location[i]->id == id)
             return location[i];
 
@@ -37,7 +37,7 @@ Location *find_site_in_city(int site, int city) {
 }
 
 int find_site_index_in_city(int site, int city) {
-    for(int i = 0; i < location.size(); i++)
+    for(int i = 0; i < (int)location.size(); i++)
         if(location[i]->type == site && (!multipleCityMode || city == -1 || location[i]->city == city))
             return i;
 

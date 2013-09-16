@@ -254,14 +254,14 @@ WeaponType::WeaponType(MCD_STR xmlstring)
 }
 
 attackst::attackst(MCD_STR xmlstring)
-    : priority(1), ranged(false), thrown(false), uses_ammo(false),
+    : priority(1), ranged(false), thrown(false), ammotype("UNDEF"), uses_ammo(false),
       attack_description("assaults"), hit_description("striking"),
-      always_describe_hit(false), hit_punctuation("."), skill(SKILL_CLUB),
-      accuracy_bonus(0), number_attacks(1), successive_attacks_difficulty(0),
-      strength_min(5), strength_max(10), random_damage(1), fixed_damage(1),
-      bruises(false), tears(false), cuts(false), burns(false), shoots(false),
-      bleeding(false), severtype(0), damages_armor(false), armorpiercing(0),
-      no_damage_reduction_for_limbs_chance(0), can_backstab(false) {
+      always_describe_hit(false), can_backstab(false), hit_punctuation("."),
+      skill(SKILL_CLUB), accuracy_bonus(0), number_attacks(1),
+      successive_attacks_difficulty(0), strength_min(5), strength_max(10),
+      random_damage(1), fixed_damage(1), bruises(false), tears(false), cuts(false),
+      burns(false), shoots(false), bleeding(false), severtype(0), damages_armor(false),
+      armorpiercing(0), no_damage_reduction_for_limbs_chance(0) {
     CMarkup xml;
     xml.SetDoc(xmlstring);
     xml.FindElem();
@@ -494,8 +494,7 @@ attackst::firest::firest()
 }
 
 WeaponType::~WeaponType() {
-    for (unsigned i = 0; i < attacks_.size(); ++i)
-        delete attacks_[i];
+    delete_and_clear(attacks_);
 }
 
 const string &WeaponType::get_name(unsigned subtype) const {

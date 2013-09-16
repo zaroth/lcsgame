@@ -744,7 +744,7 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
     string item;
     Location *shelter = 0;
 
-    for(int l = 0; l < location.size(); l++) {
+    for(int l = 0; l < (int)location.size(); l++) {
         if(location[l]->type == SITE_RESIDENTIAL_SHELTER) {
             shelter = location[l];
             break;
@@ -905,7 +905,7 @@ void sleeper_steal(Creature &cr, char &clearformess, char canseethings, int *lib
             item = "LOOT_CHEMICAL";
             itemindex = getloottype(item);
 
-            if(itemindex = getloottype(item) > -1)
+            if(itemindex > -1)
                 shelter->loot.push_back(new Loot(*loottype[itemindex]));
             else
                 numberofxmlfails++;

@@ -158,8 +158,7 @@ void amendment_termlimits(char canseethings) {
     if(termlimits)
         return;  // Durr~! Don't pass this amendment if it's already passed!
 
-    int j;
-
+    //int j;
     if(canseethings) {
         erase();
 

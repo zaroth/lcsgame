@@ -20,21 +20,17 @@
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA			//
 //////////////////////////////////////////////////////////////////////////////////////////
 
+#include "common.h"
 #define PICMAX 1000
+
 struct filelistst {
     vector<char *> list;
 
     ~filelistst() {
-        for(int l = 0; l < list.size(); l++)
-            delete list[l];
-
-        list.clear();
+        delete_and_clear(list);
     }
     void clean(void) {
-        for(int l = 0; l < list.size(); l++)
-            delete list[l];
-
-        list.clear();
+        delete_and_clear(list);
     }
 
     void open_diskload(FILE *h);
@@ -47,9 +43,7 @@ struct filelistst {
 struct CursesMovie_framest {
     short frame;
     long start, stop;
-    short sound;
-    short song;
-    short effect;
+    short sound, song, effect;
     unsigned short flag;
 
     CursesMovie_framest() {
@@ -65,10 +59,8 @@ struct CursesMovie_framest {
 
 struct CursesMoviest {
     unsigned char picture[PICMAX][80][25][4];
-    unsigned long picnum;
-    unsigned long dimx, dimy;
-    filelistst songlist;
-    filelistst soundlist;
+    int picnum, dimx, dimy;
+    filelistst songlist, soundlist;
     vector<CursesMovie_framest *> frame;
 
     CursesMoviest() {

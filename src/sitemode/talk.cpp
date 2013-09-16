@@ -539,7 +539,7 @@ char heyIWantToCancelMyRoom(Creature &a, Creature &tk) {
     //MOVE ALL ITEMS AND SQUAD MEMBERS
     int hs = find_homeless_shelter(cursite);
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < (int)pool.size(); p++) {
         if(pool[p]->location == cursite)
             pool[p]->location = hs;
 
@@ -1586,10 +1586,10 @@ char doYouComeHereOften(Creature &a, Creature &tk) {
         refresh();
         getch();
 
-        int olddate = 0;
+        //int olddate=0;
         datest *newd = NULL;
 
-        for(int d = 0; d < date.size(); d++) {
+        for(int d = 0; d < (int)date.size(); d++) {
             if(date[d]->mac_id == a.id) {
                 newd = date[d];
                 break;
@@ -3206,7 +3206,7 @@ char talkInCombat(Creature &a, Creature &tk) {
         int stolen = 0;
 
         // Police assess stolen goods in inventory
-        for(int l = 0; l < activesquad->loot.size(); l++) {
+        for(int l = 0; l < (int)activesquad->loot.size(); l++) {
             if(activesquad->loot[l]->is_loot())
                 stolen++;
         }
@@ -3297,6 +3297,7 @@ char heyMisterDog(Creature &a, Creature &tk) {
             break;
 
         case 10:
+        default:
             pitch = "\"Dogs are better than humans.\"";
             response = "\"You're pandering, but I love it.\"";
             break;
@@ -3356,6 +3357,7 @@ char heyMisterDog(Creature &a, Creature &tk) {
             break;
 
         case 10:
+        default:
             pitch = "\"Bark! Bark!\"";
             response = "\"Your accent is atrocious.\"";
             break;
@@ -3469,6 +3471,7 @@ char heyMisterMonster(Creature &a, Creature &tk) {
             break;
 
         case 10:
+        default:
             pitch = "\"Monsters are better than humans.\"";
             response = "\"You're a clever one.\"";
             break;
@@ -3528,6 +3531,7 @@ char heyMisterMonster(Creature &a, Creature &tk) {
             break;
 
         case 10:
+        default:
             pitch = "\"Slurp! Boom! Raaahgh!\"";
             response = "\"Your mockery will be met with death!\"";
             break;

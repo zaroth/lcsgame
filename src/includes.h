@@ -213,11 +213,10 @@ Ciprian Ilies, September 26, 2012
 using namespace std;
 //#include "lcsio.h"
 #include "compat.h"
+#include "common.h"
 #include "cursesmovie.h"
 #include "cursesgraphics.h"
 #include "politics/alignment.h"
-
-
 
 /*--------------------------------------------------------------------------
  * Portability Functions
@@ -236,20 +235,13 @@ using namespace std;
 
 inline unsigned int getSeed(void) {
     unsigned int t;
-
     #ifdef GO_PORTABLE
-
     t = (unsigned int)time(NULL); /* Seconds since 1970-01-01 00:00:00 */
-
     #else // WIN32
-
     t = (unsigned int)GetTickCount(); /* ms since system boot */
-
     #endif
-
     return(t);
 }
-
 
 /* raw_output() is provided in PDcurses/Xcurses but is not in ncurses.
   * This function is for compatibility and is currently a do nothing function.
@@ -259,23 +251,11 @@ inline int raw_output(bool bf) {
     raw();
     return OK;
 }
-
 #endif
 
 /*--------------------------------------------------------------------------
  * End of Portability Functions
  *--------------------------------------------------------------------------*/
-
-
-/* Macro definition */
-#ifndef MAX
-#define MAX(a,b) (((a)<(b))?(b):(a))
-#endif
-
-#ifndef MIN
-#define MIN(a,b) (((a)>(b))?(b):(a))
-#endif
-
 
 
 #ifndef NDEBUG
@@ -320,8 +300,6 @@ inline int raw_output(bool bf) {
 
 int r_num(void);
 int LCSrandom(int max);
-
-template <class Container> void delete_and_clear(Container &c);
 
 string tostring(long i);
 int stringtobool(const string &boolstr);
@@ -509,8 +487,7 @@ enum Activity {
 struct activityst {
     activityst() : type(0), arg(0), arg2(0) { }
     int type;
-    long arg;
-    long arg2;
+    long arg, arg2;
 };
 
 enum IncomeType {
@@ -554,22 +531,15 @@ class Ledger {
   private:
     int funds;
   public:
-    int income[INCOMETYPENUM];
-    int expense[EXPENSETYPENUM];
-    int total_income;
-    int total_expense;
+    int income[INCOMETYPENUM], expense[EXPENSETYPENUM], total_income, total_expense;
 
-    Ledger() {
-        funds = 7;
-        total_income = 0;
-        total_expense = 0;
-
+    Ledger() : funds(7), total_income(0), total_expense(0) {
         for(int i = 0; i < INCOMETYPENUM; i++)
             income[i] = 0;
 
         for(int e = 0; e < EXPENSETYPENUM; e++)
             expense[e] = 0;
-    }
+    };
 
     int get_funds() {
         return funds;
@@ -578,14 +548,10 @@ class Ledger {
         funds = amount;
     }
     void add_funds(int amount, int incometype) {
-        funds += amount;
-        income[incometype] += amount;
-        total_income += amount;
+        funds += amount, income[incometype] += amount, total_income += amount;
     }
     void subtract_funds(int amount, int expensetype) {
-        funds -= amount;
-        expense[expensetype] += amount;
-        total_expense += amount;
+        funds -= amount, expense[expensetype] += amount, total_expense += amount;
     }
 };
 
@@ -628,8 +594,7 @@ enum CarChaseObstacles {
 //struct chaseseqst
 struct chaseseqst {
     long location;
-    vector<Vehicle *> friendcar;
-    vector<Vehicle *> enemycar;
+    vector<Vehicle *> friendcar, enemycar;
     char canpullover;
 
     //public:
@@ -657,15 +622,10 @@ struct squadst {
             squad[p] = NULL;
 
         strcpy(name, "");
-        activity.type = ACTIVITY_NONE;
-        id = -1;
-        stance = SQUADSTANCE_STANDARD;
+        activity.type = ACTIVITY_NONE, id = -1, stance = SQUADSTANCE_STANDARD;
     }
     ~squadst() {
-        for(int l = 0; l < loot.size(); l++)
-            delete loot[l];
-
-        loot.clear();
+        delete_and_clear(loot);
     }
 };
 
@@ -726,8 +686,6 @@ enum Views {
     VIEWNUM
 };
 
-
-
 enum Laws {
     LAW_ABORTION,
     LAW_ANIMALRESEARCH,
@@ -759,14 +717,9 @@ struct datest {
     vector<Creature *> date;
     short timeleft;
     int city;
-    datest() {
-        timeleft = 0;
-    }
+    datest() : timeleft(0) { };
     ~datest() {
-        for(int d = 0; d < date.size(); d++)
-            delete date[d];
-
-        date.clear();
+        delete_and_clear(date);
     }
 };
 
@@ -784,9 +737,7 @@ struct recruitst {
     long recruiter_id;
     Creature *recruit;
     short timeleft;
-    char level;
-    char eagerness1;
-    char task;
+    char level, eagerness1, task;
     recruitst();
     ~recruitst();
     char eagerness();
@@ -863,47 +814,27 @@ enum NewsStories {
 };
 
 struct newsstoryst {
-    short type;
-    short view;
+    short type, view;
     char claimed;
-    short politics_level;
-    short violence_level;
+    short politics_level, violence_level;
     Creature *cr;
     vector<int> crime;
     long loc, priority, page, guardianpage;
     char positive;
     short siegetype;
-    newsstoryst() {
-        claimed = 1;
-        politics_level = 0;
-        violence_level = 0;
-        loc = -1;
-        cr = NULL;
-    }
+    newsstoryst() : claimed(1), politics_level(0), violence_level(0), cr(NULL), loc(-1) { };
 };
 
 #define SLOGAN_LEN 79
 
 struct highscorest {
-    char valid;
-    char endtype;
-
-    char slogan[SLOGAN_LEN + 1];
-    int month;
-    int year;
-    int stat_recruits;
-    int stat_kidnappings;
-    int stat_dead;
-    int stat_kills;
-    int stat_funds;
-    int stat_spent;
-    int stat_buys;
-    int stat_burns;
+    char valid, endtype, slogan[SLOGAN_LEN + 1];
+    int month, year, stat_recruits, stat_kidnappings, stat_dead, stat_kills, stat_funds, stat_spent, stat_buys, stat_burns;
 };
 
 //just a float that is initialized to 0
 struct float_zero {
-    float_zero() : n(0.0f) {};
+    float_zero() : n(0.0f) { };
     operator float &() {
         return n;
     };
@@ -915,18 +846,10 @@ struct float_zero {
 //of the target's current action.
 struct interrogation {
     interrogation() : druguse(0) {
-        techniques[0] = 1;
-        techniques[1] = 1;
-        techniques[2] = 0;
-        techniques[3] = 0;
-        techniques[4] = 0;
-        techniques[5] = 0;
+        techniques[0] = 1, techniques[1] = 1, techniques[2] = 0, techniques[3] = 0, techniques[4] = 0, techniques[5] = 0;
     };
-
     bool techniques[6]; //yesterday's interrogation plan
-
     int druguse; //total days of drug use
-
     //Maps individual characters to the rapport built with them
     map<long, struct float_zero> rapport;
 };
@@ -951,6 +874,7 @@ enum EndTypes {
     END_FIREMEN,
     ENDNUM
 };
+
 enum ReportTypes {
     REPORT_NEWS,
     REPORT_OPINION,
@@ -1196,11 +1120,11 @@ std::string getmonth(int month, bool shortname = false);
  translateid.cpp
 */
 /* transforms a squad id number into the index of that squad in the global vector */
-long getsquad(long id);
+int getsquad(int id);
 /* transforms a car id number into the index of that car in the global vector */
 int id_getcar(int id);
 /* transforms a creature id number into the index of that person in the pool */
-int getpoolcreature(long id);
+int getpoolcreature(int id);
 /* transforms a vehicle type id into the index of that vehicle type in the global vector */
 int getvehicletype(int id);
 /* transforms a vehicle type idname into the index of that vehicle type in the global vector */
@@ -1284,7 +1208,7 @@ void romannumeral(int amendnum);
 /* Pick a random string from a table of strings. */
 extern const char *selectRandomString(const char **string_table, int table_size);
 /* Determine table_size in selectRandomString */
-#define ARRAY_ELEMENTS(ARRAY_NAME) (sizeof(ARRAY_NAME) / sizeof(ARRAY_NAME[0]))
+#define ARRAY_ELEMENTS(ARRAY_NAME) ((int)(sizeof(ARRAY_NAME) / sizeof(ARRAY_NAME[0])))
 
 
 /*
@@ -1748,7 +1672,7 @@ void constructeventstory(char *story, short view, char positive);
 /* news - draws the specified block of text to the screen */
 void displaynewsstory(char *story, short *storyx_s, short *storyx_e, int y);
 /* news - shows animated news stories */
-void run_television_news_stories();
+void run_television_news_stories(void);
 /* news - make some filler junk */
 void generatefiller(char *story, int amount);
 /* news - major newspaper reporting on lcs and other topics */
@@ -1816,11 +1740,11 @@ void prisonscene(Creature &g);
  politics.cpp
 */
 /* politics - calculate presidential approval */
-int presidentapproval();
+int presidentapproval(void);
 /* politics -- gets the leaning of an issue voter for an election */
-int getswingvoter();
+int getswingvoter(void);
 /* politics -- promotes the Vice President to President, and replaces VP */
-void promoteVP();
+void promoteVP(void);
 /* politics -- appoints a figure to an executive office, based on the President's alignment */
 void fillCabinetPost(int position);
 /* politics - causes the people to vote (presidential, congressional, propositions) */

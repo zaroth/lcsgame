@@ -54,7 +54,6 @@ Vehicle::Vehicle(const char *inputXml) {
             myear_ = atoi (xml.GetData().c_str());
         else if (tag == "id")
             id_ = atoi (xml.GetData().c_str());
-
     }
 }
 
@@ -80,17 +79,15 @@ void Vehicle::init(const VehicleType &seed, const string &color, int myear) {
 }
 
 void Vehicle::stop_riding_me() const {
-    for(int p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < (int)pool.size(); p++)
         if(pool[p]->carid == id_)
             pool[p]->carid = -1;
-    }
 }
 
 void Vehicle::stop_preferring_me() const {
-    for(int p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < (int)pool.size(); p++)
         if(pool[p]->pref_carid == id_)
             pool[p]->pref_carid = -1;
-    }
 }
 
 string Vehicle::fullname(bool halffull) const {

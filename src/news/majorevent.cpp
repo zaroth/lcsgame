@@ -236,7 +236,7 @@ void constructeventstory(char *story, short view, char positive) {
         }
 
         case VIEW_DEATHPENALTY: {
-            char state[50];
+            //char state[50];
             strcat(story, statename());
             strcat(story, " - An innocent citizen has been put to death in the electric chair.  ");
             char dstr[200], dstr2[200], dstr3[200];
@@ -3049,9 +3049,7 @@ void run_television_news_stories() {
             }
         }
 
-        if(del) {
-            delete newsstory[n];
-            newsstory.erase(newsstory.begin() + n);
-        }
+        if(del)
+            delete_and_remove(newsstory, n);
     }
 }

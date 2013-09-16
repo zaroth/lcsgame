@@ -100,68 +100,51 @@ using namespace std;
 #ifndef HAS_STRICMP
 // Portable equivalent of Windows stricmp() function.
 // This is strcmp() on lowercase versions of the
-//string.
+// string.
 
-//strToLower() allocates a string and converts it to
-//Lower Case using POSIX tolower() function.
-//Free returned string after use.
+// strToLower() allocates a string and converts it to
+// Lower Case using POSIX tolower() function.
+// Free returned string after use.
 
 char *strToLower(const char *str) {
     int len = strlen(str);
-    char *lstr = NULL;
-    int i = 0;
+    char *lstr = (char *)malloc((len + 1) * sizeof(char));
 
-    lstr = (char *)malloc((len + 1) * sizeof(char));
-
-    for (i = 0; i < len; i++)
+    for(int i = 0; i < len; i++)
         lstr[i] = tolower(str[i]);
 
-    return(lstr);
+    return lstr;
 }
 
 int stricmp(const char *str1, const char *str2) {
-    char *lstr1 = NULL;
-    char *lstr2 = NULL;
-    int result = 0;
-
-    lstr1 = strToLower(str1);
-    lstr2 = strToLower(str2);
-
-    result = strcmp(lstr1, lstr2);
-
+    char *lstr1 = strToLower(str1), *lstr2 = strToLower(str2);
+    int result = strcmp(lstr1, lstr2);
     free(lstr1);
     free(lstr2);
-
-    return(result);
+    return result;
 }
 #endif
-
 
 #ifdef Linux // BSD and SVr4 too
 
 int init_alarm = 0; // Flag to indicate if alarmHandler() has been registered.
-struct itimerval timer_off;
-struct itimerval timer_on;
-
+struct itimerval timer_off, timer_on;
 
 void alarmHandler(int signal) {
-//WAKE UP and turn the timer off, this will un-pause().
+    //WAKE UP and turn the timer off, this will un-pause().
     setitimer(ITIMER_REAL, &timer_off, NULL);
 }
 
-void setTimeval(struct  timeval *value, long sec, long usec) {
-    value->tv_sec = sec;
-    value->tv_usec = usec;
+void setTimeval(struct timeval *value, long sec, long usec) {
+    value->tv_sec = sec, value->tv_usec = usec;
 }
 
-void msToItimerval(int ms, struct  itimerval *value) {
-    long sec = 0;
-    long usec = 0;
+void msToItimerval(int ms, struct itimerval *value) {
+    long sec = 0, usec = 0;
 
-    if (ms > 999) {
-        sec = (long)(ms / 1000);
-        usec = (long)((ms % 1000) * 1000);
-    } else
+    if(ms > 999)
+        sec = (long)(ms / 1000), usec = (long)((ms % 1000) * 1000);
+    else
         usec = (long)(ms * 1000);
 
     setTimeval(&value->it_interval, sec, usec);
@@ -187,7 +170,7 @@ void alarmset(int t) {
     #else
 
     /* If the signal handler is not set up set it up now */
-    if (init_alarm == 0)
+    if(!init_alarm)
         initalarm();
 
     // setitimer() will start a timer, pause() will stop the process until a
@@ -201,57 +184,37 @@ void alarmset(int t) {
 void alarmwait() {
     #ifdef WIN32
 
-    while(ptime > GetTickCount());
+    while(ptime > (int)GetTickCount());
 
     #else
     struct itimerval timer_now;
     getitimer(ITIMER_REAL, &timer_now);
 
     //If the timer is on we will wait for it to complete...
-    if (
-        ((timer_now.it_interval.tv_sec != 0) ||
-         (timer_now.it_interval.tv_usec != 0)) ||
-        ((timer_now.it_value.tv_sec != 0) ||
-         (timer_now.it_value.tv_usec != 0)))
+    if(timer_now.it_interval.tv_sec || timer_now.it_interval.tv_usec || timer_now.it_value.tv_sec || timer_now.it_value.tv_usec)
         pause();
 
     #endif
 }
 
 void pause_ms(int t) {
-    #ifdef Linux // BSD and SVr4 too
-
     alarmset(t);
-
-    pause();
-
-    #else
-    #ifdef WIN32
-    ptime = GetTickCount() + t;
-
-// Sadler - In 3.05 this while() was also checking that time <= GetTickCount()
-//          but as that should always be true it is removed.
-    while(ptime > GetTickCount());
-
-    #endif
-
-    #endif
-
+    alarmwait();
 }
 
 #ifndef HAS_ITOA
 // Portable equivalent of Windows itoa() function.
 // Note the radix parameter is expected to be 10.
 // The function is not fully ported and doesn't support
-//other bases, it's just enough for this program to be
-//ported.
+// other bases, it's just enough for this program to be
+// ported.
 // Ensure buffer is of sufficient size.
 char *itoa(int value, char *buffer, int radix) {
-    if (radix != 10) {
+    if(radix != 10) {
         // Error - base other than 10 not supported.
         cerr << "Error: itoa() - Ported function does not support bases other than 10." << endl;
         exit(1);
-    } else if (buffer != NULL)
+    } else if(buffer)
         sprintf(buffer, "%d", value);
 
     return buffer;

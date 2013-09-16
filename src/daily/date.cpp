@@ -70,8 +70,7 @@ static int dateresult(int aroll, int troll, datest &d, int e, int p, int y) {
                 refresh();
                 getch();
 
-                delete d.date[e];
-                d.date.erase(d.date.begin() + e);
+                delete_and_remove(d.date, e);
 
                 return DATERESULT_BREAKUP;
             }
@@ -228,8 +227,7 @@ static int dateresult(int aroll, int troll, datest &d, int e, int p, int y) {
                 refresh();
                 getch();
 
-                delete d.date[e];
-                d.date.erase(d.date.begin() + e);
+                delete_and_remove(d.date, e);
 
                 return DATERESULT_ARRESTED;
             } else {
@@ -256,8 +254,7 @@ static int dateresult(int aroll, int troll, datest &d, int e, int p, int y) {
         refresh();
         getch();
 
-        delete d.date[e];
-        d.date.erase(d.date.begin() + e);
+        delete_and_remove(d.date, e);
 
         return DATERESULT_BREAKUP;
     }
@@ -342,12 +339,12 @@ char completedate(datest &d, int p, char &clearformess) {
     } else
         addstr("dates to manage with ", gamelog);
 
-    for(e = 0; e < d.date.size(); e++) {
+    for(e = 0; e < (int)d.date.size(); e++) {
         addstr(d.date[e]->name, gamelog);
 
-        if(e <= d.date.size() - 3)
+        if(e <= (int)d.date.size() - 3)
             addstr(", ", gamelog);
-        else if(e == d.date.size() - 2)
+        else if(e == (int)d.date.size() - 2)
             addstr(" and ", gamelog);
         else {
             if(pool[p]->clinic > 0) {
@@ -489,8 +486,7 @@ char completedate(datest &d, int p, char &clearformess) {
             else if (temp.back()->is_clip())
                 d.date[e]->take_clips(*(static_cast<Clip *>(temp.back())), temp.back()->get_number());
 
-            delete temp.back();
-            temp.pop_back();
+            delete_and_remove(temp, temp.size() - 1);
         }
 
         //d.date[e]->weapon = wtemp;
@@ -605,8 +601,7 @@ char completedate(datest &d, int p, char &clearformess) {
                     if(e2 == e)
                         continue;
 
-                    delete d.date[e2];
-                    d.date.erase(d.date.begin() + e2);
+                    delete_and_remove(d.date, e2);
                     e = 0;
                 }
 
@@ -622,8 +617,7 @@ char completedate(datest &d, int p, char &clearformess) {
             }
 
             if(c == 'd') {
-                delete d.date[e];
-                d.date.erase(d.date.begin() + e);
+                delete_and_remove(d.date, e);
                 break;
             }
 
@@ -763,8 +757,7 @@ char completedate(datest &d, int p, char &clearformess) {
                         refresh();
                         getch();
 
-                        delete d.date[e];
-                        d.date.erase(d.date.begin() + e);
+                        delete_and_remove(d.date, e);
                         break;
                     } else {
                         set_color(COLOR_RED, COLOR_BLACK, 1);
@@ -798,8 +791,7 @@ char completedate(datest &d, int p, char &clearformess) {
                         refresh();
                         getch();
 
-                        delete d.date[e];
-                        d.date.erase(d.date.begin() + e);
+                        delete_and_remove(d.date, e);
                         return 1;
                     }
                 }

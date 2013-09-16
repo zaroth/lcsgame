@@ -89,8 +89,7 @@ void Shop::init(const MCD_STR &xmlstring) {
 }
 
 Shop::~Shop() {
-    for (unsigned i = 0; i < options_.size(); ++i)
-        delete options_[i];
+    delete_and_clear(options_);
 }
 
 void Shop::enter(squadst &customers) const {
@@ -354,7 +353,7 @@ void Shop::browse_fullscreen(squadst &customers, int &buyer) const {
         if (c >= 'a' && c <= 's') {
             int p = page * 19 + static_cast<int>(c - 'a');
 
-            if (p < available_options.size() && available_options[p]->is_available())
+            if (p < (int)available_options.size() && available_options[p]->is_available())
                 available_options[p]->choose(customers, buyer);
 
             break;
@@ -490,20 +489,17 @@ void Shop::sell_loot(squadst &customers) const {
                             && location[customers.squad[0]->base]->loot[l]->is_good_for_sale()) {
                         fenceamount += location[customers.squad[0]->base]->loot[l]->get_fencevalue()
                                        * location[customers.squad[0]->base]->loot[l]->get_number();
-                        delete location[customers.squad[0]->base]->loot[l];
-                        location[customers.squad[0]->base]->loot.erase(location[customers.squad[0]->base]->loot.begin() + l);
+                        delete_and_remove(location[customers.squad[0]->base]->loot, l);
                     } else if (c == 'c' && location[customers.squad[0]->base]->loot[l]->is_armor()
                                && location[customers.squad[0]->base]->loot[l]->is_good_for_sale()) {
                         fenceamount += location[customers.squad[0]->base]->loot[l]->get_fencevalue()
                                        * location[customers.squad[0]->base]->loot[l]->get_number();
-                        delete location[customers.squad[0]->base]->loot[l];
-                        location[customers.squad[0]->base]->loot.erase(location[customers.squad[0]->base]->loot.begin() + l);
+                        delete_and_remove(location[customers.squad[0]->base]->loot, l);
                     } else if (c == 'a' && location[customers.squad[0]->base]->loot[l]->is_clip()
                                && location[customers.squad[0]->base]->loot[l]->is_good_for_sale()) {
                         fenceamount += location[customers.squad[0]->base]->loot[l]->get_fencevalue()
                                        * location[customers.squad[0]->base]->loot[l]->get_number();
-                        delete location[customers.squad[0]->base]->loot[l];
-                        location[customers.squad[0]->base]->loot.erase(location[customers.squad[0]->base]->loot.begin() + l);
+                        delete_and_remove(location[customers.squad[0]->base]->loot, l);
                     } else if (c == 'l' && location[customers.squad[0]->base]->loot[l]->is_loot()
                                && location[customers.squad[0]->base]->loot[l]->is_good_for_sale()) {
                         Loot *a = static_cast<Loot *>(location[customers.squad[0]->base]->loot[l]); //cast -XML
@@ -511,8 +507,7 @@ void Shop::sell_loot(squadst &customers) const {
                         if(!a->no_quick_fencing()) {
                             fenceamount += location[customers.squad[0]->base]->loot[l]->get_fencevalue()
                                            * location[customers.squad[0]->base]->loot[l]->get_number();
-                            delete location[customers.squad[0]->base]->loot[l];
-                            location[customers.squad[0]->base]->loot.erase(location[customers.squad[0]->base]->loot.begin() + l);
+                            delete_and_remove(location[customers.squad[0]->base]->loot, l);
                         }
                     }
                 }
@@ -563,7 +558,7 @@ int Shop::fenceselect(squadst &customers) const {
         std::string itemstr;
 
         for (int l = page * 18;
-                l < location[customers.squad[0]->base]->loot.size() && l < page * 18 + 18;
+                l < (int)location[customers.squad[0]->base]->loot.size() && l < page * 18 + 18;
                 l++) {
             if (selected[l])
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
@@ -604,7 +599,7 @@ int Shop::fenceselect(squadst &customers) const {
         }
 
         //PAGE DOWN
-        if((page + 1) * 18 < location[customers.squad[0]->base]->loot.size()) {
+        if((page + 1) * 18 < (int)location[customers.squad[0]->base]->loot.size()) {
             move(17, 53);
             addnextpagestr();
         }
@@ -623,7 +618,7 @@ int Shop::fenceselect(squadst &customers) const {
         if (c >= 'a' && c <= 'r') {
             int slot = c - 'a' + page * 18;
 
-            if(slot >= 0 && slot < location[customers.squad[0]->base]->loot.size()) {
+            if(slot >= 0 && slot < (int)location[customers.squad[0]->base]->loot.size()) {
                 if (selected[slot]) {
                     ret -= location[customers.squad[0]->base]->loot[slot]->get_fencevalue() * selected[slot];
                     selected[slot] = 0;
@@ -685,19 +680,17 @@ int Shop::fenceselect(squadst &customers) const {
 
         //PAGE DOWN
         if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT)
-                && (page + 1) * 18 < location[customers.squad[0]->base]->loot.size())
+                && (page + 1) * 18 < (int)location[customers.squad[0]->base]->loot.size())
             page++;
 
     } while (true);
 
-    for (int l = location[customers.squad[0]->base]->loot.size() - 1; l >= 0; l--) {
+    for(int l = location[customers.squad[0]->base]->loot.size() - 1; l >= 0; l--) {
         if(selected[l] > 0) {
             location[customers.squad[0]->base]->loot[l]->decrease_number(selected[l]);
 
-            if(location[customers.squad[0]->base]->loot[l]->get_number() <= 0) {
-                delete location[customers.squad[0]->base]->loot[l];
-                location[customers.squad[0]->base]->loot.erase(location[customers.squad[0]->base]->loot.begin() + l);
-            }
+            if(location[customers.squad[0]->base]->loot[l]->get_number() <= 0)
+                delete_and_remove(location[customers.squad[0]->base]->loot, l);
         }
     }
 
@@ -709,12 +702,11 @@ void Shop::choose_buyer(squadst &customers, int &buyer) const {
 
     int partysize = 0;
 
-    for (int p = 0; p < 6; p++) {
-        if (customers.squad[p] != NULL)
+    for(int p = 0; p < 6; p++)
+        if(customers.squad[p] != NULL)
             partysize++;
-    }
 
-    if (partysize <= 1)
+    if(partysize <= 1)
         return;
 
     do {
@@ -804,14 +796,14 @@ void Shop::maskselect(Creature &buyer) const {
         if(c >= 'a' && c <= 's') {
             int p = page * 19 + (int)(c - 'a');
 
-            if(p < masktype.size()) {
+            if(p < (int)masktype.size()) {
                 maskindex = masktype[p];
                 break;
             }
         }
 
         if(c == 'z') {
-            for (int i = 0; i < armortype.size(); ++i) {
+            for (int i = 0; i < (int)armortype.size(); ++i) {
                 if (armortype[i]->is_mask() && armortype[i]->is_surprise_mask())
                     masktype.push_back(i);
             }
@@ -976,7 +968,7 @@ bool Shop::ShopItem::legal() const {
         // of clip, the clip is implicitly illegal as well.
         r = false;
 
-        for(int i = 0; i < weapontype.size(); i++) {
+        for(int i = 0; i < (int)weapontype.size(); i++) {
             if(weapontype[i]->acceptable_ammo(itemtypename_) && weapontype[i]->is_legal()) {
                 r = true;
                 break;
@@ -984,15 +976,17 @@ bool Shop::ShopItem::legal() const {
         }
 
         break;
-        /*case ARMOR:  r = getarmortype(itemtypename_); break; //Can't be illegal.
-        case LOOT:   r = getloottype(itemtypename_); break;*/
+
+    case ARMOR:  //r = getarmortype(itemtypename_); break; //Can't be illegal.
+    case LOOT:   //r = getloottype(itemtypename_); break;
+        break;
     }
 
     return r;
 }
 
 bool Shop::ShopItem::valid_item() const {
-    int i;
+    int i = -1;
 
     switch (itemclass_) {
     case WEAPON:

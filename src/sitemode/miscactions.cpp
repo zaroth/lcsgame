@@ -237,7 +237,7 @@ char bash(short type, char &actual) {
         }
 
         if(!crowable) { //didn't find in hands of any squad member
-            for(int l = 0; l < activesquad->loot.size(); l++) {
+            for(int l = 0; l < (int)activesquad->loot.size(); l++) {
                 if(activesquad->loot[l]->is_weapon()) {
                     Weapon *w = static_cast<Weapon *>(activesquad->loot[l]); //cast -XML
 
@@ -1387,7 +1387,7 @@ void partyrescue(short special) {
 
     vector<Creature *> waiting_for_rescue;
 
-    for(pl = 0; pl < pool.size(); pl++) {
+    for(pl = 0; pl < (int)pool.size(); pl++) {
         if(pool[pl]->location == cursite &&
                 !(pool[pl]->flag & CREATUREFLAG_SLEEPER) &&
                 !(special == SPECIAL_PRISON_CONTROL_LOW && !(pool[pl]->sentence > 0 && !pool[pl]->deathpenalty)) &&
@@ -1397,7 +1397,7 @@ void partyrescue(short special) {
             waiting_for_rescue.push_back(pool[pl]);
     }
 
-    for(pl = 0; pl < waiting_for_rescue.size(); pl++) {
+    for(pl = 0; pl < (int)waiting_for_rescue.size(); pl++) {
         if(LCSrandom(2) && freeslots) {
             for(int p = 0; p < 6; p++) {
                 if(activesquad->squad[p] == NULL) {
@@ -1433,7 +1433,7 @@ void partyrescue(short special) {
         }
     }
 
-    for(pl = 0; pl < waiting_for_rescue.size(); pl++) {
+    for(pl = 0; pl < (int)waiting_for_rescue.size(); pl++) {
         if(hostslots) {
             for(int p = 0; p < 6; p++) {
                 if(activesquad->squad[p] != NULL) {

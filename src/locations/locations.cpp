@@ -27,7 +27,7 @@ int findlocation(int type, int city = -1) {
     if(!multipleCityMode)
         city = -1;
 
-    for(int i = 0; i < location.size(); i++) {
+    for(int i = 0; i < (int)location.size(); i++) {
         Location &loc = *location[i];
 
         if(loc.type == type && (loc.city == city || city == -1))
@@ -38,7 +38,7 @@ int findlocation(int type, int city = -1) {
 }
 
 int findlocation_id(int id) {
-    for(int i = 0; i < location.size(); i++) {
+    for(int i = 0; i < (int)location.size(); i++) {
         if(location[i]->id == id)
             return i;
     }
@@ -154,23 +154,23 @@ std::string Location::getname(int shortname, bool include_city) {
 char *Location::city_description() {
     switch(type) {
     case SITE_CITY_SEATTLE:
-        return "Birthplace of the LCS.";
+        return (char *)"Birthplace of the LCS.";
 
     case SITE_CITY_LOS_ANGELES:
-        return "Hollywood and Trade.";
+        return (char *)"Hollywood and Trade.";
 
     case SITE_CITY_NEW_YORK:
-        return "Wall Street and Big Media.";
+        return (char *)"Wall Street and Big Media.";
 
     case SITE_CITY_WASHINGTON_DC:
-        return "The Nation's Capital.";
+        return (char *)"The Nation's Capital.";
 
     case SITE_CITY_CHICAGO:
     case SITE_CITY_DETROIT:
     case SITE_CITY_ATLANTA:
     case SITE_CITY_MIAMI:
     default:
-        return "";
+        return (char *)"";
     }
 }
 
@@ -297,7 +297,7 @@ bool Location::is_ccs_safehouse() {
 }
 
 bool Location::duplicatelocation() {
-    for(int l = 0; l < location.size(); l++) {
+    for(int l = 0; l < (int)location.size(); l++) {
         if(location[l] == this)
             continue;
 
@@ -316,12 +316,12 @@ bool Location::duplicatelocation() {
 void Location::update_heat_protection(void) {
     int l;
 
-    for(l = 0; l < location.size(); l++) {
+    for(l = 0; l < (int)location.size(); l++) {
         if(location[l] == this)
             break;
     }
 
-    if(l == location.size()) {
+    if(l == (int)location.size()) {
         heat_protection = 0;
         return;
     }
@@ -329,7 +329,7 @@ void Location::update_heat_protection(void) {
     int numpres = 0;
     int heatprotection = 0;
 
-    for(int p = 0; p < pool.size(); p++) {
+    for(int p = 0; p < (int)pool.size(); p++) {
         if(pool[p]->location != l)
             continue;  // People not at this base don't count
 
@@ -625,9 +625,9 @@ void initlocation(Location &loc) {
     case SITE_INDUSTRY_WAREHOUSE:
         do {
             strcpy(loc.name, "Abandoned ");
-            char str[50];
 
-            /*lastname(str);
+            /*char str[50];
+            lastname(str);
             strcat(loc.name,str);
             strcat(loc.name," ");*/
 
@@ -1081,16 +1081,14 @@ void initlocation(Location &loc) {
 /* transfer all loot from some source (such as a squad or another location) to a location, and deal with money properly
  * make sure to call loot.clear() on the source of the loot after calling this function */
 void Location::getloot(vector<Item *> loot) {
-    for(int l = loot.size() - 1; l >= 0; l--) {
+    for(int l = loot.size() - 1; l >= 0; l--)
         if(loot[l]->is_money()) {
             Money *m = static_cast<Money *>(loot[l]); //cast -XML
             ledger.add_funds(m->get_amount(), INCOME_THIEVERY);
-            delete loot[l];
-            loot.erase(loot.begin() + l);
+            delete_and_remove(loot, l);
         } else {
             // Empty squad inventory into base inventory
             this->loot.push_back(loot[l]);
             loot.erase(loot.begin() + l);
         }
-    }
 }
