@@ -1234,7 +1234,7 @@ void mode_title(void);
  initfile.cpp
 */
 /* Handles a init.txt line */
-void setconfigoption(string name, string value);
+void setconfigoption(std::string name, std::string value);
 /* Loads and parses init.txt */
 void loadinitfile(void);
 

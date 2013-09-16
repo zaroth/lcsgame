@@ -63,7 +63,7 @@ int readConfigFile(const char *filename) {
 
 // readLine reads a line from the file, parses it
 int readLine(std::ifstream &file, std::string &command, std::string &value) {
-    char line[600];
+    std::string line;
     int source = 0;
 
     // Search for a non-comment, non-empty line
@@ -71,7 +71,9 @@ int readLine(std::ifstream &file, std::string &command, std::string &value) {
         if(file.eof())
             return 0;
 
-        file.getline(line, 598);
+        getline(file, line);
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+        line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
     } while(line[0] == '#' || line[0] == 0);
 
     // Parse the line
@@ -79,19 +81,19 @@ int readLine(std::ifstream &file, std::string &command, std::string &value) {
     value.clear();
 
     // Leading whitespace
-    while(source < 600 && (line[source] == ' ' || line[source] == '\t') && line[source] != 0)
+    while((line[source] == ' ' || line[source] == '\t') && line[source] != 0)
         source++;
 
     // Command
-    while(source < 600 && (line[source] != ' ' && line[source] != '\t') && line[source] != 0)
+    while((line[source] != ' ' && line[source] != '\t') && line[source] != 0)
         command.push_back(line[source++]);
 
     // Delimiting whitespace
-    while(source < 600 && (line[source] == ' ' || line[source] == '\t') && line[source] != 0)
+    while((line[source] == ' ' || line[source] == '\t') && line[source] != 0)
         source++;
 
     // Value
-    while(source < 600 && (line[source] != ' ' && line[source] != '\t') && line[source] != 0)
+    while((line[source] != ' ' && line[source] != '\t') && line[source] != 0)
         value.push_back(line[source++]);
 
     return 1;
@@ -365,7 +367,7 @@ bool readMapFile(const char *filename, const int zLevel, void (*callback)(int, i
         return false;
     }
 
-    char line[1024];
+    std::string line;
     y = 0;
     z = zLevel;
 
@@ -373,13 +375,14 @@ bool readMapFile(const char *filename, const int zLevel, void (*callback)(int, i
         if(file->eof())
             break;
 
-        file->getline(line, 1022);
+        getline(*file, line);
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+        line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
         x = 0;
         i = 0;
         j = 0;
 
         do {
-
             while(line[j] != ',') {
                 if(line[j] == 0)
                     break;
@@ -392,7 +395,7 @@ bool readMapFile(const char *filename, const int zLevel, void (*callback)(int, i
             else
                 break;
 
-            (*callback)(x, y, z, atoi(line + i));
+            (*callback)(x, y, z, atoi(line.c_str() + i));
             x++;
             j++;
             i = j;
