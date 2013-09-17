@@ -500,7 +500,7 @@ char weapon_in_character(const string &wtype, const string &atype) {
              wtype == "WEAPON_SHOTGUN_PUMP"))
         return CREATURE_COP;
 
-    if(wtype == "WEAPON_SMG_MP5" && wtype == "WEAPON_CARBINE_M4") {
+    if(wtype == "WEAPON_SMG_MP5" || wtype == "WEAPON_CARBINE_M4") {
         if(atype == "ARMOR_SWATARMOR")
             return CREATURE_SWAT;
         else if(atype == "ARMOR_SECURITYUNIFORM" && law[LAW_GUNCONTROL] == -2)
@@ -523,6 +523,24 @@ char weapon_in_character(const string &wtype, const string &atype) {
 
     if(wtype == "WEAPON_FLAMETHROWER" && atype == "ARMOR_BUNKERGEAR" && law[LAW_FREESPEECH] == -2)
         return CREATURE_FIREFIGHTER;
+
+    if(atype == "ARMOR_PRISONGUARD" && (wtype == "WEAPON_SMG_MP5" ||
+                                        wtype == "WEAPON_SHOTGUN_PUMP" || wtype == "WEAPON_NIGHTSTICK"))
+        return CREATURE_PRISONGUARD;
+
+    if((atype == "ARMOR_OVERALLS" || atype == "ARMOR_WIFEBEATER") &&
+            (wtype == "WEAPON_TORCH" || wtype == "WEAPON_PITCHFORK" ||
+             (law[LAW_GUNCONTROL] == -2 && wtype == "WEAPON_SHOTGUN_PUMP")))
+        return CREATURE_HICK;
+
+    if(wtype == "WEAPON_SHANK" && atype == "ARMOR_PRISONER")
+        return CREATURE_PRISONER;
+
+    if(wtype == "WEAPON_CHAIN" && atype == "ARMOR_WORKCLOTHES")
+        return CREATURE_WORKER_FACTORY_UNION;
+
+    if(wtype == "WEAPON_CARBINE_M4" && atype == "ARMOR_SEALSUIT")
+        return CREATURE_SEAL;
 
     return -1;
 }
@@ -571,6 +589,9 @@ char hasdisguise(const Creature &cr) {
             if(cr.get_armor().get_itemtypename() == "ARMOR_BLACKSUIT")
                 uniformed = 1;
 
+            if(cr.get_armor().get_itemtypename() == "ARMOR_BLACKDRESS")
+                uniformed = 1;
+
             break;
         }
 
@@ -579,6 +600,9 @@ char hasdisguise(const Creature &cr) {
                 uniformed = 1;
 
             if(cr.get_armor().get_itemtypename() == "ARMOR_ARMYARMOR")
+                uniformed = 1;
+
+            if(cr.get_armor().get_itemtypename() == "ARMOR_SEALSUIT")
                 uniformed = 1;
 
             break;
@@ -618,6 +642,10 @@ char hasdisguise(const Creature &cr) {
                     location[cursite]->siege.escalationstate > 0)
                 uniformed = 1;
 
+            if(cr.get_armor().get_itemtypename() == "ARMOR_SEALSUIT" &&
+                    location[cursite]->siege.escalationstate > 0)
+                uniformed = 1;
+
             break;
         }
 
@@ -648,13 +676,8 @@ char hasdisguise(const Creature &cr) {
                 if(cr.get_armor().get_itemtypename() == "ARMOR_LABCOAT")
                     uniformed = 1;
 
-                if(location[cursite]->highsecurity) {
-                    if(cr.get_armor().get_itemtypename() == "ARMOR_SECURITYUNIFORM")
-                        uniformed = 1;
-                } else {
-                    if(cr.get_armor().get_itemtypename() == "ARMOR_SECURITYUNIFORM")
-                        uniformed = 2;
-                }
+                if(cr.get_armor().get_itemtypename() == "ARMOR_SECURITYUNIFORM")
+                    uniformed = (location[cursite]->highsecurity ? 1 : 2);
             }
 
             break;
@@ -663,15 +686,18 @@ char hasdisguise(const Creature &cr) {
             if(levelmap[locx][locy][locz].flag & SITEBLOCK_RESTRICTED) {
                 uniformed = 0;
 
-                if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2 &&
-                        cr.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM")
-                    uniformed = 1;
-
                 if(cr.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM")
                     uniformed = 1;
 
                 if(cr.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
                     uniformed = 1;
+
+                if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2 &&
+                        cr.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_SWATARMOR")
+                    uniformed = (location[cursite]->highsecurity ? 1 : 2);
             }
 
             break;
@@ -702,6 +728,9 @@ char hasdisguise(const Creature &cr) {
                     uniformed = 1;
 
                 if(cr.get_armor().get_itemtypename() == "ARMOR_ARMYARMOR")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_SEALSUIT")
                     uniformed = 1;
             }
 
@@ -741,6 +770,9 @@ char hasdisguise(const Creature &cr) {
                 if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2 &&
                         cr.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM")
                     uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_SWATARMOR")
+                    uniformed = (location[cursite]->highsecurity ? 1 : 2);
             }
 
             break;
@@ -749,8 +781,7 @@ char hasdisguise(const Creature &cr) {
             if(levelmap[locx][locy][locz].flag & SITEBLOCK_RESTRICTED) {
                 uniformed = 0;
 
-                if(law[LAW_DEATHPENALTY] == -2 &&
-                        law[LAW_POLICEBEHAVIOR] == -2) {
+                if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2) {
                     if(cr.get_armor().get_itemtypename() == "ARMOR_LABCOAT")
                         uniformed = 1;
                 } else if(cr.get_armor().get_itemtypename() == "ARMOR_PRISONGUARD")
@@ -770,6 +801,9 @@ char hasdisguise(const Creature &cr) {
                     uniformed = 1;
 
                 if(cr.get_armor().get_itemtypename() == "ARMOR_ARMYARMOR")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_SEALSUIT")
                     uniformed = 1;
             }
 
@@ -807,6 +841,13 @@ char hasdisguise(const Creature &cr) {
 
                     if(cr.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
                         uniformed = 1;
+
+                    if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2 &&
+                            cr.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM")
+                        uniformed = 1;
+
+                    if(cr.get_armor().get_itemtypename() == "ARMOR_SWATARMOR")
+                        uniformed = 1;
                 }
             }
 
@@ -830,6 +871,13 @@ char hasdisguise(const Creature &cr) {
 
                 if(cr.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
                     uniformed = 1;
+
+                if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2 &&
+                        cr.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM")
+                    uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_SWATARMOR")
+                    uniformed = (location[cursite]->highsecurity ? 1 : 2);
 
                 if(location[cursite]->highsecurity) {
                     if(cr.get_armor().get_itemtypename() == "ARMOR_CIVILLIANARMOR")
@@ -943,6 +991,9 @@ char hasdisguise(const Creature &cr) {
 
                 if(cr.get_armor().get_itemtypename() == "ARMOR_ARMYARMOR")
                     uniformed = 1;
+
+                if(cr.get_armor().get_itemtypename() == "ARMOR_SEALSUIT")
+                    uniformed = 1;
             }
 
             break;
@@ -999,13 +1050,25 @@ char hasdisguise(const Creature &cr) {
     }
 
     if(!uniformed) {
-        if(cr.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM" ||
-                cr.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
+        if(cr.get_armor().get_itemtypename() == "ARMOR_POLICEUNIFORM")
+            uniformed = 2;
+
+        if(cr.get_armor().get_itemtypename() == "ARMOR_POLICEARMOR")
             uniformed = 2;
 
         if(law[LAW_POLICEBEHAVIOR] == -2 && law[LAW_DEATHPENALTY] == -2 &&
                 cr.get_armor().get_itemtypename() == "ARMOR_DEATHSQUADUNIFORM")
             uniformed = 2;
+
+        if(location[cursite]->highsecurity &&
+                cr.get_armor().get_itemtypename() == "ARMOR_SWATARMOR")
+            uniformed = 2;
+
+        if((levelmap[locx][locy][locz].flag & SITEBLOCK_FIRE_START ||
+                levelmap[locx][locy][locz].flag & SITEBLOCK_FIRE_END ||
+                levelmap[locx][locy][locz].flag & SITEBLOCK_FIRE_PEAK) &&
+                cr.get_armor().get_itemtypename() == "ARMOR_BUNKERGEAR")
+            uniformed = 1;
     }
 
     return uniformed;
