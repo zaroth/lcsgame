@@ -20,10 +20,19 @@
 
 #define MAXSUBORDINATES 30
 
-#define GENDER_NEUTRAL 0
-#define GENDER_MALE    1
-#define GENDER_FEMALE  2
-#define GENDER_WHITEMALEPATRIARCH 3
+enum CreatureGender {
+    GENDER_NEUTRAL,
+    GENDER_MALE,
+    GENDER_FEMALE,
+
+    // Used to get some more specific names.
+    GENDER_WHITEMALEPATRIARCH,
+
+    // Used in creature creation.
+    GENDER_MALE_BIAS,
+    GENDER_FEMALE_BIAS,
+    GENDER_RANDOM
+};
 
 enum CheckDifficulty {
     DIFFICULTY_AUTOMATIC    = 1,
@@ -84,7 +93,7 @@ enum CreatureSkill {
     SKILLNUM
 };
 
-enum CreatureType {
+enum CreatureTypes {
     CREATURE_BOUNCER,
     CREATURE_SECURITYGUARD,
     CREATURE_SCIENTIST_LABTECH,
@@ -297,6 +306,7 @@ class Creature {
     bool alive;
     void die();
     short type;
+    std::string type_idname;
     float infiltration;
     char animalgloss;
     short specialattack;
@@ -339,6 +349,7 @@ class Creature {
     bool ready_another_throwing_weapon();
     bool take_clips(Item &clip, int number);
     bool take_clips(Clip &clip, int number);
+    bool take_clips(const ClipType &ct, int number);
     int count_clips() const;
     bool is_armed() const {
         return weapon != NULL;
@@ -347,10 +358,12 @@ class Creature {
         return armor == NULL;
     }
     void give_weapon(Weapon &w, vector<Item *> *lootpile);
+    void give_weapon(const WeaponType &wt, vector<Item *> *lootpile);
     void drop_weapon(vector<Item *> *lootpile);
     void drop_weapons_and_clips(vector<Item *> *lootpile);
     int count_weapons() const;
     void give_armor(Armor &a, vector<Item *> *lootpile);
+    void give_armor(const ArmorType &at, vector<Item *> *lootpile);
     void strip(vector<Item *> *lootpile);
     bool weapon_is_concealed() const;
     string get_weapon_string(int subtype) const;

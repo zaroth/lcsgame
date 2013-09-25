@@ -58,3 +58,6 @@ bool Money::sort_compare_special(Item *other) const {
     return (other != NULL && !other->is_money());
 }
 
+string Money::equip_title() const {
+    return ("$" + tostring(amount_));
+}
