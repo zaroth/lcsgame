@@ -411,7 +411,6 @@ void passmonth(char &clearformess, char canseethings) {
             } else {
                 //TRY TO GET RACKETEERING CHARGE
                 int copstrength = 100;
-                float heat = 0;
 
                 if(law[LAW_POLICEBEHAVIOR] == -2)
                     copstrength = 200;
@@ -425,10 +424,7 @@ void passmonth(char &clearformess, char canseethings) {
                 if(law[LAW_POLICEBEHAVIOR] == 2)
                     copstrength = 50;
 
-                for(int i = 0; i < LAWFLAGNUM; i++)
-                    heat += (pool[p]->heat) / 4.0f;
-
-                copstrength = static_cast<int>(copstrength * heat);
+                copstrength = (copstrength * pool[p]->heat) / 4;
 
                 if(copstrength > 200)
                     copstrength = 200;
