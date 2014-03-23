@@ -74,26 +74,26 @@ int readLine(std::ifstream &file, std::string &command, std::string &value) {
         getline(file, line);
         line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
         line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
-    } while(line[0] == '#' || line[0] == 0);
+    } while(line.empty() || line[0] == '#');
 
     // Parse the line
     command.clear();
     value.clear();
 
     // Leading whitespace
-    while((line[source] == ' ' || line[source] == '\t') && line[source] != 0)
+    while(source < line.length() && (line[source] == ' ' || line[source] == '\t'))
         source++;
 
     // Command
-    while((line[source] != ' ' && line[source] != '\t') && line[source] != 0)
+    while(source < line.length() && (line[source] != ' ' && line[source] != '\t'))
         command.push_back(line[source++]);
 
     // Delimiting whitespace
-    while((line[source] == ' ' || line[source] == '\t') && line[source] != 0)
+    while(source < line.length() && (line[source] == ' ' || line[source] == '\t'))
         source++;
 
     // Value
-    while((line[source] != ' ' && line[source] != '\t') && line[source] != 0)
+    while(source < line.length() && (line[source] != ' ' && line[source] != '\t'))
         value.push_back(line[source++]);
 
     return 1;
@@ -383,14 +383,10 @@ bool readMapFile(const char *filename, const int zLevel, void (*callback)(int, i
         j = 0;
 
         do {
-            while(line[j] != ',') {
-                if(line[j] == 0)
-                    break;
-                else
-                    j++;
-            }
+            while(j < line.length() && line[j] != ',')
+                j++;
 
-            if(line[j] != 0)
+            if(j < line.length())
                 line[j] = 0;
             else
                 break;
