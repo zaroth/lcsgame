@@ -237,8 +237,6 @@ enum CantSeeReason {
 };
 
 void mode_base(void) {
-    short buyer = 0;
-
     char forcewait, canseethings;
     int nonsighttime = 0;
     int oldforcemonth = month;
@@ -305,26 +303,16 @@ void mode_base(void) {
         }
 
         int partysize = 0;
-        int partydead = 0;
 
         if(activesquad != NULL) {
             for(int p = 0; p < 6; p++) {
                 if(activesquad->squad[p] != NULL)
                     partysize++;
-                else {
-                    if(p == buyer)
-                        buyer = 0;
+            }
 
-                    continue;
-                }
-
-                if(!partysize) {
-                    delete activesquad;
-                    activesquad = NULL;
-                }
-
-                if(!activesquad->squad[p]->alive)
-                    partydead++;
+            if(!partysize) {
+                delete_and_remove(squad, getsquad(activesquad->id));
+                activesquad = NULL;
             }
         }
 
