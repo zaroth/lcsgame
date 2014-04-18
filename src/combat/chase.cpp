@@ -282,6 +282,7 @@ char chasesequence(void) {
             } else if(c == 'p') {
                 if(chaseseq.canpullover) {
                     chase_giveup();
+                    mode = GAMEMODE_BASE;
                     gamelog.nextMessage(); //Next message.
                     return 0;
                 }
@@ -574,6 +575,7 @@ char footchase(void) {
             if(c == 'g') {
                 if(chaseseq.canpullover) {
                     chase_giveup();
+                    mode = GAMEMODE_BASE;
                     gamelog.nextMessage(); //Get ready for the next message.
                     return 0;
                 }
