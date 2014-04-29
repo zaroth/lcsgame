@@ -81,19 +81,19 @@ int readLine(std::ifstream &file, std::string &command, std::string &value) {
     value.clear();
 
     // Leading whitespace
-    while(source < line.length() && (line[source] == ' ' || line[source] == '\t'))
+    while(source < (int)line.length() && (line[source] == ' ' || line[source] == '\t'))
         source++;
 
     // Command
-    while(source < line.length() && (line[source] != ' ' && line[source] != '\t'))
+    while(source < (int)line.length() && (line[source] != ' ' && line[source] != '\t'))
         command.push_back(line[source++]);
 
     // Delimiting whitespace
-    while(source < line.length() && (line[source] == ' ' || line[source] == '\t'))
+    while(source < (int)line.length() && (line[source] == ' ' || line[source] == '\t'))
         source++;
 
     // Value
-    while(source < line.length() && (line[source] != ' ' && line[source] != '\t'))
+    while(source < (int)line.length() && (line[source] != ' ' && line[source] != '\t'))
         value.push_back(line[source++]);
 
     return 1;
@@ -383,10 +383,10 @@ bool readMapFile(const char *filename, const int zLevel, void (*callback)(int, i
         j = 0;
 
         do {
-            while(j < line.length() && line[j] != ',')
+            while(j < (int)line.length() && line[j] != ',')
                 j++;
 
-            if(j < line.length())
+            if(j < (int)line.length())
                 line[j] = 0;
             else
                 break;
