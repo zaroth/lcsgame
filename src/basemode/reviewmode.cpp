@@ -644,18 +644,9 @@ void review_mode(short mode) {
                         move(24, 0);
                         addstr("                                                                    ");
 
-                        keypad(stdscr, FALSE);
-                        raw_output(FALSE);
-                        echo();
-                        curs_set(1);
                         move(24, 0);
                         enter_name(temppool[p]->name, CREATURE_NAMELEN,
                                    temppool[p]->propername);
-
-                        curs_set(0);
-                        noecho();
-                        raw_output(TRUE);
-                        keypad(stdscr, TRUE);
                     } else if(c == 'g' && temppool[p]->align == 1) {
                         temppool[p]->gender_liberal++;
 
@@ -1266,7 +1257,7 @@ void assemblesquad(squadst *cursquad) {
             echo();
             curs_set(1);
             char tempstr[100];
-            mvgetstr(24, 0, tempstr);
+            mvgetnstr(24, 0, tempstr, 99);
             tempstr[39] = 0;
             strcpy(cursquad->name, tempstr);
             curs_set(0);
