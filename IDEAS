@@ -1,0 +1,155 @@
+Bugs:
+
+* heat does not feel threatening
+* do dupy! przejecie bazy przez ccs dziala ZLEEE - dodatkowo fajne gadzety powinny byc dostepne i w innych lokacjach (takie jak printing press)
+* president is bugged 
+* mutants too easy to recruit even though it's "nearly impossible"
+* recruiting crashes when your squad consisting of the same proffesions you recruit dies during recruitment
+* after successful convertion to liberalism via persuasion you can't change the subject's name
+
+QOI interface changes:
+
+* add tab with easy equipment access to everyone + tabs of equipment categories
+* add sorting by date of joining the squad or summarical skill or juice
+* coloured squad's members names showing juice level and glorious leader
+* jobs for entire squads to remove tedinesss
+* easier squad management:makes you be able to move ppl to squads individually
+* TAB - toggles information shown in any list - from proffesion to presuasion/seduction/psychology + Charisma + slots of recruitments/meetings and lovers/dates, stealth/disguise/security/street sense + Agility
+2 best combat skills + dodges stat on which the best one bases (Heart/Agility/Strength), 
+	Easier sorting by pressing column's numbers - same as reorder squad first, second... etc
+	DO NOT AUTO RESORT PEOPLE, keep X sorting even after changing tabs /\ resort when changing sort preferentions + auto show the best results (1st page)
+	+ filters for for example only healthy ppl
+* to your own custom views showing 
+* different numbers/colors for squads in squad view
+* color equipment: gray:  misc items, blue: weapons, violet: ammunition, white(1stclass):yellow(lower class)-red(torn or broken): clothes
+* make arrows in shop add/decrease items to sell
+* make arrows work in menus to choose selections/select with /\\/ and <>
+* make possible changing squads' order
+* change equipment menu - button for reload all weapons/give clips
+
+Other QoI changes:
+
+* martial arts - - > physical disarm and impairment
+* make "repairing clothes" option work automatically even for clothes on other people
+* Make list view in squads default by all means
+* reorder skills to: Heart/Wisdom/Charisma/Intelligence/Agility/Strength/Health
+* display squad name during raid
+* all information about events stackable on 1 screen and scrolls as they go + saves for one day
+	to review if missed/forgot something + button to fill whole page with info instead of holding enter
+* increase "Recruiting" option effectiveness to meet more ppl
+* add meeting tab to review meetings with ppl with all needed information:
+	expandable recruit's profiles, people's skills that can be learned from these meetings,	description of agents:
+	how many slots/lovers they have, how much persuasion/seduction/psychology/charisma they have
+plus meeting policy for less micro management:
+	for example: meet for free until learned X skill,
+	meet for free till ready to join,
+	meet X times with X policy (and then decide) - mainly for training persuasion,
+	auto accept joining LCS when ready on X position (sleeper/active agent),
+	break at next meeting,
+Also make this policy settable during meetings.
+
+* show CLEARLY people dependency tree
+* show effects of wearing armor - generally more feedback about effects of equipment - even description in words
+* more friendly sleeper agents display, let know of actions' ACTUAL efficiency and their detailed profiles, especially juice they earned via their LIBERAL ACTIONS
+* add possibility for selecting default person to conversate during raid 
+* show how long learning in uni district will take to learn X skill at T next levels
+* add some actions like - sending someone somewhere (personally - to shop or any utility district), moving to base, renaming, ordering job for ANY people reviewing window (except raid :P)
+
+Features/Ideas:
+
+* research & sciecne: develop and produce interrogating substances or fight resources (liberal gas!)
+* add throwing weapons like grenades
+
+* map? ! with districts and ascii drawn locations
+* teaching tab + some progress/results? - currently noone knows what happens during teaching or how effective it is.
+* make possible to willingly go to the court for (much sooner trial) to clear yourself from any crimes
+* make public more picky about your crime actions (in supporting liberals) and general support % in getting sonds view
+* add some skill dependency to get info about ppl during meeting at raid: how is one armed and how is one dressed. - probably street sense
+* high psychology (5+ ) - gives you chance to sense negative intentions during meetings, or exact engagement and chance to decline on X option,
+** add more options at conversation to recruit, and personalise choices and wills, for example choice of subjects to talk discuss with - psychology lets you know which topics are the most preferable
+* new tab to manage people's policy - default tasks that one is assigned to on some circumstances: feeling well (default: laying low), wounded (def: laying low)
+* make shop prices depend on business/charisma
+* improve teaching (f.e.: focus on X skill...) - maybe rework it to organise classes for x skill and manual attendance?
+* calendar display: showing schedulded taxes, parlament elections/votings, peoples' coming backs from hospitals/jails, schedulded judgements / other big events
+* add some (rare) super possitive and super negative odds for meetings with X ppl (for example genius teenagers with 15 int)
+	rare - super low or being masked conservatist swine!
+	generally more diversity
+^^^ obsolete after I discovered mutants
+* make strength useful for: staying fit even when wounded, cap of items that can be stolen, bonus damage for meelee weapons?
+* street sense -> makes finding wanted cars and ppl to recruit easier
+
+LARGE PROJECT IDEAS:
+* add ambient music and many other sound effects to improve reception of this great game :D
+
+* create large, long term projects to participate in, actions avialible after preparations:
+	for these tasks are already pre-prepared lists of steps/needs to fullfill. These actions may have both great benefits at success and painful penalties for failure
+	You also get lots of juice after trying to realise prepared project.
+	Some propositions (less or more developped):
+	- make possible for with computer skills developping LIBERAL GAMES to sell them and decrease Wisdom (efficiency depends on creator's computers and psychology or science) - depending on the law
+		it may be illegal and Conservatists may censor it (and probably will do if it becomes popular and it's effective), delegalise and shut down - which cuts most of your profits if you want to sell it,
+		but still provides you with Extra de-Wisdoming as you wish :p
+	* list of steps: well... programmers, psychologists + time and funds to release project; optional: good artists, musics and writers could improve quality of the game
+	- planning a bank robbery (list of steps - like hostaging/enlightening bank manager/any bank socket), getting a man with high security, a man with high computers, a squad with guns and armors
+	* list of steps: gathering the above + time for getting bank's details, map; optional: parallel actions to disrupt police and postpone it's reaction (sleeper agents also may participate),
+		costumes to lower the chance of getting crime for it
+	- bureocracy + some swindling to decrease X base's heat
+	- project to erect new base/bunker
+	- become/abolish president? :D
+	- fiddle with election's results
+	* possitive effect: more liberals in parliament; negative effect (very severe): alienating people to LCS and getting more conservative views
+	- plan a prison outbreak (for both your agents and new recruits at prison) - via frontal attack or sneaky inflirtration/
+	- nuclear plant meltdown - produce mutants?
+	- build your own military facility to train shooting and fighting (uses ammunition to train) and teach these skills more effectively and create your own army!
+	- project to clear member's name from crimes in court via corruption, sleepers, lawyers, etc.
+	- create your own radiostation to manage with anchormen, musicians etc?
+	- steal tanks from army :D
+	- create your own LIBERAL TEXTILE FACTORY to sell goods
+	- work onto LIBERAL DICTATURE AND ALL HAIL THE GLORIOUS LEADER!
+	- prepare anti-president campaign
+	- build a secret tunnel network between your bases to escape sieges and make all bases become 'one'
+Some of these are actually possible, but putting them here will help in letting know about this possibility and it will make easier to organise and prepare for the event
+
+* add morale (their stability - buffor - would depend on one's heart)? those could benefit all actions and learning pace (if high) and reverse if low, or even lead to betrayal (if heart-wisdom low and morale are close to 0)
+	morale could increase by:
+		random events, successes of people in LCS one knows/recruited, media (telling about successes of liberalism), liberal election, high living standards, liberal results of voting, 
+	morale could decrease by:
+		any negative of the above + especially wounds and being crippled, being imprisoned, interrogating or murdering (if these occur may depend on heart)
+		low juice
+		laying low
+	These influence both instantly the value of morale and the pace of morale going up/down per day - to prevent instant ragequits of your members after failures
+	As you may have noticed, I listed more negative factors than possitive: that's because of:
+	To increase general morales one could also assign psychologists (similarily to teaching)
+	SUBIDEA: - add some costs and extra management connected with that: pay for delivering food (choose quality), entertainment and living standards to get higher morales
+
+* maybe add some random events for bases and danger of recognition/events during travels to locations - danger of recognition depends on street sense (and trains it) +
+	+ threat level for being recognized (laying low or other base-actions lower it, while commiting crimes increase it - also sleeper agents: policemen or ppl in police station/cable news anchormen
+	or any TV/radio/news ppl help to make threat (with limited efficiency for each of media) level go up slower / they disrupt advertisement of the crimes
+	sleeper policemen could also warn you aboutt patrols/raids on your base 
+	Make any conservative encounters be able to recognise you and try to seize you if that's their job (sec guards, agents, policemen etc) - depends on stealth and disguise to mitigate or eliminate this effect
+	
+* increase infulence of religion and make possible to recruit via it and create liberal sect, possibly add church location
+
+* make more useful more skills - like science - make possible to create your drug empire to raise funds - at Science 20 you become Heisenberg, 
+	business - to improve selling prices, lower business , paying for rents, 
+	art - paint to increase the impact of your press via LIBERAL PICTURES, not only graphitti, - make possible LITERALLY create graphitti at certain location during raid same as opening doors to have impact on THAT
+		exact location
+	psychology - as I suggested in many of these ideas
+	street sense - as in threat level, also may serve as intuition in guessing encounters' weapons
+	driving - umm it's difficult one...
+	martial arts - as any other weapon has higher damage and efficiency - add possibility to try to disarm someone in fight or prevent escaping, increase seizure (kidnapping) odds
+	throwing - err what this skill is doing here? it's not an rpg roguelike where you actually throw
+	I suggest firearms for all kinds of shooting weapons, and heavy for heavy ones like basooka and flamethrower which you can use manually
+	I suggest also one cathegory for swords, axes, knives and clubs and make them use more strength than agility
+	religion - as suggested
+This idea connects with idea about adding diversity to conversations - to discuss X subject
+
+* add some more tactics to raid screen - make encounters fade longer and show possible encounters on next fields (which spawn and move, you sense them with street sense skill),
+	more entrances to locations 
+	if you have sleeper agents in the place, make possible to meet them/phone them and for example ask to evacuate you from the building at cost of their disguise and laying low
+
+* add some dangers for sleepers
+
+POLISH EXTRAS:
+
+* możliwość pikietowania i namawiania do pikiet w danych miejscach przykuwając uwagę publiczną (interest) - może zdobywać juice do 10, 1 za dzień - powolny proces bezpieczniejszy od włamywania się
+	prowokuje media, oraz posiadanie sleeper agentow w mediach potęguje efekt
