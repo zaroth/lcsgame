@@ -1,3 +1,4 @@
+# autotools
 Makefile
 Makefile.in
 configure
@@ -6,11 +7,19 @@ depcomp
 install-sh
 missing
 stamp-h1
-
 autom4te.cache
 aclocal.m4
 config.*
 
+# code::blocks
+workspaces/Debug
+workspaces/Release
+workspaces/*.layout
+
+# visual studio
+workspaces/*.ncb
+
+# binaries
 src/.deps
 src/crimesquad
 *.o
