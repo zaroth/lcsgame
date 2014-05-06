@@ -1,3 +1,7 @@
+Changelog for version 4.0.x (git HEAD):
+* Moved the repository from svn to git and cleaned up the history from binary
+blobs while at it (reduced size from 300MB to 7.5MB)
+
 ChangeLog for Version 3.11.4:
 
 2007-07-14   Jonathan Stickles   <jonathansfox@users.sourceforge.net>
