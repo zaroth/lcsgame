@@ -64,7 +64,6 @@ void set_alignment_color(signed char alignment, bool extended_range) {
     }
 }
 
-
 // Sets the text color per activity type
 void set_activity_color(long activity_type) {
     switch(activity_type) {
@@ -266,6 +265,37 @@ void locheader(void) {
     }
 }
 
+// Sets color basing on juice to emphase status of member or his title
+void juice_to_color(const short juice) {
+    if(juice <= -50)
+        set_color(COLOR_RED, COLOR_BLACK, 0);
+    else if(juice <= -10)
+        set_color(COLOR_YELLOW, COLOR_BLACK, 0);
+    else if(juice < 0)
+        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+    else if(juice < 10)
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+    else if(juice < 50)
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
+    else if(juice < 100)
+        set_color(COLOR_CYAN, COLOR_BLACK, 0);
+    else if(juice < 200)
+        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+    else if(juice < 500)
+        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+    else if(juice < 1000)
+        set_color(COLOR_GREEN, COLOR_BLACK, 0);
+    else
+        set_color(COLOR_MAGENTA, COLOR_BLACK, 0);
+}
+
+// Prints Creature's name colored according to hisher juice level
+void print_name_colored_according_to_juice(Creature *subject, const unsigned char def_color, const unsigned char def_outline) {
+    juice_to_color(subject->juice);
+    addstr(subject->name);
+    set_color(def_color, COLOR_BLACK, def_outline);
+}
+
 /* party info at top of screen */
 void printparty(void) {
     Creature *party[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
@@ -279,7 +309,7 @@ void printparty(void) {
 
     for(int i = 2; i < 8; i++) {
         move(i, 0);
-        addstr("                                                                                ");
+        addstr("                                                                                "); // ... really?
     }
 
     if(party_status != -1 && party[party_status] == NULL)
@@ -308,16 +338,13 @@ void printparty(void) {
             addch('1' + p);
 
             if(party[p] != NULL) {
-                if(party[p]->prisoner != NULL)
-                    set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
-                else
-                    set_color(COLOR_WHITE, COLOR_BLACK, 0);
-
                 move(p + 2, 2);
-                addstr(party[p]->name);
+                print_name_colored_according_to_juice(party[p]); //addstr(party[p]->name);
 
-                if(party[p]->prisoner != NULL)
+                if(party[p]->prisoner != NULL) {
+                    set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
                     addstr("+H");
+                }
 
                 int skill = 0;
                 char bright = 0;
@@ -656,7 +683,7 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(1, 2);
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr(", ");
     gettitle(str, *cr);
     addstr(str);
@@ -1056,11 +1083,11 @@ void fullstatus(int p) {
         addstr("Profile of a Liberal");
 
         if(page == 0)
-            printliberalstats(*activesquad->squad[p]);
+            printliberalstats(activesquad->squad[p]);
         else if(page == 1)
-            printliberalskills(*activesquad->squad[p]);
+            printliberalkills(activesquad->squad[p]);
         else if (page == 2)
-            printliberalcrimes(*activesquad->squad[p]);
+            printliberalcrimes(activesquad->squad[p]);
 
         move(23, 0);
         addstr("N - Change Code Name      G - Fix Gender Label");
@@ -1130,7 +1157,7 @@ void fullstatus(int p) {
 
 
 /* Full screen character sheet, skills only edition */
-void printliberalskills(Creature &cr) {
+void printliberalkills(Creature *cr) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     char str[200];
     char num[5];
@@ -1138,19 +1165,17 @@ void printliberalskills(Creature &cr) {
     // Add name
     move(2, 0);
 
-    if(strcmp(cr.propername, cr.name) != 0)
+    if(strcmp(cr->propername, cr->name) != 0)
         addstr("Code name: ");
     else
         addstr("Name: ");
 
-    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-    addstr(cr.name);
-    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    print_name_colored_according_to_juice(cr);
     addstr(", ");
-    gettitle(str, cr);
+    gettitle(str, *cr);
     addstr(str);
     addstr(" (");
-    addstr(cr.get_type_name());
+    addstr(cr->get_type_name());
     addstr(")");
 
     // Add all skills
@@ -1164,14 +1189,14 @@ void printliberalskills(Creature &cr) {
         }
 
         // Maxed skills are cyan
-        if(cr.skill_cap(s, true) != 0 && cr.get_skill(s) >= cr.skill_cap(s, true))
+        if(cr->skill_cap(s, true) != 0 && cr->get_skill(s) >= cr->skill_cap(s, true))
             set_color(COLOR_CYAN, COLOR_BLACK, 1);
         // About to level up skills are white
-        else if(cr.get_skill_ip(s) >= 100 + (10 * cr.get_skill(s)) &&
-                cr.get_skill(s) < cr.skill_cap(s, true))
+        else if(cr->get_skill_ip(s) >= 100 + (10 * cr->get_skill(s)) &&
+                cr->get_skill(s) < cr->skill_cap(s, true))
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
         // <1 skills are dark gray
-        else if(cr.get_skill(s) < 1)
+        else if(cr->get_skill(s) < 1)
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
         // >=1 skills are light gray
         else
@@ -1182,14 +1207,14 @@ void printliberalskills(Creature &cr) {
         strcat(str, ": ");
         addstr(str);
         move(5 + s / 3, 14 + 27 * (s % 3));
-        sprintf(num, "%2d.", cr.get_skill(s));
+        sprintf(num, "%2d.", cr->get_skill(s));
         addstr(num);
 
-        if(cr.get_skill_ip(s) < 100 + (10 * cr.get_skill(s))) {
-            if ((cr.get_skill_ip(s) * 100) / (100 + (10 * cr.get_skill(s))) != 0) {
-                itoa((cr.get_skill_ip(s) * 100) / (100 + (10 * cr.get_skill(s))), num, 10);
+        if(cr->get_skill_ip(s) < 100 + (10 * cr->get_skill(s))) {
+            if ((cr->get_skill_ip(s) * 100) / (100 + (10 * cr->get_skill(s))) != 0) {
+                itoa((cr->get_skill_ip(s) * 100) / (100 + (10 * cr->get_skill(s))), num, 10);
 
-                if ((cr.get_skill_ip(s) * 100) / (100 + (10 * cr.get_skill(s))) < 10)
+                if ((cr->get_skill_ip(s) * 100) / (100 + (10 * cr->get_skill(s))) < 10)
                     addstr("0");
 
                 addstr(num);
@@ -1198,11 +1223,11 @@ void printliberalskills(Creature &cr) {
         } else
             addstr("99+");
 
-        if(cr.skill_cap(s, true) == 0 || cr.get_skill(s) < cr.skill_cap(s, true))
+        if(cr->skill_cap(s, true) == 0 || cr->get_skill(s) < cr->skill_cap(s, true))
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
         move(5 + s / 3, 20 + 27 * (s % 3));
-        sprintf(str, "%2d.00", cr.skill_cap(s, true));
+        sprintf(str, "%2d.00", cr->skill_cap(s, true));
         addstr(str);
     }
 
@@ -1211,7 +1236,7 @@ void printliberalskills(Creature &cr) {
 
 
 /* full screen character sheet */
-void printliberalstats(Creature &cr) {
+void printliberalstats(Creature *cr) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
     char num[20], str[200];
@@ -1219,22 +1244,20 @@ void printliberalstats(Creature &cr) {
     // Add name
     move(2, 0);
     addstr("Name: ");
-    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-    addstr(cr.name);
-    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    print_name_colored_according_to_juice(cr);
 
-    if(strcmp(cr.propername, cr.name) != 0) {
+    if(strcmp(cr->propername, cr->name) != 0) {
         //The names do not match, print real name as well
         addstr(" (");
-        addstr(cr.propername);
+        addstr(cr->propername);
         addstr(")");
     }
 
     addstr(", ");
-    gettitle(str, cr);
+    gettitle(str, *cr);
     addstr(str);
     addstr(" (");
-    addstr(cr.get_type_name());
+    addstr(cr->get_type_name());
     addstr(")");
     move(3, 0);
 
@@ -1242,62 +1265,62 @@ void printliberalstats(Creature &cr) {
 
     // Add birthdate
     addstr("Born ");
-    addstr(getmonth(cr.birthday_month));
+    addstr(getmonth(cr->birthday_month));
     addstr(" ");
-    itoa(cr.birthday_day, num, 10);
+    itoa(cr->birthday_day, num, 10);
     addstr(num);
     addstr(", ");
 
-    if(cr.birthday_month < month ||
-            (cr.birthday_month == month && cr.birthday_day <= day))
-        itoa(year - cr.age, num, 10);
+    if(cr->birthday_month < month ||
+            (cr->birthday_month == month && cr->birthday_day <= day))
+        itoa(year - cr->age, num, 10);
     else
-        itoa(year - 1 - cr.age, num, 10);
+        itoa(year - 1 - cr->age, num, 10);
 
     addstr(num);
     // Add age
     addstr(" (Age ");
-    itoa(cr.age, num, 10);
+    itoa(cr->age, num, 10);
     addstr(num);
 
     // Assess their gender in an Elite Liberal way
-    if(cr.gender_liberal == GENDER_MALE)
+    if(cr->gender_liberal == GENDER_MALE)
         addstr(", Male");
-    else if(cr.gender_liberal == GENDER_FEMALE)
+    else if(cr->gender_liberal == GENDER_FEMALE)
         addstr(", Female");
     else
         addstr(", Genderqueer");
 
     // DON'T Note if there's some conflict with Conservative society's perceptions
-    //if(cr.gender_liberal != cr.gender_conservative && cr.gender_liberal != GENDER_NEUTRAL)
+    //if(cr->gender_liberal != cr->gender_conservative && cr->gender_liberal != GENDER_NEUTRAL)
     //   addstr("*");
     addstr(")");
 
     move(3, 46);
-    statebrokenlaws(cr);
+    statebrokenlaws(*cr);
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
     // Add juice
     move(10, 16);
     addstr("Juice: ");
-    itoa(cr.juice, num, 10);
+    itoa(cr->juice, num, 10);
     addstr(num);
 
-    if(cr.juice < 1000) {
+    if(cr->juice < 1000) {
         move(11, 16);
         addstr("Next:  ");
 
-        if(cr.juice < 0)
+        if(cr->juice < 0)
             addstr("0");
-        else if(cr.juice < 10)
+        else if(cr->juice < 10)
             addstr("10");
-        else if(cr.juice < 50)
+        else if(cr->juice < 50)
             addstr("50");
-        else if(cr.juice < 100)
+        else if(cr->juice < 100)
             addstr("100");
-        else if(cr.juice < 200)
+        else if(cr->juice < 200)
             addstr("200");
-        else if(cr.juice < 500)
+        else if(cr->juice < 500)
             addstr("500");
         else
             addstr("1000");
@@ -1306,31 +1329,31 @@ void printliberalstats(Creature &cr) {
     // Add attributes
     move(5, 0);
     addstr("Heart: ");
-    itoa(cr.get_attribute(ATTRIBUTE_HEART, true), num, 10);
+    itoa(cr->get_attribute(ATTRIBUTE_HEART, true), num, 10);
     addstr(num);
     move(6, 0);
     addstr("Intelligence: ");
-    itoa(cr.get_attribute(ATTRIBUTE_INTELLIGENCE, true), num, 10);
+    itoa(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true), num, 10);
     addstr(num);
     move(7, 0);
     addstr("Wisdom: ");
-    itoa(cr.get_attribute(ATTRIBUTE_WISDOM, true), num, 10);
+    itoa(cr->get_attribute(ATTRIBUTE_WISDOM, true), num, 10);
     addstr(num);
     move(8, 0);
     addstr("Health: ");
-    itoa(cr.get_attribute(ATTRIBUTE_HEALTH, true), num, 10);
+    itoa(cr->get_attribute(ATTRIBUTE_HEALTH, true), num, 10);
     addstr(num);
     move(9, 0);
     addstr("Agility: ");
-    itoa(cr.get_attribute(ATTRIBUTE_AGILITY, true), num, 10);
+    itoa(cr->get_attribute(ATTRIBUTE_AGILITY, true), num, 10);
     addstr(num);
     move(10, 0);
     addstr("Strength: ");
-    itoa(cr.get_attribute(ATTRIBUTE_STRENGTH, true), num, 10);
+    itoa(cr->get_attribute(ATTRIBUTE_STRENGTH, true), num, 10);
     addstr(num);
     move(11, 0);
     addstr("Charisma: ");
-    itoa(cr.get_attribute(ATTRIBUTE_CHARISMA, true), num, 10);
+    itoa(cr->get_attribute(ATTRIBUTE_CHARISMA, true), num, 10);
     addstr(num);
 
     // Add highest skills
@@ -1352,8 +1375,8 @@ void printliberalstats(Creature &cr) {
         long maxs = -1;
 
         for(int s = 0; s < SKILLNUM; s++) {
-            if((cr.get_skill(s) * 10000 + cr.get_skill_ip(s)) > max && !used[s]) {
-                max = (cr.get_skill(s) * 10000 + cr.get_skill_ip(s));
+            if((cr->get_skill(s) * 10000 + cr->get_skill_ip(s)) > max && !used[s]) {
+                max = (cr->get_skill(s) * 10000 + cr->get_skill_ip(s));
                 maxs = s;
             }
         }
@@ -1363,14 +1386,14 @@ void printliberalstats(Creature &cr) {
             printed = 1;
 
             // Maxed skills are cyan
-            if(cr.skill_cap(maxs, true) != 0 && cr.get_skill(maxs) >= cr.skill_cap(maxs, true))
+            if(cr->skill_cap(maxs, true) != 0 && cr->get_skill(maxs) >= cr->skill_cap(maxs, true))
                 set_color(COLOR_CYAN, COLOR_BLACK, 1);
             // About to level up skills are white
-            else if(cr.get_skill_ip(maxs) >= 100 + (10 * cr.get_skill(maxs)) &&
-                    cr.get_skill(maxs) < cr.skill_cap(maxs, true))
+            else if(cr->get_skill_ip(maxs) >= 100 + (10 * cr->get_skill(maxs)) &&
+                    cr->get_skill(maxs) < cr->skill_cap(maxs, true))
                 set_color(COLOR_WHITE, COLOR_BLACK, 1);
             // <1 skills are dark gray
-            else if(cr.get_skill(maxs) < 1)
+            else if(cr->get_skill(maxs) < 1)
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
             // >=1 skills are light gray
             else
@@ -1381,14 +1404,14 @@ void printliberalstats(Creature &cr) {
             strcat(str, ": ");
             addstr(str);
             move(6 + skills_shown, 42);
-            sprintf(num, "%2d.", cr.get_skill(maxs));
+            sprintf(num, "%2d.", cr->get_skill(maxs));
             addstr(num);
 
-            if(cr.get_skill_ip(maxs) < 100 + (10 * cr.get_skill(maxs))) {
-                if ((cr.get_skill_ip(maxs) * 100) / (100 + (10 * cr.get_skill(maxs))) != 0) {
-                    itoa((cr.get_skill_ip(maxs) * 100) / (100 + (10 * cr.get_skill(maxs))), num, 10);
+            if(cr->get_skill_ip(maxs) < 100 + (10 * cr->get_skill(maxs))) {
+                if ((cr->get_skill_ip(maxs) * 100) / (100 + (10 * cr->get_skill(maxs))) != 0) {
+                    itoa((cr->get_skill_ip(maxs) * 100) / (100 + (10 * cr->get_skill(maxs))), num, 10);
 
-                    if ((cr.get_skill_ip(maxs) * 100) / (100 + (10 * cr.get_skill(maxs))) < 10)
+                    if ((cr->get_skill_ip(maxs) * 100) / (100 + (10 * cr->get_skill(maxs))) < 10)
                         addstr("0");
 
                     addstr(num);
@@ -1397,11 +1420,11 @@ void printliberalstats(Creature &cr) {
             } else
                 addstr("99+");
 
-            if(cr.skill_cap(maxs, true) == 0 || cr.get_skill(maxs) < cr.skill_cap(maxs, true))
+            if(cr->skill_cap(maxs, true) == 0 || cr->get_skill(maxs) < cr->skill_cap(maxs, true))
                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
             move(6 + skills_shown, 48);
-            sprintf(str, "%2d.00", cr.skill_cap(maxs, true));
+            sprintf(str, "%2d.00", cr->skill_cap(maxs, true));
             addstr(str);
         }
     }
@@ -1411,12 +1434,12 @@ void printliberalstats(Creature &cr) {
     // Add weapon
     move(13, 0);
     addstr("Weapon: ");
-    addstr(cr.get_weapon_string(0).c_str());
+    addstr(cr->get_weapon_string(0).c_str());
 
     // Add clothing
     move(14, 0);
     addstr("Clothes: ");
-    addstr(cr.get_armor_string(true).c_str());
+    addstr(cr->get_armor_string(true).c_str());
 
 
     // Add vehicle
@@ -1425,33 +1448,33 @@ void printliberalstats(Creature &cr) {
     long v = -1;
 
     if(showcarprefs == 1)
-        v = id_getcar(cr.pref_carid);
+        v = id_getcar(cr->pref_carid);
     else
-        v = id_getcar(cr.carid);
+        v = id_getcar(cr->carid);
 
     if(v != -1 && showcarprefs != -1) {
         strcpy(str, vehicle[v]->shortname().c_str());
         char d;
 
         if(showcarprefs == 1)
-            d = cr.pref_is_driver;
+            d = cr->pref_is_driver;
         else
-            d = cr.is_driver;
+            d = cr->is_driver;
 
         if(d)
             strcat(str, "-D");
     } else {
         int legok = 2;
 
-        if((cr.wound[BODYPART_LEG_RIGHT] & WOUND_NASTYOFF) ||
-                (cr.wound[BODYPART_LEG_RIGHT] & WOUND_CLEANOFF))
+        if((cr->wound[BODYPART_LEG_RIGHT] & WOUND_NASTYOFF) ||
+                (cr->wound[BODYPART_LEG_RIGHT] & WOUND_CLEANOFF))
             legok--;
 
-        if((cr.wound[BODYPART_LEG_LEFT] & WOUND_NASTYOFF) ||
-                (cr.wound[BODYPART_LEG_LEFT] & WOUND_CLEANOFF))
+        if((cr->wound[BODYPART_LEG_LEFT] & WOUND_NASTYOFF) ||
+                (cr->wound[BODYPART_LEG_LEFT] & WOUND_CLEANOFF))
             legok--;
 
-        if(cr.flag & CREATUREFLAG_WHEELCHAIR)
+        if(cr->flag & CREATUREFLAG_WHEELCHAIR)
             strcpy(str, "Wheelchair");
         else if(legok >= 1)
             strcpy(str, "On Foot");
@@ -1462,12 +1485,12 @@ void printliberalstats(Creature &cr) {
     addstr(str);
 
     // Add recruit stats
-    if(cr.flag != CREATUREFLAG_BRAINWASHED) {
+    if(cr->flag != CREATUREFLAG_BRAINWASHED) {
         move(18, 0);
-        itoa(maxsubordinates(cr) - subordinatesleft(cr), num, 10);
+        itoa(maxsubordinates(*cr) - subordinatesleft(*cr), num, 10);
         addstr(num);
         addstr(" Recruits / ");
-        itoa(maxsubordinates(cr), num, 10);
+        itoa(maxsubordinates(*cr), num, 10);
         addstr(num);
         addstr(" Max");
     } else {
@@ -1477,7 +1500,7 @@ void printliberalstats(Creature &cr) {
     }
 
     // Any meetings with potential recruits scheduled?
-    int recruiting = scheduledmeetings(cr);
+    int recruiting = scheduledmeetings(*cr);
 
     if(recruiting) {
         move(18, 55);
@@ -1488,9 +1511,9 @@ void printliberalstats(Creature &cr) {
 
     // Add seduction stats
     move(19, 0);
-    int lovers = loveslaves(cr);
+    int lovers = loveslaves(*cr); // TODO: export lover counter into another function
 
-    if(cr.flag & CREATUREFLAG_LOVESLAVE)
+    if(cr->flag & CREATUREFLAG_LOVESLAVE)
         lovers++;
 
     if(lovers) {
@@ -1503,7 +1526,7 @@ void printliberalstats(Creature &cr) {
     }
 
     // Any dates with potential love interests scheduled?
-    int wooing = scheduleddates(cr);
+    int wooing = scheduleddates(*cr);
 
     if(wooing) {
         move(19, 55);
@@ -1514,7 +1537,7 @@ void printliberalstats(Creature &cr) {
 
     // Add wound status
     for(int w = 0; w < BODYPARTNUM; w++) {
-        if(cr.wound[w] & WOUND_BLEEDING)
+        if(cr->wound[w] & WOUND_BLEEDING)
             set_color(COLOR_RED, COLOR_BLACK, 1);
         else
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
@@ -1549,38 +1572,38 @@ void printliberalstats(Creature &cr) {
 
         move(5 + w, 66);
 
-        if(cr.wound[w] & WOUND_NASTYOFF)
+        if(cr->wound[w] & WOUND_NASTYOFF)
             addstr("Ripped off");
-        else if(cr.wound[w] & WOUND_CLEANOFF)
+        else if(cr->wound[w] & WOUND_CLEANOFF)
             addstr("Severed");
         else {
             int sum = 0;
 
-            if(cr.wound[w] & WOUND_SHOT)
+            if(cr->wound[w] & WOUND_SHOT)
                 sum++;
 
-            if(cr.wound[w] & WOUND_CUT)
+            if(cr->wound[w] & WOUND_CUT)
                 sum++;
 
-            if(cr.wound[w] & WOUND_BRUISED)
+            if(cr->wound[w] & WOUND_BRUISED)
                 sum++;
 
-            if(cr.wound[w] & WOUND_BURNED)
+            if(cr->wound[w] & WOUND_BURNED)
                 sum++;
 
-            if(cr.wound[w] & WOUND_TORN)
+            if(cr->wound[w] & WOUND_TORN)
                 sum++;
 
             if(sum == 0) {
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
 
-                if(cr.animalgloss == ANIMALGLOSS_ANIMAL)
+                if(cr->animalgloss == ANIMALGLOSS_ANIMAL)
                     addstr("Animal");
                 else
                     addstr("Liberal");
             }
 
-            if(cr.wound[w] & WOUND_SHOT) {
+            if(cr->wound[w] & WOUND_SHOT) {
                 addstr("Shot");
                 sum--;
 
@@ -1588,7 +1611,7 @@ void printliberalstats(Creature &cr) {
                     addstr(",");
             }
 
-            if(cr.wound[w] & WOUND_BRUISED) {
+            if(cr->wound[w] & WOUND_BRUISED) {
                 addstr("Bruised");
                 sum--;
 
@@ -1596,7 +1619,7 @@ void printliberalstats(Creature &cr) {
                     addstr(",");
             }
 
-            if(cr.wound[w] & WOUND_CUT) {
+            if(cr->wound[w] & WOUND_CUT) {
                 addstr("Cut");
                 sum--;
 
@@ -1604,7 +1627,7 @@ void printliberalstats(Creature &cr) {
                     addstr(",");
             }
 
-            if(cr.wound[w] & WOUND_TORN) {
+            if(cr->wound[w] & WOUND_TORN) {
                 addstr("Torn");
                 sum--;
 
@@ -1612,7 +1635,7 @@ void printliberalstats(Creature &cr) {
                     addstr(",");
             }
 
-            if(cr.wound[w] & WOUND_BURNED) {
+            if(cr->wound[w] & WOUND_BURNED) {
                 addstr("Burned");
                 sum--;
 
@@ -1630,100 +1653,100 @@ void printliberalstats(Creature &cr) {
     int y = 12;
     int x = 55;
 
-    if(cr.special[SPECIALWOUND_HEART] != 1) {
+    if(cr->special[SPECIALWOUND_HEART] != 1) {
         move(y++, x);
         addstr("Heart Punctured");
     }
 
-    if(cr.special[SPECIALWOUND_RIGHTLUNG] != 1) {
+    if(cr->special[SPECIALWOUND_RIGHTLUNG] != 1) {
         move(y++, x);
         addstr("R. Lung Collapsed");
     }
 
-    if(cr.special[SPECIALWOUND_LEFTLUNG] != 1) {
+    if(cr->special[SPECIALWOUND_LEFTLUNG] != 1) {
         move(y++, x);
         addstr("L. Lung Collapsed");
     }
 
-    if(cr.special[SPECIALWOUND_NECK] != 1) {
+    if(cr->special[SPECIALWOUND_NECK] != 1) {
         move(y++, x);
         addstr("Broken Neck");
     }
 
-    if(cr.special[SPECIALWOUND_UPPERSPINE] != 1) {
+    if(cr->special[SPECIALWOUND_UPPERSPINE] != 1) {
         move(y++, x);
         addstr("Broken Up Spine");
     }
 
-    if(cr.special[SPECIALWOUND_LOWERSPINE] != 1) {
+    if(cr->special[SPECIALWOUND_LOWERSPINE] != 1) {
         move(y++, x);
         addstr("Broken Lw Spine");
     }
 
-    if(cr.special[SPECIALWOUND_RIGHTEYE] != 1) {
+    if(cr->special[SPECIALWOUND_RIGHTEYE] != 1) {
         move(y++, x);
         addstr("No Right Eye");
     }
 
-    if(cr.special[SPECIALWOUND_LEFTEYE] != 1) {
+    if(cr->special[SPECIALWOUND_LEFTEYE] != 1) {
         move(y++, x);
         addstr("No Left Eye");
     }
 
-    if(cr.special[SPECIALWOUND_NOSE] != 1) {
+    if(cr->special[SPECIALWOUND_NOSE] != 1) {
         move(y++, x);
         addstr("No Nose");
     }
 
-    if(cr.special[SPECIALWOUND_TONGUE] != 1) {
+    if(cr->special[SPECIALWOUND_TONGUE] != 1) {
         move(y++, x);
         addstr("No Tongue");
     }
 
-    if(cr.special[SPECIALWOUND_TEETH] != TOOTHNUM) {
+    if(cr->special[SPECIALWOUND_TEETH] != TOOTHNUM) {
         move(y++, x);
 
-        if(cr.special[SPECIALWOUND_TEETH] == 0)
+        if(cr->special[SPECIALWOUND_TEETH] == 0)
             addstr("No Teeth");
-        else if(cr.special[SPECIALWOUND_TEETH] == TOOTHNUM - 1)
+        else if(cr->special[SPECIALWOUND_TEETH] == TOOTHNUM - 1)
             addstr("Missing a Tooth");
-        else if(cr.special[SPECIALWOUND_TEETH] < TOOTHNUM)
+        else if(cr->special[SPECIALWOUND_TEETH] < TOOTHNUM)
             addstr("Missing Teeth");
     }
 
-    if(cr.special[SPECIALWOUND_LIVER] != 1) {
+    if(cr->special[SPECIALWOUND_LIVER] != 1) {
         move(y++, x);
         addstr("Liver Damaged");
     }
 
-    if(cr.special[SPECIALWOUND_RIGHTKIDNEY] != 1) {
+    if(cr->special[SPECIALWOUND_RIGHTKIDNEY] != 1) {
         move(y++, x);
         addstr("R. Kidney Damaged");
     }
 
-    if(cr.special[SPECIALWOUND_LEFTKIDNEY] != 1) {
+    if(cr->special[SPECIALWOUND_LEFTKIDNEY] != 1) {
         move(y++, x);
         addstr("L. Kidney Damaged");
     }
 
-    if(cr.special[SPECIALWOUND_STOMACH] != 1) {
+    if(cr->special[SPECIALWOUND_STOMACH] != 1) {
         move(y++, x);
         addstr("Stomach Injured");
     }
 
-    if(cr.special[SPECIALWOUND_SPLEEN] != 1) {
+    if(cr->special[SPECIALWOUND_SPLEEN] != 1) {
         move(y++, x);
         addstr("Busted Spleen");
     }
 
-    if(cr.special[SPECIALWOUND_RIBS] != RIBNUM) {
+    if(cr->special[SPECIALWOUND_RIBS] != RIBNUM) {
         move(y++, x);
 
-        if(cr.special[SPECIALWOUND_RIBS] == 0)
+        if(cr->special[SPECIALWOUND_RIBS] == 0)
             addstr("All Ribs Broken");
-        else if(cr.special[SPECIALWOUND_RIBS] == RIBNUM - 1)
+        else if(cr->special[SPECIALWOUND_RIBS] == RIBNUM - 1)
             addstr("Broken Rib");
-        else if(cr.special[SPECIALWOUND_RIBS] < RIBNUM)
+        else if(cr->special[SPECIALWOUND_RIBS] < RIBNUM)
             addstr("Broken Ribs");
     }
 
@@ -1731,7 +1754,7 @@ void printliberalstats(Creature &cr) {
 }
 
 /* Full screen character sheet, crime sheet */
-void printliberalcrimes(Creature &cr) {
+void printliberalcrimes(Creature *cr) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     char str[200];
     char num[5];
@@ -1739,19 +1762,17 @@ void printliberalcrimes(Creature &cr) {
     // Add name
     move(2, 0);
 
-    if(strcmp(cr.propername, cr.name) != 0)
+    if(strcmp(cr->propername, cr->name) != 0)
         addstr("Code name: ");
     else
         addstr("Name: ");
 
-    set_color(COLOR_WHITE, COLOR_BLACK, 1);
-    addstr(cr.name);
-    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    print_name_colored_according_to_juice(cr);
     addstr(", ");
-    gettitle(str, cr);
+    gettitle(str, *cr);
     addstr(str);
     addstr(" (");
-    addstr(cr.get_type_name());
+    addstr(cr->get_type_name());
     addstr(")");
 
     // Add all crimes
@@ -1765,7 +1786,7 @@ void printliberalcrimes(Creature &cr) {
         }
 
         // Commited crimes are yellow
-        if(cr.crimes_suspected[i] > 0)
+        if(cr->crimes_suspected[i] > 0)
             set_color(COLOR_YELLOW, COLOR_BLACK, 1);
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
@@ -1775,7 +1796,7 @@ void printliberalcrimes(Creature &cr) {
         strcat(str, ": ");
         addstr(str);
         move(5 + i / 2, 30 + 40 * (i % 2));
-        sprintf(num, "%2d", cr.crimes_suspected[i]);
+        sprintf(num, "%2d", cr->crimes_suspected[i]);
         addstr(num);
     }
 

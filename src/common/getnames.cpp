@@ -868,6 +868,6 @@ std::string getmonth(int month, bool shortname) {
         return (shortname ? "Dec." : "December");
 
     default:
-        return (shortname ? "Bug." : "Bugtober");
+        return (shortname ? "Bug." : "Bugtober"); // Lol!
     }
 }

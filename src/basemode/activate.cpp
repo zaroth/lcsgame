@@ -93,8 +93,7 @@ void activate(void) {
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
-            addstr(temppool[p]->name);
-
+            print_name_colored_according_to_juice(temppool[p]);
             char bright = 0;
             int skill = 0;
 
@@ -355,7 +354,7 @@ void activate(Creature *cr) {
         move(0, 0);
 
         if (cr->income) {
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" made $");
             char num[20];
             itoa(cr->income, num, 10);
@@ -363,7 +362,7 @@ void activate(Creature *cr) {
             addstr(" yesterday. What now?");
         } else {
             addstr("Taking Action: What will ");
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" be doing today?");
         }
 
@@ -584,7 +583,7 @@ void activate(Creature *cr) {
         switch(cr->activity.type) {
         case ACTIVITY_COMMUNITYSERVICE:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will help the elderly, local library, anything");
             move(23, 1);
             addstr("  that is liberal.");
@@ -592,13 +591,13 @@ void activate(Creature *cr) {
 
         case ACTIVITY_TROUBLE:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will create public disturbances. ");
             break;
 
         case ACTIVITY_GRAFFITI:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will spray political graffiti. Art and Heart will");
             move(23, 1);
             addstr("  enhance the liberal effect.");
@@ -606,7 +605,7 @@ void activate(Creature *cr) {
 
         case ACTIVITY_POLLS:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will search the internet for public opinion polls.");
             move(23, 1);
             addstr("  Polls will give an idea on how the liberal agenda is going. Computers");
@@ -616,7 +615,7 @@ void activate(Creature *cr) {
 
         case ACTIVITY_DOS_ATTACKS:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will harass Conservative websites. Computer skill");
             move(23, 1);
             addstr("  will give greater effect.");
@@ -624,7 +623,7 @@ void activate(Creature *cr) {
 
         case ACTIVITY_HACKING:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will harass websites and hack private networks.");
             move(23, 1);
             addstr("  Computer skill and intelligence will give more frequent results.");
@@ -634,19 +633,19 @@ void activate(Creature *cr) {
 
         case ACTIVITY_WRITE_LETTERS:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will write letters to newspapers about current events.");
             break;
 
         case ACTIVITY_WRITE_GUARDIAN:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will write articles for the LCS's newspaper.");
             break;
 
         case ACTIVITY_DONATIONS:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will walk around and ask for donations to the LCS.");
             move(23, 1);
             addstr("  Based on persuasion, public's view on the cause, and how well dressed the");
@@ -656,7 +655,7 @@ void activate(Creature *cr) {
 
         case ACTIVITY_SELL_TSHIRTS:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
 
             if(cr->get_skill(SKILL_TAILORING) >= 8)
                 addstr(" will print and distribute shirts with Liberal slogans.");
@@ -669,7 +668,7 @@ void activate(Creature *cr) {
 
         case ACTIVITY_SELL_ART:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
 
             if(cr->get_skill(SKILL_ART) >= 8)
                 addstr(" will create and sell paintings embracing the Liberal agenda.");
@@ -682,7 +681,7 @@ void activate(Creature *cr) {
 
         case ACTIVITY_SELL_MUSIC:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will go out into the streets and drum on buckets,");
             move(23, 1);
             addstr("  or play guitar if one is equipped.");
@@ -690,19 +689,19 @@ void activate(Creature *cr) {
 
         case ACTIVITY_RECRUITING:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will try to find someone to join the LCS.");
             break;
 
         case ACTIVITY_STEALCARS:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will try to find and steal a car.");
             break;
 
         case ACTIVITY_SELL_DRUGS:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will bake and sell special adult brownies that open");
             move(23, 1);
             addstr("  magical shimmering doorways to the adamantium pits.");
@@ -710,19 +709,19 @@ void activate(Creature *cr) {
 
         case ACTIVITY_PROSTITUTION:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will trade sex for money.");
             break;
 
         case ACTIVITY_CCFRAUD:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will commit credit card fraud online.");
             break;
 
         case ACTIVITY_DOS_RACKET:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will demand money in exchange for not bringing down");
             move(23, 1);
             addstr("major websites.");
@@ -771,7 +770,7 @@ void activate(Creature *cr) {
         case ACTIVITY_STUDY_TEACHING:
         case ACTIVITY_STUDY_LOCKSMITHING:
             move(22, 3);
-            addstr(cr->name);
+            print_name_colored_according_to_juice(cr);
             addstr(" will attend classes in the University District");
             move(23, 1);
             addstr("  at a cost of $60 a day.");
@@ -1080,7 +1079,7 @@ void activate(Creature *cr) {
         if(state == 'd' && choice == '1') {
             activityst oact = cr->activity;
             cr->activity.type = ACTIVITY_NONE;
-            recruitSelect(*cr);
+            recruitSelect(cr);
 
             if(cr->activity.type == ACTIVITY_RECRUITING)
                 break;
@@ -1248,7 +1247,7 @@ void activatebulk(void) {
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
-            addstr(temppool[p]->name);
+            print_name_colored_according_to_juice(temppool[p]);
 
             move(y, 25);
             set_activity_color(temppool[p]->activity.type);
@@ -1388,7 +1387,7 @@ void select_tendhostage(Creature *cr) {
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(0, 0);
         addstr("Which hostage will ");
-        addstr(cr->name);
+        print_name_colored_according_to_juice(cr);
         addstr(" be watching over?");
         move(1, 0);
         addstr("----CODE NAME------------SKILL---HEALTH---LOCATION------------------------------");
@@ -1402,7 +1401,7 @@ void select_tendhostage(Creature *cr) {
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
-            addstr(temppool[p]->name);
+            print_name_colored_according_to_juice(temppool[p]);
 
             char bright = 0;
             int skill = 0;
@@ -1494,12 +1493,12 @@ long select_hostagefundinglevel(Creature *cr, Creature *hs) {
 
     move(2, 0);
     addstr("A - Don't spend anything.  ");
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr(" is just on watch duty.");
 
     move(3, 0);
     addstr("B - Don't spend anything.  ");
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr(" will turn the prisoner over time.");
 
     move(4, 0);
@@ -1507,12 +1506,12 @@ long select_hostagefundinglevel(Creature *cr, Creature *hs) {
 
     move(5, 0);
     addstr("D - $50 per day.  ");
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr(" will go for a thrifty indoctrination.");
 
     move(6, 0);
     addstr("E - $100 per day.  ");
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr(" needs enough freedom to be creative.");
 
     move(7, 0);
@@ -1523,7 +1522,7 @@ long select_hostagefundinglevel(Creature *cr, Creature *hs) {
 
     move(10, 0);
     addstr("Enter - On second thought, this isn't a job for ");
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr(".");
 
     refresh();
@@ -1602,7 +1601,7 @@ char *recruitName(int creatureType) {
     return (char *)"missingno";
 }
 
-void recruitSelect(Creature &cr) {
+void recruitSelect(Creature *cr) {
     // Number of recruitable creatures
     int options = sizeof(recruitable_creatures) / sizeof(recruitData);
 
@@ -1626,7 +1625,7 @@ void recruitSelect(Creature &cr) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(0, 0);
         addstr("What type of person will ");
-        addstr(cr.name);
+        print_name_colored_according_to_juice(cr);
         addstr(" try to meet and recruit today?");
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(1, 0);
@@ -1727,8 +1726,8 @@ void recruitSelect(Creature &cr) {
             int p = page * 19 + (int)(c - 'a');
 
             if(p < options) {
-                cr.activity.type = ACTIVITY_RECRUITING;
-                cr.activity.arg = recruitable_creatures[p].type;
+                cr->activity.type = ACTIVITY_RECRUITING;
+                cr->activity.arg = recruitable_creatures[p].type;
                 break;
             }
         }
@@ -1763,7 +1762,7 @@ void select_makeclothing(Creature *cr) {
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         move(0, 0);
         addstr("Which will ");
-        addstr(cr->name);
+        print_name_colored_according_to_juice(cr);
         addstr(" try to make?   (Note: Half Cost if you have cloth)");
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
         move(1, 0);
@@ -1914,7 +1913,7 @@ long select_troublefundinglevel(Creature *cr) {
 
     move(2, 0);
     addstr("A - Don't spend anything.  ");
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr(" just needs something constructive to do.");
 
     move(3, 0);
@@ -1930,12 +1929,12 @@ long select_troublefundinglevel(Creature *cr) {
     addstr("E - $500 per day.  The Machine will buckle under the weight of");
     move(7, 0);
     addstr("    ");
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr("'s Numerous and Varied Liberal Acts.");
 
     move(9, 0);
     addstr("Enter - On second thought, this isn't a job for ");
-    addstr(cr->name);
+    print_name_colored_according_to_juice(cr);
     addstr(".");
 
     refresh();

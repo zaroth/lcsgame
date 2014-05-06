@@ -1018,6 +1018,8 @@ void set_alignment_color(signed char alignment, bool extended_range = false);
 void set_activity_color(long activity_type);
 /* location and squad header */
 void locheader(void);
+/* prints Creature's name colored according to hisher juice level */
+void print_name_colored_according_to_juice(Creature *subject, unsigned char def_color = COLOR_WHITE, unsigned char def_outline = 0);
 /* party info at top of screen */
 void printparty(void);
 /* location info at top of screen */
@@ -1027,11 +1029,11 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge = 255);
 /* full character sheet (with surrounding interface) */
 void fullstatus(int p);
 /* full screen character sheet, just skills */
-void printliberalskills(Creature &cr);
+void printliberalkills(Creature *cr);
 /* full screen character sheet */
-void printliberalstats(Creature &cr);
+void printliberalstats(Creature *cr);
 /* Full screen character sheet, crime sheet */
-void printliberalcrimes(Creature &cr);
+void printliberalcrimes(Creature *cr);
 /* draws a horizontal line across the screen */
 void makedelimiter(int y, int x);
 /* prints a character's health description (One Leg, Liberal, NearDETH...) */
@@ -1392,7 +1394,7 @@ long select_hostagefundinglevel(Creature *cr, Creature *hs);
 /* activation-based recruitment */
 int recruitFindDifficulty(int creatureType);
 char *recruitName(int creatureType);
-void recruitSelect(Creature &cr);
+void recruitSelect(Creature *cr);
 /* base - activate - make clothing */
 void select_makeclothing(Creature *cr);
 int armor_makedifficulty(Armor &type, Creature *cr); //Replace with Armor class method? -XML

@@ -336,7 +336,7 @@ void review_mode(short mode) {
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
-            addstr(temppool[p]->name);
+            print_name_colored_according_to_juice(temppool[p]);
 
             char bright = 0;
             int skill = 0;
@@ -573,11 +573,11 @@ void review_mode(short mode) {
                     }
 
                     if(page == 0)
-                        printliberalstats(*temppool[p]);
+                        printliberalstats(temppool[p]);
                     else if(page == 1)
-                        printliberalskills(*temppool[p]);
+                        printliberalkills(temppool[p]);
                     else if(page == 2)
-                        printliberalcrimes(*temppool[p]);
+                        printliberalcrimes(temppool[p]);
 
                     // Add removal of squad members member
                     move(22, 0);
@@ -1002,7 +1002,7 @@ void assemblesquad(squadst *cursquad) {
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
-            addstr(temppool[p]->name);
+            print_name_colored_according_to_juice(temppool[p]);
 
             char bright = 0;
             int skill = 0;

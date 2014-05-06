@@ -272,9 +272,8 @@ char recruitment_activity(Creature &cr, char &clearformess) {
 
 /* daily - recruit - recruit meeting */
 char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
+    char num[5]; // for temporary use for itoa()
     clearformess = 1;
-
-
 
     erase();
     set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -339,8 +338,14 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
 
     move(11, 0);
     addstr("How should ");
-    addstr(pool[p]->name);
-    addstr(" approach the situation?");
+    print_name_colored_according_to_juice(pool[p]);
+    addstr(" [");
+    itoa(maxsubordinates(*pool[p]) - subordinatesleft(*pool[p]), num, 10);
+    addstr(num);
+    addstr("/");
+    itoa(maxsubordinates(*pool[p]), num, 10);
+    addstr(num);
+    addstr(" recruits] approach the situation?");
 
     move(13, 0);
 

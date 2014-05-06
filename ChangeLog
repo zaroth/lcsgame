@@ -1,4 +1,7 @@
 Changelog for version 4.0.x (git HEAD):
+* Added displaying recruit counter during meetings next to name of recruiter.
+* Added coloring names of your members according to their juice level for
+easier distinguishing them. It's not everywhere, just where it counts.
 * Moved the repository from svn to git and cleaned up the history from binary
 blobs while at it (reduced size from 300MB to 7.5MB)
 

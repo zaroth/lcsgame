@@ -269,7 +269,7 @@ void dealership(int loc) {
 
             //Picked a car, pick color
             int colorchoice;
-            //if (vehicletype[availablevehicle[choice]]->color().size()>1) //Allow to back out if you don't like single colour? -XML
+            //if (vehicletype[availablevehicle[choice]]->color().size()>1) //Allow to back out if you don't like single color? -XML
             //{
             colorchoice = choiceprompt("Choose a color", "", vehicletype[availablevehicle[carchoice]]->color(),
                                        "Color", true, "These colors are Conservative");

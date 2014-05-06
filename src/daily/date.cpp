@@ -483,7 +483,8 @@ char completedate(datest &d, int p, char &clearformess) {
 
         move(10, 0);
         addstr("How should ");
-        addstr(pool[p]->name);
+        print_name_colored_according_to_juice(pool[p]); // TODO: add display of lovers counter
+//      addstr(" [");
         addstr(" approach the situation?");
 
         if(ledger.get_funds() >= 100 && !pool[p]->clinic)

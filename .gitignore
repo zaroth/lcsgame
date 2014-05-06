@@ -24,3 +24,6 @@ src/.deps
 src/crimesquad
 *.o
 
+# vim
+*.swp
+
