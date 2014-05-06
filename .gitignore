@@ -1,0 +1,17 @@
+Makefile
+Makefile.in
+configure
+compile
+depcomp
+install-sh
+missing
+stamp-h1
+
+autom4te.cache
+aclocal.m4
+config.*
+
+src/.deps
+src/crimesquad
+*.o
+
