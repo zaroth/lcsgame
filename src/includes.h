@@ -1535,7 +1535,8 @@ char alienationcheck(char mistake);
 void disguisecheck(int encounter_timer);
 /* checks if a creature's weapon is suspicious or illegal */
 char weaponcheck(const Creature &cr, bool metaldetect = false);
-/* checks if a creature's uniform is appropriate to the location */
+/** checks if a creature's uniform is appropriate to the location,
+ * @return 0 - no disguise 1 - full disguise 2 - partial disguise */
 char hasdisguise(const Creature &cr);
 /* returns true if the entire site is not open to public */
 char disguisesite(long type);

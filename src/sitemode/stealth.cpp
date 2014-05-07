@@ -554,7 +554,7 @@ char weaponcheck(const Creature &cr, bool metaldetect) {
 
     // If your disguise is inappropriate to the current location,
     // then being in character isn't sufficient
-    if(hasdisguise(cr) == false)
+    if(hasdisguise(cr) == 0)
         incharacter = -1;
 
     if(suspicious) {
