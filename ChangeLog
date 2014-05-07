@@ -1,4 +1,5 @@
-Changelog for version 4.0.x (git HEAD):
+Changelog for version 4.8-git:
+
 * Changed recruit action mechanics to automatically start conversation
 when only 1 recruit found is left
 * Reordered display of attributes to be more logically grouped.
