@@ -27,9 +27,9 @@ This file is part of Liberal Crime Squad.                                       
 */
 
 #define CONSOLE_SUPPORT
-//#include <includes.h>
-#include <externs.h>
-#include <lcsio.h>
+//#include "includes.h"
+#include "externs.h"
+#include "lcsio.h"
 
 #if defined(USE_NCURSES) || defined (USE_NCURSES_W)
 #include <term.h>

@@ -31,8 +31,8 @@ This file is part of Liberal Crime Squad.                                       
 //handles the squad moving around the site. For now, this'll do. I must remember
 //to come back here and finish the job.
 
-//#include <includes.h>
-#include <externs.h>
+//#include "includes.h"
+#include "externs.h"
 
 
 

@@ -18,7 +18,7 @@ This file is part of Liberal Crime Squad.                                       
 
 #include "politics/law.h"
 #include "politics/alignment.h"
-#include <includes.h>
+#include "includes.h"
 
 // Default constructor
 law::law() {

@@ -19,8 +19,8 @@ This file is part of Liberal Crime Squad.                                       
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA   02111-1307   USA     //
 */
 
-//#include <includes.h>
-#include <externs.h>
+//#include "includes.h"
+#include "externs.h"
 
 
 /* recruit struct constructor */

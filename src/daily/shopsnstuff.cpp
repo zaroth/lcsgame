@@ -26,8 +26,8 @@ This file is part of Liberal Crime Squad.                                       
         the bottom of includes.h in the top src folder.
 */
 
-//#include <includes.h>
-#include <externs.h>
+//#include "includes.h"
+#include "externs.h"
 
 #define MAX_PATH_SIZE 2048
 extern char artdir[MAX_PATH_SIZE];

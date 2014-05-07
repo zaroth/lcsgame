@@ -28,8 +28,8 @@ This file is part of Liberal Crime Squad.                                       
 
 //TODO: Add logging for this file? --Addictgamer
 
-//#include <includes.h>
-#include <externs.h>
+//#include "includes.h"
+#include "externs.h"
 #include <cstring>
 #include "news/news.h"
 

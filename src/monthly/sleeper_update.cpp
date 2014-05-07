@@ -18,8 +18,8 @@ This file is part of Liberal Crime Squad.                                       
 
 /* monthly - sleeper behavior */
 
-#include <includes.h>
-#include <externs.h>
+#include "includes.h"
+#include "externs.h"
 
 /**********************************************************************
 ** *JDS*

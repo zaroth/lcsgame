@@ -10,6 +10,7 @@
 #endif
 #include "cursesgraphics.h"
 
+// TODO: remove this file? what is it for?
 using namespace std;
 
 

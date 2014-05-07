@@ -27,8 +27,8 @@ This file is part of Liberal Crime Squad.                                       
 */
 
 
-//#include <includes.h>
-#include <externs.h>
+//#include "includes.h"
+#include "externs.h"
 
 
 /* select new game options */

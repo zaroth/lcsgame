@@ -9,7 +9,10 @@ missing
 stamp-h1
 autom4te.cache
 aclocal.m4
-config.*
+config.h
+config.h.in
+config.log
+config.status
 
 # cmake
 build/

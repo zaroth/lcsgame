@@ -26,8 +26,8 @@ To see descriptions of files and functions, see the list at
 the bottom of includes.h in the top src folder.
 */
 
-//#include <includes.h>
-#include <externs.h>
+//#include "includes.h"
+#include "externs.h"
 
 // Sets the text color to the thematic color for the given alignment
 // extended_range forces colors to be set on a 5 point scale instead

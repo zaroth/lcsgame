@@ -1,5 +1,5 @@
-#include <includes.h>
-#include <externs.h>
+#include "includes.h"
+#include "externs.h"
 
 enum Pages {
     PAGE_LEADERS,

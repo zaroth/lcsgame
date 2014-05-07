@@ -26,9 +26,9 @@ This file is part of Liberal Crime Squad.                                       
         the bottom of includes.h in the top src folder.
 */
 
-#include <includes.h>
+#include "includes.h"
 #include <math.h>
-#include <externs.h>
+#include "externs.h"
 
 /* common - test for possible game over */
 char endcheck(char cause) {
