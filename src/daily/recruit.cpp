@@ -202,55 +202,14 @@ char recruitment_activity(Creature &cr, char &clearformess) {
             return 0;
         }
 
-        while(recruitCount > 1) {
+        if(recruitCount == 1) {
             erase();
             set_color(COLOR_WHITE, COLOR_BLACK, 1);
             mvaddstr(0, 0, "Adventures in Liberal Recruitment");
             printcreatureinfo(&cr);
             makedelimiter(8, 0);
 
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            mvaddstr_f(10, 0, "%s was able to get information on multiple people.", cr.name);
-
-            for(int i = 0; i < recruitCount; i++) {
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                mvaddstr_f(12 + i, 0, "%c - ", 'a' + i);
-                set_alignment_color(encounter[i].align);
-                addstr(encounter[i].name);
-                add_age(encounter[i]);
-            }
-
-            set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            mvaddstr(12 + recruitCount + 1, 0, "Press enter or escape to call it a day.");
-            int c = getch();
-            translategetch(c);
-
-            if(c == ENTER || c == ESC)
-                break;
-
-            c -= 'a';
-
-            if(c >= 0 && c < ENCMAX - 1 && encounter[c].exists) {
-                int id = encounter[c].id;
-                erase();
-                set_color(COLOR_WHITE, COLOR_BLACK, 1);
-                mvaddstr(0, 0, "Adventures in Liberal Recruitment");
-                printcreatureinfo(&encounter[c]);
-                makedelimiter(8, 0);
-
-                talk(cr, c);
-
-                if(encounter[c].id == id)
-                    delenc(c, 0);
-
-                recruitCount--;
-
-                if(recruitCount <= 1)
-                    break;
-            }
-        }
-
-        if(recruitCount == 1) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
             mvaddstr_f(11, 0, "%s managed to set up a meeting with ", cr.name);
             set_alignment_color(encounter[0].align);
             addstr(encounter[0].name);
@@ -265,8 +224,77 @@ char recruitment_activity(Creature &cr, char &clearformess) {
             printcreatureinfo(&encounter[0]);
             makedelimiter(8, 0);
             talk(cr, 0);
-        }
+        } else {
+            while(recruitCount > 1) {
+                erase();
+                set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                mvaddstr(0, 0, "Adventures in Liberal Recruitment");
+                printcreatureinfo(&cr);
+                makedelimiter(8, 0);
 
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                mvaddstr_f(10, 0, "%s was able to get information on multiple people.", cr.name);
+
+                for(int i = 0; i < recruitCount; i++) {
+                    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                    mvaddstr_f(12 + i, 0, "%c - ", 'A' + i);
+                    set_alignment_color(encounter[i].align);
+                    addstr(encounter[i].name);
+                    add_age(encounter[i]);
+                }
+
+                set_color(COLOR_WHITE, COLOR_BLACK, 0);
+                mvaddstr(12 + recruitCount + 1, 0, "Press enter or escape to call it a day.");
+                int c = getch();
+                translategetch(c);
+
+                if(c == ENTER || c == ESC)
+                    break;
+
+                c -= 'a';
+
+                if(c >= 0 && c < ENCMAX - 1 && encounter[c].exists) {
+                    int id = encounter[c].id;
+                    erase();
+                    set_color(COLOR_WHITE, COLOR_BLACK, 1);
+                    mvaddstr(0, 0, "Adventures in Liberal Recruitment");
+                    printcreatureinfo(&encounter[c]);
+                    makedelimiter(8, 0);
+
+                    talk(cr, c);
+
+                    if(encounter[c].id == id)
+                        delenc(c, 0);
+
+                    recruitCount--;
+
+                    if(recruitCount <= 1)
+                        break;
+                }
+            }
+
+            erase();
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            mvaddstr(0, 0, "Adventures in Liberal Recruitment");
+            printcreatureinfo(&cr);
+            makedelimiter(8, 0);
+
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            mvaddstr_f(11, 0, "%s approaches the last %s.", cr.name, name);
+            //set_alignment_color(encounter[0].align);
+            //addstr(encounter[0].name);
+            //add_age(encounter[0]);
+            //set_color(COLOR_WHITE,COLOR_BLACK,0);
+            //addstr(".");
+            getch();
+
+            erase();
+            set_color(COLOR_WHITE, COLOR_BLACK, 1);
+            mvaddstr(0, 0, "Adventures in Liberal Recruitment");
+            printcreatureinfo(&encounter[0]);
+            makedelimiter(8, 0);
+            talk(cr, 0);
+        }
     }
 
     cursite = ocursite;
