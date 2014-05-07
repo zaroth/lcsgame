@@ -6,11 +6,14 @@ include(CheckIncludeFiles)
 
 set(LCS_VERSION_STRING "4.8-git")
 
+set(lcs_REQUIRED_LIBRARIES ncurses)
+
 find_package(Curses REQUIRED)
 
 add_definitions(-DCMAKE -DHAVE_CONFIG_H)
 
 check_include_files(ncurses.h HAVE_NCURSES_H)
+set(HAVE_WIDE_NCURSES 1)
 set(NCURSES 1)
 set(USE_NCURSES 1)
 set(Linux 1)
