@@ -3,35 +3,24 @@ Bugs:
 * heat does not feel threatening
 * do dupy! przejecie bazy przez ccs dziala ZLEEE - dodatkowo fajne gadzety powinny byc dostepne i w innych lokacjach (takie jak printing press)
 * recruiting crashes when your squad consisting of the same professions you recruit dies during recruitment
-* after successful conversion to liberalism via persuasion you can't change the subject's name
 
 QOI interface changes:
 
 * add tab with easy equipment access to everyone + tabs of equipment categories
-* add sorting by date of joining the squad or summarical skill or juice
-* jobs for entire squads to remove tedinesss
-* easier squad management:makes you be able to move ppl to squads individually
 * TAB - toggles information shown in any list - from proffesion to presuasion/seduction/psychology + Charisma + slots of recruitments/meetings and lovers/dates, stealth/disguise/security/street sense + Agility
 2 best combat skills + dodges stat on which the best one bases (Heart/Agility/Strength), 
 	Easier sorting by pressing column's numbers - same as reorder squad first, second... etc
 	DO NOT AUTO RESORT PEOPLE, keep X sorting even after changing tabs /\ resort when changing sort preferentions + auto show the best results (1st page)
 	+ filters for for example only healthy ppl
-* to your own custom views showing 
-* different numbers/colors for squads in squad view
-* color equipment: gray:  misc items, blue: weapons, violet: ammunition, white(1stclass):yellow(lower class)-red(torn or broken): clothes
-* make arrows in shop add/decrease items to sell
+* to your own custom views showing
 * make arrows work in menus to choose selections/select with /\\/ and <>
 * make possible changing squads' order
-* change equipment menu - button for reload all weapons/give clips
 
 Other QoI changes:
 
 * martial arts - - > physical disarm and impairment
-* Make list view in squads default by all means
-* display squad name during raid
 * all information about events stackable on 1 screen and scrolls as they go + saves for one day
 	to review if missed/forgot something + button to fill whole page with info instead of holding enter
-* increase "Recruiting" option effectiveness to meet more ppl
 * add meeting tab to review meetings with ppl with all needed information:
 	expandable recruit's profiles, people's skills that can be learned from these meetings,	description of agents:
 	how many slots/lovers they have, how much persuasion/seduction/psychology/charisma they have
@@ -43,35 +32,22 @@ plus meeting policy for less micro management:
 	break at next meeting,
 Also make this policy settable during meetings.
 
-* show CLEARLY people dependency tree
+
 * show effects of wearing armor - generally more feedback about effects of equipment - even description in words
 * more friendly sleeper agents display, let know of actions' ACTUAL efficiency and their detailed profiles, especially juice they earned via their LIBERAL ACTIONS
-* add possibility for selecting default person to conversate during raid 
-* show how long learning in uni district will take to learn X skill at T next levels
 * add some actions like - sending someone somewhere (personally - to shop or any utility district), moving to base, renaming, ordering job for ANY people reviewing window (except raid :P)
 
 Features/Ideas:
 
-* add juice for driving/chasing experience
-* research & sciecne: develop and produce interrogating substances or fight resources (liberal gas!)
+* research & science: develop and produce interrogating substances or fight resources (liberal gas!)
 * add throwing weapons like grenades
 
 * map? ! with districts and ascii drawn locations
-* teaching tab + some progress/results? - currently noone knows what happens during teaching or how effective it is.
 * make possible to willingly go to the court for (much sooner trial) to clear yourself from any crimes
 * make public more picky about your crime actions (in supporting liberals) and general support % in getting sonds view
-* add some skill dependency to get info about ppl during meeting at raid: how is one armed and how is one dressed. - probably street sense
 * high psychology (5+ ) - gives you chance to sense negative intentions during meetings, or exact engagement and chance to decline on X option,
 ** add more options at conversation to recruit, and personalise choices and wills, for example choice of subjects to talk discuss with - psychology lets you know which topics are the most preferable
 * new tab to manage people's policy - default tasks that one is assigned to on some circumstances: feeling well (default: laying low), wounded (def: laying low)
-* make shop prices depend on business/charisma
-* improve teaching (f.e.: focus on X skill...) - maybe rework it to organise classes for x skill and manual attendance?
-* calendar display: showing schedulded taxes, parlament elections/votings, peoples' coming backs from hospitals/jails, schedulded judgements / other big events
-* add some (rare) super possitive and super negative odds for meetings with X ppl (for example genius teenagers with 15 int)
-	rare - super low or being masked conservatist swine!
-	generally more diversity
-^^^ obsolete after I discovered mutants
-* make strength useful for: staying fit even when wounded, cap of items that can be stolen, bonus damage for meelee weapons?
 * street sense -> makes finding wanted cars and ppl to recruit easier
 
 LARGE PROJECT IDEAS:
