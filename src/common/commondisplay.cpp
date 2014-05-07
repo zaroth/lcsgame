@@ -1511,17 +1511,14 @@ void printliberalstats(Creature *cr) {
 
     // Add seduction stats
     move(19, 0);
-    int lovers = loveslaves(*cr); // TODO: export lover counter into another function
+    int romances = lovers(*cr);
 
-    if(cr->flag & CREATUREFLAG_LOVESLAVE)
-        lovers++;
-
-    if(lovers) {
-        itoa(lovers, num, 10);
+    if(romances) {
+        itoa(romances, num, 10);
         addstr(num);
         addstr(" Romantic Interest");
 
-        if(lovers > 1)
+        if(romances != 1)
             addstr("s");
     }
 

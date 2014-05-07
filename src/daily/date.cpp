@@ -321,6 +321,7 @@ char completevacation(datest &d, int p, char &clearformess) {
 /* daily - date - dater p goes on some dates */
 char completedate(datest &d, int p, char &clearformess) {
     int e;
+    char num[5];
     clearformess = 1;
 
     erase();
@@ -483,9 +484,16 @@ char completedate(datest &d, int p, char &clearformess) {
 
         move(10, 0);
         addstr("How should ");
-        print_name_colored_according_to_juice(pool[p]); // TODO: add display of lovers counter
-//      addstr(" [");
-        addstr(" approach the situation?");
+        print_name_colored_according_to_juice(pool[p]);
+        addstr(" [");
+        itoa(lovers(*pool[p]), num, 10);
+        addstr(num);
+        addstr(" lover");
+
+        if(lovers(*pool[p]) != 1)
+            addstr("s");
+
+        addstr("] approach the situation?");
 
         if(ledger.get_funds() >= 100 && !pool[p]->clinic)
             set_color(COLOR_WHITE, COLOR_BLACK, 0);

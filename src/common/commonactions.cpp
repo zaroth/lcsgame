@@ -725,18 +725,22 @@ int loveslaves(const Creature &cr) {
     return loveslaves;
 }
 
+// Determines the number of lovers a creature has
+int lovers(const Creature &cr) {
+    if(cr.flag & CREATUREFLAG_LOVESLAVE)
+        return loveslaves(cr) + 1;
+    else
+        return loveslaves(cr);
+}
+
 // Determines the number of love slaves a creature may recruit,
-// based on max minus number they already command
+// based on max minus number of their lovers
 int loveslavesleft(const Creature &cr) {
     // Get maximum lovers
     int loveslavecap = cr.get_skill(SKILL_SEDUCTION) / 2 + 1;
 
-    // -1 if they're a love slave (their boss is a lover)
-    if(cr.flag & CREATUREFLAG_LOVESLAVE)
-        loveslavecap--;
-
-    // Subtract number of love slaves they have
-    loveslavecap -= loveslaves(cr);
+    // Subtract number of lovers they have
+    loveslavecap -= lovers(cr);
 
     // If they can have more, return that number
     if(loveslavecap > 0)

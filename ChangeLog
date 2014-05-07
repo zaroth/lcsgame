@@ -2,7 +2,8 @@ Changelog for version 4.0.x (git HEAD):
 * Changed recruit action mechanics to automatically start conversation
 when only 1 recruit found is left
 * Reordered display of attributes to be more logically grouped.
-* Added displaying recruit counter during meetings next to name of recruiter.
+* Added displaying recruit counter during meetings next to the name of recruiter
+and lovers counter display next to the name of seducer.
 * Added coloring names of your members according to their juice level for
 easier distinguishing them. It's not everywhere, just where it counts.
 * Moved the repository from svn to git and cleaned up the history from binary

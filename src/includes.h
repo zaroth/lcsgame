@@ -1106,6 +1106,8 @@ int maxsubordinates(const Creature &cr);
 int subordinatesleft(const Creature &cr);
 // Determines the number of love slaves a creature has
 int loveslaves(const Creature &cr);
+// Determines the number of lovers a creature has
+int lovers(const Creature &cr);
 /* Determines the number of loveslaves a creature may recruit,
    based on their max and the number they already command */
 int loveslavesleft(const Creature &cr);
