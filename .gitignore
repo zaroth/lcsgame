@@ -11,6 +11,9 @@ autom4te.cache
 aclocal.m4
 config.*
 
+# cmake
+build/
+
 # code::blocks
 workspaces/Debug
 workspaces/Release
