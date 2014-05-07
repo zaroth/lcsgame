@@ -1085,7 +1085,7 @@ void fullstatus(int p) {
         if(page == 0)
             printliberalstats(activesquad->squad[p]);
         else if(page == 1)
-            printliberalkills(activesquad->squad[p]);
+            printliberalskills(activesquad->squad[p]);
         else if (page == 2)
             printliberalcrimes(activesquad->squad[p]);
 
@@ -1157,7 +1157,7 @@ void fullstatus(int p) {
 
 
 /* Full screen character sheet, skills only edition */
-void printliberalkills(Creature *cr) {
+void printliberalskills(Creature *cr) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     char str[200];
     char num[5];
@@ -1180,6 +1180,7 @@ void printliberalkills(Creature *cr) {
 
     // Add all skills
     for(int s = 0; s < SKILLNUM; s++) {
+        // Print skills' header
         if(s % 3 == 0 && s < 9) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
             move(4, 27 * (s / 3));

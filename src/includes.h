@@ -1029,7 +1029,7 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge = 255);
 /* full character sheet (with surrounding interface) */
 void fullstatus(int p);
 /* full screen character sheet, just skills */
-void printliberalkills(Creature *cr);
+void printliberalskills(Creature *cr);
 /* full screen character sheet */
 void printliberalstats(Creature *cr);
 /* Full screen character sheet, crime sheet */

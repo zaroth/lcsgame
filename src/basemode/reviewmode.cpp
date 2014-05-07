@@ -575,7 +575,7 @@ void review_mode(short mode) {
                     if(page == 0)
                         printliberalstats(temppool[p]);
                     else if(page == 1)
-                        printliberalkills(temppool[p]);
+                        printliberalskills(temppool[p]);
                     else if(page == 2)
                         printliberalcrimes(temppool[p]);
 
