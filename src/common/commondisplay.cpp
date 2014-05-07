@@ -282,11 +282,11 @@ void juice_to_color(const short juice) {
     else if(juice < 200)
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
     else if(juice < 500)
-        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+        set_color(COLOR_BLUE, COLOR_BLACK, 0);
     else if(juice < 1000)
         set_color(COLOR_GREEN, COLOR_BLACK, 0);
     else
-        set_color(COLOR_MAGENTA, COLOR_BLACK, 0);
+        set_color(COLOR_GREEN, COLOR_BLACK, 1);
 }
 
 // Prints Creature's name colored according to hisher juice level
