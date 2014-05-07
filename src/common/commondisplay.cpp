@@ -732,15 +732,6 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
         addstr("?");
 
     move(3, 0);
-    addstr("Int:    ");
-
-    if(knowledge > 0) {
-        itoa(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true), num, 10);
-        addstr(num);
-    } else
-        addstr("?");
-
-    move(4, 0);
     addstr("Wis:    ");
 
     if(knowledge > 0) {
@@ -749,20 +740,29 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
     } else
         addstr("?");
 
-    move(5, 0);
-    addstr("Hlth:   ");
+    move(4, 0);
+    addstr("Int:    ");
 
-    if(knowledge > 1) {
-        itoa(cr->get_attribute(ATTRIBUTE_HEALTH, true), num, 10);
+    if(knowledge > 0) {
+        itoa(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true), num, 10);
+        addstr(num);
+    } else
+        addstr("?");
+
+    move(5, 0);
+    addstr("Char:   ");
+
+    if(knowledge > 0) {
+        itoa(cr->get_attribute(ATTRIBUTE_CHARISMA, true), num, 10);
         addstr(num);
     } else
         addstr("?");
 
     move(2, 11);
-    addstr("Agi:    ");
+    addstr("Hlth:   ");
 
     if(knowledge > 1) {
-        itoa(cr->get_attribute(ATTRIBUTE_AGILITY, true), num, 10);
+        itoa(cr->get_attribute(ATTRIBUTE_HEALTH, true), num, 10);
         addstr(num);
     } else
         addstr("?");
@@ -777,10 +777,10 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
         addstr("?");
 
     move(4, 11);
-    addstr("Char:   ");
+    addstr("Agi:    ");
 
-    if(knowledge > 0) {
-        itoa(cr->get_attribute(ATTRIBUTE_CHARISMA, true), num, 10);
+    if(knowledge > 1) {
+        itoa(cr->get_attribute(ATTRIBUTE_AGILITY, true), num, 10);
         addstr(num);
     } else
         addstr("?");
@@ -1332,28 +1332,28 @@ void printliberalstats(Creature *cr) {
     itoa(cr->get_attribute(ATTRIBUTE_HEART, true), num, 10);
     addstr(num);
     move(6, 0);
-    addstr("Intelligence: ");
-    itoa(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true), num, 10);
-    addstr(num);
-    move(7, 0);
     addstr("Wisdom: ");
     itoa(cr->get_attribute(ATTRIBUTE_WISDOM, true), num, 10);
     addstr(num);
+    move(7, 0);
+    addstr("Intelligence: ");
+    itoa(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true), num, 10);
+    addstr(num);
     move(8, 0);
-    addstr("Health: ");
-    itoa(cr->get_attribute(ATTRIBUTE_HEALTH, true), num, 10);
+    addstr("Charisma: ");
+    itoa(cr->get_attribute(ATTRIBUTE_CHARISMA, true), num, 10);
     addstr(num);
     move(9, 0);
-    addstr("Agility: ");
-    itoa(cr->get_attribute(ATTRIBUTE_AGILITY, true), num, 10);
+    addstr("Health: ");
+    itoa(cr->get_attribute(ATTRIBUTE_HEALTH, true), num, 10);
     addstr(num);
     move(10, 0);
     addstr("Strength: ");
     itoa(cr->get_attribute(ATTRIBUTE_STRENGTH, true), num, 10);
     addstr(num);
     move(11, 0);
-    addstr("Charisma: ");
-    itoa(cr->get_attribute(ATTRIBUTE_CHARISMA, true), num, 10);
+    addstr("Agility: ");
+    itoa(cr->get_attribute(ATTRIBUTE_AGILITY, true), num, 10);
     addstr(num);
 
     // Add highest skills
