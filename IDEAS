@@ -2,16 +2,13 @@ Bugs:
 
 * heat does not feel threatening
 * do dupy! przejecie bazy przez ccs dziala ZLEEE - dodatkowo fajne gadzety powinny byc dostepne i w innych lokacjach (takie jak printing press)
-* president is bugged 
-* mutants too easy to recruit even though it's "nearly impossible"
-* recruiting crashes when your squad consisting of the same proffesions you recruit dies during recruitment
-* after successful convertion to liberalism via persuasion you can't change the subject's name
+* recruiting crashes when your squad consisting of the same professions you recruit dies during recruitment
+* after successful conversion to liberalism via persuasion you can't change the subject's name
 
 QOI interface changes:
 
 * add tab with easy equipment access to everyone + tabs of equipment categories
 * add sorting by date of joining the squad or summarical skill or juice
-* coloured squad's members names showing juice level and glorious leader
 * jobs for entire squads to remove tedinesss
 * easier squad management:makes you be able to move ppl to squads individually
 * TAB - toggles information shown in any list - from proffesion to presuasion/seduction/psychology + Charisma + slots of recruitments/meetings and lovers/dates, stealth/disguise/security/street sense + Agility
@@ -30,9 +27,7 @@ QOI interface changes:
 Other QoI changes:
 
 * martial arts - - > physical disarm and impairment
-* make "repairing clothes" option work automatically even for clothes on other people
 * Make list view in squads default by all means
-* reorder skills to: Heart/Wisdom/Charisma/Intelligence/Agility/Strength/Health
 * display squad name during raid
 * all information about events stackable on 1 screen and scrolls as they go + saves for one day
 	to review if missed/forgot something + button to fill whole page with info instead of holding enter
@@ -80,7 +75,6 @@ Features/Ideas:
 * street sense -> makes finding wanted cars and ppl to recruit easier
 
 LARGE PROJECT IDEAS:
-* add ambient music and many other sound effects to improve reception of this great game :D
 
 * create large, long term projects to participate in, actions avialible after preparations:
 	for these tasks are already pre-prepared lists of steps/needs to fullfill. These actions may have both great benefits at success and painful penalties for failure
