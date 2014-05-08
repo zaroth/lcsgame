@@ -993,7 +993,7 @@ void assemblesquad(squadst *cursquad) {
         }
 
         move(1, 0);
-        addstr("----CODE NAME------------SKILL---HEALTH-----------PROFESSION--------------------");
+        addstr("----CODE NAME------------SKILL---HEALTH-----------PROFESSION-----------SQUAD-ID--");
 
         int y = 2;
 
@@ -1031,7 +1031,7 @@ void assemblesquad(squadst *cursquad) {
                 set_color(COLOR_YELLOW, COLOR_BLACK, 0);
                 move(y, 71);
                 char squad_with_id[10];
-                sprintf(squad_with_id, "SQUAD %c%c", 'A' + temppool[p]->squadid / 26, 'A' + temppool[p]->squadid % 26); // TODO: EXPERIMENTAL
+                sprintf(squad_with_id, "SQUAD %c%c", '0' + (temppool[p]->squadid % 100) / 10, '0' + temppool[p]->squadid % 10); // TODO: EXPERIMENTAL
                 addstr(squad_with_id);
             } else if(cursquad->squad[0] != NULL) {
                 if(cursquad->squad[0]->location != temppool[p]->location) {

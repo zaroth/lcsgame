@@ -1,12 +1,19 @@
 Changelog for version 4.8-git:
 
+* Last found person in recruit menu is approached automatically now. You still
+might cancel meeting by pressing "C" in talk option. It has been done to support
+holding "B" key to seduce everyone.
+* Added unique id display for squads in Review mode for easier distinguishing
+them fron each other.
+* When toggling through squads with TAB in main window, it will also swap to
+list view as well, instead keep zooming X member.
 * Changed recruit action mechanics to automatically start conversation
 when only 1 recruit found is left
 * Reordered display of attributes to be more logically grouped.
 * Added displaying recruit counter during meetings next to the name of recruiter
 and lovers counter display next to the name of seducer.
 * Added coloring names of your members according to their juice level for
-easier distinguishing them. It's not everywhere, just where it counts.
+easier distinguishing them. It's not everywhere, just where it might count.
 * Moved the repository from svn to git and cleaned up the history from binary
 blobs while at it (reduced size from 300MB to 7.5MB)
 
