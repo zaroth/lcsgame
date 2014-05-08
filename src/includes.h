@@ -683,6 +683,16 @@ struct squadst {
     ~squadst() {
         delete_and_clear(loot);
     }
+
+    short countMembers() {
+        short members = 0;
+
+        for(int i = 0; i < 6; ++i)
+            if(squad[i] != NULL)
+                ++members;
+
+        return members;
+    }
 };
 
 
@@ -1067,6 +1077,9 @@ int mvaddstr_fl(int y, int x, Log &log, const char *format, ...);
 /*
  commonactions.cpp
 */
+
+/* prepares squad identificator as two characters*/
+void getSquadIdRepresentation(char *hereIWrite, int squadid);
 /* common - test for possible game over */
 char endcheck(char cause = -1);
 /* common - tests if the person is a wanted criminal */

@@ -30,6 +30,10 @@ This file is part of Liberal Crime Squad.                                       
 #include <math.h>
 #include "externs.h"
 
+
+void getSquadIdRepresentation(char *hereIWrite, int squadid) {
+    sprintf(hereIWrite, "%02d", (squadid % 100));
+}
 /* common - test for possible game over */
 char endcheck(char cause) {
     char dead = 1;

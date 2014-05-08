@@ -41,7 +41,7 @@ void review(void) {
         addstr("Review your Liberals and Assemble Squads");
 
         move(1, 0);
-        addstr("----SQUAD NAME-----------------LOCATION------------ACTIVITY----------------------");
+        addstr("----SQUAD NAME----------------#--ID--LOCATION------------ACTIVITY----------------");
 
         int y = 2;
 
@@ -57,10 +57,18 @@ void review(void) {
                 addstr(" - ");
                 addstr(squad[p]->name);
 
-                if(squad[p]->squad[0] != NULL && squad[p]->squad[0]->location != -1)
-                    mvaddstr(y, 31, location[squad[p]->squad[0]->location]->getname(true, true));
+                // Printing number of squad members and squad's ID
+                char bufferstring[10];
+                sprintf(bufferstring, "%hd  ", squad[p]->countMembers());
+                getSquadIdRepresentation(bufferstring + strlen(bufferstring), squad[p]->id);
+                mvaddstr(y, 30, bufferstring);
 
-                move(y, 51);
+                // Printing squad location
+                if(squad[p]->squad[0] != NULL && squad[p]->squad[0]->location != -1)
+                    mvaddstr(y, 37, location[squad[p]->squad[0]->location]->getname(true, true));
+
+                // Printing squad's Activity
+                move(y, 57);
 
                 if(squad[p]->squad[0] != NULL) {
                     char str[80];
@@ -1030,9 +1038,10 @@ void assemblesquad(squadst *cursquad) {
             } else if(temppool[p]->squadid != -1) {
                 set_color(COLOR_YELLOW, COLOR_BLACK, 0);
                 move(y, 71);
-                char squad_with_id[10];
-                sprintf(squad_with_id, "SQUAD %c%c", '0' + (temppool[p]->squadid % 100) / 10, '0' + temppool[p]->squadid % 10); // TODO: EXPERIMENTAL
-                addstr(squad_with_id);
+                char squad_id_repr[4];
+                getSquadIdRepresentation(squad_id_repr, temppool[p]->squadid);
+                addstr("SQUAD ");
+                addstr(squad_id_repr);
             } else if(cursquad->squad[0] != NULL) {
                 if(cursquad->squad[0]->location != temppool[p]->location) {
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
