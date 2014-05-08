@@ -1,6 +1,7 @@
 Changelog for version 4.8-git:
 
-* Disabled multiple city mode for now. It's buggy and not supported.
+* Fixed not displaying "AWAY" bug when creating a new squad.
+* Disable multiple city mode for now. It's buggy and not supported.
 * Added displaying squads' id and number of members in squad review.
 * Last found person in recruit menu is approached automatically now. You still
 might cancel meeting by pressing "C" in talk option. It has been done to support

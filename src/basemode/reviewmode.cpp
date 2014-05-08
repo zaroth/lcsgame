@@ -1031,23 +1031,22 @@ void assemblesquad(squadst *cursquad) {
 
             printhealthstat(*temppool[p], y, 33, FALSE);
 
-            if(temppool[p]->squadid == cursquad->id) {
-                set_color(COLOR_GREEN, COLOR_BLACK, 1);
+            if(cursquad->squad[0] != NULL &&
+                    cursquad->squad[0]->location != temppool[p]->location) {
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);
                 move(y, 71);
-                addstr("NEW SQUAD");
-            } else if(temppool[p]->squadid != -1) {
-                set_color(COLOR_YELLOW, COLOR_BLACK, 0);
+                addstr("AWAY");
+            } else if (temppool[p]->squadid != -1) {
+                if(temppool[p]->squadid == cursquad->id)
+                    set_color(COLOR_GREEN, COLOR_BLACK, 1);
+                else
+                    set_color(COLOR_YELLOW, COLOR_BLACK, 0);
+
                 move(y, 71);
                 char squad_id_repr[4];
                 getSquadIdRepresentation(squad_id_repr, temppool[p]->squadid);
                 addstr("SQUAD ");
                 addstr(squad_id_repr);
-            } else if(cursquad->squad[0] != NULL) {
-                if(cursquad->squad[0]->location != temppool[p]->location) {
-                    set_color(COLOR_BLACK, COLOR_BLACK, 1);
-                    move(y, 75);
-                    addstr("AWAY");
-                }
             }
 
             if(temppool[p]->align == -1)
