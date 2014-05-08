@@ -700,7 +700,7 @@ void mode_base(void) {
         if(c == 'b')
             activate_sleepers();
 
-        if(c == 9 && squad.size() > 0) {
+        if(c == 9 && squad.size() > 0) { // 9 is a TAB
             if(activesquad == NULL)
                 activesquad = squad[0];
             else {
@@ -715,6 +715,8 @@ void mode_base(void) {
                     }
                 }
             }
+
+            party_status = -1;
         }
 
         if(c == 'z' && safenumber > 0) {
