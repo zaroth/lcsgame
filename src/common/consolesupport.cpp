@@ -254,13 +254,18 @@ int addch_unicode(int c) {
 
 void set_title (char *s) {
     #if defined(USE_NCURSES) || defined (USE_NCURSES_W)
+    //Added these below to remove warnings, as these functs' have const char arguments
+    char tgetflag_arg[] = "hs";
+    char tgetstr1_arg[] = "tsl";
+    char tgetstr2_arg[] = "fsl";
 
-    if (tgetflag ("hs")) { // terminal has status line support
+    if (tgetflag (tgetflag_arg)) { // terminal has status line support
         char buf[255] = {0};
         char *p = buf; // tgetstr modifies its second argument, let buf keep pointing to the beginning
         char *ok; // tgetstr's return value is apparently undocumented, except that it's NULL on errors
 
-        ok = tgetstr ("tsl", &p); // "to status line"
+
+        ok = tgetstr (tgetstr1_arg, &p); // "to status line"
 
         if (ok == NULL)
             return;
@@ -268,7 +273,7 @@ void set_title (char *s) {
         strcpy (p - 1, s); // tgetstr leaves us *after* the null, so skip back a bit
         p += strlen (s) - 1; // same here
 
-        ok = tgetstr ("fsl", &p); // "from status line"
+        ok = tgetstr (tgetstr2_arg, &p); // "from status line"
 
         if (ok == NULL)
             return;
