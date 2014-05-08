@@ -1,10 +1,12 @@
 Changelog for version 4.8-git:
 
+* Disabled multiple city mode for now. It's buggy and not supported.
+* Added displaying squads' id and number of members in squad review.
 * Last found person in recruit menu is approached automatically now. You still
 might cancel meeting by pressing "C" in talk option. It has been done to support
 holding "B" key to seduce everyone.
 * Added unique id display for squads in Review mode for easier distinguishing
-them fron each other.
+them from each other.
 * When toggling through squads with TAB in main window, it will also swap to
 list view as well, instead keep zooming X member.
 * Changed recruit action mechanics to automatically start conversation
@@ -16,6 +18,170 @@ and lovers counter display next to the name of seducer.
 easier distinguishing them. It's not everywhere, just where it might count.
 * Moved the repository from svn to git and cleaned up the history from binary
 blobs while at it (reduced size from 300MB to 7.5MB)
+
+
+2013-04-24   Jonathan Stickles   <jonathansfox@users.sourceforge.net>
+4.07.0 Changelog
+
+* Split knives into Combat Knife, Dagger, and Shank, removing the old generic Knife
+* Added the ability to hit up to three times when attacking with a knife (though it takes a great deal of skill to do consistently)
+* Added Sneak Attacks
+* Added Black Leather Armor in the Oubliette
+* Made stealthy armor show up black (instead of green/red) when in a situation where you might sneak
+* Made it possible for formerly healthy Liberals to die in labor camp
+* Updated site maps and incorporated some of KA101's new maps
+* Increased shotgun capacity to 8 shells from 6
+* Increased accuracy and minimum damage of shotguns
+* Removed the +50% damage "critical" chance from shotguns
+* Added AA-12 Auto-Shotgun, which fires twice
+* Gave AA-12 to CCS bosses
+* Gave CCS bosses dodge skill
+* Made CCS bosses hard to intimidate through threatening hostages
+* Fixed metal detectors seeming to not detect M16s and such if you're in disguise
+* Expanded weapon tracking to make "in-character" weapons only less suspicious, not invisible
+* Allowed CCS door guards to admit you at the Bar & Grill (but not subsequent CCS safehouses)
+* Made datenapping much easier with melee weapons, martial arts
+* Renamed some CCS disguises
+* CCS leaders no longer spawn randomly
+* CCS leaders can now be found in fixed locations on the CCS safehouse maps
+* You now defeat CCS safehouse by killing their safehouse leader rather than racking up a body count (though the victory text now changes based on whether you snuck in and assassinated them or cut a swath of destruction on your way in)
+* Sleeper Bank Managers can now embezzle thousands of dollars per month
+* Prisons issue enabled, new news stories for prisons and gun control issues
+* Fixed over-healing bug
+* The game will now generate names for the people you're dating, rather than coldly identifying a person you're sleeping with only by their profession
+* The game will now tell you where the recruit or date you're interacting with works
+* Removed the requirement to wait multiple days to identify information about the people you're dating
+* Can now toggle between sorting by type or location, and can move all items at once on the Review and Move Equipment screen
+* Fixed Anti-Aircraft gun's performance so it's not bugged and useless
+* Stopped sieges from disrupting teaching and tending hostages
+* Various other bug fixes, changes to flavor text, etc.
+
+New Attack: Sneak Attacks
+
+Sneak attacks are attempted automatically when you attack unsuspecting Conservatives with a knife. You add your stealth to the attack roll, and the victim will defend with their Wisdom instead of their dodge. If the attack is successful, you'll stab the target in the head or body and will usually kill the target instantly. This attack does not cause any alarm if it is successful.
+
+If there are other Conservatives present who are not immediately taken out in the same fashion, your attack is unsuccessful, or the target's armor causes them to survive the attack, the jig is up and the site alarm will be raised. Multiple Liberals can attempt sneak attacks in order to silently take down larger groups of enemies, as long as nothing goes wrong; one failed attack and the rest of your party will have to fall back on traditional knife fighting.
+
+Note that while killing Conservatives in this way may not cause immediate alarm, leaving a trail of bodies is still highly suspicious; you will not have long before the Conservatives figure out something is going horribly wrong, even if they have yet to identify you as the perpetrator. And while this new attack makes knives a very powerful infiltration weapon, sneak attacks can't be used in sieges or any other circumstance where the Conservatives are already alarmed.
+
+2012-08-31   Jonathan Stickles   <jonathansfox@users.sourceforge.net>
+4.06.5 Changelog
+* Added a warning before opening an alarmed door
+* Added a limit to how many times SWAT teams can raid the bank vault on one mission
+* Added a restriction on ammo sales based on gun laws
+* Most messages should now be logged in an external log file
+* Rebalanced body disposal so that it doesn't always result in police showing up
+* Fixed a bug where you can't buy stuff in the hardware section of the department store
+* Fixed a bug where your first name was sometimes using the wrong gender on character creation
+* Fixed a bug where quirrelous parents always insisted otherwise when the doctors reported your sex at birth
+* Fixed a bug where it could sometimes take extra time for the command hierarchy to fall apart after key people are killed
+* Fixed a bug where the metal detector (not used in the game, but available to map modders) always went off
+* Fixed a bug where weapons were never suspicious unless your clothes were, to the point that you could carry an AK-47 through a metal detector without being confronted
+
+4.06.4 Changelog
+* Improved map moddability
+* Improved consistency in the UI; you should now be able to use enter or escape to exit almost all screens
+* Swapped left/right on the Liberal Agenda screen, so left-wing policies are on the left
+* Replaced Conservative Re-Education Camps with Conservative Prison Labor Camps, and added Liberal Prison Therapy
+* Added KA101’s Department Store upgrade. You can buy the Desert Eagle and M249 there, if the laws are appropriate, so these are no longer truly unique. Ammo available there too.
+* Reduced the chance of the police attacking each day. 1 day sieges should be less common now, and rations/safehouse improvements are much more important.
+* Made starving during a siege more lethal.
+* Added message when your liberals are starving during a siege.
+* People now die properly when starved to death, and a message is shown
+* Partially fixed "ghost sieges" where sieges didn't end properly; this should at least occur less often
+* Changed fighting messages slightly. Messages should bug out onto the site map less.
+* Changed starting car from the Bug to a Sports car, and made it stolen so that you can't sell it for more than $1000
+* Added a screen before on-foot chases, similar to car chases
+* Added logging of important gameplay messages to gamelog.txt
+* Added special text message for people in wheelchairs kicking doors
+* Added site mode options menu, usable to enable/disable encocuonter warnings
+* Added different text for encounter warnings based on encounter size and whether squad has moved
+* Fixed a bug where someone who escaped prison and then was arrested again would have their old sentence shown while in the police station or court house
+* Fixed an issue where low quality or damaged bunker gear was better rather than worse
+* Fixed bug where pressing Z to tab through safehouses would get stuck on the Robert E. Lee Bunker
+* Fixed a crash bug related to long names when hacking
+* Fixed an issue where sleepers could be promoted into leadership positions when their superior dies
+* Fixed an exploit that let you move squadless Liberals out of a safehouse currently under siege
+* Fixed an oversight where a squad getting subdued by police would not be reflected in the news story
+* Fixed a crash bug related to a squad being subdued by police
+* Fixed a problem where sleepers who were fired from their jobs would use their old workplase as a safehouse
+* Fixed waiting in apartments not always producing an encounter
+* Fixed hackers being charged with kidnapping
+* Fixed being able to spray graffiti while in combat
+* Fixed a text display error when a liberal is cornered by an angry mob after causing trouble
+* Fixed a text display error after not picking a lock
+* Fixed naked characters getting their "naked armor" bloody
+* Fixed an issue that prevented characters from dying due to old age and drug overdose in interrogations
+* Fixed an issue with tracking drug use during interrogations
+* Fixed dead bodies without head or body exploding every time they are hit
+* Fixed a display issue where a liberal's name didn't always appear when bluffing
+* Fixed a text display error when a liberal is cornered by an angry mob after causing trouble.
+* Fixed a rare crash when allocating the same vehicles to multiple squads.
+
+4.06.3 Changelog
+* Added a unique "CCS Backer List" item that can be published in a Liberal Guardian special edition
+* Fixed two separate display issues with the anti-aircraft gun upgrade
+* Fixed the "wait out the siege" text appearing even without a siege
+* Fixed the problem where you couldn't dodge or slow down when you saw a child in the street during a car chase
+* Fixed the issue where the squad activity would often overlap your money supply if you had a lot of money
+* Reduced the length of some safehouse names to make it less likely that the safehouse and date would be written over by the squad activity
+* Fixed the longstanding crash bug that could occur when killing police that try to arrest liberals during certain activities
+* Fixed the bug where picking up loot in the bank gave you nothing
+* Fixed the bug where your options for how to react to the landlord's quote on a room price overwrote the previous text without clearing it
+
+4.06.2 Hotfix
+* Fixed a crash bug with cracking the bank vault.
+
+4.06.2 Changelog
+* Added locksmithing class to the university
+* Made clothing making more linear in difficulty
+* Added a chance to fail to make clothing at all, if you can't even hack fourth-rate
+* Added an Anti-Aircraft Gun upgrade to safehouses
+* Adjusted heat to give an ongoing decay for high heat liberals
+* Added heat to bank robbery
+* Added two new ways to rob banks, accessible through the bank teller
+* Made banks much slower to lower their security after a big raid
+* Added news reporting for bank robberies
+* Increased the response speed and intensity of police response to vault break-ins
+* Reduced the heart threshold for talking to dogs
+* Added the ability to talk to genetic monsters like dogs
+* Made successful speech with one dog or monster convert all dogs or monsters in the group
+* Fixed a bug related to dogs still being responsive after they turn back conservative in response to a pickup line
+
+4.06.1 Changelog
+* Added banks and vault heists! Enjoy figuring out the details, it should be pretty intuitive. Somewhat WIP; still can't rob the teller or force anyone to let you into the vault without cracking it yourself.
+* New site tiles, specials, and creature classes to support banks.
+* Some car chase obstacle changes that were discussed in the forums awhile back. Fruit stand flavoring, child in the street, stuff like that.
+* Raids can do a lot more damage to your money if you're rich.
+* Some bug fixes; most notably, the sitemaps file wasn't being used properly in the last release.
+
+4.06.0 Changelog
+* Bug fixes, crashes removed, stability
+* New way to edit and load pre-made maps
+* Can now see all options in the make clothing menu, even if it's way out of your league
+* Added all types of body armor to the make clothing menu, including heavy body armor (listed as "Heavy Ceramic Armor")
+* Made civilian body armor easier to make
+* Significantly buffed SEAL Armor
+* SEALs will now always spawn with M4s instead of M16s
+* Once bombers are being used, standard soldiers will be replaced with Navy SEALs during raids
+* Military support is now more likely in high heat police raids
+* Third and fourth-rate stealthy clothing is now less stealthy
+* Replaced mercenaries with Elite Security and gave them mild buffs
+* New nuclear reactor map using the new map system with an on-site museum room
+* New site action: smashing display cases
+* Added a new security checkpoint similar to the bouncer, and usable on other maps
+* Pressing the Big Red Button will have outcomes flavored as a near meltdown
+* The nuclear plant now has an armory similar to the military base
+* Added support for future metal detector checkpoints
+* Made skilled Conservatives have different stealth and disguise detection ratings, instead of using one common rating; guard dogs will now be countered by good disguise
+
+New Map Editing
+The biggest feature of this version is that maps are now much more moddable, and it's easier for developers to add new maps. It's now possible to use the point-and-click interface of DAME to create new LCS sitemaps, and the game can load these in at runtime. I've created tiles for all the major features and icons representing every kind of unique site action possible, from jury rooms to bouncers to fluffy bunny cages, and proven the system by designing the new Nuclear Plant map.
+
+***
+Changelog ceased to be updated. All changes can be extracted from svn sourceforge
+commits: http://sourceforge.net/p/lcsgame/code/751/log/
+***
 
 ChangeLog for Version 3.11.4:
 
@@ -273,3 +439,73 @@ RELEASE VERSION 3.11.1:
 Fixed crash when squad is disbanded.
 Split up game.cpp into smaller files.
 Support for GNU Autotools
+
+Changelog version 3.10
+
+--- COMBAT & FIGHTING:
+* Ballistic vests that provide the strongest armor yet, and can't be made or bought, but are carried by military and some police forces
+* Raids conducted by special Police SWAT units with machine guns and body armor (Trivia from the SWAT entry on Wikipedia: In the SLA siege, the police eventually assaulted the building with teargas and SWAT units armed only with semi-automatic rifles and shotguns, and no body armor. The building burned down, all of the SLA members inside were shot multiple times, and despite over three thousand rounds fired and the police not using body armor, not a single police officer was injured.)
+* Back ranks during a siege are less effective (must pass an agility check to attack)
+* Assault rifles can hit more than once per round
+* Just a little less likely to hit Liberal bystanders on accident... it's not really fun to have to always be holding your fire when fighting
+* Shotguns are easier to hit with, but do reduced damage on a "barely hit"
+* Mere pistols no longer blow people's limbs apart with a single bullet (I lost one too many main characters to security guards BLOWING MY BODY IN HALF with the first shot from their .22 revolver), but may still get other critical hits ("heart is blasted!" and dead at the end of the round, broken neck and paralyzed, all those other uncool other things that don't involve decapitation, exploding bodies, or outright dismemberment that is vastly out of proportion to the power of the weapon used)
+
+--- SLEEPERS:
+* Sleeper system overhaul -- eliminating the early News Anchor/Radio Personality win without making them useless, by having them all influence the normal background moves of public opinion, rather than have their own independent effect
+* Make almost all sleepers good for something, except like, police dogs and mutants
+* Police department sleepers can give advance warning of police raids and leak police records
+* CEO sleepers may warn of imminent corporate attacks and leak corporate documents (corporate managers can also leak documents)
+* Agent sleepers may warn of imminent CIA raids and leak intelligence documents
+
+--- LEGAL SYSTEM:
+* Hiring a good attorney costs $5000 instead of $1000
+* Getting away with murder (literally and metaphorically) in court is generally harder; prosecution is stronger, and how many (and how bad) the charges are influences the difficulty
+* Sleeper judges always reduce the sentence, and never order executions
+* There's always a chance of conviction, even if you're really good; you're guilty, it should never be a sure thing to get away with it. Instead, emphasis should be on avoiding that position in the first place.
+
+--- HACKING:
+* Harder to get a "major event" in hacking
+* Can cause a scare by hacking into CIA networks (don't get data disks, but you do influence the intelligence issue)
+* Can deface conservative websites
+* Credit card fraud is less lucrative for lower level hackers
+
+--- DATING:
+* Law enforcement officers and agents sometimes identify wanted Liberals on dates, and try to arrest them
+* Kidnapping soldiers and other dangerous targets can sometimes backfire
+
+--- COMMAND STRUCTURE:
+* Liberals stay in contact when their boss is only arrested, and only disappear when their boss gets sent to jail or dies
+* High juice, high heart liberals might come back after their boss is released from jail (so maybe you're sent to jail for twenty years, and awhile after you're released, one day your old top general just shows up at the homeless shelter, weapon in hand... everyone else has abandoned you, but she's a veteran with too much put into this... even after twenty years, the man can't keep her down)
+* Color coding on the promotion screen to show which liberals are arrested, in jail, or in hiding due to their superiors being in jail
+
+--- OTHER STUFF:
+* Armor can only be sold at the cost of manufacture (can't sell expensive suits to raise money)
+* The keys '/' and '\' can be used to page forward and back instead of brackets or pageup/pagedown, by typing "slashes" into the init file
+
+3.10a1
+
+* I re-doubled the selling price on armor, so that it's now twice the manufacturing price, rather than merely the manufacturing price. So now you can still make a profit from making expensive suits, it's just much less attractive than it used to be -- $300 per suit profit is less useful than $1200 per suit.
+* No agility check to give cover fire in sieges
+* / and \ support in init file removed; AZERTY support added
+
+3.10a3
+
+* General balance changes.
+* Police now search for safe houses differently.
+* Added a prototype system for writing articles for the Liberal Guardian.
+* Added various new weapons.
+
+3.10a5
+
+* A pause before you get into encounters
+* Stuff appears in restricted squares
+* New law: Gun control
+* Pawn shop now sells more guns, but only if they're legal
+* You can now cause alarm by the weapon you're carrying
+* You can now cause instant alarm as soon as anybody sees you if your weapon is totally illegal, like walking into the police station with an AK-47 and a clown suit
+* You can get thrown in jail for openly carrying an illegal weapon in public
+* You can disguise yourself and get away with holding an illegal weapon
+* "Massive Conservative Response Imminent"
+
+Older changes are too conservative.
