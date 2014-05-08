@@ -1025,12 +1025,14 @@ void assemblesquad(squadst *cursquad) {
 
             if(temppool[p]->squadid == cursquad->id) {
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
-                move(y, 75);
-                addstr("SQUAD");
+                move(y, 71);
+                addstr("NEW SQUAD");
             } else if(temppool[p]->squadid != -1) {
                 set_color(COLOR_YELLOW, COLOR_BLACK, 0);
-                move(y, 75);
-                addstr("SQUAD");
+                move(y, 71);
+                char squad_with_id[10];
+                sprintf(squad_with_id, "SQUAD %c%c", 'A' + temppool[p]->squadid / 26, 'A' + temppool[p]->squadid % 26); // TODO: EXPERIMENTAL
+                addstr(squad_with_id);
             } else if(cursquad->squad[0] != NULL) {
                 if(cursquad->squad[0]->location != temppool[p]->location) {
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
