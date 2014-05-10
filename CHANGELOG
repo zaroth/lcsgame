@@ -1,24 +1,34 @@
 Changelog for version 4.8-git:
 
-* Fixed not displaying "AWAY" bug when creating a new squad.
-* Disable multiple city mode for now. It's buggy and not supported.
+* Added possibility to toggle through squads while equipping (with TAB).
+* Fixed not displaying "AWAY" bug when creating a new squad in other location
+than currently displayed.
+* Disabled multiple city mode. It's a bit buggy and too ambitious,
+while confusing and not adding too much value to the gameplay - at least for
+now. Probably will be looked at on a later date.
 * Added displaying squads' id and number of members in squad review.
-* Last found person in recruit menu is approached automatically now. You still
-might cancel meeting by pressing "C" in talk option. It has been done to support
-holding "B" key to seduce everyone.
+* Last found person in daily recruitment menu is approached automatically now. You still
+can cancel meeting by pressing "C" in the talk dialog. It has been done to support
+holding "B" key to seduce everyone met.
 * Added unique id display for squads in Review mode for easier distinguishing
 them from each other.
-* When toggling through squads with TAB in main window, it will also swap to
-list view as well, instead keep zooming X member.
+* When toggling through squads with TAB in main window, it will now swap to
+list view as well, instead keep zooming n-th member.
 * Changed recruit action mechanics to automatically start conversation
 when only 1 recruit found is left
-* Reordered display of attributes to be more logically grouped.
-* Added displaying recruit counter during meetings next to the name of recruiter
-and lovers counter display next to the name of seducer.
+* Reordered display of attributes to be more logically grouped (now: Hrt, Wis,
+Int, Char, Hlth, Str, Agi) - mental stats first, physical later, Hrt and Wis next to
+each other.
+* Added current/max recruit counter during meetings next to the name of the recruiter
+and lovers counter display next to the name of the seducer.
 * Added coloring names of your members according to their juice level for
 easier distinguishing them. It's not everywhere, just where it might count.
 * Moved the repository from svn to git and cleaned up the history from binary
 blobs while at it (reduced size from 300MB to 7.5MB)
+* Run astyle on the codebase, rewriting commit history as well, in order to keep
+consistent code formatting across all files. Used options can be found in astyle.sh.
+* Added CMake build files for *nix systems, right now pretty basic, but getting the same 
+functionality as autotools is planned.
 
 
 2013-04-24   Jonathan Stickles   <jonathansfox@users.sourceforge.net>

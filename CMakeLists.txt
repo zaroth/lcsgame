@@ -20,6 +20,8 @@ set(Linux 1)
 
 configure_file(${lcs_SOURCE_DIR}/config.h.cmake ${lcs_SOURCE_DIR}/config.h)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g") #-Wall -pedantic -Wextra -g")
+
 include_directories(${CURSES_INCLUDE_DIR})
 include_directories(${lcs_SOURCE_DIR})
 include_directories(${lcs_SOURCE_DIR}/src)

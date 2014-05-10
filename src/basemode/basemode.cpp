@@ -46,7 +46,7 @@ bool show_disbanding_screen(int &oldforcemonth) {
 
         if(pool[p]->juice < targetjuice) {
             if(pool[p]->hireid != -1 && !(pool[p]->flag & CREATUREFLAG_SLEEPER))
-                pool[p]->alive = 0;  // Kill for the purposes of disbanding all contacts below
+                pool[p]->alive = 0;   // Kill for the purposes of disbanding all contacts below
         }
     }
 
@@ -236,6 +236,25 @@ enum CantSeeReason {
     CANTSEE_DISBANDING = 4
 };
 
+void toggle_squads(void) { // TODO: this function does not belong here
+    if(activesquad == NULL)
+        activesquad = squad[0];
+    else {
+        for(int sq = 0; sq < (int)squad.size(); sq++) {
+            if(squad[sq] == activesquad) {
+                if(sq == (int)squad.size() - 1)
+                    activesquad = squad[0];
+                else
+                    activesquad = squad[sq + 1];
+
+                break;
+            }
+        }
+    }
+
+    party_status = -1;
+}
+
 void mode_base(void) {
     char forcewait, canseethings;
     int nonsighttime = 0;
@@ -357,13 +376,13 @@ void mode_base(void) {
 
         for(int p = 0; p < (int)pool.size(); p++) {
             if(!pool[p]->alive)
-                continue;  // Dead people don't count
+                continue;   // Dead people don't count
 
             if(pool[p]->align != 1)
-                continue;  // Non-liberals don't count
+                continue;   // Non-liberals don't count
 
             if(pool[p]->location == -1)
-                continue;  // Vacationers don't count
+                continue;   // Vacationers don't count
 
             num_present[pool[p]->location]++;
         }
@@ -700,24 +719,8 @@ void mode_base(void) {
         if(c == 'b')
             activate_sleepers();
 
-        if(c == 9 && squad.size() > 0) { // 9 is a TAB
-            if(activesquad == NULL)
-                activesquad = squad[0];
-            else {
-                for(int sq = 0; sq < (int)squad.size(); sq++) {
-                    if(squad[sq] == activesquad) {
-                        if(sq == (int)squad.size() - 1)
-                            activesquad = squad[0];
-                        else
-                            activesquad = squad[sq + 1];
-
-                        break;
-                    }
-                }
-            }
-
-            party_status = -1;
-        }
+        if(c == TAB && squad.size() > 0)
+            toggle_squads();
 
         if(c == 'z' && safenumber > 0) {
             activesquad = NULL;
@@ -742,7 +745,7 @@ void mode_base(void) {
 
         if(c == 'e' && partysize > 0 && !underattack && activesquad->squad[0]->location != -1) {
             party_status = -1;
-            equip(location[activesquad->squad[0]->location]->loot, -1);
+            equip(&(location[activesquad->squad[0]->base]->loot), -1);
         }
 
         if(c == 'r' && pool.size() > 0)

@@ -323,7 +323,7 @@ char chasesequence(void) {
                 }
 
                 if(c == 'e')
-                    equip(activesquad->loot, -1);
+                    equip(&(activesquad->loot), -1);
             } else {
                 switch(obstacle) {
                 case CARCHASE_OBSTACLE_CHILD:
@@ -606,7 +606,7 @@ char footchase(void) {
             }
 
             if(c == 'e')
-                equip(activesquad->loot, -1);
+                equip(&activesquad->loot, -1);
 
             //HAVE YOU LOST ALL OF THEM?
             //THEN LEAVE
@@ -681,7 +681,7 @@ void evasivedrive(void) {
     }
 
     if(yourrolls.size() == 0)
-        yourrolls.push_back(0);  //error -- and for this you get a 0
+        yourrolls.push_back(0);   //error -- and for this you get a 0
 
     for(e = 0; e < ENCMAX; e++) {
         if(encounter[e].carid != -1 &&
@@ -1273,9 +1273,9 @@ void makechasers(long sitetype, long sitecrime) {
         case SITE_CORPORATE_HEADQUARTERS:
         case SITE_CORPORATE_HOUSE:
             if(LCSrandom(2))
-                cartype = "SUV";  //Site property? Temporary solution. -XML
+                cartype = "SUV";   //Site property? Temporary solution. -XML
             else
-                cartype = "JEEP";  //Site property? Temporary solution. -XML
+                cartype = "JEEP";   //Site property? Temporary solution. -XML
 
             pnum = LCSrandom(sitecrime / 5 + 1) + 1;
 

@@ -152,7 +152,7 @@ void siegecheck(char canseethings) {
                 }
 
                 if(pool[p]->align != 1)
-                    continue;  // Non-liberals don't count other than that
+                    continue;   // Non-liberals don't count other than that
 
                 numpres++;
 
@@ -416,7 +416,7 @@ void siegecheck(char canseethings) {
                     getch();
                 }
             } else if(location[l]->siege.timeuntilcorps > 0)
-                location[l]->siege.timeuntilcorps--;  // Corp raid countdown!
+                location[l]->siege.timeuntilcorps--;   // Corp raid countdown!
             else if(location[l]->siege.timeuntilcorps == 0 && !location[l]->siege.siege && offended_corps && numpres > 0) {
                 location[l]->siege.timeuntilcorps = -1;
                 // Corps raid!
@@ -439,7 +439,7 @@ void siegecheck(char canseethings) {
                 location[l]->siege.cameras_off = 0;
                 offended_corps = 0;
             } else if(location[l]->siege.timeuntilcorps == 0)
-                location[l]->siege.timeuntilcorps = -1;  // Silently call off foiled corp raids
+                location[l]->siege.timeuntilcorps = -1;   // Silently call off foiled corp raids
 
             //CONSERVATIVE CRIME SQUAD
             bool ccs_active = endgamestate >= ENDGAME_CCS_APPEARANCE && endgamestate < ENDGAME_CCS_DEFEATED;
@@ -475,7 +475,7 @@ void siegecheck(char canseethings) {
                         getch();
                     }
                 } else if(location[l]->siege.timeuntilccs > 0)
-                    location[l]->siege.timeuntilccs--;  // CCS raid countdown!
+                    location[l]->siege.timeuntilccs--;   // CCS raid countdown!
                 else if(location[l]->siege.timeuntilccs == 0 && !location[l]->siege.siege && numpres > 0) {
                     location[l]->siege.timeuntilccs = -1;
                     // CCS raid!
@@ -580,7 +580,7 @@ void siegecheck(char canseethings) {
                         location[l]->siege.cameras_off = 0;
                     }
                 } else if(location[l]->siege.timeuntilccs == 0)
-                    location[l]->siege.timeuntilccs = -1;  // Silently call off foiled ccs raids
+                    location[l]->siege.timeuntilccs = -1;   // Silently call off foiled ccs raids
             }
 
 
@@ -617,7 +617,7 @@ void siegecheck(char canseethings) {
                     getch();
                 }
             } else if(location[l]->siege.timeuntilcia > 0)
-                location[l]->siege.timeuntilcia--;  // CIA raid countdown!
+                location[l]->siege.timeuntilcia--;   // CIA raid countdown!
             else if(location[l]->siege.timeuntilcia == 0 && !location[l]->siege.siege && offended_cia && numpres > 0) {
                 location[l]->siege.timeuntilcia = -1;
                 // CIA raids!
@@ -657,7 +657,7 @@ void siegecheck(char canseethings) {
                 location[l]->siege.lights_off = 1;
                 location[l]->siege.cameras_off = 1;
             } else if(location[l]->siege.timeuntilcia == 0)
-                location[l]->siege.timeuntilcia = -1;  // Silently call off foiled cia raids
+                location[l]->siege.timeuntilcia = -1;   // Silently call off foiled cia raids
 
             //HICKS
             if(!location[l]->siege.siege && offended_amradio && attitude[VIEW_AMRADIO] <= 35 && !LCSrandom(600) && numpres > 0) {
@@ -882,13 +882,13 @@ void siegeturn(char clearformess) {
 
     for(int p = 0; p < (int)pool.size(); p++) {
         if(!pool[p]->alive)
-            continue;  // Dead people don't count
+            continue;   // Dead people don't count
 
         if(pool[p]->align != 1)
-            continue;  // Non-liberals don't count
+            continue;   // Non-liberals don't count
 
         if(pool[p]->location == -1)
-            continue;  // Vacationers don't count
+            continue;   // Vacationers don't count
 
         liberalcount[pool[p]->location]++;
     }
@@ -908,7 +908,7 @@ void siegeturn(char clearformess) {
 
                 if(location[l]->siege.siegetype == SIEGE_CCS) {
                     if(location[l]->type == SITE_INDUSTRY_WAREHOUSE)
-                        location[l]->renting = RENTING_CCS;  // CCS Captures warehouse
+                        location[l]->renting = RENTING_CCS;   // CCS Captures warehouse
                 }
 
                 refresh();
@@ -1891,7 +1891,7 @@ void giveup(void) {
         getch();
 
         if(location[loc]->siege.siegetype == SIEGE_FIREMEN)
-            offended_firemen = 0;  // Firemen do not hold grudges
+            offended_firemen = 0;   // Firemen do not hold grudges
 
         for(p = pool.size() - 1; p >= 0; p--) {
             if(pool[p]->location != loc)
@@ -1954,7 +1954,7 @@ void giveup(void) {
 
         if(location[loc]->siege.siegetype == SIEGE_CCS)
             if(location[loc]->type == SITE_INDUSTRY_WAREHOUSE)
-                location[loc]->renting = RENTING_CCS;  // CCS Captures warehouse
+                location[loc]->renting = RENTING_CCS;   // CCS Captures warehouse
 
         erase();
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
@@ -2247,7 +2247,7 @@ char sally_forth_aux(int loc) {
             }
 
             if(c == 'e')
-                equip(location[loc]->loot, -1);
+                equip(&location[loc]->loot, -1);
 
             // Check for victory
             partysize = 0;
@@ -2361,7 +2361,7 @@ void sally_forth(void) {
 
     if(location[loc]->siege.siegetype == SIEGE_CCS) {
         if(location[loc]->type == SITE_INDUSTRY_WAREHOUSE)
-            location[loc]->renting = RENTING_CCS;  // CCS Captures warehouse -- this will be reversed if you fight them off
+            location[loc]->renting = RENTING_CCS;   // CCS Captures warehouse -- this will be reversed if you fight them off
     }
 
     //CRIMINALIZE
@@ -2510,7 +2510,7 @@ void escape_engage(void) {
 
     if(location[loc]->siege.siegetype == SIEGE_CCS) {
         if(location[loc]->type == SITE_INDUSTRY_WAREHOUSE)
-            location[loc]->renting = RENTING_CCS;  // CCS Captures warehouse -- this will be reversed if you fight them off
+            location[loc]->renting = RENTING_CCS;   // CCS Captures warehouse -- this will be reversed if you fight them off
     }
 
     //CRIMINALIZE

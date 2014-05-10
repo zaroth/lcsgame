@@ -70,14 +70,14 @@ long prompt_amount(long min, long max) {
 }
 
 /* review squad equipment */
-void equip(vector<Item *> &loot, int loc) {
+void equip(vector<Item *> *loot, int loc) { // location should be read from squad's info
     if(activesquad == NULL)
         return;
 
     consolidateloot(loot);
 
-    if(loc != -1)
-        consolidateloot(location[loc]->loot);
+//     if(loc != -1)
+//         consolidateloot(location[loc]->loot);
 
     int page = 0;
     const char *errmsg = NULL;
@@ -103,11 +103,11 @@ void equip(vector<Item *> &loot, int loc) {
         char str[200];
         //char str2[200];
 
-        for(int l = page * 18; l < (int)loot.size() && l < page * 18 + 18; l++) {
-            string s = loot[l]->equip_title();
+        for(int l = page * 18; l < (int)loot->size() && l < page * 18 + 18; l++) {
+            string s = (*loot)[l]->equip_title();
 
-            if(loot[l]->get_number() > 1)
-                s += " x" + tostring(loot[l]->get_number());
+            if((*loot)[l]->get_number() > 1)
+                s += " x" + tostring((*loot)[l]->get_number());
 
             str[0] = l - page * 18 + 'A';
             str[1] = '\x0';
@@ -132,7 +132,7 @@ void equip(vector<Item *> &loot, int loc) {
         }
 
         //PAGE DOWN
-        if((page + 1) * 18 < (int)loot.size()) {
+        if((page + 1) * 18 < (int)loot->size()) {
             move(17, 53);
             addnextpagestr();
         }
@@ -147,34 +147,54 @@ void equip(vector<Item *> &loot, int loc) {
         move(22, 1);
         addstr("Cursors - Increase or decrease ammo allocation");
 
-        if(loc != -1) {
-            if(location[loc]->loot.size() > 0)
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            else
-                set_color(COLOR_BLACK, COLOR_BLACK, 1);
+        // TODO: investigate when it happens. Ain't it a dead code?
+//         if(loc != -1) {
+//             if(location[loc]->loot->size() > 0)
+//                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
+//             else
+//                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
+//
+//             move(23, 1);
+//             addstr("Y - Get things from ");
+//             addstr(location[loc]->getname(true));
+//
+//             if(loot->size() > 0)
+//                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
+//             else
+//                 set_color(COLOR_BLACK, COLOR_BLACK, 1);
+//
+//             move(23, 40);
+//             addstr("Z - Stash things at ");
+//             addstr(location[loc]->getname(true));
+//         }
 
-            move(23, 1);
-            addstr("Y - Get things from ");
-            addstr(location[loc]->getname(true));
-
-            if(loot.size() > 0)
-                set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            else
-                set_color(COLOR_BLACK, COLOR_BLACK, 1);
-
-            move(23, 40);
-            addstr("Z - Stash things at ");
-            addstr(location[loc]->getname(true));
+        if(activesquad->activity.type != ACTIVITY_VISIT) {
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            move(25, 1);
+            addstr("TAB - Toggle squads");
         }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(24, 1);
+        move(26, 1);
         addstr("Enter - Done");
 
         refresh();
 
         int c = getch();
         translategetch(c);
+
+        if(c == TAB &&
+                activesquad->activity.type != ACTIVITY_VISIT) { //TODO:change equipment for squad's location eq and disallow to TAB during raid or siege
+            do {
+                toggle_squads(); // changes active squad
+            } while(activesquad->squad[0]->base == -1 ||
+                    activesquad->activity.type == ACTIVITY_VISIT);
+
+            loot = &location[activesquad->squad[0]->base]->loot;
+            consolidateloot(loot);
+            continue;
+        }
+
         bool increaseammo = (c == KEY_UP);
         bool decreaseammo = (c == KEY_DOWN);
 
@@ -184,12 +204,12 @@ void equip(vector<Item *> &loot, int loc) {
             if (increaseammo || decreaseammo)
                 slot = -999;
             else {
-                if(slot < 0 || slot >= (int)loot.size()) {
+                if(slot < 0 || slot >= (int)loot->size()) {
                     // Out of range.
                     continue;
-                } else if (!loot[slot]->is_weapon()
-                           && !loot[slot]->is_armor()
-                           && !loot[slot]->is_clip()) {
+                } else if (!(*loot)[slot]->is_weapon()
+                           && !(*loot)[slot]->is_armor()
+                           && !(*loot)[slot]->is_clip()) {
                     errmsg = "You can't equip that.";
                     continue;
                 }
@@ -235,7 +255,7 @@ void equip(vector<Item *> &loot, int loc) {
                 if(squaddie != NULL) {
                     if (decreaseammo) {
                         if (!squaddie->clips.empty()) {
-                            loot.push_back(squaddie->clips.back()->split(1));
+                            loot->push_back(squaddie->clips.back()->split(1));
 
                             if (squaddie->clips.back()->empty())
                                 squaddie->clips.pop_back();
@@ -259,12 +279,12 @@ void equip(vector<Item *> &loot, int loc) {
 
                         slot = -1;
 
-                        for (int sl = 0; sl < (int)loot.size(); sl++) {
-                            if ((loot[sl]->is_clip() && squaddie->get_weapon().acceptable_ammo(*loot[sl]))) {
+                        for (int sl = 0; sl < (int)loot->size(); sl++) {
+                            if (((*loot)[sl]->is_clip() && squaddie->get_weapon().acceptable_ammo(*(*loot)[sl]))) {
                                 slot = sl;
                                 break;
-                            } else if (loot[sl]->is_weapon() && loot[sl]->is_same_type(squaddie->get_weapon())) { //For throwing weapons. -XML
-                                Weapon *w = static_cast<Weapon *>(loot[sl]); //cast -XML
+                            } else if ((*loot)[sl]->is_weapon() && (*loot)[sl]->is_same_type(squaddie->get_weapon())) { //For throwing weapons. -XML
+                                Weapon *w = static_cast<Weapon *>((*loot)[sl]); //cast -XML
 
                                 if (w->is_throwable()) {
                                     slot = sl;
@@ -295,31 +315,31 @@ void equip(vector<Item *> &loot, int loc) {
                     if(squaddie->special[SPECIALWOUND_UPPERSPINE] != 1)
                         armok = 0;
 
-                    if(loot[slot]->is_weapon() && armok) {
-                        Weapon *w = static_cast<Weapon *>(loot[slot]); //cast -XML
-                        squaddie->give_weapon(*w, &loot);
+                    if((*loot)[slot]->is_weapon() && armok) {
+                        Weapon *w = static_cast<Weapon *>((*loot)[slot]); //cast -XML
+                        squaddie->give_weapon(*w, loot);
 
-                        if(loot[slot]->empty())
-                            delete_and_remove(loot, slot);
+                        if((*loot)[slot]->empty())
+                            delete_and_remove((*loot), slot);
 
-                        if(page * 18 >= (int)loot.size() && page != 0)
+                        if(page * 18 >= (int)loot->size() && page != 0)
                             page--;
-                    } else if(loot[slot]->is_armor()) {
-                        Armor *a = static_cast<Armor *>(loot[slot]); //cast -XML
-                        squaddie->give_armor(*a, &loot);
+                    } else if((*loot)[slot]->is_armor()) {
+                        Armor *a = static_cast<Armor *>((*loot)[slot]); //cast -XML
+                        squaddie->give_armor(*a, loot);
 
-                        if(loot[slot]->empty())
-                            delete_and_remove(loot, slot);
+                        if((*loot)[slot]->empty())
+                            delete_and_remove((*loot), slot);
 
-                        if(page * 18 >= (int)loot.size() && page != 0)
+                        if(page * 18 >= (int)loot->size() && page != 0)
                             page--;
-                    } else if(loot[slot]->is_clip() && armok) {
+                    } else if((*loot)[slot]->is_clip() && armok) {
                         int space = 9 - squaddie->count_clips();
 
                         if (!squaddie->get_weapon().uses_ammo()) {
                             errmsg = "Can't carry ammo without a gun.";
                             continue;
-                        } else if (!squaddie->get_weapon().acceptable_ammo(*loot[slot])) {
+                        } else if (!squaddie->get_weapon().acceptable_ammo(*(*loot)[slot])) {
                             errmsg = "That ammo doesn't fit.";
                             continue;
                         } else if (space < 1) {
@@ -328,21 +348,21 @@ void equip(vector<Item *> &loot, int loc) {
                         } else {
                             int amount = 1;
 
-                            if (loot[slot]->get_number() > 1) {
+                            if ((*loot)[slot]->get_number() > 1) {
                                 if (increaseammo)
                                     amount = 1;
                                 else {
                                     amount = prompt_amount(0,
-                                                           MIN(loot[slot]->get_number(), space));
+                                                           MIN((*loot)[slot]->get_number(), space));
                                 }
                             }
 
-                            squaddie->take_clips(*loot[slot], amount);
+                            squaddie->take_clips(*(*loot)[slot], amount);
 
-                            if(loot[slot]->empty())
-                                delete_and_remove(loot, slot);
+                            if((*loot)[slot]->empty())
+                                delete_and_remove((*loot), slot);
 
-                            if(page * 18 >= (int)loot.size() && page != 0)
+                            if(page * 18 >= (int)loot->size() && page != 0)
                                 page--;
                         }
                     }
@@ -383,7 +403,7 @@ void equip(vector<Item *> &loot, int loc) {
 
             if(c >= '1' && c <= '6') {
                 if(activesquad->squad[c - '1'] != NULL) {
-                    activesquad->squad[c - '1']->strip(&loot);
+                    activesquad->squad[c - '1']->strip(loot);
                     consolidateloot(loot);
                 }
             }
@@ -392,19 +412,19 @@ void equip(vector<Item *> &loot, int loc) {
         if(c == 10 || c == ESC)
             return;
 
-        if(loc != -1) {
-            if(c == 'y' && location[loc]->loot.size() > 0)
-                moveloot(loot, location[loc]->loot);
-
-            if(c == 'z' && loot.size() > 0)
-                moveloot(location[loc]->loot, loot);
-        }
+//         if(loc != -1) { // Wow, when does it occurr? TODO: examine
+//             if(c == 'y' && location[loc]->loot->size() > 0)
+//                 moveloot(loot, location[loc]->loot);
+//
+//             if(c == 'z' && loot->size() > 0)
+//                 moveloot(location[loc]->loot, loot);
+//         }
 
         if(c >= '1' && c <= '6') {
             int p = c - '1';
 
             if(activesquad->squad[p] != NULL) {
-                activesquad->squad[p]->drop_weapons_and_clips(&loot);
+                activesquad->squad[p]->drop_weapons_and_clips(loot);
                 consolidateloot(loot);
             }
         }
@@ -414,7 +434,7 @@ void equip(vector<Item *> &loot, int loc) {
             page--;
 
         //PAGE DOWN
-        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < (int)loot.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < (int)loot->size())
             page++;
 
     } while(1);
@@ -423,10 +443,10 @@ void equip(vector<Item *> &loot, int loc) {
 
 
 /* lets you pick stuff to stash/retrieve from one location to another */
-void moveloot(vector<Item *> &dest, vector<Item *> &source) {
+void moveloot(vector<Item *> *dest, vector<Item *> *source) {
     int page = 0;
 
-    vector<int> selected(source.size(), 0);
+    vector<int> selected(source->size(), 0);
 
     do {
         erase();
@@ -441,15 +461,15 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
         char str[200];
         //char str2[200];
 
-        for(int l = page * 18; l < (int)source.size() && l < page * 18 + 18; l++) {
+        for(int l = page * 18; l < (int)source->size() && l < page * 18 + 18; l++) {
             if(selected[l])
                 set_color(COLOR_GREEN, COLOR_BLACK, 1);
             else
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
-            string s = source[l]->equip_title();
+            string s = (*source)[l]->equip_title();
 
-            if(source[l]->get_number() > 1) {
+            if((*source)[l]->get_number() > 1) {
                 s += " ";
 
                 if(selected[l] > 0)
@@ -457,7 +477,7 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
                 else
                     s += "x";
 
-                s += tostring(source[l]->get_number());
+                s += tostring((*source)[l]->get_number());
             }
 
             str[0] = l - page * 18 + 'A';
@@ -485,7 +505,7 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
         }
 
         //PAGE DOWN
-        if((page + 1) * 18 < (int)source.size()) {
+        if((page + 1) * 18 < (int)source->size()) {
             move(17, 53);
             addnextpagestr();
         }
@@ -504,12 +524,12 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
         if(c >= 'a' && c <= 'r') {
             int slot = c - 'a' + page * 18;
 
-            if(slot >= 0 && slot < (int)source.size()) {
+            if(slot >= 0 && slot < (int)source->size()) {
                 if(selected[slot])
                     selected[slot] = 0;
                 else {
-                    if(source[slot]->get_number() > 1)
-                        selected[slot] = prompt_amount(0, source[slot]->get_number());
+                    if((*source)[slot]->get_number() > 1)
+                        selected[slot] = prompt_amount(0, (*source)[slot]->get_number());
                     else
                         selected[slot] = 1;
                 }
@@ -524,19 +544,19 @@ void moveloot(vector<Item *> &dest, vector<Item *> &source) {
             page--;
 
         //PAGE DOWN
-        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < (int)source.size())
+        if((c == interface_pgdn || c == KEY_DOWN || c == KEY_RIGHT) && (page + 1) * 18 < (int)source->size())
             page++;
 
     } while(1);
 
-    for(int l = source.size() - 1; l >= 0; l--) {
+    for(int l = source->size() - 1; l >= 0; l--) {
         if(selected[l] > 0) {
-            if(source[l]->get_number() <= selected[l]) {
-                dest.push_back(source[l]);
-                source.erase(source.begin() + l);
+            if((*source)[l]->get_number() <= selected[l]) {
+                dest->push_back((*source)[l]);
+                source->erase(source->begin() + l);
             } else {
-                Item *newit = source[l]->split(selected[l]);
-                dest.push_back(newit);
+                Item *newit = (*source)[l]->split(selected[l]);
+                dest->push_back(newit);
             }
         }
     }
@@ -735,23 +755,23 @@ void equipmentbaseassign(void) {
 
 
 /* combines multiple items of the same type into stacks */
-void consolidateloot(vector<Item *> &loot) {
+void consolidateloot(vector<Item *> *loot) {
     int l;
     int l2;
 
     //PUT THINGS TOGETHER
-    for(l = loot.size() - 1; l >= 1; l--) {
+    for(l = loot->size() - 1; l >= 1; l--) {
         for(l2 = l - 1; l2 >= 0; l2--) {
-            loot[l2]->merge(*loot[l]);
+            (*loot)[l2]->merge(*((*loot)[l]));
 
-            if (loot[l]->empty()) {
-                delete_and_remove(loot, l);
+            if ((*loot)[l]->empty()) {
+                delete_and_remove((*loot), l);
                 break;
             }
         }
     }
 
-    std::sort(loot.begin(), loot.end(), Item::sort_compare);
+    std::sort(loot->begin(), loot->end(), Item::sort_compare);
 }
 
 
