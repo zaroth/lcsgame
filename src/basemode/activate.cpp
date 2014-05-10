@@ -95,10 +95,9 @@ void activate(void) {
             addstr(" - ");
             print_name_colored_according_to_juice(temppool[p]);
             char bright = 0;
-            int skill = 0;
+            int skill = temppool[p]->count_skill_sum();
 
             for(int sk = 0; sk < SKILLNUM; sk++) {
-                skill += temppool[p]->get_skill(sk);
 
                 if(temppool[p]->get_skill_ip(sk) >= 100 + (10 * temppool[p]->get_skill(sk)) &&
                         temppool[p]->get_skill(sk) < temppool[p]->skill_cap(sk, true))
@@ -135,9 +134,12 @@ void activate(void) {
         addstr("Press a Letter to Assign an Activity.");
         move(23, 0);
         addpagestr();
-        addstr(" T to sort people.");
+        addstr(" T to sort people. TAB toggles sortings.");
         move(24, 0);
         addstr("Press Z to assign simple tasks in bulk.");
+        move(25, 50);
+        addstr("Current sorting: ");
+        addstr(type_of_sorting(activesortingchoice[SORTINGCHOICE_ACTIVATE]));
 
         refresh();
 
@@ -161,6 +163,12 @@ void activate(void) {
 
         if(c == 't') {
             sorting_prompt(SORTINGCHOICE_ACTIVATE);
+            sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ACTIVATE], true);
+        }
+
+        if(c == TAB) {
+            activesortingchoice[SORTINGCHOICE_ACTIVATE] += 1;
+            activesortingchoice[SORTINGCHOICE_ACTIVATE] %= SORTINGNUM;
             sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ACTIVATE], true);
         }
 
@@ -520,7 +528,7 @@ void activate(Creature *cr) {
             set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_PROSTITUTION);
 
             if(cr->age < 18)
-                set_color(COLOR_BLACK, COLOR_BLACK, 1);      //Grayed out for minors
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);       //Grayed out for minors
 
             mvaddstr(11, 40, "2 - Prostitution");
 

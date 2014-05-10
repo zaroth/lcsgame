@@ -1,5 +1,8 @@
 Changelog for version 4.8-git:
 
+* Added current sorting indicator and possibility to toggle between sorting
+types with TAB.
+* Added 2 new sorting methods: by juice and by skill.
 * Added possibility to toggle through squads while equipping (with TAB).
 * Fixed not displaying "AWAY" bug when creating a new squad in other location
 than currently displayed.

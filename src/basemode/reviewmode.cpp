@@ -337,6 +337,10 @@ void review_mode(short mode) {
             break;
         }
 
+        move(24, 50);
+        addstr("Current sorting: ");
+        addstr(type_of_sorting(activesortingchoice[reviewmodeenum_to_sortingchoiceenum(mode)]));
+
         int y = 2;
 
         for(int p = page * 19; p < (int)temppool.size() && p < page * 19 + 19; p++) {
@@ -545,7 +549,11 @@ void review_mode(short mode) {
 
         move(23, 0);
         addpagestr();
-        addstr(" T to sort people.");
+        addstr(" T to sort people. TAB to toggle sortings.");
+
+        move(24, 50);
+        addstr("Current sorting: ");
+        addstr(type_of_sorting(activesortingchoice[reviewmodeenum_to_sortingchoiceenum(mode)]));
 
         refresh();
 
@@ -842,6 +850,12 @@ void review_mode(short mode) {
             sortliberals(temppool, activesortingchoice[reviewmodeenum_to_sortingchoiceenum(mode)], true);
         }
 
+        if(c == TAB) {
+            activesortingchoice[reviewmodeenum_to_sortingchoiceenum(mode)] += 1;
+            activesortingchoice[reviewmodeenum_to_sortingchoiceenum(mode)] %= SORTINGNUM;
+            sortliberals(temppool, activesortingchoice[reviewmodeenum_to_sortingchoiceenum(mode)], true);
+        }
+
         // Reorder squad
         if(c == 'z') {
             if(temppool.size() <= 1)
@@ -1066,7 +1080,10 @@ void assemblesquad(squadst *cursquad) {
         addstr("Press a Letter to add or remove a Liberal from the squad.");
         move(23, 0);
         addpagestr();
-        addstr(" T to sort people.");
+        addstr(" T to sort people. TAB to toggle sortings.");
+        move(24, 57);
+        addstr("Sorting: ");
+        addstr(type_of_sorting(activesortingchoice[SORTINGCHOICE_ASSEMBLESQUAD]));
         move(23, 50);
         addstr("V - View a Liberal");
         move(24, 0);
@@ -1081,7 +1098,7 @@ void assemblesquad(squadst *cursquad) {
         else
             set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
-        move(24, 40);
+        move(24, 30);
         addstr("9 - Dissolve the squad.");
 
         refresh();
@@ -1165,6 +1182,12 @@ void assemblesquad(squadst *cursquad) {
 
         if(c == 't') {
             sorting_prompt(SORTINGCHOICE_ASSEMBLESQUAD);
+            sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ASSEMBLESQUAD], true);
+        }
+
+        if(c == TAB) {
+            activesortingchoice[SORTINGCHOICE_ASSEMBLESQUAD] += 1;
+            activesortingchoice[SORTINGCHOICE_ASSEMBLESQUAD] %= SORTINGNUM;
             sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ASSEMBLESQUAD], true);
         }
 
@@ -1400,7 +1423,10 @@ void squadlessbaseassign(void) {
         }
 
         move(23, 35);
-        addstr("T to sort people.");
+        addstr(" people. TAB to toggle sortings.");
+        move(24, 50);
+        addstr("Current sorting: ");
+        addstr(type_of_sorting(activesortingchoice[SORTINGCHOICE_BASEASSIGN]));
 
         refresh();
 
@@ -1442,6 +1468,12 @@ void squadlessbaseassign(void) {
 
         if(c == 't') {
             sorting_prompt(SORTINGCHOICE_BASEASSIGN);
+            sortliberals(temppool, activesortingchoice[SORTINGCHOICE_BASEASSIGN], true);
+        }
+
+        if(c == TAB) {
+            activesortingchoice[SORTINGCHOICE_BASEASSIGN] += 1;
+            activesortingchoice[SORTINGCHOICE_BASEASSIGN] %= SORTINGNUM;
             sortliberals(temppool, activesortingchoice[SORTINGCHOICE_BASEASSIGN], true);
         }
 

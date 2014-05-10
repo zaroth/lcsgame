@@ -170,12 +170,12 @@ void equip(vector<Item *> *loot, int loc) { // location should be read from squa
 
         if(activesquad->activity.type != ACTIVITY_VISIT) {
             set_color(COLOR_WHITE, COLOR_BLACK, 0);
-            move(25, 1);
+            move(23, 1);
             addstr("TAB - Toggle squads");
         }
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
-        move(26, 1);
+        move(24, 1);
         addstr("Enter - Done");
 
         refresh();

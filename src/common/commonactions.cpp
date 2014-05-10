@@ -433,7 +433,7 @@ int choose_one(const int *weight_list, int number_of_options, int default_value)
         weight_total += weight_list[option];
 
     if(weight_total < 1)
-        return default_value;  // No acceptable results; use default
+        return default_value;   // No acceptable results; use default
 
     int choose = LCSrandom(weight_total);
 
@@ -880,6 +880,14 @@ void sortliberals(std::vector<Creature *> &liberals, short sortingchoice, bool d
     case SORTING_SQUAD_OR_NAME:
         sort(liberals.begin(), liberals.end(), sort_squadorname);
         break;
+
+    case SORTING_JUICE:
+        sort(liberals.begin(), liberals.end(), sort_juice);
+        break;
+
+    case SORTING_SKILL:
+        sort(liberals.begin(), liberals.end(), sort_skill);
+        break;
     }
 }
 
@@ -931,6 +939,14 @@ bool sort_squadorname(Creature *first, Creature *second) {
     }
 
     return a;
+}
+
+bool sort_juice(Creature *first, Creature *second) {
+    return first->juice >= second->juice;
+}
+
+bool sort_skill(Creature *first, Creature *second) {
+    return first->count_skill_sum() >= second->count_skill_sum();
 }
 
 /* common - Prompt to decide how to sort liberals.*/
@@ -991,13 +1007,17 @@ void sorting_prompt(short listforsorting) {
     }
 
     move(3, 2);
-    addstr("A - No sorting.");
+    addstr("A - Sort by date of joining to LCS.");
     move(4, 2);
     addstr("B - Sort by name.");
     move(5, 2);
     addstr("C - Sort by location and name.");
     move(6, 2);
     addstr("D - Sort by squad or name.");
+    move(7, 2);
+    addstr("E - Sort by gained juice.");
+    move(8, 2);
+    addstr("F - Sort by sum of skills.");
 
     while(1) {
         int c = getch();
@@ -1015,8 +1035,40 @@ void sorting_prompt(short listforsorting) {
         } else if(c == 'd') {
             activesortingchoice[listforsorting] = SORTING_SQUAD_OR_NAME;
             break;
-        } else if(c == 10 || c == ESC)
+        } else if(c == 'e') {
+            activesortingchoice[listforsorting] = SORTING_JUICE;
             break;
+        } else if(c == 'f') {
+            activesortingchoice[listforsorting] = SORTING_SKILL;
+            break;
+        } else if(c == ENTER || c == ESC)
+            break;
+    }
+}
+
+/* common - translates enum of sorting choice to readable string */
+const char *type_of_sorting(short sortchoice) {
+    switch(sortchoice) {
+    case SORTING_SQUAD_OR_NAME:
+        return "by squad then name";
+
+    case SORTING_LOCATION_AND_NAME:
+        return "by location then name";
+
+    case SORTING_NAME:
+        return "by name";
+
+    case SORTING_NONE:
+        return "by joining order";
+
+    case SORTING_SKILL:
+        return "by skill";
+
+    case SORTING_JUICE:
+        return "by juice";
+
+    default:
+        return "BUG SORT";
     }
 }
 

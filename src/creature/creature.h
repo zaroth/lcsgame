@@ -288,10 +288,12 @@ class Creature {
     int attribute_roll(int attribute) const;
     bool attribute_check(int attribute, int difficulty) const;
 
+    int count_skill_sum();
     void set_skill(int skill, int amount);
     int get_skill(int skill) const;
     int skill_roll(int skill) const;
     bool skill_check(int skill, int difficulty) const;
+
 
     char name[CREATURE_NAMELEN];
     char propername[CREATURE_NAMELEN];

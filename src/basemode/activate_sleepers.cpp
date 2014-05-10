@@ -113,7 +113,10 @@ void activate_sleepers(void) {
         addstr("Press a Letter to Assign an Activity.");
         move(23, 0);
         addpagestr();
-        addstr(" T to sort people.");
+        addstr(" T to sort people. TAB to toggle sortings.");
+        move(25, 50);
+        addstr("Current sorting: ");
+        addstr(type_of_sorting(activesortingchoice[SORTINGCHOICE_ACTIVATESLEEPERS]));
 
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
@@ -139,6 +142,11 @@ void activate_sleepers(void) {
 
         if(c == 't') {
             sorting_prompt(SORTINGCHOICE_ACTIVATESLEEPERS);
+            sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ACTIVATESLEEPERS], true);
+        }
+
+        if(c == TAB) {
+            activesortingchoice[SORTINGCHOICE_ACTIVATESLEEPERS] = (activesortingchoice[SORTINGCHOICE_ACTIVATESLEEPERS] + 1) % SORTINGNUM;
             sortliberals(temppool, activesortingchoice[SORTINGCHOICE_ACTIVATESLEEPERS], true);
         }
 

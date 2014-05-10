@@ -748,7 +748,7 @@ string Creature::showXml() const {
         xml.AddSubDoc(skills[i].showXml());
 
     for (int i = 0; i < SKILLNUM; i++)
-        xml.AddElem("skill_experience", skill_experience[i]);  //Bad, relies on their order in the xml file. -XML
+        xml.AddElem("skill_experience", skill_experience[i]);   //Bad, relies on their order in the xml file. -XML
 
     if (weapon != NULL)
         xml.AddSubDoc(weapon->showXml());
@@ -855,6 +855,15 @@ int Creature::get_skill(int skill) const {
     return skills[skill].value;
 }
 
+int Creature::count_skill_sum() {
+    int skillsum = 0;
+
+    for(int sk = 0; sk < SKILLNUM; sk++)
+        skillsum += skills[sk].value;
+
+    return skillsum;
+}
+
 void Creature::adjust_attribute(int attribute, int amount) {
     attributes[attribute].value += amount;
 }
@@ -866,7 +875,7 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
     switch(attribute) {
     case ATTRIBUTE_STRENGTH:
         if(age < 11)
-            ret >>= 1;  // Strength is lowest at the beginning and end of life
+            ret >>= 1;   // Strength is lowest at the beginning and end of life
         else if(age < 16)
             ret -= 1;
         else if(age > 70)
@@ -880,7 +889,7 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
 
     case ATTRIBUTE_AGILITY:
         if(age > 70)
-            ret -= 6;  // Agility is weakened with age
+            ret -= 6;   // Agility is weakened with age
         else if(age > 52)
             ret -= 3;
         else if(age > 35)
@@ -892,18 +901,18 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
         if(age < 11)
             ret -= 2;
         else if(age < 16)
-            ret -= 1;  // Physical immaturity weakens health
+            ret -= 1;   // Physical immaturity weakens health
 
         // Aging actually damages base health and eventually kills, so no aging effects here
         break;
 
     case ATTRIBUTE_CHARISMA:
         if(age < 11)
-            ret += 2;  // Lots of folks like kids
+            ret += 2;   // Lots of folks like kids
         else if(age < 16)
-            ret -= 1;  // Teenagers have communication difficulties and image issues
+            ret -= 1;   // Teenagers have communication difficulties and image issues
         else if(age > 70)
-            ret += 3;  // Authority and experience in life then enhance Charisma with age
+            ret += 3;   // Authority and experience in life then enhance Charisma with age
         else if(age > 52)
             ret += 2;
         else if(age > 35)
@@ -913,7 +922,7 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
 
     case ATTRIBUTE_INTELLIGENCE:
         if(age < 11)
-            ret -= 3;  // Experience enhances Intelligence with age
+            ret -= 3;   // Experience enhances Intelligence with age
         else if(age < 16)
             ret -= 1;
         else if(age > 70)
@@ -927,7 +936,7 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
 
     case ATTRIBUTE_WISDOM:
         if(age < 11)
-            ret -= 2;  // Experience grants Wisdom with age
+            ret -= 2;   // Experience grants Wisdom with age
         else if(age < 16)
             ret -= 1;
         else if(age > 70)
@@ -939,9 +948,9 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
 
     case ATTRIBUTE_HEART:
         if(age < 11)
-            ret += 2;  // Experience saps Heart with age due to cynicism
+            ret += 2;   // Experience saps Heart with age due to cynicism
         else if(age < 16)
-            ret += 1;  // No wonder it's typically the young who are most Liberal...
+            ret += 1;   // No wonder it's typically the young who are most Liberal...
         else if(age > 70)
             ret -= 2;
         else if(age > 52)
@@ -1021,24 +1030,24 @@ int Creature::get_attribute(int attribute, bool usejuice) const {
     // Effects of juice on the character's attributes
     if(usejuice) {
         if(juice <= -50)
-            ret = 1;  // Damn worthless
+            ret = 1;   // Damn worthless
         else if(juice <= -10)
-            ret = static_cast<int>(ret * 0.6);  // Society's dregs
+            ret = static_cast<int>(ret * 0.6);   // Society's dregs
         else if(juice < 0)
-            ret = static_cast<int>(ret * 0.8);  // Punk
+            ret = static_cast<int>(ret * 0.8);   // Punk
         else if(juice >= 10) {
             if(juice < 50)
-                ret += 1;  // Activist
+                ret += 1;   // Activist
             else if(juice < 100)
-                ret = static_cast<int>(ret * 1.1 + 2);  // Socialist Threat
+                ret = static_cast<int>(ret * 1.1 + 2);   // Socialist Threat
             else if(juice < 200)
-                ret = static_cast<int>(ret * 1.2 + 3);  // Revolutionary
+                ret = static_cast<int>(ret * 1.2 + 3);   // Revolutionary
             else if(juice < 500)
-                ret = static_cast<int>(ret * 1.3 + 4);  // Urban Guerrilla
+                ret = static_cast<int>(ret * 1.3 + 4);   // Urban Guerrilla
             else if(juice < 1000)
-                ret = static_cast<int>(ret * 1.4 + 5);  // Liberal Guardian
+                ret = static_cast<int>(ret * 1.4 + 5);   // Liberal Guardian
             else
-                ret = static_cast<int>(ret * 1.5 + 6);  // Elite Liberal
+                ret = static_cast<int>(ret * 1.5 + 6);   // Elite Liberal
         }
 
         // Debilitations for temporary injuries in attributes based
@@ -1326,7 +1335,7 @@ void Creature::train(int trainedskill, int experience, int upto) {
             skills[trainedskill].value >= (skill_cap(trainedskill, true) - 1))
         abovenextlevel = 0;
     else
-        abovenextlevel = 50 + 5 * (1 + skills[trainedskill].value);  // enough skill points to get halfway through the next skill level
+        abovenextlevel = 50 + 5 * (1 + skills[trainedskill].value);   // enough skill points to get halfway through the next skill level
 
     skill_experience[trainedskill] = min(skill_experience[trainedskill], 100 + 10 * skills[trainedskill].value + abovenextlevel);
 
@@ -1783,7 +1792,7 @@ bool Creature::take_clips(Item &clip, int number) {
     bool r;
 
     if (clip.is_clip())
-        r = take_clips(static_cast<Clip &>(clip), number);  //cast -XML
+        r = take_clips(static_cast<Clip &>(clip), number);   //cast -XML
     else
         r = false;
 

@@ -984,6 +984,8 @@ enum SortingChoices {
     SORTING_NAME,
     SORTING_LOCATION_AND_NAME,
     SORTING_SQUAD_OR_NAME,
+    SORTING_JUICE,
+    SORTING_SKILL,
     SORTINGNUM
 };
 
@@ -1142,8 +1144,12 @@ bool sort_none(Creature *first, Creature *second);
 bool sort_name(Creature *first, Creature *second);
 bool sort_locationandname(Creature *first, Creature *second);
 bool sort_squadorname(Creature *first, Creature *second);
+bool sort_juice(Creature *first, Creature *second);
+bool sort_skill(Creature *first, Creature *second);
 /* common - Prompt to decide how to sort liberals.*/
 void sorting_prompt(short listforsorting);
+/* common - translates enum of sorting choice to readable string */
+const char *type_of_sorting(short sortchoice);
 /* common - Returns appropriate sortingchoice enum value for a reviewmode enum value.
             (Is currently unnecessary unless the enums are changed.)*/
 short reviewmodeenum_to_sortingchoiceenum(short reviewmode);
