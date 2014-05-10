@@ -1,5 +1,7 @@
 Changelog for version 4.8-git:
 
+* Changed brief view to show more exact numbers of skill progress (to be able to
+observe comfortably how your skill grows when performing actions during raids)
 * Added current sorting indicator and possibility to toggle between sorting
 types with TAB.
 * Added 2 new sorting methods: by juice and by skill.

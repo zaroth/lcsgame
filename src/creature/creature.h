@@ -370,6 +370,7 @@ class Creature {
     bool weapon_is_concealed() const;
     string get_weapon_string(int subtype) const;
     string get_armor_string(bool fullname) const;
+    char* get_skill_string(char *to_write, int s) const;
 
     int money;
     short juice;

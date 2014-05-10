@@ -926,11 +926,10 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
             strcat(str, ": ");
 
             if(knowledge > 7 - snum)
-                itoa(cr->get_skill(maxs), num, 10);
+                strcat(str, cr->get_skill_string(num, maxs));
             else
-                strcpy(num, "?");
+                strcat(str, "?");
 
-            strcat(str, num);
             addstr(str);
 
             if(snum == 5 && printed) {
@@ -1160,7 +1159,7 @@ void fullstatus(int p) {
 void printliberalskills(Creature *cr) {
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     char str[200];
-    char num[5];
+    char num[10];
 
     // Add name
     move(2, 0);
@@ -1208,21 +1207,8 @@ void printliberalskills(Creature *cr) {
         strcat(str, ": ");
         addstr(str);
         move(5 + s / 3, 14 + 27 * (s % 3));
-        sprintf(num, "%2d.", cr->get_skill(s));
-        addstr(num);
-
-        if(cr->get_skill_ip(s) < 100 + (10 * cr->get_skill(s))) {
-            if ((cr->get_skill_ip(s) * 100) / (100 + (10 * cr->get_skill(s))) != 0) {
-                itoa((cr->get_skill_ip(s) * 100) / (100 + (10 * cr->get_skill(s))), num, 10);
-
-                if ((cr->get_skill_ip(s) * 100) / (100 + (10 * cr->get_skill(s))) < 10)
-                    addstr("0");
-
-                addstr(num);
-            } else
-                addstr("00");
-        } else
-            addstr("99+");
+        //sprintf(num, "%2d.", cr->get_skill(s));
+        addstr(cr->get_skill_string(num, s));
 
         if(cr->skill_cap(s, true) == 0 || cr->get_skill(s) < cr->skill_cap(s, true))
             set_color(COLOR_BLACK, COLOR_BLACK, 1);

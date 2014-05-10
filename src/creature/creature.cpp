@@ -855,6 +855,22 @@ int Creature::get_skill(int skill) const {
     return skills[skill].value;
 }
 
+char* Creature::get_skill_string(char *to_write, int s) const { // s - skill TODO: rewrite this function, it's ugly
+    sprintf(to_write, "%2d.", skills[s].value);
+
+    if(skill_experience[s] < 100 + (10 * skills[s].value)) {
+        if ((skill_experience[s] * 100) / (100 + (10 * skills[s].value)) != 0) {
+            itoa((skill_experience[s] * 100) / (100 + (10 * skills[s].value)), to_write+strlen(to_write), 10);
+
+            if ((skill_experience[s] * 100) / (100 + (10 * skills[s].value)) < 10)
+                strcat(to_write, "0");
+        } else
+            strcat(to_write, "00");
+    } else
+        strcat(to_write, "99+");
+    return to_write;
+}
+
 int Creature::count_skill_sum() {
     int skillsum = 0;
 
