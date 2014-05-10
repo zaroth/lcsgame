@@ -270,7 +270,7 @@ void Shop::browse_halfscreen(squadst &customers, int &buyer) const {
         }
 
         if(c == 'e' && customers.squad[0]->base != -1)
-            equip(location[customers.squad[0]->base]->loot, -1);
+            equip(&(location[customers.squad[0]->base]->loot), -1);
         else if (c == 's' && allow_selling_
                  && location[customers.squad[0]->base]->loot.size() > 0)
             sell_loot(customers);
@@ -449,7 +449,7 @@ void Shop::sell_loot(squadst &customers) const {
             break;
 
         if (c == 'e' && customers.squad[0]->base != -1)
-            equip(location[customers.squad[0]->base]->loot, -1);
+            equip(&(location[customers.squad[0]->base]->loot), -1);
 
         if (c == 'w' || c == 'a' || c == 'c') {
             move(18, 1);
@@ -532,7 +532,7 @@ void Shop::sell_loot(squadst &customers) const {
 int Shop::fenceselect(squadst &customers) const {
     int ret = 0;
 
-    consolidateloot(location[customers.squad[0]->base]->loot);
+    consolidateloot(&(location[customers.squad[0]->base]->loot));
 
     int page = 0;
 

@@ -297,6 +297,7 @@ inline int raw_output(bool bf) {
 
 #define ENTER 10
 #define ESC 27
+#define TAB 9
 
 int r_num(void);
 int LCSrandom(int max);
@@ -1226,13 +1227,13 @@ const CreatureType *getcreaturetype(const std::string &crtype);
  equipment.cpp
 */
 /* review squad equipment */
-void equip(vector<Item *> &loot, int loc);
+void equip(vector<Item *> *loot, int loc);
 /* lets you pick stuff to stash/retrieve from one location to another */
-void moveloot(vector<Item *> &dest, vector<Item *> &source);
+void moveloot(vector<Item *> *dest, vector<Item *> *source);
 /* equipment - assign new bases to the equipment */
 void equipmentbaseassign(void);
 /* combines multiple items of the same type into stacks */
-void consolidateloot(vector<Item *> &loot);
+void consolidateloot(vector<Item *> *loot);
 /* compares two items, used in sorting gear */
 char itemcompare(Item *a, Item *b);
 /* check if the squad has a certain weapon */
@@ -1366,6 +1367,8 @@ void reset(void);
 /*
  basemode.cpp
 */
+void toggle_squads(void);
+
 void mode_base(void);
 
 /*

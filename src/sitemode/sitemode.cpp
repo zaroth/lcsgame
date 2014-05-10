@@ -1369,7 +1369,7 @@ void mode_site(void) {
             }
 
             if(c == 'e') {
-                equip(activesquad->loot, -1);
+                equip(&(activesquad->loot), -1);
 
                 if(enemy && sitealarm)
                     enemyattack();
@@ -2880,7 +2880,7 @@ void mode_site(void) {
                                  location[cursite]->type == SITE_RESIDENTIAL_TENEMENT ||
                                  location[cursite]->type == SITE_RESIDENTIAL_APARTMENT_UPSCALE)) {
                             if(LCSrandom(3))
-                                break;  // Rarely encounter someone in apartments.
+                                break;   // Rarely encounter someone in apartments.
                         }
 
                         prepareencounter(sitetype, location[cursite]->highsecurity);

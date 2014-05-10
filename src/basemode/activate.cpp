@@ -520,7 +520,7 @@ void activate(Creature *cr) {
             set_color(COLOR_WHITE, COLOR_BLACK, cr->activity.type == ACTIVITY_PROSTITUTION);
 
             if(cr->age < 18)
-                set_color(COLOR_BLACK, COLOR_BLACK, 1);     //Grayed out for minors
+                set_color(COLOR_BLACK, COLOR_BLACK, 1);      //Grayed out for minors
 
             mvaddstr(11, 40, "2 - Prostitution");
 
@@ -1120,7 +1120,7 @@ void activate(Creature *cr) {
             activesquad->squad[0] = cr;
             cr->squadid = activesquad->id;
             //go to equipment screen
-            equip(location[activesquad->squad[0]->location]->loot, -1);
+            equip(&(location[activesquad->squad[0]->location]->loot), -1);
             //once you're done, restore original squad status.
             delete activesquad;
             activesquad = oldactivesquad;
