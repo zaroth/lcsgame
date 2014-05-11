@@ -46,7 +46,7 @@ bool show_disbanding_screen(int &oldforcemonth) {
 
         if(pool[p]->juice < targetjuice) {
             if(pool[p]->hireid != -1 && !(pool[p]->flag & CREATUREFLAG_SLEEPER))
-                pool[p]->alive = 0;   // Kill for the purposes of disbanding all contacts below
+                pool[p]->alive = 0;    // Kill for the purposes of disbanding all contacts below
         }
     }
 
@@ -376,13 +376,13 @@ void mode_base(void) {
 
         for(int p = 0; p < (int)pool.size(); p++) {
             if(!pool[p]->alive)
-                continue;   // Dead people don't count
+                continue;    // Dead people don't count
 
             if(pool[p]->align != 1)
-                continue;   // Non-liberals don't count
+                continue;    // Non-liberals don't count
 
             if(pool[p]->location == -1)
-                continue;   // Vacationers don't count
+                continue;    // Vacationers don't count
 
             num_present[pool[p]->location]++;
         }
@@ -518,8 +518,6 @@ void mode_base(void) {
             if (activesquad) {
                 move(8, 1);
                 set_color(COLOR_WHITE, COLOR_BLACK, 0);
-                addstr(activesquad->name);
-                addstr("-"); //in case of overlap, at least make it clear where the name ends.
             }
 
             if(squad.size() > 1 || (activesquad == NULL && squad.size() > 0))

@@ -510,6 +510,7 @@ void printparty(void) {
         addstr(getSquadIdRepresentation(num, activesquad->id));
         addstr(" : ");
         addstr(activesquad->name);
+        addstr("-"); // in case of overlap let know where name ends
     }
 }
 
@@ -1156,6 +1157,7 @@ void fullstatus(int p) {
 
         break;
     } while(1);
+
     party_status = -1; //resetting squad view to list view
 }
 
