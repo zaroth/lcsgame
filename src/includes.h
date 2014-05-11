@@ -674,6 +674,8 @@ struct squadst {
 
     char stance; // Squad's site action stance: high profile, low profile, etc.
 
+    //char* getSquadIdRepresentation(char *hereIWrite, int squadid); // TODO: - not a class methood YET
+
     squadst() {
         for(int p = 0; p < 6; p++)
             squad[p] = NULL;
@@ -1082,7 +1084,7 @@ int mvaddstr_fl(int y, int x, Log &log, const char *format, ...);
 */
 
 /* prepares squad identificator as two characters*/
-void getSquadIdRepresentation(char *hereIWrite, int squadid);
+char *getSquadIdRepresentation(char *hereIWrite, int squadid);
 /* common - test for possible game over */
 char endcheck(char cause = -1);
 /* common - tests if the person is a wanted criminal */

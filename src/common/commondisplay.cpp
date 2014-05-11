@@ -315,17 +315,17 @@ void printparty(void) {
     if(party_status != -1 && party[party_status] == NULL)
         party_status = -1;
 
+    char num[20];
+
     if(party_status != -1) {
         printcreatureinfo(party[party_status]);
 
-        char num[20];
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
         itoa(party_status + 1, num, 10);
         move(1, 0);
         addstr(num);
     } else {
         char str[200];
-        char num[20];
 
         move(1, 0);
         addstr("#-CODE NAME------------SKILL---WEAPON---------ARMOR----------HEALTH---TRANSPORT-");
@@ -339,7 +339,7 @@ void printparty(void) {
 
             if(party[p] != NULL) {
                 move(p + 2, 2);
-                print_name_colored_according_to_juice(party[p]); //addstr(party[p]->name);
+                print_name_colored_according_to_juice(party[p]);
 
                 if(party[p]->prisoner != NULL) {
                     set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
@@ -402,7 +402,6 @@ void printparty(void) {
                 //set_color(COLOR_WHITE,COLOR_BLACK,0);
                 if(party[p]->get_weapon().get_ammoamount() > 0) {
                     //set_color(COLOR_WHITE,COLOR_BLACK,0);
-                    char num[20];
                     itoa(party[p]->get_weapon().get_ammoamount(), num, 10);
                     addstr(" (");
                     addstr(num);
@@ -411,7 +410,6 @@ void printparty(void) {
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
 
                     if(!party[p]->clips.empty()) {
-                        char num[20];
                         itoa(party[p]->count_clips(), num, 10);
                         addstr(" (");
                         addstr(num);
@@ -423,7 +421,6 @@ void printparty(void) {
                 else if(party[p]->has_thrown_weapon && !party[p]->extra_throwing_weapons.empty()) {
                     set_color(COLOR_BLACK, COLOR_BLACK, 1);
                     int no_weapons = party[p]->count_weapons() - party[p]->is_armed();
-                    char num[20];
                     itoa(no_weapons, num, 10);
                     addstr(" (");
                     addstr(num);
@@ -507,6 +504,13 @@ void printparty(void) {
     }
 
     makedelimiter(8, 0);
+
+    if(activesquad != NULL) {
+        move(8, 1);
+        addstr(getSquadIdRepresentation(num, activesquad->id));
+        addstr(" : ");
+        addstr(activesquad->name);
+    }
 }
 
 

@@ -31,8 +31,9 @@ This file is part of Liberal Crime Squad.                                       
 #include "externs.h"
 
 
-void getSquadIdRepresentation(char *hereIWrite, int squadid) {
+char *getSquadIdRepresentation(char *hereIWrite, int squadid) {
     sprintf(hereIWrite, "%02d", (squadid % 100));
+    return hereIWrite;
 }
 /* common - test for possible game over */
 char endcheck(char cause) {
@@ -433,7 +434,7 @@ int choose_one(const int *weight_list, int number_of_options, int default_value)
         weight_total += weight_list[option];
 
     if(weight_total < 1)
-        return default_value;   // No acceptable results; use default
+        return default_value;    // No acceptable results; use default
 
     int choose = LCSrandom(weight_total);
 
