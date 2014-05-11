@@ -20,8 +20,6 @@ holding "B" key to seduce everyone met.
 them from each other.
 * When toggling through squads with TAB in main window, it will now swap to
 list view as well, instead keep zooming n-th member.
-* Changed recruit action mechanics to automatically start conversation
-when only 1 recruit found is left
 * Reordered display of attributes to be more logically grouped (now: Hrt, Wis,
 Int, Char, Hlth, Str, Agi) - mental stats first, physical later, Hrt and Wis next to
 each other.

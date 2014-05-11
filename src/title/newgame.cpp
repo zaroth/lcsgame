@@ -83,7 +83,10 @@ void setup_newgame(void) {
         else
             addstr("[ ]");
 
-        addstr(" D - National LCS: Advanced play across multiple cities.");
+        set_color(COLOR_BLACK, COLOR_BLACK, 1);
+        addstr(" D - National LCS: Advanced play across multiple cities. (not yet supported!)");
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
+
         move(14, 0);
 
         if(nocourtpurge)
@@ -114,7 +117,7 @@ void setup_newgame(void) {
         }
 
         if(c == 'd') {
-            multipleCityMode = !multipleCityMode;
+//            multipleCityMode = !multipleCityMode;
             continue;
         }
 
@@ -536,7 +539,7 @@ void makecharacter(void) {
             move(5, 0);
 
             if(choices || selection == 0)
-                addstr("A - my parents grounded me and hid my toys, but I knew where they put them.");  // Toy box
+                addstr("A - my parents grounded me and hid my toys, but I knew where they put them.");   // Toy box
 
             //SKILL_SECURITY 1
             //ATTRIBUTE_AGILITY 1
@@ -758,7 +761,7 @@ void makecharacter(void) {
             move(7, 0);
 
             if(choices || selection == 1)
-                addstr("B - my step mom shot her ex-husband, my dad, with a shotgun.  She got off."); //XXX: Sounds... Sexual...
+                addstr("B - my step mom shot her ex-husband, my dad, with a shotgun.  She got off.");  //XXX: Sounds... Sexual...
 
             //SKILL_SHOTGUN 2
             //ATTRIBUTE_AGILITY 1
@@ -850,7 +853,7 @@ void makecharacter(void) {
             move(11, 0);
 
             if(choices || selection == 3)
-                addstr("D - I went to a party and met a cool law student.  We've been dating since."); //XXX: No Seduction?
+                addstr("D - I went to a party and met a cool law student.  We've been dating since.");  //XXX: No Seduction?
 
             move(13, 0);
 
