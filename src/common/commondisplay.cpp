@@ -1246,10 +1246,13 @@ void printliberalstats(Creature *cr) {
         addstr(cr->propername);
         addstr(")");
     }
-
+    
+    //Add juice title
     addstr(", ");
+    juice_to_color(cr->juice);
     gettitle(str, *cr);
     addstr(str);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     addstr(" (");
     addstr(cr->get_type_name());
     addstr(")");
@@ -1298,7 +1301,10 @@ void printliberalstats(Creature *cr) {
     move(10, 16);
     addstr("Juice: ");
     itoa(cr->juice, num, 10);
+    juice_to_color(cr->juice);
     addstr(num);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
+    
 
     if(cr->juice < 1000) {
         move(11, 16);
