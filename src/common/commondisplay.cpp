@@ -265,6 +265,31 @@ void locheader(void) {
     }
 }
 
+// Sets color basing on attribute level
+void set_attribute_color(short attribute, bool reverse) {
+    short edge = 3;
+    if(reverse) {
+        edge = 2;
+        attribute = 15-attribute;
+    }
+    if(attribute <= edge)
+        set_color(COLOR_RED, COLOR_BLACK, 0);
+    else if(attribute <= 2*edge)
+        set_color(COLOR_YELLOW, COLOR_BLACK, 1);
+    else if(attribute <= 3*edge)
+        set_color(COLOR_WHITE, COLOR_BLACK, 1);
+    else if(attribute <= 4*edge)
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
+    else if(attribute <= 5*edge)
+        set_color(COLOR_BLUE, COLOR_BLACK, 1);
+    else if(attribute <= 6*edge)
+        set_color(COLOR_GREEN, COLOR_BLACK, 0);
+    else if(attribute <= 7*edge)
+        set_color(COLOR_GREEN, COLOR_BLACK, 1);
+    else // more than 21
+        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
+}
+
 // Sets color basing on juice to emphase status of member or his title
 void juice_to_color(const short juice) {
     if(juice <= -50)
@@ -732,7 +757,9 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     if(knowledge > 0) {
         itoa(cr->get_attribute(ATTRIBUTE_HEART, true), num, 10);
+        set_attribute_color(cr->get_attribute(ATTRIBUTE_HEART, true));
         addstr(num);
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
     } else
         addstr("?");
 
@@ -741,7 +768,9 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     if(knowledge > 0) {
         itoa(cr->get_attribute(ATTRIBUTE_WISDOM, true), num, 10);
+        set_attribute_color(cr->get_attribute(ATTRIBUTE_WISDOM, true), true);
         addstr(num);
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
     } else
         addstr("?");
 
@@ -750,7 +779,9 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     if(knowledge > 0) {
         itoa(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true), num, 10);
+        set_attribute_color(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true));
         addstr(num);
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
     } else
         addstr("?");
 
@@ -759,7 +790,9 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     if(knowledge > 0) {
         itoa(cr->get_attribute(ATTRIBUTE_CHARISMA, true), num, 10);
+        set_attribute_color(cr->get_attribute(ATTRIBUTE_CHARISMA, true));
         addstr(num);
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
     } else
         addstr("?");
 
@@ -768,7 +801,9 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     if(knowledge > 1) {
         itoa(cr->get_attribute(ATTRIBUTE_HEALTH, true), num, 10);
+        set_attribute_color(cr->get_attribute(ATTRIBUTE_HEALTH, true));
         addstr(num);
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
     } else
         addstr("?");
 
@@ -777,7 +812,9 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     if(knowledge > 1) {
         itoa(cr->get_attribute(ATTRIBUTE_STRENGTH, true), num, 10);
+        set_attribute_color(cr->get_attribute(ATTRIBUTE_STRENGTH, true));
         addstr(num);
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
     } else
         addstr("?");
 
@@ -786,10 +823,12 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     if(knowledge > 1) {
         itoa(cr->get_attribute(ATTRIBUTE_AGILITY, true), num, 10);
+        set_attribute_color(cr->get_attribute(ATTRIBUTE_AGILITY, true));
         addstr(num);
+        set_color(COLOR_WHITE, COLOR_BLACK, 0);
     } else
         addstr("?");
-
+    
     move(5, 11);
     addstr("Trans: ");
     long v = -1;
@@ -1330,31 +1369,45 @@ void printliberalstats(Creature *cr) {
     move(5, 0);
     addstr("Heart: ");
     itoa(cr->get_attribute(ATTRIBUTE_HEART, true), num, 10);
+    set_attribute_color(cr->get_attribute(ATTRIBUTE_HEART, true));
     addstr(num);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(6, 0);
     addstr("Wisdom: ");
     itoa(cr->get_attribute(ATTRIBUTE_WISDOM, true), num, 10);
+    set_attribute_color(cr->get_attribute(ATTRIBUTE_WISDOM, true), true);
     addstr(num);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(7, 0);
     addstr("Intelligence: ");
     itoa(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true), num, 10);
+    set_attribute_color(cr->get_attribute(ATTRIBUTE_INTELLIGENCE, true));
     addstr(num);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(8, 0);
     addstr("Charisma: ");
     itoa(cr->get_attribute(ATTRIBUTE_CHARISMA, true), num, 10);
+    set_attribute_color(cr->get_attribute(ATTRIBUTE_CHARISMA, true));
     addstr(num);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(9, 0);
     addstr("Health: ");
     itoa(cr->get_attribute(ATTRIBUTE_HEALTH, true), num, 10);
+    set_attribute_color(cr->get_attribute(ATTRIBUTE_HEALTH, true));
     addstr(num);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(10, 0);
     addstr("Strength: ");
     itoa(cr->get_attribute(ATTRIBUTE_STRENGTH, true), num, 10);
+    set_attribute_color(cr->get_attribute(ATTRIBUTE_STRENGTH, true));
     addstr(num);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(11, 0);
     addstr("Agility: ");
     itoa(cr->get_attribute(ATTRIBUTE_AGILITY, true), num, 10);
+    set_attribute_color(cr->get_attribute(ATTRIBUTE_AGILITY, true));
     addstr(num);
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
 
     // Add highest skills
     char used[SKILLNUM];
