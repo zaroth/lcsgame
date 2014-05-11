@@ -1156,6 +1156,7 @@ void fullstatus(int p) {
 
         break;
     } while(1);
+    party_status = -1; //resetting squad view to list view
 }
 
 

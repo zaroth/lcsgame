@@ -293,6 +293,8 @@ void orderpartyV2(void) {
 void stopevil(void) {
     int l = 0;
     int p = 0;
+    
+    party_status = -1; //resetting squad view to list view
 
     if(activesquad == NULL)
         return;

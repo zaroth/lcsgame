@@ -427,6 +427,8 @@ void advanceday(char &clearformess, char canseethings) {
 
                 getch();
             }
+            
+            party_status = -1; // Resetting squad view for list view before departure.
 
             if(canDepart) switch(location[squad[sq]->activity.arg]->type) {
                 case SITE_CITY_NEW_YORK:
