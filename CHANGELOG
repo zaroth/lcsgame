@@ -1,5 +1,7 @@
 Changelog for version 4.8-git:
 
+* Fixed: now persuasing someone also enquires you to change nickname
+* Added colorifying progress of presuasion
 * Added attribute coloring (according to how high it is at the moment)
 * Added displaying squad's id and name during raids.
 * Changed brief view to show more exact numbers of skill progress (to be able to

@@ -1379,7 +1379,7 @@ void squadlessbaseassign(void) {
             move(y, 0);
             addch(y + 'A' - 2);
             addstr(" - ");
-            addstr(temppool[p]->name);
+            print_name_colored_according_to_juice(temppool[p]);
 
             mvaddstr(y, 25, location[temppool[p]->base]->getname(true, true));
 

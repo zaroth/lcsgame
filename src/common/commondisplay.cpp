@@ -94,7 +94,7 @@ void set_activity_color(long activity_type) {
     case ACTIVITY_SLEEPER_STEAL:
     case ACTIVITY_WHEELCHAIR:
     case ACTIVITY_STEALCARS:
-        set_color(COLOR_CYAN, COLOR_BLACK, 0);
+        set_color(COLOR_CYAN, COLOR_BLACK, 1);
         break;
 
     // Illegal fundraising
@@ -111,7 +111,7 @@ void set_activity_color(long activity_type) {
     case ACTIVITY_SELL_TSHIRTS:
     case ACTIVITY_SELL_ART:
     case ACTIVITY_SELL_MUSIC:
-        set_color(COLOR_CYAN, COLOR_BLACK, 1);
+        set_color(COLOR_BLUE, COLOR_BLACK, 0);
         break;
 
     // Clothing/garment stuff
@@ -266,28 +266,29 @@ void locheader(void) {
 }
 
 // Sets color basing on attribute level
-void set_attribute_color(short attribute, bool reverse) {
-    short edge = 3;
-    if(reverse) {
-        edge = 2;
-        attribute = 15-attribute;
-    }
-    if(attribute <= edge)
+void set_attribute_color(short attribute) {
+    if(attribute <= 1)
+        set_color(COLOR_RED, COLOR_BLACK, 1);
+    else if(attribute <= 2)
         set_color(COLOR_RED, COLOR_BLACK, 0);
-    else if(attribute <= 2*edge)
+    else if(attribute <= 3)
+        set_color(COLOR_MAGENTA, COLOR_BLACK, 0);
+    else if(attribute <= 4)
+        set_color(COLOR_YELLOW, COLOR_BLACK, 0);
+    else if(attribute <= 6)
         set_color(COLOR_YELLOW, COLOR_BLACK, 1);
-    else if(attribute <= 3*edge)
+    else if(attribute <= 8)
         set_color(COLOR_WHITE, COLOR_BLACK, 1);
-    else if(attribute <= 4*edge)
+    else if(attribute <= 10)
         set_color(COLOR_CYAN, COLOR_BLACK, 1);
-    else if(attribute <= 5*edge)
+    else if(attribute <= 12)
         set_color(COLOR_BLUE, COLOR_BLACK, 1);
-    else if(attribute <= 6*edge)
+    else if(attribute <= 15)
+        set_color(COLOR_BLUE, COLOR_BLACK, 0);
+    else if(attribute <= 19)
         set_color(COLOR_GREEN, COLOR_BLACK, 0);
-    else if(attribute <= 7*edge)
+    else
         set_color(COLOR_GREEN, COLOR_BLACK, 1);
-    else // more than 21
-        set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
 }
 
 // Sets color basing on juice to emphase status of member or his title
@@ -768,7 +769,7 @@ void printcreatureinfo(Creature *cr, unsigned char knowledge) {
 
     if(knowledge > 0) {
         itoa(cr->get_attribute(ATTRIBUTE_WISDOM, true), num, 10);
-        set_attribute_color(cr->get_attribute(ATTRIBUTE_WISDOM, true), true);
+        set_attribute_color(cr->get_attribute(ATTRIBUTE_HEART, true)-cr->get_attribute(ATTRIBUTE_WISDOM, true));
         addstr(num);
         set_color(COLOR_WHITE, COLOR_BLACK, 0);
     } else
@@ -1375,7 +1376,7 @@ void printliberalstats(Creature *cr) {
     move(6, 0);
     addstr("Wisdom: ");
     itoa(cr->get_attribute(ATTRIBUTE_WISDOM, true), num, 10);
-    set_attribute_color(cr->get_attribute(ATTRIBUTE_WISDOM, true), true);
+    set_attribute_color(cr->get_attribute(ATTRIBUTE_HEART, true)-cr->get_attribute(ATTRIBUTE_WISDOM, true));
     addstr(num);
     set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(7, 0);

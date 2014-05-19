@@ -347,26 +347,34 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
 
     switch(r.eagerness()) {
     case 1:
+        set_color(COLOR_YELLOW, COLOR_BLACK, 0);
         addstr(" will take a lot of persuading.");
         break;
 
     case 2:
+        set_color(COLOR_CYAN, COLOR_BLACK, 0);
         addstr(" is interested in learning more.");
         break;
 
     case 3:
+        set_color(COLOR_BLUE, COLOR_BLACK, 1);
         addstr(" feels something needs to be done.");
         break;
 
     default:
-        if(r.eagerness() >= 4)
+        if(r.eagerness() >= 4) {
+            set_color(COLOR_GREEN, COLOR_BLACK, 1);
             addstr(" is ready to fight for the Liberal Cause.");
-        else
+        }
+        else {
+            set_color(COLOR_MAGENTA, COLOR_BLACK, 1);
             addstr(" kind of regrets agreeing to this.");
+        }
 
         break;
     }
-
+    
+    set_color(COLOR_WHITE, COLOR_BLACK, 0);
     move(11, 0);
     addstr("How should ");
     print_name_colored_according_to_juice(pool[p]);
@@ -441,8 +449,20 @@ char completerecruitmeeting(recruitst &r, int p, char &clearformess) {
 
             refresh();
             getch();
-
+            
             erase();
+            
+            move(2, 0);
+            set_color(COLOR_WHITE, COLOR_BLACK, 0);
+            addstr("What name will you use for this ");
+            addstr(r.recruit->get_type_name());
+            addstr(" in its presence?");
+            move(3, 0);
+            addstr("If you do not enter anything, their real name will be used.");
+
+            move(4, 0);
+            enter_name(r.recruit->name, CREATURE_NAMELEN, r.recruit->propername);
+            
             sleeperize_prompt(*r.recruit, *pool[p], 6);
 
             r.recruit->hireid = pool[p]->id;

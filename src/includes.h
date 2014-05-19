@@ -1032,7 +1032,7 @@ void set_alignment_color(signed char alignment, bool extended_range = false);
 /* Sets the text color per activity type */
 void set_activity_color(long activity_type);
 /* Sets  the color basing on how high attribute is */
-void set_attribute_color(const short attribute_value, bool reverse=false);
+void set_attribute_color(const short attribute_value);
 /* location and squad header */
 void locheader(void);
 /* prints Creature's name colored according to hisher juice level */
